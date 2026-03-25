@@ -120,14 +120,68 @@
 
 ## Traceability
 
-| REQ-ID | Phase | Status |
-|--------|-------|--------|
-| FOUND-01 to FOUND-09 | — | Pending |
-| AUTH-01 to AUTH-08 | — | Pending |
-| INPUT-01 to INPUT-14 | — | Pending |
-| MGMT-01 to MGMT-05 | — | Pending |
-| IMPEX-01 to IMPEX-13 | — | Pending |
-| PLAT-01 to PLAT-11 | — | Pending |
+| REQ-ID | Phase | Phase Name | Status |
+|--------|-------|------------|--------|
+| FOUND-01 | 2 | DB Schema & Tenant Isolation | Pending |
+| FOUND-02 | 2 | DB Schema & Tenant Isolation | Pending |
+| FOUND-03 | 1 | Project Scaffolding & Dev Environment | Pending |
+| FOUND-04 | 2 | DB Schema & Tenant Isolation | Pending |
+| FOUND-05 | 2 | DB Schema & Tenant Isolation | Pending |
+| FOUND-06 | 3 | Authentication & App Shell | Pending |
+| FOUND-07 | 2 | DB Schema & Tenant Isolation | Pending |
+| FOUND-08 | 3 | Authentication & App Shell | Pending |
+| FOUND-09 | 1 | Project Scaffolding & Dev Environment | Pending |
+| AUTH-01 | 3 | Authentication & App Shell | Pending |
+| AUTH-02 | 3 | Authentication & App Shell | Pending |
+| AUTH-03 | 3 | Authentication & App Shell | Pending |
+| AUTH-04 | 3 | Authentication & App Shell | Pending |
+| AUTH-05 | 3 | Authentication & App Shell | Pending |
+| AUTH-06 | 3 | Authentication & App Shell | Pending |
+| AUTH-07 | 3 | Authentication & App Shell | Pending |
+| AUTH-08 | 3 | Authentication & App Shell | Pending |
+| INPUT-01 | 6 | AG Grid Spike & Core Grid | Pending |
+| INPUT-02 | 6 | AG Grid Spike & Core Grid | Pending |
+| INPUT-03 | 6 | AG Grid Spike & Core Grid | Pending |
+| INPUT-04 | 6 | AG Grid Spike & Core Grid | Pending |
+| INPUT-05 | 6 | AG Grid Spike & Core Grid | Pending |
+| INPUT-06 | 7 | Grid Polish & Navigation | Pending |
+| INPUT-07 | 7 | Grid Polish & Navigation | Pending |
+| INPUT-08 | 6 | AG Grid Spike & Core Grid | Pending |
+| INPUT-09 | 7 | Grid Polish & Navigation | Pending |
+| INPUT-10 | 7 | Grid Polish & Navigation | Pending |
+| INPUT-11 | 7 | Grid Polish & Navigation | Pending |
+| INPUT-12 | 6 | AG Grid Spike & Core Grid | Pending |
+| INPUT-13 | 6 | AG Grid Spike & Core Grid | Pending |
+| INPUT-14 | 7 | Grid Polish & Navigation | Pending |
+| MGMT-01 | 4 | Person & Project CRUD | Pending |
+| MGMT-02 | 4 | Person & Project CRUD | Pending |
+| MGMT-03 | 5 | Reference Data Admin | Pending |
+| MGMT-04 | 5 | Reference Data Admin | Pending |
+| MGMT-05 | 5 | Reference Data Admin | Pending |
+| IMPEX-01 | 8 | Import Wizard | Pending |
+| IMPEX-02 | 8 | Import Wizard | Pending |
+| IMPEX-03 | 8 | Import Wizard | Pending |
+| IMPEX-04 | 8 | Import Wizard | Pending |
+| IMPEX-05 | 8 | Import Wizard | Pending |
+| IMPEX-06 | 8 | Import Wizard | Pending |
+| IMPEX-07 | 8 | Import Wizard | Pending |
+| IMPEX-08 | 8 | Import Wizard | Pending |
+| IMPEX-09 | 8 | Import Wizard | Pending |
+| IMPEX-10 | 8 | Import Wizard | Pending |
+| IMPEX-11 | 9 | Flat Table View & Export | Pending |
+| IMPEX-12 | 9 | Flat Table View & Export | Pending |
+| IMPEX-13 | 8 | Import Wizard | Pending |
+| PLAT-01 | 10 | Platform Admin | Pending |
+| PLAT-02 | 10 | Platform Admin | Pending |
+| PLAT-03 | 10 | Platform Admin | Pending |
+| PLAT-04 | 10 | Platform Admin | Pending |
+| PLAT-05 | 10 | Platform Admin | Pending |
+| PLAT-06 | 10 | Platform Admin | Pending |
+| PLAT-07 | 10 | Platform Admin | Pending |
+| PLAT-08 | 10 | Platform Admin | Pending |
+| PLAT-09 | 10 | Platform Admin | Pending |
+| PLAT-10 | 10 | Platform Admin | Pending |
+| PLAT-11 | 10 | Platform Admin | Pending |
 
 ---
 *60 v1 requirements across 6 categories. 13 v2 requirements deferred. 11 explicit exclusions.*
