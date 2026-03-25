@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nordic Capacity - Person Input: Lars Andersson</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "error-dim": "#4e0309",
+                "surface-variant": "#d9e4e8",
+                "inverse-primary": "#cce6fb",
+                "surface-tint": "#496173",
+                "inverse-surface": "#0b0f10",
+                "on-surface": "#2a3437",
+                "primary-fixed": "#cce6fb",
+                "primary": "#496173",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-high": "#e1eaec",
+                "surface-container-low": "#f0f4f6",
+                "secondary-dim": "#4c5459",
+                "secondary-fixed": "#dce4e9",
+                "surface": "#f8fafb",
+                "on-tertiary-fixed": "#42474a",
+                "on-tertiary-container": "#54595c",
+                "outline-variant": "#a9b4b7",
+                "on-primary-fixed-variant": "#465e70",
+                "surface-dim": "#cfdce0",
+                "surface-container-highest": "#d9e4e8",
+                "primary-container": "#cce6fb",
+                "surface-bright": "#f8fafb",
+                "tertiary": "#5b6063",
+                "on-primary-container": "#3d5466",
+                "secondary-container": "#dce4e9",
+                "on-secondary-fixed": "#394045",
+                "on-primary": "#f3f8ff",
+                "on-secondary-fixed-variant": "#555d61",
+                "on-background": "#2a3437",
+                "outline": "#727d80",
+                "on-surface-variant": "#566164",
+                "on-tertiary": "#f5f9fd",
+                "inverse-on-surface": "#9a9d9e",
+                "surface-container": "#e8eff1",
+                "on-error-container": "#752121",
+                "tertiary-container": "#eaeef2",
+                "primary-dim": "#3d5567",
+                "on-primary-fixed": "#2a4253",
+                "on-secondary-container": "#4b5358",
+                "on-tertiary-fixed-variant": "#5e6366",
+                "tertiary-fixed-dim": "#dce0e3",
+                "error": "#9f403d",
+                "error-container": "#fe8983",
+                "secondary-fixed-dim": "#ced5db",
+                "primary-fixed-dim": "#bed8ed",
+                "tertiary-dim": "#4f5457",
+                "tertiary-fixed": "#eaeef2",
+                "on-error": "#fff7f6",
+                "background": "#f8fafb",
+                "secondary": "#586065",
+                "on-secondary": "#f3faff"
+              },
+              fontFamily: {
+                "headline": ["Manrope"],
+                "body": ["Inter"],
+                "label": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+            },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafb; color: #2a3437; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .tabular-nums { font-variant-numeric: tabular-nums; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .focus-cell { outline: 2px solid #496173; outline-offset: -2px; background-color: #ffffff !important; }
+        .drag-handle { position: absolute; bottom: -2px; right: -2px; width: 6px; height: 6px; background: #496173; cursor: nwse-resize; }
+    </style>
+</head>
+<body class="flex min-h-screen overflow-hidden">
+<!-- SideNavBar (Predicted Component) -->
+<aside class="flex flex-col h-full border-r border-[#a9b4b7]/15 bg-[#f0f4f6] dark:bg-slate-950 h-screen w-64 fixed left-0 top-0 z-20">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-8 h-8 bg-primary rounded-sm flex items-center justify-center text-on-primary font-headline font-bold">NP</div>
+<div>
+<h2 class="font-['Manrope'] font-bold text-[#496173] dark:text-slate-200 text-sm leading-tight">Resource Planner</h2>
+<p class="text-[10px] text-outline font-medium tracking-wider uppercase">Nordic Precision</p>
+</div>
+</div>
+<nav class="space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#e2e8f0] dark:hover:bg-slate-900 font-['Inter'] text-xs font-medium transition-transform duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="group">group</span>
+<span>Resources</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 bg-[#d9e4e8] dark:bg-slate-800 text-[#496173] dark:text-white rounded-sm font-semibold font-['Inter'] text-xs transition-transform duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="event_available">event_available</span>
+<span>Allocations</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#e2e8f0] dark:hover:bg-slate-900 font-['Inter'] text-xs font-medium transition-transform duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="bar_chart">bar_chart</span>
+<span>Capacity</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#e2e8f0] dark:hover:bg-slate-900 font-['Inter'] text-xs font-medium transition-transform duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="flag">flag</span>
+<span>Milestones</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#e2e8f0] dark:hover:bg-slate-900 font-['Inter'] text-xs font-medium transition-transform duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="description">description</span>
+<span>Reports</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-6 space-y-4">
+<button class="w-full bg-primary text-on-primary py-2 px-4 rounded-sm font-['Inter'] text-xs font-semibold hover:opacity-90 transition-opacity">
+                New Entry
+            </button>
+<div class="pt-4 border-t border-outline-variant/15 space-y-1">
+<a class="flex items-center gap-3 px-3 py-1.5 text-slate-600 dark:text-slate-400 hover:bg-[#e2e8f0] dark:hover:bg-slate-900 font-['Inter'] text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="help_outline">help_outline</span>
+<span>Help</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-1.5 text-slate-600 dark:text-slate-400 hover:bg-[#e2e8f0] dark:hover:bg-slate-900 font-['Inter'] text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="archive">archive</span>
+<span>Archive</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content -->
+<main class="flex-1 ml-64 flex flex-col max-w-[calc(1440px-256px)] mx-auto overflow-hidden">
+<!-- TopNavBar (Predicted Component) -->
+<header class="flex justify-between items-center w-full px-6 py-3 max-w-full bg-[#f8fafb] dark:bg-slate-900 border-b border-outline-variant/15 z-10">
+<div class="flex items-center gap-8">
+<span class="text-xl font-semibold text-[#496173] dark:text-slate-100 tracking-tighter font-headline">Nordic Capacity</span>
+<nav class="hidden md:flex items-center gap-6 font-['Manrope'] font-medium text-sm tracking-tight text-slate-500">
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173]" href="#">Input</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173]" href="#">Team</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173]" href="#">Projects</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173]" href="#">Data</a>
+<a class="text-[#496173] dark:text-white border-b-2 border-[#496173] dark:border-blue-400 pb-1 font-bold" href="#">Dashboard</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined text-[#496173] cursor-pointer" data-icon="notifications">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</div>
+<span class="material-symbols-outlined text-[#496173] cursor-pointer" data-icon="settings">settings</span>
+<img alt="User profile" class="w-8 h-8 rounded-full border border-outline-variant/30" data-alt="Close up portrait of a professional man with glasses and a clean-cut beard against a neutral studio background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAETK1Bo4N5k25f3jo4W1OSlsQnVOj9viKqxO-7K1mZBzYWRrlOde2fReyzN_ENGDgZwj8ZwuV52xPZ1iaBWh_I0VrtNidaQu0LKWVFpEm8F998adLqvIg88Fmsp4FYtTf1cIeWpLKhuccvxLcX1SrjTiWwid4a3EVi7FszTlBh5lQCuLmZmm27--sJGvXc6ygwW2lb2I1yfkWkw6bR9QwmKus2ppDWYtMptoyoVgNwCiQ_2_j5zZUEomyAQ5hgqh5xAnoVn-CP_4cf"/>
+</div>
+</header>
+<!-- Page Content -->
+<div class="flex-1 overflow-auto p-8 space-y-6 bg-surface">
+<!-- Person Header -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<button class="p-1 hover:bg-surface-container-low transition-colors rounded-sm text-outline">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<h1 class="font-headline text-2xl font-semibold text-on-surface">Lars Andersson</h1>
+<button class="p-1 hover:bg-surface-container-low transition-colors rounded-sm text-outline">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+<div class="flex items-center gap-2 ml-4">
+<span class="px-2.5 py-0.5 bg-secondary-container text-on-secondary-fixed text-xs font-semibold rounded-full">SW</span>
+<span class="px-2.5 py-0.5 bg-secondary-container text-on-secondary-fixed text-xs font-semibold rounded-full">Drivetrain</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-outline uppercase font-semibold tracking-widest">Monthly Target</p>
+<p class="font-headline text-xl font-bold text-primary">150<span class="text-sm font-medium text-outline ml-1">h/month</span></p>
+</div>
+</div>
+<!-- Spreadsheet Grid Container -->
+<div class="bg-surface-container-lowest border border-outline-variant/15 rounded-sm shadow-sm overflow-hidden">
+<div class="overflow-x-auto no-scrollbar">
+<table class="w-full border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="sticky left-0 z-10 bg-surface-container-low border-r border-outline-variant/15 px-4 py-3 text-left w-64 min-w-[256px]">
+<span class="font-label text-xs font-bold text-outline uppercase tracking-wider">Project Name</span>
+</th>
+<!-- Month Columns -->
+<th class="px-4 py-3 border-r border-outline-variant/15 min-w-[100px] bg-primary-container/10">
+<span class="font-label text-xs font-bold text-primary block">2026-01</span>
+<span class="text-[9px] text-primary/60 font-medium">CURRENT</span>
+</th>
+<th class="px-4 py-3 border-r border-outline-variant/15 min-w-[100px]">
+<span class="font-label text-xs font-bold text-outline-variant block">2026-02</span>
+</th>
+<th class="px-4 py-3 border-r border-outline-variant/15 min-w-[100px]">
+<span class="font-label text-xs font-bold text-outline-variant block">2026-03</span>
+</th>
+<th class="px-4 py-3 border-r border-outline-variant/15 min-w-[100px]">
+<span class="font-label text-xs font-bold text-outline-variant block">2026-04</span>
+</th>
+<th class="px-4 py-3 border-r border-outline-variant/15 min-w-[100px]">
+<span class="font-label text-xs font-bold text-outline-variant block">2026-05</span>
+</th>
+<th class="px-4 py-3 border-r border-outline-variant/15 min-w-[100px]">
+<span class="font-label text-xs font-bold text-outline-variant block">2026-06</span>
+</th>
+<th class="px-4 py-3 border-r border-outline-variant/15 min-w-[100px]">
+<span class="font-label text-xs font-bold text-outline-variant block">2026-07</span>
+</th>
+<th class="px-4 py-3 border-r border-outline-variant/15 min-w-[100px]">
+<span class="font-label text-xs font-bold text-outline-variant block">2026-08</span>
+</th>
+<th class="px-4 py-3 min-w-[100px]">
+<span class="font-label text-xs font-bold text-outline-variant block">2026-09</span>
+</th>
+</tr>
+</thead>
+<tbody class="font-label text-sm">
+<!-- Project Atlas -->
+<tr class="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors group">
+<td class="sticky left-0 z-10 bg-white group-hover:bg-surface-container-low border-r border-outline-variant/15 px-4 py-2 font-semibold text-on-surface">Atlas</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15 bg-primary-container/5">100</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">120</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15 focus-cell relative">
+                                    100
+                                    <div class="drag-handle"></div>
+</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">100</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">120</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">120</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">120</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">100</td>
+<td class="tabular-nums text-right px-4 py-2">100</td>
+</tr>
+<!-- Project Vega -->
+<tr class="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors group">
+<td class="sticky left-0 z-10 bg-white group-hover:bg-surface-container-low border-r border-outline-variant/15 px-4 py-2 font-semibold text-on-surface">Vega</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15 bg-primary-container/5">40</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">20</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">40</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">40</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">40</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">20</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">20</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">40</td>
+<td class="tabular-nums text-right px-4 py-2">40</td>
+</tr>
+<!-- Project Nova -->
+<tr class="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors group">
+<td class="sticky left-0 z-10 bg-white group-hover:bg-surface-container-low border-r border-outline-variant/15 px-4 py-2 font-semibold text-on-surface">Nova</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15 bg-primary-container/5">10</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">10</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">10</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">20</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">20</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">20</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">10</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">10</td>
+<td class="tabular-nums text-right px-4 py-2">10</td>
+</tr>
+<!-- Empty Rows -->
+<tr class="border-b border-outline-variant/5">
+<td class="sticky left-0 z-10 bg-white border-r border-outline-variant/15 px-4 py-2 text-outline-variant italic font-normal">Add project...</td>
+<td class="px-4 py-2 border-r border-outline-variant/15 bg-primary-container/5"></td>
+<td class="px-4 py-2 border-r border-outline-variant/15"></td>
+<td class="px-4 py-2 border-r border-outline-variant/15"></td>
+<td class="px-4 py-2 border-r border-outline-variant/15"></td>
+<td class="px-4 py-2 border-r border-outline-variant/15"></td>
+<td class="px-4 py-2 border-r border-outline-variant/15"></td>
+<td class="px-4 py-2 border-r border-outline-variant/15"></td>
+<td class="px-4 py-2 border-r border-outline-variant/15"></td>
+<td class="px-4 py-2"></td>
+</tr>
+<tr class="border-b border-outline-variant/5">
+<td class="sticky left-0 z-10 bg-white border-r border-outline-variant/15 px-4 py-2"></td>
+<td class="px-4 py-2 border-r border-outline-variant/15 bg-primary-container/5"></td>
+<td class="px-4 py-2 border-r border-outline-variant/15"></td>
+<td class="px-4 py-2 border-r border-outline-variant/15"></td>
+<td class="px-4 py-2 border-r border-outline-variant/15"></td>
+<td class="px-4 py-2 border-r border-outline-variant/15"></td>
+<td class="px-4 py-2 border-r border-outline-variant/15"></td>
+<td class="px-4 py-2 border-r border-outline-variant/15"></td>
+<td class="px-4 py-2 border-r border-outline-variant/15"></td>
+<td class="px-4 py-2"></td>
+</tr>
+<!-- Summary: SUMMA -->
+<tr class="bg-surface-container-low font-bold">
+<td class="sticky left-0 z-10 bg-surface-container-low border-r border-outline-variant/15 px-4 py-3">SUMMA</td>
+<td class="tabular-nums text-right px-4 py-3 border-r border-outline-variant/15">150</td>
+<td class="tabular-nums text-right px-4 py-3 border-r border-outline-variant/15">150</td>
+<td class="tabular-nums text-right px-4 py-3 border-r border-outline-variant/15">150</td>
+<td class="tabular-nums text-right px-4 py-3 border-r border-outline-variant/15">160</td>
+<td class="tabular-nums text-right px-4 py-3 border-r border-outline-variant/15">180</td>
+<td class="tabular-nums text-right px-4 py-3 border-r border-outline-variant/15">160</td>
+<td class="tabular-nums text-right px-4 py-3 border-r border-outline-variant/15">150</td>
+<td class="tabular-nums text-right px-4 py-3 border-r border-outline-variant/15">150</td>
+<td class="tabular-nums text-right px-4 py-3">150</td>
+</tr>
+<!-- Summary: Target -->
+<tr class="text-outline">
+<td class="sticky left-0 z-10 bg-white border-r border-outline-variant/15 px-4 py-2 font-medium">Target</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15 bg-primary-container/5">150</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">150</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">150</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">150</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">150</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">150</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">150</td>
+<td class="tabular-nums text-right px-4 py-2 border-r border-outline-variant/15">150</td>
+<td class="tabular-nums text-right px-4 py-2">150</td>
+</tr>
+<!-- Summary: Status -->
+<tr>
+<td class="sticky left-0 z-10 bg-white border-r border-outline-variant/15 px-4 py-3 font-medium text-outline">Status</td>
+<!-- Jan - Mar: Green -->
+<td class="px-4 py-3 border-r border-outline-variant/15 bg-primary-container/5">
+<div class="flex justify-end"><span class="w-3 h-3 rounded-full bg-on-secondary-container opacity-40"></span></div>
+</td>
+<td class="px-4 py-3 border-r border-outline-variant/15 bg-green-50">
+<div class="flex justify-end"><span class="w-3 h-3 rounded-full bg-on-secondary-container"></span></div>
+</td>
+<td class="px-4 py-3 border-r border-outline-variant/15 bg-green-50">
+<div class="flex justify-end"><span class="w-3 h-3 rounded-full bg-on-secondary-container"></span></div>
+</td>
+<!-- Apr: Amber -->
+<td class="px-4 py-3 border-r border-outline-variant/15 bg-amber-50">
+<div class="flex justify-end"><span class="w-3 h-3 rounded-full bg-outline-variant"></span></div>
+</td>
+<!-- May: Red -->
+<td class="px-4 py-3 border-r border-outline-variant/15 bg-error-container/10">
+<div class="flex justify-end"><span class="w-3 h-3 rounded-full bg-error"></span></div>
+</td>
+<td class="px-4 py-3 border-r border-outline-variant/15 bg-amber-50">
+<div class="flex justify-end"><span class="w-3 h-3 rounded-full bg-outline-variant"></span></div>
+</td>
+<td class="px-4 py-3 border-r border-outline-variant/15 bg-green-50">
+<div class="flex justify-end"><span class="w-3 h-3 rounded-full bg-on-secondary-container"></span></div>
+</td>
+<td class="px-4 py-3 border-r border-outline-variant/15 bg-green-50">
+<div class="flex justify-end"><span class="w-3 h-3 rounded-full bg-on-secondary-container"></span></div>
+</td>
+<td class="px-4 py-3 bg-green-50">
+<div class="flex justify-end"><span class="w-3 h-3 rounded-full bg-on-secondary-container"></span></div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Dashboard Analytics Preview (Bento Grid Style) -->
+<div class="grid grid-cols-12 gap-4 mt-8">
+<div class="col-span-12 md:col-span-4 bg-surface-container-lowest p-5 border border-outline-variant/15 flex flex-col justify-between">
+<div>
+<h4 class="text-xs font-bold text-outline uppercase tracking-widest mb-4">Total Allocation Trend</h4>
+<div class="h-24 w-full flex items-end gap-2 px-2">
+<div class="bg-primary/20 w-full h-[60%]"></div>
+<div class="bg-primary/20 w-full h-[70%]"></div>
+<div class="bg-primary/20 w-full h-[65%]"></div>
+<div class="bg-primary w-full h-[85%]"></div>
+<div class="bg-error w-full h-[95%]"></div>
+<div class="bg-primary/20 w-full h-[80%]"></div>
+<div class="bg-primary/20 w-full h-[60%]"></div>
+</div>
+</div>
+<div class="mt-4 flex justify-between items-center">
+<span class="text-xs font-medium text-outline">Q1-Q2 Forecast</span>
+<span class="text-sm font-bold text-error">+12% Peak</span>
+</div>
+</div>
+<div class="col-span-12 md:col-span-5 bg-surface-container-lowest p-5 border border-outline-variant/15">
+<h4 class="text-xs font-bold text-outline uppercase tracking-widest mb-4">Project Distribution</h4>
+<div class="space-y-3">
+<div class="flex items-center gap-4">
+<span class="text-xs font-medium text-on-surface w-16">Atlas</span>
+<div class="flex-1 h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[65%]"></div>
+</div>
+<span class="text-xs tabular-nums font-bold text-primary">65%</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs font-medium text-on-surface w-16">Vega</span>
+<div class="flex-1 h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="bg-primary-fixed-dim h-full w-[25%]"></div>
+</div>
+<span class="text-xs tabular-nums font-bold text-primary">25%</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-xs font-medium text-on-surface w-16">Nova</span>
+<div class="flex-1 h-2 bg-surface-container-low rounded-full overflow-hidden">
+<div class="bg-secondary-fixed-dim h-full w-[10%]"></div>
+</div>
+<span class="text-xs tabular-nums font-bold text-primary">10%</span>
+</div>
+</div>
+</div>
+<div class="col-span-12 md:col-span-3 bg-primary text-on-primary p-5 flex flex-col justify-between">
+<div>
+<span class="material-symbols-outlined mb-2" data-icon="lightbulb">lightbulb</span>
+<h4 class="text-xs font-bold uppercase tracking-widest opacity-80">Capacity Insight</h4>
+<p class="text-sm font-medium mt-2 leading-relaxed">May 2026 exceeds target by 30h due to overlap in Atlas &amp; Nova milestones.</p>
+</div>
+<button class="mt-4 text-[11px] font-bold underline underline-offset-4 text-left uppercase tracking-widest">Adjust Allocation</button>
+</div>
+</div>
+</div>
+<!-- Footer / Action Bar -->
+<footer class="bg-white border-t border-outline-variant/15 px-8 py-4 flex justify-between items-center">
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-on-secondary-container"></span>
+<span class="text-[11px] font-medium text-outline uppercase tracking-wider">On Track</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span>
+<span class="text-[11px] font-medium text-outline uppercase tracking-wider">Warning</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="text-[11px] font-medium text-outline uppercase tracking-wider">Over Capacity</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-5 py-2 text-xs font-bold text-primary hover:bg-surface-container-low transition-colors rounded-sm uppercase tracking-widest">Discard Changes</button>
+<button class="px-8 py-2 text-xs font-bold bg-primary text-on-primary rounded-sm uppercase tracking-widest hover:opacity-90 transition-opacity">Save Worksheet</button>
+</div>
+</footer>
+</main>
+</body></html>

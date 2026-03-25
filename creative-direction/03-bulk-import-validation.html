@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nordic Capacity | Bulk Import Validation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "error-dim": "#4e0309",
+              "surface-variant": "#d9e4e8",
+              "inverse-primary": "#cce6fb",
+              "surface-tint": "#496173",
+              "inverse-surface": "#0b0f10",
+              "on-surface": "#2a3437",
+              "primary-fixed": "#cce6fb",
+              "primary": "#496173",
+              "surface-container-lowest": "#ffffff",
+              "surface-container-high": "#e1eaec",
+              "surface-container-low": "#f0f4f6",
+              "secondary-dim": "#4c5459",
+              "secondary-fixed": "#dce4e9",
+              "surface": "#f8fafb",
+              "on-tertiary-fixed": "#42474a",
+              "on-tertiary-container": "#54595c",
+              "outline-variant": "#a9b4b7",
+              "on-primary-fixed-variant": "#465e70",
+              "surface-dim": "#cfdce0",
+              "surface-container-highest": "#d9e4e8",
+              "primary-container": "#cce6fb",
+              "surface-bright": "#f8fafb",
+              "tertiary": "#5b6063",
+              "on-primary-container": "#3d5466",
+              "secondary-container": "#dce4e9",
+              "on-secondary-fixed": "#394045",
+              "on-primary": "#f3f8ff",
+              "on-secondary-fixed-variant": "#555d61",
+              "on-background": "#2a3437",
+              "outline": "#727d80",
+              "on-surface-variant": "#566164",
+              "on-tertiary": "#f5f9fd",
+              "inverse-on-surface": "#9a9d9e",
+              "surface-container": "#e8eff1",
+              "on-error-container": "#752121",
+              "tertiary-container": "#eaeef2",
+              "primary-dim": "#3d5567",
+              "on-primary-fixed": "#2a4253",
+              "on-secondary-container": "#4b5358",
+              "on-tertiary-fixed-variant": "#5e6366",
+              "tertiary-fixed-dim": "#dce0e3",
+              "error": "#9f403d",
+              "error-container": "#fe8983",
+              "secondary-fixed-dim": "#ced5db",
+              "primary-fixed-dim": "#bed8ed",
+              "tertiary-dim": "#4f5457",
+              "tertiary-fixed": "#eaeef2",
+              "on-error": "#fff7f6",
+              "background": "#f8fafb",
+              "secondary": "#586065",
+              "on-secondary": "#f3faff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .font-headline { font-family: 'Manrope', sans-serif; }
+        .tabular-nums { font-variant-numeric: tabular-nums; }
+    </style>
+</head>
+<body class="bg-surface text-on-surface min-h-screen flex">
+<!-- SideNavBar (Shared Component) -->
+<aside class="flex flex-col h-screen w-64 docked left-0 bg-[#f0f4f6] dark:bg-slate-950 border-r border-[#a9b4b7]/15 shrink-0">
+<div class="px-6 py-8">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 bg-primary rounded-sm flex items-center justify-center text-on-primary font-headline font-bold">N</div>
+<div>
+<h1 class="font-['Manrope'] font-bold text-[#496173] dark:text-slate-200 leading-none">Resource Planner</h1>
+<p class="font-['Inter'] text-[10px] font-medium text-outline uppercase tracking-widest mt-1">Nordic Precision</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#d9e4e8]/50 dark:hover:bg-slate-800/50 transition-transform duration-200 ease-in-out font-['Inter'] text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="group">group</span>
+                Resources
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#d9e4e8]/50 dark:hover:bg-slate-800/50 transition-transform duration-200 ease-in-out font-['Inter'] text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="event_available">event_available</span>
+                Allocations
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#d9e4e8]/50 dark:hover:bg-slate-800/50 transition-transform duration-200 ease-in-out font-['Inter'] text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="bar_chart">bar_chart</span>
+                Capacity
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#d9e4e8]/50 dark:hover:bg-slate-800/50 transition-transform duration-200 ease-in-out font-['Inter'] text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="flag">flag</span>
+                Milestones
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#d9e4e8]/50 dark:hover:bg-slate-800/50 transition-transform duration-200 ease-in-out font-['Inter'] text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="description">description</span>
+                Reports
+            </a>
+</nav>
+<div class="px-6 py-6 mt-auto">
+<button class="w-full bg-primary text-on-primary py-2.5 rounded-sm text-xs font-semibold hover:opacity-90 transition-all">
+                New Entry
+            </button>
+<div class="mt-6 space-y-4">
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 font-['Inter'] text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="help_outline">help_outline</span>
+                    Help
+                </a>
+<a class="flex items-center gap-3 text-slate-600 dark:text-slate-400 font-['Inter'] text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="archive">archive</span>
+                    Archive
+                </a>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col min-w-0 bg-surface">
+<!-- TopNavBar (Shared Component) -->
+<header class="flex justify-between items-center w-full px-8 py-4 max-w-full bg-[#f8fafb] dark:bg-slate-900 sticky top-0 z-10 border-b border-outline-variant/10">
+<div class="flex items-center gap-8">
+<div class="text-xl font-semibold text-[#496173] dark:text-slate-100 tracking-tighter font-headline">Nordic Capacity</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173] font-['Manrope'] font-medium text-sm tracking-tight transition-colors" href="#">Input</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173] font-['Manrope'] font-medium text-sm tracking-tight transition-colors" href="#">Team</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173] font-['Manrope'] font-medium text-sm tracking-tight transition-colors" href="#">Projects</a>
+<a class="text-[#496173] dark:text-white border-b-2 border-[#496173] dark:border-blue-400 pb-1 font-bold font-['Manrope'] text-sm tracking-tight" href="#">Data</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173] font-['Manrope'] font-medium text-sm tracking-tight transition-colors" href="#">Dashboard</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined text-[#496173] p-2 hover:bg-[#f0f4f6] rounded-full transition-colors cursor-pointer" data-icon="notifications">notifications</span>
+</div>
+<span class="material-symbols-outlined text-[#496173] p-2 hover:bg-[#f0f4f6] rounded-full transition-colors cursor-pointer" data-icon="settings">settings</span>
+<img alt="User profile" class="w-8 h-8 rounded-full border border-outline-variant/20" data-alt="Close up portrait of a professional man in a neutral office setting with soft daylighting and minimal background clutter" src="https://lh3.googleusercontent.com/aida-public/AB6AXuArTXclMIhJ8ttij7dMBrpkvc0_FIDfe6-zRU4IqKd08jSJqg5HPYd37ZZ_te2hHdSycHduZLyYQ6TSipc3he5DovGpi-J4sVCD8f1jRoxbWPV8qauzaWhahJ3KovZw6vYivU9xaV2fc0mr70TtK2fim93q7mlub_qPRJW4sAA1k-kptv9GuKL7kvb6Echt5NI9yCNXqvbg9_uy0TJP2c4ZO896i1Hf4Q23WsfFFGF5rBpvNjlxkvlrGrswIPHA80ifbdTaDEDQtRdc"/>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<div class="p-8 max-w-6xl mx-auto w-full">
+<!-- Stepper -->
+<div class="mb-10 flex items-center justify-between">
+<div>
+<h2 class="text-2xl font-headline font-semibold text-on-surface tracking-tight">Bulk Import Validation</h2>
+<p class="text-on-surface-variant text-sm mt-1">Step 3 of 4: Reviewing data integrity and mapping accuracy.</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-xs font-label font-semibold text-primary px-3 py-1 bg-primary-container rounded-full">Phase: Verification</span>
+</div>
+</div>
+<!-- Summary Bento Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+<!-- Ready Card -->
+<div class="bg-surface-container-lowest p-6 rounded-lg border-l-4 border-primary shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div>
+<p class="text-xs font-semibold text-outline tracking-wider uppercase">Ready to Process</p>
+<h3 class="text-4xl font-headline font-bold text-primary mt-2 tabular-nums">820</h3>
+<p class="text-sm text-on-surface-variant mt-1">Rows validated successfully</p>
+</div>
+<span class="material-symbols-outlined text-primary text-3xl opacity-50" data-icon="check_circle">check_circle</span>
+</div>
+</div>
+<!-- Warnings Card -->
+<div class="bg-surface-container-lowest p-6 rounded-lg border-l-4 border-outline shadow-sm hover:shadow-md transition-shadow" style="border-left-color: #d1a03e;">
+<div class="flex items-start justify-between">
+<div>
+<p class="text-xs font-semibold text-outline tracking-wider uppercase">Warnings</p>
+<h3 class="text-4xl font-headline font-bold mt-2 tabular-nums text-[#d1a03e]">25</h3>
+<p class="text-sm text-on-surface-variant mt-1">Potential logical conflicts</p>
+</div>
+<span class="material-symbols-outlined text-[#d1a03e] text-3xl opacity-50" data-icon="warning">warning</span>
+</div>
+</div>
+<!-- Errors Card -->
+<div class="bg-surface-container-lowest p-6 rounded-lg border-l-4 border-error shadow-sm hover:shadow-md transition-shadow">
+<div class="flex items-start justify-between">
+<div>
+<p class="text-xs font-semibold text-outline tracking-wider uppercase">Critical Errors</p>
+<h3 class="text-4xl font-headline font-bold text-error mt-2 tabular-nums">5</h3>
+<p class="text-sm text-on-surface-variant mt-1">Blockers requiring action</p>
+</div>
+<span class="material-symbols-outlined text-error text-3xl opacity-50" data-icon="error">error</span>
+</div>
+</div>
+</div>
+<!-- Issue List Section -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden border border-outline-variant/10">
+<div class="px-6 py-4 bg-surface-container-low border-b border-outline-variant/10 flex justify-between items-center">
+<h4 class="font-headline font-semibold text-on-surface">Validation Log</h4>
+<div class="flex gap-2">
+<button class="text-xs font-medium px-3 py-1 bg-surface-container-highest text-on-surface-variant rounded-sm hover:bg-surface-dim transition-colors">Filter: Errors Only</button>
+<button class="text-xs font-medium px-3 py-1 bg-surface-container-highest text-on-surface-variant rounded-sm hover:bg-surface-dim transition-colors">Export Log</button>
+</div>
+</div>
+<div class="divide-y divide-outline-variant/10">
+<!-- Error Entry -->
+<div class="p-6 flex gap-4 hover:bg-surface-container-low/30 transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-error" data-icon="error">error</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-3">
+<span class="text-xs font-bold font-label text-error bg-error-container/20 px-2 py-0.5 rounded uppercase">Error</span>
+<span class="text-xs font-medium text-outline tabular-nums">Row 34</span>
+</div>
+<p class="text-on-surface mt-2 font-medium">Person <span class="font-bold">"Johan Nilson"</span> not found in global resource directory.</p>
+<div class="mt-4 bg-surface-container-low p-4 rounded-sm flex items-center justify-between border-l-2 border-primary">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-sm" data-icon="lightbulb">lightbulb</span>
+<p class="text-sm text-on-surface-variant">Suggestion: Did you mean <span class="font-semibold text-on-surface">"Johan Nilsson"</span>?</p>
+</div>
+<button class="text-xs font-bold text-primary hover:underline px-4 py-1">Apply Fix</button>
+</div>
+</div>
+</div>
+<!-- Warning Entry -->
+<div class="p-6 flex gap-4 hover:bg-surface-container-low/30 transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-[#d1a03e]" data-icon="warning">warning</span>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-3">
+<span class="text-xs font-bold font-label text-[#8a6a2a] bg-[#fff3cd] px-2 py-0.5 rounded uppercase">Warning</span>
+<span class="text-xs font-medium text-outline tabular-nums">Row 112</span>
+</div>
+<p class="text-on-surface mt-2 font-medium">Duplicate allocation detected for <span class="font-semibold text-primary">Project Vega</span>.</p>
+<p class="text-sm text-on-surface-variant mt-1">This resource is already assigned to this project during the specified period. Importing will override existing data.</p>
+</div>
+<div class="flex flex-col gap-2">
+<button class="text-xs font-semibold text-outline hover:text-on-surface transition-colors">Ignore</button>
+<button class="text-xs font-semibold text-primary hover:underline transition-colors">Edit Row</button>
+</div>
+</div>
+<!-- Placeholder for others -->
+<div class="p-6 text-center text-outline text-xs italic bg-surface/50">
+                        + 28 additional notifications (Filtered for brevity)
+                    </div>
+</div>
+</div>
+<!-- Action Footer -->
+<div class="mt-12 flex items-center justify-between py-6 border-t border-outline-variant/15">
+<button class="flex items-center gap-2 px-6 py-2.5 text-primary font-semibold hover:bg-surface-container-low transition-all rounded-sm">
+<span class="material-symbols-outlined text-lg" data-icon="arrow_back">arrow_back</span>
+                    Back to mapping
+                </button>
+<div class="flex items-center gap-4">
+<button class="px-6 py-2.5 border border-outline-variant text-on-surface-variant font-semibold hover:bg-surface-container-low transition-all rounded-sm">
+                        Cancel Import
+                    </button>
+<button class="px-8 py-2.5 bg-primary text-on-primary font-bold shadow-lg shadow-primary/20 hover:opacity-95 transition-all rounded-sm flex items-center gap-2">
+                        Import 820 rows, skip errors
+                        <span class="material-symbols-outlined text-lg" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Contextual Alert (Overlay Style) -->
+<div class="fixed bottom-8 right-8 max-w-sm bg-inverse-surface text-inverse-on-surface p-4 rounded-lg shadow-2xl flex gap-4 items-start border border-white/10 backdrop-blur-md bg-opacity-90">
+<span class="material-symbols-outlined text-primary-fixed-dim" data-icon="info" data-weight="fill" style="font-variation-settings: 'FILL' 1;">info</span>
+<div>
+<p class="text-sm font-medium text-white">Validation complete.</p>
+<p class="text-xs text-slate-400 mt-1">5 rows will be ignored during the import process unless corrected.</p>
+</div>
+<button class="text-white hover:text-primary-fixed-dim">
+<span class="material-symbols-outlined text-sm" data-icon="close">close</span>
+</button>
+</div>
+</body></html>

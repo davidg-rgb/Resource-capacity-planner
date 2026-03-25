@@ -1,0 +1,77 @@
+# Resource Capacity Planner — Functional Specifications & Creative Direction
+
+## Purpose
+This document defines the visual and functional requirements for a professional resource planning tool designed for engineering and line managers. It replaces spreadsheets (Excel/Access) with a clean, data-dense, and highly functional interface.
+
+## Brand & Aesthetic Direction
+### Personality
+- **Professional, Lean, Clean, Precise, Trustworthy, Calm, Functional.**
+- **Scandinavian-influenced:** Minimalist but warm, high-quality materials/ui, focused on utility.
+- **Audience:** Data-oriented managers who value efficiency over decoration.
+
+### Creative Principles
+1. **Clean over Clever:** No gimmicks. Every element serves a purpose.
+2. **Dense but Breathable:** High data density (many numbers) but readable through strategic whitespace and alignment.
+3. **Spreadsheet-Familiar, Not Spreadsheet-Ugly:** Elevated grid UI with superior typography and structure.
+4. **Muted, Confident Palette:** Neutral chrome (whites/off-whites/subtle grays) with meaningful color for status (capacity OK/near-full/over).
+5. **Typography for Clarity:** Clean sans-serif (12-14px cells). **Tabular/fixed-width digits** for numerical alignment.
+6. **Light Theme First:** Clean backgrounds, subtle borders.
+
+### Things to Avoid
+- Bubbly/Rounded "SaaS" aesthetics (Notion/Linear style).
+- Excessive icons or purely decorative illustrations.
+- Card-heavy layouts for data areas (the grid IS the UI).
+- Sidebar-heavy navigation that wastes horizontal space.
+
+## Screen Specifications
+
+### 1. Person Input Form
+- **Primary editing screen.** Shows one person's project allocations.
+- **Header:** Person name (editable), Nav (prev/next), Attributes (Discipline: "SW", Dept: "Drivetrain", Target: "150h/m").
+- **Grid:** 
+    - Sticky left column: Project names + dropdowns.
+    - Columns: Months (YYYY-MM). ~9 visible, scrollable to 24-36.
+    - Cells: Numeric inputs, spreadsheet-style, tabular digits.
+    - Current month highlighted.
+- **Summary Rows:** SUMMA (totals), Target capacity, Status (color-coded dots/tints).
+
+### 2. Person Input Form — Sidebar Navigation
+- Same as Screen 1 but with a **collapsible left sidebar (~240px)**.
+- Sidebar contains: Search, List of people (Name, Discipline, Status dot), Grouped by department.
+
+### 3. Team Overview (Heat Map)
+- **Read-only scanning tool.**
+- Top bar: View toggles (Input/Team/Projects/Data), Filter pills, Search, Export.
+- Main grid: Rows per person, grouped by department. Cells show total hours, color-coded by capacity status (background tints).
+
+### 4. Project View
+- **Staffing view per project.**
+- Header: Project name ("Atlas"), Program badge, Metrics (Total hours, People count).
+- Grid: Rows = people assigned. Columns = months. Cells = hours for *this* project.
+
+### 5. Flat Table View (Data Export)
+- **Raw allocation data for Excel export.**
+- Columns: Person, Discipline, Department, Project, Program, Month, Hours.
+- Features: Sorting, filtering, dense rows, prominent "Export to Excel" button.
+
+### 6. Bulk Import — Column Mapping
+- **Step 2 of upload flow.**
+- Progress indicator: Upload → Map → Validate → Import.
+- Mapping table: Source column (e.g., "Namn") → Arrow → System field dropdown → Preview value/Match status.
+
+### 7. Bulk Import — Validation
+- **Step 3: Pre-commit check.**
+- Summary cards: Ready (Green), Warnings (Amber), Errors (Red).
+- Issue list: Severity badge, description, and action buttons.
+
+### 8. Dashboard (Phase 2)
+- **Org-wide health overview.**
+- KPI cards: Utilization %, Overloaded count, etc.
+- Utilization heat map by department.
+- Capacity alerts (text-based) and discipline breakdown charts.
+
+## Component Reference
+- **Grid Cells:** Directly editable, tabular digits, subtle lines, focus state, drag-to-fill handle.
+- **Status Colors:** Green (Healthy), Amber (85-99%), Red (100%+), Gray (Empty).
+- **Discipline Tags:** Small badges (SW, Mek, Elnik, HW, Test, PT, Sys).
+- **Navigation:** Top tab bar for primary views. Secondary actions (Import, Settings) on the right.

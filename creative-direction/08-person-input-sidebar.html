@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nordic Capacity - Person Input</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "error-dim": "#4e0309",
+                        "surface-variant": "#d9e4e8",
+                        "inverse-primary": "#cce6fb",
+                        "surface-tint": "#496173",
+                        "inverse-surface": "#0b0f10",
+                        "on-surface": "#2a3437",
+                        "primary-fixed": "#cce6fb",
+                        "primary": "#496173",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#e1eaec",
+                        "surface-container-low": "#f0f4f6",
+                        "secondary-dim": "#4c5459",
+                        "secondary-fixed": "#dce4e9",
+                        "surface": "#f8fafb",
+                        "on-tertiary-fixed": "#42474a",
+                        "on-tertiary-container": "#54595c",
+                        "outline-variant": "#a9b4b7",
+                        "on-primary-fixed-variant": "#465e70",
+                        "surface-dim": "#cfdce0",
+                        "surface-container-highest": "#d9e4e8",
+                        "primary-container": "#cce6fb",
+                        "surface-bright": "#f8fafb",
+                        "tertiary": "#5b6063",
+                        "on-primary-container": "#3d5466",
+                        "secondary-container": "#dce4e9",
+                        "on-secondary-fixed": "#394045",
+                        "on-primary": "#f3f8ff",
+                        "on-secondary-fixed-variant": "#555d61",
+                        "on-background": "#2a3437",
+                        "outline": "#727d80",
+                        "on-surface-variant": "#566164",
+                        "on-tertiary": "#f5f9fd",
+                        "inverse-on-surface": "#9a9d9e",
+                        "surface-container": "#e8eff1",
+                        "on-error-container": "#752121",
+                        "tertiary-container": "#eaeef2",
+                        "primary-dim": "#3d5567",
+                        "on-primary-fixed": "#2a4253",
+                        "on-secondary-container": "#4b5358",
+                        "on-tertiary-fixed-variant": "#5e6366",
+                        "tertiary-fixed-dim": "#dce0e3",
+                        "error": "#9f403d",
+                        "error-container": "#fe8983",
+                        "secondary-fixed-dim": "#ced5db",
+                        "primary-fixed-dim": "#bed8ed",
+                        "tertiary-dim": "#4f5457",
+                        "tertiary-fixed": "#eaeef2",
+                        "on-error": "#fff7f6",
+                        "background": "#f8fafb",
+                        "secondary": "#586065",
+                        "on-secondary": "#f3faff"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafb;
+        }
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body class="text-on-surface">
+<!-- TopNavBar -->
+<header class="fixed top-0 left-0 right-0 z-50 bg-[#f8fafb] dark:bg-slate-900 flex justify-between items-center w-full px-6 py-3 max-w-full font-['Manrope'] font-medium text-sm tracking-tight border-b border-[#a9b4b7]/15">
+<div class="flex items-center gap-8">
+<span class="text-xl font-semibold text-[#496173] dark:text-slate-100 tracking-tighter">Nordic Capacity</span>
+<nav class="hidden md:flex gap-6">
+<a class="text-[#496173] dark:text-white border-b-2 border-[#496173] dark:border-blue-400 pb-1 font-bold" href="#">Input</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173] transition-colors" href="#">Team</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173] transition-colors" href="#">Projects</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173] transition-colors" href="#">Data</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173] transition-colors" href="#">Dashboard</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+<input class="pl-9 pr-4 py-1.5 bg-surface-container-low border-none text-xs rounded-sm focus:ring-1 focus:ring-primary w-64" placeholder="Global Search" type="text"/>
+</div>
+<button class="p-2 hover:bg-[#f0f4f6] dark:hover:bg-slate-800 transition-colors rounded-full">
+<span class="material-symbols-outlined text-primary" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 hover:bg-[#f0f4f6] dark:hover:bg-slate-800 transition-colors rounded-full">
+<span class="material-symbols-outlined text-primary" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden ml-2 bg-surface-container-highest">
+<img alt="User profile" data-alt="professional portrait of a senior resource planner in a clean minimalist office environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2ntTrZoAN2vWkYx5oCM66680zgSiEZ_uz4UwmINGW4zH7GPBr0cd98CZ-9zvdoQDnUFv5G7F4qBt8feZVEceYgpVMAMbnQq4a_T74ab32XWRjMPpmNlyE161v5L7F0b_TCfi8jAMRIaKT0gnMQ6QuyyT3xNLZ-sO8_7VYuiWSMgWBCjB7nm44oHWqUzGqtd-HrM2gYlB-lmo4gFdqKtPH7dQDXVR5lA3i_S7bRBLNBMBrcebRR5ve-6vSAFnosuMImwX6iKewAIjb"/>
+</div>
+</div>
+</header>
+<div class="flex pt-[57px] h-screen overflow-hidden">
+<!-- SideNavBar (Collapsible, currently open) -->
+<aside class="flex flex-col h-full border-r border-[#a9b4b7]/15 bg-[#f0f4f6] dark:bg-slate-950 w-72 transition-transform duration-200 ease-in-out">
+<div class="p-4 space-y-4 flex-grow overflow-y-auto">
+<!-- Search Section -->
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
+<input class="w-full pl-9 pr-4 py-2 bg-surface-container-lowest border-none text-xs rounded-sm focus:ring-1 focus:ring-primary shadow-sm" placeholder="Search people..." type="text"/>
+</div>
+<!-- People List Grouped by Department -->
+<nav class="space-y-6">
+<div>
+<h3 class="font-headline text-[10px] uppercase tracking-widest text-outline mb-3 px-2">Software Development</h3>
+<div class="space-y-1">
+<button class="w-full flex items-center justify-between p-2 hover:bg-[#d9e4e8]/50 dark:hover:bg-slate-800/50 rounded-sm transition-all group">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+<span class="font-body text-xs font-medium text-on-surface">Johan Nilsson</span>
+</div>
+<span class="px-1.5 py-0.5 rounded-full bg-secondary-container text-[10px] text-on-secondary-fixed font-semibold">SW</span>
+</button>
+<button class="w-full flex items-center justify-between p-2 bg-[#d9e4e8] dark:bg-slate-800 text-[#496173] dark:text-white rounded-sm font-semibold transition-all shadow-sm">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+<span class="font-body text-xs">Lars Andersson</span>
+</div>
+<span class="px-1.5 py-0.5 rounded-full bg-primary text-[10px] text-on-primary font-semibold">SW</span>
+</button>
+</div>
+</div>
+<div>
+<h3 class="font-headline text-[10px] uppercase tracking-widest text-outline mb-3 px-2">Mechanical Engineering</h3>
+<div class="space-y-1">
+<button class="w-full flex items-center justify-between p-2 hover:bg-[#d9e4e8]/50 dark:hover:bg-slate-800/50 rounded-sm transition-all">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-amber-500"></div>
+<span class="font-body text-xs text-on-surface">Erik Forsberg</span>
+</div>
+<span class="px-1.5 py-0.5 rounded-full bg-secondary-container text-[10px] text-on-secondary-fixed font-semibold">Mek</span>
+</button>
+<button class="w-full flex items-center justify-between p-2 hover:bg-[#d9e4e8]/50 dark:hover:bg-slate-800/50 rounded-sm transition-all">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+<span class="font-body text-xs text-on-surface">Sofia Berg</span>
+</div>
+<span class="px-1.5 py-0.5 rounded-full bg-secondary-container text-[10px] text-on-secondary-fixed font-semibold">Mek</span>
+</button>
+</div>
+</div>
+<div>
+<h3 class="font-headline text-[10px] uppercase tracking-widest text-outline mb-3 px-2">Electronics</h3>
+<div class="space-y-1">
+<button class="w-full flex items-center justify-between p-2 hover:bg-[#d9e4e8]/50 dark:hover:bg-slate-800/50 rounded-sm transition-all">
+<div class="flex items-center gap-3">
+<div class="w-2 h-2 rounded-full bg-error"></div>
+<span class="font-body text-xs text-on-surface">Ingrid Lind</span>
+</div>
+<span class="px-1.5 py-0.5 rounded-full bg-secondary-container text-[10px] text-on-secondary-fixed font-semibold">Elnik</span>
+</button>
+</div>
+</div>
+</nav>
+</div>
+<!-- SideNav Footer -->
+<div class="p-4 border-t border-[#a9b4b7]/15">
+<button class="w-full py-2 bg-primary text-on-primary text-xs font-bold rounded-sm mb-4 shadow-sm hover:opacity-90 transition-opacity">
+                    New Entry
+                </button>
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 p-2 text-slate-600 dark:text-slate-400 hover:bg-[#e2e8f0] dark:hover:bg-slate-900 rounded-sm text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-sm">help_outline</span>
+                        Help
+                    </a>
+<a class="flex items-center gap-3 p-2 text-slate-600 dark:text-slate-400 hover:bg-[#e2e8f0] dark:hover:bg-slate-900 rounded-sm text-xs font-medium" href="#">
+<span class="material-symbols-outlined text-sm">archive</span>
+                        Archive
+                    </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-grow overflow-y-auto p-8 max-w-[1440px] mx-auto w-full">
+<!-- Breadcrumbs & Header -->
+<div class="mb-8">
+<nav class="flex text-[10px] font-medium text-outline mb-2 uppercase tracking-widest">
+<span>Resources</span>
+<span class="mx-2">/</span>
+<span class="text-primary">Allocations</span>
+</nav>
+<div class="flex justify-between items-end">
+<div>
+<h1 class="font-headline text-3xl font-bold text-on-surface tracking-tight">Lars Andersson</h1>
+<p class="font-body text-sm text-on-surface-variant mt-1">Software Engineer — Q3 Precision Unit</p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 border border-outline-variant/30 text-primary text-xs font-semibold rounded-sm hover:bg-surface-container-low transition-colors">
+                            Export PDF
+                        </button>
+<button class="px-4 py-2 bg-primary text-on-primary text-xs font-semibold rounded-sm shadow-md hover:opacity-90 transition-opacity">
+                            Save Changes
+                        </button>
+</div>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Summary Stats (Top Bar) -->
+<div class="col-span-12 grid grid-cols-4 gap-4 mb-2">
+<div class="bg-surface-container-lowest p-4 rounded-sm border border-outline-variant/10">
+<p class="text-[10px] text-outline uppercase font-bold tracking-wider mb-1">Weekly Capacity</p>
+<p class="text-2xl font-headline font-semibold tabular-nums">40.0<span class="text-sm text-outline font-normal ml-1">hrs</span></p>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-sm border border-outline-variant/10">
+<p class="text-[10px] text-outline uppercase font-bold tracking-wider mb-1">Allocated Q3</p>
+<p class="text-2xl font-headline font-semibold tabular-nums">82<span class="text-sm text-outline font-normal ml-1">%</span></p>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-sm border border-outline-variant/10">
+<p class="text-[10px] text-outline uppercase font-bold tracking-wider mb-1">Billable Target</p>
+<p class="text-2xl font-headline font-semibold tabular-nums text-emerald-600">95<span class="text-sm text-outline font-normal ml-1">%</span></p>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-sm border border-outline-variant/10">
+<p class="text-[10px] text-outline uppercase font-bold tracking-wider mb-1">Utilization</p>
+<p class="text-2xl font-headline font-semibold tabular-nums text-primary">High</p>
+</div>
+</div>
+<!-- Main Input Grid -->
+<div class="col-span-12 lg:col-span-9 bg-surface-container-lowest rounded-sm p-6 shadow-sm border border-outline-variant/10">
+<div class="flex justify-between items-center mb-6">
+<h2 class="font-headline text-lg font-medium text-on-surface">Capacity Entry</h2>
+<div class="flex gap-2">
+<button class="p-1 hover:bg-surface-container-low rounded-sm transition-colors">
+<span class="material-symbols-outlined text-outline">chevron_left</span>
+</button>
+<span class="text-xs font-bold self-center px-2">July 2024</span>
+<button class="p-1 hover:bg-surface-container-low rounded-sm transition-colors">
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Input Grid Headers -->
+<div class="grid grid-cols-8 gap-1 mb-4 border-b border-outline-variant/15 pb-2">
+<div class="col-span-2 text-[10px] uppercase font-bold text-outline tracking-wider">Project / Task</div>
+<div class="text-[10px] uppercase font-bold text-outline tracking-wider text-right px-2">Mon</div>
+<div class="text-[10px] uppercase font-bold text-outline tracking-wider text-right px-2">Tue</div>
+<div class="text-[10px] uppercase font-bold text-outline tracking-wider text-right px-2">Wed</div>
+<div class="text-[10px] uppercase font-bold text-outline tracking-wider text-right px-2">Thu</div>
+<div class="text-[10px] uppercase font-bold text-outline tracking-wider text-right px-2">Fri</div>
+<div class="text-[10px] uppercase font-bold text-outline tracking-wider text-right px-2">Total</div>
+</div>
+<!-- Input Rows -->
+<div class="space-y-3">
+<!-- Row 1 -->
+<div class="grid grid-cols-8 gap-1 group">
+<div class="col-span-2 flex items-center gap-2">
+<div class="w-1 h-6 bg-primary rounded-full"></div>
+<span class="text-xs font-medium text-on-surface">Alpha Engine (SW)</span>
+</div>
+<input class="bg-surface-container-low border-none text-xs text-right rounded-sm tabular-nums focus:ring-1 focus:ring-primary h-8 px-2" type="text" value="8.0"/>
+<input class="bg-surface-container-low border-none text-xs text-right rounded-sm tabular-nums focus:ring-1 focus:ring-primary h-8 px-2" type="text" value="8.0"/>
+<input class="bg-surface-container-low border-none text-xs text-right rounded-sm tabular-nums focus:ring-1 focus:ring-primary h-8 px-2" type="text" value="6.5"/>
+<input class="bg-surface-container-low border-none text-xs text-right rounded-sm tabular-nums focus:ring-1 focus:ring-primary h-8 px-2" type="text" value="4.0"/>
+<input class="bg-surface-container-low border-none text-xs text-right rounded-sm tabular-nums focus:ring-1 focus:ring-primary h-8 px-2" type="text" value="0.0"/>
+<div class="flex items-center justify-end px-2 text-xs font-bold tabular-nums text-primary">26.5</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-8 gap-1 group">
+<div class="col-span-2 flex items-center gap-2">
+<div class="w-1 h-6 bg-outline-variant/30 rounded-full"></div>
+<span class="text-xs font-medium text-on-surface">General Admin</span>
+</div>
+<input class="bg-surface-container-low border-none text-xs text-right rounded-sm tabular-nums focus:ring-1 focus:ring-primary h-8 px-2" type="text" value="0.0"/>
+<input class="bg-surface-container-low border-none text-xs text-right rounded-sm tabular-nums focus:ring-1 focus:ring-primary h-8 px-2" type="text" value="0.0"/>
+<input class="bg-surface-container-low border-none text-xs text-right rounded-sm tabular-nums focus:ring-1 focus:ring-primary h-8 px-2" type="text" value="1.5"/>
+<input class="bg-surface-container-low border-none text-xs text-right rounded-sm tabular-nums focus:ring-1 focus:ring-primary h-8 px-2" type="text" value="2.0"/>
+<input class="bg-surface-container-low border-none text-xs text-right rounded-sm tabular-nums focus:ring-1 focus:ring-primary h-8 px-2" type="text" value="4.0"/>
+<div class="flex items-center justify-end px-2 text-xs font-bold tabular-nums text-outline">7.5</div>
+</div>
+<!-- Row 3 -->
+<div class="grid grid-cols-8 gap-1 group">
+<div class="col-span-2 flex items-center gap-2">
+<div class="w-1 h-6 bg-error rounded-full"></div>
+<span class="text-xs font-medium text-on-surface">Beta Review</span>
+</div>
+<input class="bg-surface-container-low border-none text-xs text-right rounded-sm tabular-nums focus:ring-1 focus:ring-primary h-8 px-2" placeholder="-" type="text"/>
+<input class="bg-surface-container-low border-none text-xs text-right rounded-sm tabular-nums focus:ring-1 focus:ring-primary h-8 px-2" placeholder="-" type="text"/>
+<input class="bg-surface-container-low border-none text-xs text-right rounded-sm tabular-nums focus:ring-1 focus:ring-primary h-8 px-2" type="text" value="0.0"/>
+<input class="bg-surface-container-low border-none text-xs text-right rounded-sm tabular-nums focus:ring-1 focus:ring-primary h-8 px-2" type="text" value="2.0"/>
+<input class="bg-surface-container-low border-none text-xs text-right rounded-sm tabular-nums focus:ring-1 focus:ring-primary h-8 px-2" type="text" value="4.0"/>
+<div class="flex items-center justify-end px-2 text-xs font-bold tabular-nums text-error">6.0</div>
+</div>
+</div>
+<!-- Footer / Add Row -->
+<div class="mt-8 pt-4 border-t border-outline-variant/10 flex justify-between">
+<button class="flex items-center gap-2 text-primary hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined text-sm">add_circle</span>
+<span class="text-[10px] font-bold uppercase tracking-wider">Add Activity Line</span>
+</button>
+<div class="flex items-center gap-6">
+<div class="text-right">
+<span class="text-[10px] text-outline uppercase font-bold tracking-wider mr-2">Weekly Total:</span>
+<span class="text-sm font-bold tabular-nums">40.0 / 40.0</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Sidebar Details -->
+<div class="col-span-12 lg:col-span-3 space-y-6">
+<div class="bg-surface-container-lowest p-6 rounded-sm shadow-sm border border-outline-variant/10">
+<h3 class="font-headline text-sm font-semibold mb-4 border-b border-outline-variant/10 pb-2">Allocations Info</h3>
+<div class="space-y-4">
+<div>
+<p class="text-[10px] text-outline uppercase font-bold mb-1">Upcoming Milestones</p>
+<div class="flex items-center gap-2 mt-2">
+<span class="material-symbols-outlined text-amber-500 text-sm">flag</span>
+<span class="text-xs font-medium">Alpha V1 Release</span>
+<span class="text-[10px] text-outline ml-auto">July 18</span>
+</div>
+</div>
+<div>
+<p class="text-[10px] text-outline uppercase font-bold mb-1">Resource Notes</p>
+<p class="text-xs text-on-surface-variant leading-relaxed">Lars will be on vacation starting July 22 for two weeks. Ensure handover for Beta Review tasks is completed by EOD Friday.</p>
+</div>
+</div>
+</div>
+<div class="bg-surface-variant/30 p-6 rounded-sm border border-outline-variant/20">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-primary">info</span>
+<h3 class="text-xs font-bold uppercase tracking-wider text-primary">Status Tip</h3>
+</div>
+<p class="text-xs text-on-primary-fixed-variant leading-relaxed italic">
+                            "Lars' current workload is hitting 105% for week 29. Consider re-allocating 'General Admin' if priorities shift."
+                        </p>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
