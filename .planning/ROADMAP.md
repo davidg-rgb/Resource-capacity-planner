@@ -23,6 +23,11 @@
 
 **Parallel with:** None (must complete first)
 
+**Plans:** 1 plan
+
+Plans:
+- [ ] 01-01-PLAN.md — Scaffold Next.js 16 with tooling, env validation, and CI pipeline
+
 ---
 
 ### Phase 2: Database Schema & Tenant Isolation
