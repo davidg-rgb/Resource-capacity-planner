@@ -81,6 +81,11 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 
 - [x] Next.js 16 project setup with App Router, TypeScript, Tailwind CSS 4 (FOUND-03) — Phase 1
 - [x] Environment configuration — all env vars documented and validated at startup (FOUND-09) — Phase 1
+- [x] Multi-tenant organization with data isolation (F-001 / FOUND-01) — Phase 2
+- [x] `withTenant()` ORM wrapper enforcing tenant isolation (FOUND-02) — Phase 2
+- [x] Drizzle ORM schema — all 13 entities (FOUND-04) — Phase 2
+- [x] Database migrations and seed data on Neon PG17 (FOUND-05) — Phase 2
+- [x] Health check endpoint with DB status (FOUND-07) — Phase 2
 
 ### Active — MVP (Milestone 1)
 
@@ -168,4 +173,4 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 
 ---
 
-_Last updated: 2026-03-26 — Phase 1 complete (project scaffolding, env validation, CI)_
+_Last updated: 2026-03-26 — Phase 2 complete (DB schema, tenant isolation, health check, seed data)_
