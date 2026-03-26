@@ -101,12 +101,13 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [x] Dynamic project rows — "Add project" at bottom (INPUT-08) — Phase 6
 - [x] Past months read-only, current + future editable (INPUT-12) — Phase 6
 
+- [x] Person sidebar with dept grouping + status dots, prev/next navigation (INPUT-06/07 / F-004) — Phase 7
+- [x] Keyboard nav: Tab/Enter/Arrow/Escape (INPUT-10 / F-021) — Phase 7
+- [x] Custom clipboard paste from Excel (INPUT-11 / F-021) — Phase 7
+- [x] Custom drag-to-fill across months (INPUT-09 / F-021) — Phase 7
+- [x] Conflict detection with overwrite/refresh prompt (INPUT-14 / F-020) — Phase 7
+
 ### Active — MVP (Milestone 1)
-
-**Person Input Form (Polish):**
-
-- [ ] Person navigation: prev/next, sidebar list with status dots (F-004)
-- [ ] Spreadsheet interactions: clipboard, drag-to-fill, keyboard nav (F-021)
 
 **Import & Export:**
 
@@ -171,4 +172,4 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 
 ---
 
-_Last updated: 2026-03-26 — Phase 6 complete (AG Grid Person Input Form — core product value with editable hours, SUMMA/Target/Status rows, auto-save)_
+_Last updated: 2026-03-27 — Phase 7 complete (Grid polish — keyboard nav, clipboard paste, drag-to-fill, conflict detection, person sidebar)_
