@@ -19,6 +19,8 @@ import {
 } from '@/components/grid/grid-config';
 import { StatusCell } from '@/components/grid/cell-renderers/status-cell';
 import { ProjectCell } from '@/components/grid/cell-renderers/project-cell';
+import { parseClipboardText, mapPasteToGridCells } from '@/lib/clipboard-handler';
+import { tabToNextCell, navigateToNextCell } from '@/hooks/use-keyboard-nav';
 
 type AllocationGridProps = {
   allocations: FlatAllocation[];
@@ -40,6 +42,8 @@ export function AllocationGrid({
   onAddProject,
 }: AllocationGridProps) {
   const gridRef = useRef<GridApi | null>(null);
+  const gridContainerRef = useRef<HTMLDivElement>(null);
+  const localRowDataRef = useRef<GridRow[]>([]);
 
   // Generate 12 months: 6 months back + current + 5 months forward
   const currentMonth = useMemo(() => getCurrentMonth(), []);
@@ -108,6 +112,75 @@ export function AllocationGrid({
     [onCellChange],
   );
 
+  // Keep ref in sync for stale-closure-safe paste handler
+  localRowDataRef.current = localRowData;
+
+  // ---------------------------------------------------------------------------
+  // Clipboard paste handler
+  // ---------------------------------------------------------------------------
+  useEffect(() => {
+    const container = gridContainerRef.current;
+    if (!container) return;
+
+    function handlePaste(e: ClipboardEvent) {
+      const text = e.clipboardData?.getData('text/plain');
+      if (!text) return;
+      e.preventDefault();
+
+      const api = gridRef.current;
+      if (!api) return;
+
+      const focusedCell = api.getFocusedCell();
+      if (!focusedCell) return;
+
+      const colId = focusedCell.column.getColId();
+      const monthIndex = months.indexOf(colId);
+      if (monthIndex === -1) return; // Focused on projectName column
+
+      // Use ref to avoid stale closure
+      const dataRows = localRowDataRef.current.filter((r) => !r.isAddRow);
+
+      const parsed = parseClipboardText(text);
+      const { cells, errors, skippedReadOnly } = mapPasteToGridCells(
+        parsed,
+        focusedCell.rowIndex,
+        monthIndex,
+        dataRows,
+        months,
+        currentMonth,
+      );
+
+      if (errors.length > 0) {
+        console.warn(`Paste: ${errors.length} invalid value(s) skipped`, errors);
+      }
+      if (skippedReadOnly > 0) {
+        console.info(`Paste: ${skippedReadOnly} cell(s) skipped (past months are read-only)`);
+      }
+
+      if (cells.length === 0) return;
+
+      // Batch update local state
+      setLocalRowData((prev) => {
+        const updated = [...prev];
+        for (const cell of cells) {
+          const idx = updated.findIndex((r) => r.projectId === cell.projectId);
+          if (idx !== -1) {
+            updated[idx] = { ...updated[idx], [cell.month]: cell.hours };
+          }
+        }
+        return updated;
+      });
+
+      // Trigger autosave for each pasted cell
+      for (const cell of cells) {
+        onCellChange({ projectId: cell.projectId, month: cell.month, hours: cell.hours });
+      }
+    }
+
+    container.addEventListener('paste', handlePaste);
+    return () => container.removeEventListener('paste', handlePaste);
+  }, [months, currentMonth, onCellChange]);
+
   // Custom components map
   const components = useMemo(
     () => ({
@@ -121,7 +194,7 @@ export function AllocationGrid({
   );
 
   return (
-    <div className="h-[600px] w-full">
+    <div ref={gridContainerRef} className="h-[600px] w-full outline-none" tabIndex={0}>
       <AgGridReact
         modules={modules}
         rowData={localRowData}
@@ -131,6 +204,10 @@ export function AllocationGrid({
         components={components}
         singleClickEdit={true}
         stopEditingWhenCellsLoseFocus={true}
+        enterNavigatesVertically={true}
+        enterNavigatesVerticallyAfterEdit={true}
+        tabToNextCell={tabToNextCell}
+        navigateToNextCell={navigateToNextCell}
         onGridReady={(params: GridReadyEvent) => {
           gridRef.current = params.api;
         }}
