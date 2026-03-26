@@ -86,15 +86,13 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [x] Drizzle ORM schema — all 13 entities (FOUND-04) — Phase 2
 - [x] Database migrations and seed data on Neon PG17 (FOUND-05) — Phase 2
 - [x] Health check endpoint with DB status (FOUND-07) — Phase 2
+- [x] Auth: sign-up, login, org creation, user invitation (F-002 / AUTH-01–AUTH-07) — Phase 3
+- [x] Role-based access: Owner, Admin, Planner, Viewer (AUTH-08) — Phase 3
+- [x] App shell with top nav + side nav routing (A7 / FOUND-08) — Phase 3
+- [x] Error taxonomy — AppError hierarchy (FOUND-06) — Phase 3
+- [x] Tenant context middleware — getTenantId(), requireRole() (AUTH-06) — Phase 3
 
 ### Active — MVP (Milestone 1)
-
-**Foundation & Auth:**
-
-- [ ] Multi-tenant organization with data isolation (F-001)
-- [ ] Auth: sign-up, login, org creation, user invitation (F-002)
-- [ ] App shell with top nav + side nav routing (A7)
-- [ ] Error taxonomy and health check endpoint
 
 **Person Input Form (Core Value):**
 
@@ -173,4 +171,4 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 
 ---
 
-_Last updated: 2026-03-26 — Phase 2 complete (DB schema, tenant isolation, health check, seed data)_
+_Last updated: 2026-03-26 — Phase 3 complete (Clerk auth, app shell, error taxonomy, role-based access)_
