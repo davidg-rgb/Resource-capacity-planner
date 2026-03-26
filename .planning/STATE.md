@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: Not started
-status: Ready to plan
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-03-26T16:09:43.110Z"
+current_plan: 2
+status: Executing Phase 05
+stopped_at: Completed 05-02-PLAN.md
+last_updated: "2026-03-26T16:16:32Z"
 progress:
   total_phases: 10
   completed_phases: 4
   total_plans: 11
-  completed_plans: 10
+  completed_plans: 11
 ---
 
 # Nordic Capacity -- Project State
 
 ## Current Phase
 
-Phase 3 -- Authentication & App Shell (complete)
+Phase 5 -- Reference Data Admin (complete)
 
-Current Plan: Not started
+Current Plan: 2 of 2
 
 ## Phase Status
 
@@ -29,7 +29,7 @@ Current Plan: Not started
 | 2     | Database Schema & Tenant Isolation    | complete    | 2026-03-26 | 2026-03-26 |
 | 3     | Authentication & App Shell            | in progress | 2026-03-26 | --        |
 | 4     | Person & Project CRUD                 | not started | --         | --        |
-| 5     | Reference Data Admin                  | not started | --         | --        |
+| 5     | Reference Data Admin                  | complete    | 2026-03-26 | 2026-03-26 |
 | 6     | AG Grid Spike & Core Grid             | not started | --         | --        |
 | 7     | Grid Polish & Navigation              | not started | --         | --        |
 | 8     | Import Wizard                         | not started | --         | --        |
@@ -70,6 +70,8 @@ Current Plan: Not started
 - Webhook handler uses explicit env.CLERK_WEBHOOK_SECRET (not Clerk SDK default env var)
 - [Phase 03]: Role validation allows org:viewer, org:planner, org:admin (cannot invite as org:owner -- only Clerk Dashboard can set owner)
 - [Phase 05]: Usage count checks at service layer before delete for clear error messages with counts
+- [Phase 05]: Centralized reference data hooks in single file with backward-compatible re-exports
+- [Phase 05]: Usage count fetched on-demand when delete clicked, not pre-loaded for all rows
 
 ## Performance Metrics
 
@@ -82,7 +84,8 @@ Current Plan: Not started
 | 03    | 02   | 2min     | 2     | 7     |
 | 03    | 03   | 2min     | 2     | 11    |
 | 03    | 04   | 2min     | 1     | 1     |
-| Phase 05 P01 | 3min | 2 tasks | 17 files |
+| 05    | 01   | 3min     | 2     | 17    |
+| 05    | 02   | 5min     | 2     | 8     |
 
 ## Active Context
 
@@ -94,8 +97,8 @@ Current Plan: Not started
 
 ## Last Session
 
-- **Stopped at:** Completed 05-01-PLAN.md
-- **Timestamp:** 2026-03-26T11:25:43Z
+- **Stopped at:** Completed 05-02-PLAN.md
+- **Timestamp:** 2026-03-26T16:16:32Z
 
 ---
 

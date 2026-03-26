@@ -152,12 +152,12 @@ Plans:
 
 **Parallel with:** Phase 4 (Person & Project CRUD)
 
-**Plans:** 1/2 plans executed
+**Plans:** 2/2 plans complete
 
 Plans:
 
 - [x] 05-01-PLAN.md -- Backend: withTenant helpers, feature modules, API routes for disciplines/departments/programs CRUD
-- [ ] 05-02-PLAN.md -- Frontend: reference data hooks, admin CRUD pages, navigation integration
+- [x] 05-02-PLAN.md -- Frontend: reference data hooks, admin CRUD pages, navigation integration
 
 ---
 
