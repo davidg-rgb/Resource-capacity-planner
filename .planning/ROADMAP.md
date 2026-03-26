@@ -152,6 +152,13 @@ Plans:
 
 **Parallel with:** Phase 4 (Person & Project CRUD)
 
+**Plans:** 2 plans
+
+Plans:
+
+- [ ] 05-01-PLAN.md -- Backend: withTenant helpers, feature modules, API routes for disciplines/departments/programs CRUD
+- [ ] 05-02-PLAN.md -- Frontend: reference data hooks, admin CRUD pages, navigation integration
+
 ---
 
 ### Phase 6: AG Grid Spike & Core Grid
