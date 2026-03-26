@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: Not started
-status: Executing Phase 05
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-03-26T16:22:42.355Z"
+current_plan: 2
+status: Executing Phase 06
+stopped_at: Completed 06-01-PLAN.md
+last_updated: "2026-03-26T21:36:31Z"
 progress:
   total_phases: 10
   completed_phases: 5
-  total_plans: 11
-  completed_plans: 11
+  total_plans: 13
+  completed_plans: 12
 ---
 
 # Nordic Capacity -- Project State
 
 ## Current Phase
 
-Phase 3 -- Authentication & App Shell (complete)
+Phase 6 -- AG Grid Spike & Core Grid (in progress)
 
-Current Plan: Not started
+Current Plan: 2 of 2
 
 ## Phase Status
 
@@ -30,7 +30,7 @@ Current Plan: Not started
 | 3     | Authentication & App Shell            | in progress | 2026-03-26 | --        |
 | 4     | Person & Project CRUD                 | not started | --         | --        |
 | 5     | Reference Data Admin                  | not started | --         | --        |
-| 6     | AG Grid Spike & Core Grid             | not started | --         | --        |
+| 6     | AG Grid Spike & Core Grid             | in progress | 2026-03-26 | --        |
 | 7     | Grid Polish & Navigation              | not started | --         | --        |
 | 8     | Import Wizard                         | not started | --         | --        |
 | 9     | Flat Table View & Export              | not started | --         | --        |
@@ -52,6 +52,10 @@ Current Plan: Not started
 - AUTH-04: Clerk webhook creates internal org record with default disciplines/departments
 - AUTH-05: Protected routes redirect to sign-in via clerkMiddleware
 - AUTH-07: Admin can invite team members via Clerk organization invitation API
+- INPUT-01: Person Input Form displays AG Grid with months as columns (backend/API)
+- INPUT-02: User can click a cell and type hours (backend batch upsert)
+- INPUT-12: Past months read-only support (date utils)
+- INPUT-13: Auto-save on cell blur with debounced batch upsert (backend API)
 
 ## Decisions
 
@@ -70,6 +74,9 @@ Current Plan: Not started
 - Webhook handler uses explicit env.CLERK_WEBHOOK_SECRET (not Clerk SDK default env var)
 - [Phase 03]: Role validation allows org:viewer, org:planner, org:admin (cannot invite as org:owner -- only Clerk Dashboard can set owner)
 - [Phase 05]: Usage count checks at service layer before delete for clear error messages with counts
+- [Phase 06]: onConflictDoUpdate with column target array for allocation upserts
+- [Phase 06]: Month normalization: DB stores YYYY-MM-01, API returns YYYY-MM via normalizeMonth()
+- [Phase 06]: Created/updated distinction via createdAt vs updatedAt timestamp comparison
 
 ## Performance Metrics
 
@@ -83,6 +90,7 @@ Current Plan: Not started
 | 03    | 03   | 2min     | 2     | 11    |
 | 03    | 04   | 2min     | 1     | 1     |
 | Phase 05 P01 | 3min | 2 tasks | 17 files |
+| 06    | 01   | 2min     | 2     | 9     |
 
 ## Active Context
 
@@ -94,8 +102,8 @@ Current Plan: Not started
 
 ## Last Session
 
-- **Stopped at:** Completed 05-01-PLAN.md
-- **Timestamp:** 2026-03-26T11:25:43Z
+- **Stopped at:** Completed 06-01-PLAN.md
+- **Timestamp:** 2026-03-26T21:36:31Z
 
 ---
 

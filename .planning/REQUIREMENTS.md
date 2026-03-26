@@ -139,8 +139,8 @@
 | AUTH-06  | 3     | Authentication & App Shell            | Pending |
 | AUTH-07  | 3     | Authentication & App Shell            | Pending |
 | AUTH-08  | 3     | Authentication & App Shell            | Pending |
-| INPUT-01 | 6     | AG Grid Spike & Core Grid             | Pending |
-| INPUT-02 | 6     | AG Grid Spike & Core Grid             | Pending |
+| INPUT-01 | 6     | AG Grid Spike & Core Grid             | In Progress |
+| INPUT-02 | 6     | AG Grid Spike & Core Grid             | In Progress |
 | INPUT-03 | 6     | AG Grid Spike & Core Grid             | Pending |
 | INPUT-04 | 6     | AG Grid Spike & Core Grid             | Pending |
 | INPUT-05 | 6     | AG Grid Spike & Core Grid             | Pending |
@@ -150,8 +150,8 @@
 | INPUT-09 | 7     | Grid Polish & Navigation              | Pending |
 | INPUT-10 | 7     | Grid Polish & Navigation              | Pending |
 | INPUT-11 | 7     | Grid Polish & Navigation              | Pending |
-| INPUT-12 | 6     | AG Grid Spike & Core Grid             | Pending |
-| INPUT-13 | 6     | AG Grid Spike & Core Grid             | Pending |
+| INPUT-12 | 6     | AG Grid Spike & Core Grid             | In Progress |
+| INPUT-13 | 6     | AG Grid Spike & Core Grid             | In Progress |
 | INPUT-14 | 7     | Grid Polish & Navigation              | Pending |
 | MGMT-01  | 4     | Person & Project CRUD                 | Pending |
 | MGMT-02  | 4     | Person & Project CRUD                 | Pending |
