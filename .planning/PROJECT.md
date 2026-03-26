@@ -11,6 +11,7 @@ A multi-tenant SaaS web application that replaces Excel/Access-based resource pl
 ## Why It Exists
 
 Engineering organizations manage resource planning through spreadsheets that break down as teams grow:
+
 - No real-time visibility into over/under-allocation
 - Manual effort to detect conflicts and capacity issues
 - Data locked in single-user files with no shared source of truth
@@ -26,6 +27,7 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 ## Architecture Source of Truth
 
 **`ARCHITECTURE.md`** (4,544 lines, 15 sections) is the definitive build blueprint:
+
 - 38 features with priority/phase mapping
 - 23 modules with ~75 service functions (all with Called by/Calls cross-refs)
 - 13 data models with full field definitions
@@ -40,22 +42,22 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 
 ## Tech Stack
 
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| Framework | Next.js 15 (App Router) | Full-stack React, Server Components |
-| Language | TypeScript 5.x | Type safety |
-| Database | PostgreSQL 16 on Neon | Serverless Postgres, scales to zero |
-| ORM | Drizzle 0.35+ | SQL-first, type-safe queries |
-| Auth | Clerk | Authentication, organizations, invites, roles |
-| Grid | AG Grid Community 32.x | Spreadsheet-grade editing |
-| Styling | Tailwind CSS 4.x | Utility-first, matches prototypes |
-| State | TanStack Query 5.x | Server state, caching |
-| Validation | Zod 3.x | Schema validation |
-| Excel | SheetJS 0.20+ | Import/export |
-| Monitoring | Sentry | Error tracking |
-| Hosting | Vercel Pro | Frontend + serverless functions |
-| CI/CD | GitHub Actions | Automated testing, deployment |
-| Fonts | Manrope + Inter | Design system typography |
+| Layer      | Technology              | Purpose                                       |
+| ---------- | ----------------------- | --------------------------------------------- |
+| Framework  | Next.js 15 (App Router) | Full-stack React, Server Components           |
+| Language   | TypeScript 5.x          | Type safety                                   |
+| Database   | PostgreSQL 16 on Neon   | Serverless Postgres, scales to zero           |
+| ORM        | Drizzle 0.35+           | SQL-first, type-safe queries                  |
+| Auth       | Clerk                   | Authentication, organizations, invites, roles |
+| Grid       | AG Grid Community 32.x  | Spreadsheet-grade editing                     |
+| Styling    | Tailwind CSS 4.x        | Utility-first, matches prototypes             |
+| State      | TanStack Query 5.x      | Server state, caching                         |
+| Validation | Zod 3.x                 | Schema validation                             |
+| Excel      | SheetJS 0.20+           | Import/export                                 |
+| Monitoring | Sentry                  | Error tracking                                |
+| Hosting    | Vercel Pro              | Frontend + serverless functions               |
+| CI/CD      | GitHub Actions          | Automated testing, deployment                 |
+| Fonts      | Manrope + Inter         | Design system typography                      |
 
 ## Core Architectural Principles
 
@@ -77,17 +79,20 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Next.js 16 project setup with App Router, TypeScript, Tailwind CSS 4 (FOUND-03) — Phase 1
+- [x] Environment configuration — all env vars documented and validated at startup (FOUND-09) — Phase 1
 
 ### Active — MVP (Milestone 1)
 
 **Foundation & Auth:**
+
 - [ ] Multi-tenant organization with data isolation (F-001)
 - [ ] Auth: sign-up, login, org creation, user invitation (F-002)
 - [ ] App shell with top nav + side nav routing (A7)
 - [ ] Error taxonomy and health check endpoint
 
 **Person Input Form (Core Value):**
+
 - [ ] Person Input Form with AG Grid spreadsheet editing (F-003)
 - [ ] Person navigation: prev/next, sidebar list with status dots (F-004)
 - [ ] SUMMA + Target + Status rows with real-time calculation (F-005)
@@ -97,6 +102,7 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [ ] Project CRUD (F-012)
 
 **Import & Export:**
+
 - [ ] Bulk import 4-step wizard (F-006)
 - [ ] Column mapping with Swedish/English auto-detection (F-007)
 - [ ] Import validation with error/warning + suggestions (F-008)
@@ -105,9 +111,11 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [ ] Downloadable import templates (F-019)
 
 **Admin:**
+
 - [ ] Admin UI for reference data: disciplines, departments, programs, projects (F-010)
 
 **Platform Admin (SaaS Operations):**
+
 - [ ] Platform admin dashboard (F-029)
 - [ ] Tenant impersonation with audit trail (F-030)
 - [ ] Tenant management: create/suspend/reactivate/delete (F-031)
@@ -142,15 +150,15 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 
 ## Key Decisions
 
-| Decision | Rationale | Outcome |
-|----------|-----------|---------|
-| Neon over Supabase | Pure serverless Postgres, native Vercel integration, don't pay for unused auth/realtime | Neon |
-| AG Grid Community over Enterprise | MIT licensed, covers core needs. Drag-to-fill implemented custom. | AG Grid Community |
-| Clerk over Auth.js | Org management maps to tenants, invitation flows built-in, SSO available later | Clerk |
-| Drizzle over Prisma | SQL-first, better complex aggregations, lighter weight | Drizzle |
-| Modular monolith over microservices | Solo dev, shared domain model, no natural service boundary | Monolith |
-| No Stripe for MVP | Revenue integration deferred, focus on core product | Deferred |
-| Platform admin separate auth | Own JWT + table, completely isolated from Clerk tenant auth | Separate |
+| Decision                            | Rationale                                                                               | Outcome           |
+| ----------------------------------- | --------------------------------------------------------------------------------------- | ----------------- |
+| Neon over Supabase                  | Pure serverless Postgres, native Vercel integration, don't pay for unused auth/realtime | Neon              |
+| AG Grid Community over Enterprise   | MIT licensed, covers core needs. Drag-to-fill implemented custom.                       | AG Grid Community |
+| Clerk over Auth.js                  | Org management maps to tenants, invitation flows built-in, SSO available later          | Clerk             |
+| Drizzle over Prisma                 | SQL-first, better complex aggregations, lighter weight                                  | Drizzle           |
+| Modular monolith over microservices | Solo dev, shared domain model, no natural service boundary                              | Monolith          |
+| No Stripe for MVP                   | Revenue integration deferred, focus on core product                                     | Deferred          |
+| Platform admin separate auth        | Own JWT + table, completely isolated from Clerk tenant auth                             | Separate          |
 
 ## Repository
 
@@ -159,4 +167,5 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - **Deployment:** Vercel (auto-deploy on merge to main)
 
 ---
-*Last updated: 2025-03-25 after initialization*
+
+_Last updated: 2026-03-26 — Phase 1 complete (project scaffolding, env validation, CI)_
