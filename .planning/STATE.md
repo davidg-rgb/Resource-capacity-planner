@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_plan: 2
-status: Executing Phase 06
-stopped_at: Completed 06-01-PLAN.md
-last_updated: "2026-03-26T21:36:31Z"
+status: Phase 06 Complete
+stopped_at: Completed 06-02-PLAN.md
+last_updated: "2026-03-26T21:46:29Z"
 progress:
   total_phases: 10
   completed_phases: 5
   total_plans: 13
-  completed_plans: 12
+  completed_plans: 13
 ---
 
 # Nordic Capacity -- Project State
@@ -56,6 +56,10 @@ Current Plan: 2 of 2
 - INPUT-02: User can click a cell and type hours (backend batch upsert)
 - INPUT-12: Past months read-only support (date utils)
 - INPUT-13: Auto-save on cell blur with debounced batch upsert (backend API)
+- INPUT-03: SUMMA row real-time updates via local state
+- INPUT-04: Target row displays person targetHoursPerMonth
+- INPUT-05: Status row with color-coded capacity indicators
+- INPUT-08: Add project flow with dropdown selector
 
 ## Decisions
 
@@ -77,6 +81,8 @@ Current Plan: 2 of 2
 - [Phase 06]: onConflictDoUpdate with column target array for allocation upserts
 - [Phase 06]: Month normalization: DB stores YYYY-MM-01, API returns YYYY-MM via normalizeMonth()
 - [Phase 06]: Created/updated distinction via createdAt vs updatedAt timestamp comparison
+- [Phase 06]: Local useState<GridRow[]> for real-time SUMMA updates without server round-trip
+- [Phase 06]: Reused existing use-projects.ts hook from Phase 4 instead of creating simplified duplicate
 
 ## Performance Metrics
 
@@ -91,6 +97,7 @@ Current Plan: 2 of 2
 | 03    | 04   | 2min     | 1     | 1     |
 | Phase 05 P01 | 3min | 2 tasks | 17 files |
 | 06    | 01   | 2min     | 2     | 9     |
+| 06    | 02   | 5min     | 2     | 8     |
 
 ## Active Context
 
@@ -102,8 +109,8 @@ Current Plan: 2 of 2
 
 ## Last Session
 
-- **Stopped at:** Completed 06-01-PLAN.md
-- **Timestamp:** 2026-03-26T21:36:31Z
+- **Stopped at:** Completed 06-02-PLAN.md
+- **Timestamp:** 2026-03-26T21:46:29Z
 
 ---
 

@@ -192,7 +192,7 @@ Plans:
 Plans:
 
 - [x] 06-01-PLAN.md -- Backend: AG Grid deps, allocation feature module, API routes, capacity/date utils (DONE)
-- [ ] 06-02-PLAN.md -- Frontend: AG Grid component, pinned rows, cell renderers, auto-save hook, person input page
+- [x] 06-02-PLAN.md -- Frontend: AG Grid component, pinned rows, cell renderers, auto-save hook, person input page
 
 ---
 
