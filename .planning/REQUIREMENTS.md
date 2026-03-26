@@ -10,11 +10,11 @@
 
 ### Foundation (FOUND)
 
-- [ ] **FOUND-01**: Multi-tenant organization with row-level data isolation via `organization_id` on every table (F-001)
+- [x] **FOUND-01**: Multi-tenant organization with row-level data isolation via `organization_id` on every table (F-001)
 - [ ] **FOUND-02**: `withTenant()` ORM query wrapper enforcing tenant isolation on every database query (Research: critical risk)
 - [x] **FOUND-03**: Next.js 16 project setup with App Router, TypeScript, Tailwind CSS 4 config from prototypes (ADR-004, ADR-006)
-- [ ] **FOUND-04**: Drizzle ORM schema: organizations, people, projects, programs, departments, disciplines, allocations (ADR-002)
-- [ ] **FOUND-05**: Database migrations and development seed data on Neon PostgreSQL 17 (ADR-002)
+- [x] **FOUND-04**: Drizzle ORM schema: organizations, people, projects, programs, departments, disciplines, allocations (ADR-002)
+- [x] **FOUND-05**: Database migrations and development seed data on Neon PostgreSQL 17 (ADR-002)
 - [ ] **FOUND-06**: Error taxonomy — AppError hierarchy: ValidationError, AuthError, ForbiddenError, NotFoundError, ConflictError, RateLimitError, InternalError (Section 11.1)
 - [ ] **FOUND-07**: Health check endpoint returning 200 with DB connection status
 - [ ] **FOUND-08**: App shell — top nav (Input/Team/Projects/Data/Dashboard) + contextual side nav + main area (A7)

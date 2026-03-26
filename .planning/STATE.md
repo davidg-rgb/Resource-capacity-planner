@@ -2,31 +2,31 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: Not started
-status: unknown
-stopped_at: Completed 01-01-PLAN.md
-last_updated: "2026-03-26T09:10:25.161Z"
+current_plan: 2
+status: Executing Phase 02
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-03-26T09:44:03Z"
 progress:
   total_phases: 10
   completed_phases: 1
-  total_plans: 1
-  completed_plans: 1
+  total_plans: 3
+  completed_plans: 2
 ---
 
 # Nordic Capacity -- Project State
 
 ## Current Phase
 
-Phase 1 -- Project Scaffolding & Dev Environment (in progress)
+Phase 2 -- Database Schema & Tenant Isolation (in progress)
 
-Current Plan: Not started
+Current Plan: 2 of 2
 
 ## Phase Status
 
 | Phase | Name                                  | Status      | Started    | Completed |
 | ----- | ------------------------------------- | ----------- | ---------- | --------- |
-| 1     | Project Scaffolding & Dev Environment | in progress | 2026-03-26 | --        |
-| 2     | Database Schema & Tenant Isolation    | not started | --         | --        |
+| 1     | Project Scaffolding & Dev Environment | complete    | 2026-03-26 | 2026-03-26 |
+| 2     | Database Schema & Tenant Isolation    | in progress | 2026-03-26 | --        |
 | 3     | Authentication & App Shell            | not started | --         | --        |
 | 4     | Person & Project CRUD                 | not started | --         | --        |
 | 5     | Reference Data Admin                  | not started | --         | --        |
@@ -47,12 +47,16 @@ Current Plan: Not started
 - Kept TypeScript 5.9.3 from create-next-app instead of pinning to 5.7 (both 5.x, stable)
 - Used `eslint .` instead of `next lint` (path with & character causes failure)
 - proxy.ts exports named `proxy` function per Next.js 16 API (not `middleware`)
+- Used process.env.DATABASE_URL directly in db/index.ts for CLI/seed script compatibility
+- Single schema.ts file for all 13 tables per research recommendation
+- date('month', { mode: 'string' }) for allocations to avoid JS timezone issues
 
 ## Performance Metrics
 
 | Phase | Plan | Duration | Tasks | Files |
 | ----- | ---- | -------- | ----- | ----- |
 | 01    | 01   | 11min    | 2     | 21    |
+| 02    | 01   | 4min     | 2     | 6     |
 
 ## Active Context
 
@@ -64,8 +68,8 @@ Current Plan: Not started
 
 ## Last Session
 
-- **Stopped at:** Completed 01-01-PLAN.md
-- **Timestamp:** 2026-03-26T09:01:43Z
+- **Stopped at:** Completed 02-01-PLAN.md
+- **Timestamp:** 2026-03-26T09:44:03Z
 
 ---
 

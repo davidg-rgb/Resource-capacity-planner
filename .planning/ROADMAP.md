@@ -60,7 +60,7 @@ Plans:
 
 Plans:
 
-- [ ] 02-01-PLAN.md -- Drizzle schema (13 tables), db client, deps, env update, Drizzle Kit config
+- [x] 02-01-PLAN.md -- Drizzle schema (13 tables), db client, deps, env update, Drizzle Kit config
 - [ ] 02-02-PLAN.md -- withTenant() wrapper, health check endpoint, migrations, seed script
 
 ---
