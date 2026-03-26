@@ -93,6 +93,7 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [x] Tenant context middleware — getTenantId(), requireRole() (AUTH-06) — Phase 3
 - [x] Person CRUD — create, read, update, soft-delete (MGMT-01 / F-011) — Phase 4
 - [x] Project CRUD — create, read, update, archive (MGMT-02 / F-012) — Phase 4
+- [x] Admin UI for reference data: disciplines, departments, programs (MGMT-03/04/05 / F-010) — Phase 5
 
 ### Active — MVP (Milestone 1)
 
@@ -112,10 +113,6 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [ ] Pivot/grid format detection and unpivoting (F-026)
 - [ ] Flat table view with sorting, filtering, Excel/CSV export (F-009)
 - [ ] Downloadable import templates (F-019)
-
-**Admin:**
-
-- [ ] Admin UI for reference data: disciplines, departments, programs, projects (F-010)
 
 **Platform Admin (SaaS Operations):**
 
@@ -171,4 +168,4 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 
 ---
 
-_Last updated: 2026-03-26 — Phase 4 complete (Person & Project CRUD with TanStack Query, tenant-scoped API routes, Team + Projects pages)_
+_Last updated: 2026-03-26 — Phase 5 complete (Reference data admin — disciplines, departments, programs CRUD with role gating and delete protection)_
