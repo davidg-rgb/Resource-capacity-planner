@@ -4,8 +4,8 @@ import { z } from 'zod';
 export const env = createEnv({
   server: {
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
-    // Required in Phase 2+
-    DATABASE_URL: z.string().url().optional(),
+    // Database connection string (Neon PostgreSQL)
+    DATABASE_URL: z.string().url(),
     // Required in Phase 3+
     CLERK_SECRET_KEY: z.string().min(1).optional(),
     CLERK_WEBHOOK_SECRET: z.string().min(1).optional(),
