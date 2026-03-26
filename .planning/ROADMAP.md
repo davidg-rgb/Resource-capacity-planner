@@ -93,6 +93,15 @@ Plans:
 
 **Parallel with:** None
 
+**Plans:** 4 plans
+
+Plans:
+
+- [ ] 03-01-PLAN.md -- Error taxonomy, auth helpers, Clerk deps, env config
+- [ ] 03-02-PLAN.md -- Clerk integration: proxy.ts, ClerkProvider, sign-in/sign-up, webhook, org service
+- [ ] 03-03-PLAN.md -- App shell: top nav, side nav, breadcrumbs, (app) layout, placeholder pages
+- [ ] 03-04-PLAN.md -- Invite API endpoint with role-based access control
+
 ---
 
 ### Phase 4: Person & Project CRUD
