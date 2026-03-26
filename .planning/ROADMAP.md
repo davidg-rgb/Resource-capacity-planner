@@ -56,6 +56,13 @@ Plans:
 
 **Parallel with:** None
 
+**Plans:** 2 plans
+
+Plans:
+
+- [ ] 02-01-PLAN.md -- Drizzle schema (13 tables), db client, deps, env update, Drizzle Kit config
+- [ ] 02-02-PLAN.md -- withTenant() wrapper, health check endpoint, migrations, seed script
+
 ---
 
 ### Phase 3: Authentication & App Shell
@@ -337,29 +344,29 @@ Plans:
 
 ```
 Phase 1: Scaffolding
-  │
-  ▼
+  |
+  v
 Phase 2: DB Schema & Tenant Isolation
-  │
-  ├──────────────────────────────────────┐
-  ▼                                      ▼
-Phase 3: Auth & App Shell            Phase 10: Platform Admin ──────┐
-  │                                   (can start after Phase 3      │
-  ├──────────────┐                     for Clerk SDK integration)   │
-  ▼              ▼                                                  │
-Phase 4:       Phase 5:                                             │
-Person/Proj    Ref Data Admin                                       │
-CRUD           (parallel w/ 4)                                      │
-  │                                                                 │
-  ▼                                                                 │
-Phase 6: AG Grid Spike & Core Grid ◄── CRITICAL PATH               │
-  │                                                                 │
-  ├──────────────┬──────────────┐                                   │
-  ▼              ▼              ▼                                   │
-Phase 7:       Phase 8:       Phase 9:                              │
-Grid Polish    Import Wizard  Flat Table                            │
-& Navigation   (parallel w/7) & Export                              │
-                               (parallel w/ 7, 8)                   │
+  |
+  +--------------------------------------+
+  v                                      v
+Phase 3: Auth & App Shell            Phase 10: Platform Admin ------+
+  |                                   (can start after Phase 3      |
+  +--------------+                     for Clerk SDK integration)   |
+  v              v                                                  |
+Phase 4:       Phase 5:                                             |
+Person/Proj    Ref Data Admin                                       |
+CRUD           (parallel w/ 4)                                      |
+  |                                                                 |
+  v                                                                 |
+Phase 6: AG Grid Spike & Core Grid <-- CRITICAL PATH               |
+  |                                                                 |
+  +--------------+--------------+                                   |
+  v              v              v                                   |
+Phase 7:       Phase 8:       Phase 9:                              |
+Grid Polish    Import Wizard  Flat Table                            |
+& Navigation   (parallel w/7) & Export                              |
+                               (parallel w/ 7, 8)                   |
 ```
 
 ---
