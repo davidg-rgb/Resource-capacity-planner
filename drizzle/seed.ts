@@ -1,0 +1,171 @@
+import 'dotenv/config';
+
+import { eq } from 'drizzle-orm';
+import { drizzle } from 'drizzle-orm/neon-http';
+
+import * as schema from '../src/db/schema';
+
+const db = drizzle(process.env.DATABASE_URL!);
+
+async function seed() {
+  console.log('Seeding database...');
+
+  // Idempotency check — skip if demo org already exists
+  const existing = await db
+    .select()
+    .from(schema.organizations)
+    .where(eq(schema.organizations.clerkOrgId, 'org_demo_seed'))
+    .limit(1);
+
+  if (existing.length > 0) {
+    console.log('Demo org already exists, skipping seed.');
+    return;
+  }
+
+  // a) Create demo organization
+  const [org] = await db
+    .insert(schema.organizations)
+    .values({
+      clerkOrgId: 'org_demo_seed',
+      name: 'Demo Engineering AB',
+      slug: 'demo-engineering',
+      subscriptionStatus: 'trial',
+    })
+    .returning();
+  console.log('Created 1 organization...');
+
+  const orgId = org.id;
+
+  // b) Create 3 departments
+  const [deptMech, deptSW, deptElec] = await db
+    .insert(schema.departments)
+    .values([
+      { organizationId: orgId, name: 'Mechanical Engineering' },
+      { organizationId: orgId, name: 'Software Engineering' },
+      { organizationId: orgId, name: 'Electronics' },
+    ])
+    .returning();
+  console.log('Created 3 departments...');
+
+  // c) Create 4 disciplines
+  const [discSW, discMek, discElnik, discTest] = await db
+    .insert(schema.disciplines)
+    .values([
+      { organizationId: orgId, name: 'Software', abbreviation: 'SW' },
+      { organizationId: orgId, name: 'Mechanical', abbreviation: 'Mek' },
+      { organizationId: orgId, name: 'Electronics', abbreviation: 'Elnik' },
+      { organizationId: orgId, name: 'Test', abbreviation: 'Test' },
+    ])
+    .returning();
+  console.log('Created 4 disciplines...');
+
+  // d) Create 5 people
+  const [anna, erik, sara, marcus, lisa] = await db
+    .insert(schema.people)
+    .values([
+      {
+        organizationId: orgId,
+        firstName: 'Anna',
+        lastName: 'Johansson',
+        disciplineId: discSW.id,
+        departmentId: deptSW.id,
+        targetHoursPerMonth: 160,
+      },
+      {
+        organizationId: orgId,
+        firstName: 'Erik',
+        lastName: 'Lindgren',
+        disciplineId: discMek.id,
+        departmentId: deptMech.id,
+        targetHoursPerMonth: 160,
+      },
+      {
+        organizationId: orgId,
+        firstName: 'Sara',
+        lastName: 'Bergman',
+        disciplineId: discElnik.id,
+        departmentId: deptElec.id,
+        targetHoursPerMonth: 160,
+      },
+      {
+        organizationId: orgId,
+        firstName: 'Marcus',
+        lastName: 'Holm',
+        disciplineId: discSW.id,
+        departmentId: deptSW.id,
+        targetHoursPerMonth: 120,
+      },
+      {
+        organizationId: orgId,
+        firstName: 'Lisa',
+        lastName: 'Nystrom',
+        disciplineId: discTest.id,
+        departmentId: deptMech.id,
+        targetHoursPerMonth: 160,
+      },
+    ])
+    .returning();
+  console.log('Created 5 people...');
+
+  // e) Create 4 projects
+  const [atlas, beacon, compass, legacy] = await db
+    .insert(schema.projects)
+    .values([
+      { organizationId: orgId, name: 'Project Atlas', status: 'active' as const },
+      { organizationId: orgId, name: 'Project Beacon', status: 'active' as const },
+      { organizationId: orgId, name: 'Project Compass', status: 'planned' as const },
+      { organizationId: orgId, name: 'Legacy System Migration', status: 'active' as const },
+    ])
+    .returning();
+  console.log('Created 4 projects...');
+
+  // f) Create 12+ allocations across people/projects for Apr-Sep 2026
+  const allocationData = [
+    // Anna: Atlas 80h Apr-Jun, Beacon 80h Apr-Jun
+    { personId: anna.id, projectId: atlas.id, month: '2026-04-01', hours: 80 },
+    { personId: anna.id, projectId: atlas.id, month: '2026-05-01', hours: 80 },
+    { personId: anna.id, projectId: atlas.id, month: '2026-06-01', hours: 80 },
+    { personId: anna.id, projectId: beacon.id, month: '2026-04-01', hours: 80 },
+    { personId: anna.id, projectId: beacon.id, month: '2026-05-01', hours: 80 },
+    { personId: anna.id, projectId: beacon.id, month: '2026-06-01', hours: 80 },
+
+    // Erik: Atlas 120h Apr-May, Compass 40h Jun-Jul
+    { personId: erik.id, projectId: atlas.id, month: '2026-04-01', hours: 120 },
+    { personId: erik.id, projectId: atlas.id, month: '2026-05-01', hours: 120 },
+    { personId: erik.id, projectId: compass.id, month: '2026-06-01', hours: 40 },
+    { personId: erik.id, projectId: compass.id, month: '2026-07-01', hours: 40 },
+
+    // Sara: Beacon 160h Apr-Jun
+    { personId: sara.id, projectId: beacon.id, month: '2026-04-01', hours: 160 },
+    { personId: sara.id, projectId: beacon.id, month: '2026-05-01', hours: 160 },
+    { personId: sara.id, projectId: beacon.id, month: '2026-06-01', hours: 160 },
+
+    // Marcus: Atlas 60h Apr-Jun, Legacy 60h Apr-Jun
+    { personId: marcus.id, projectId: atlas.id, month: '2026-04-01', hours: 60 },
+    { personId: marcus.id, projectId: atlas.id, month: '2026-05-01', hours: 60 },
+    { personId: marcus.id, projectId: atlas.id, month: '2026-06-01', hours: 60 },
+    { personId: marcus.id, projectId: legacy.id, month: '2026-04-01', hours: 60 },
+    { personId: marcus.id, projectId: legacy.id, month: '2026-05-01', hours: 60 },
+    { personId: marcus.id, projectId: legacy.id, month: '2026-06-01', hours: 60 },
+
+    // Lisa: Legacy 80h Apr-Jul
+    { personId: lisa.id, projectId: legacy.id, month: '2026-04-01', hours: 80 },
+    { personId: lisa.id, projectId: legacy.id, month: '2026-05-01', hours: 80 },
+    { personId: lisa.id, projectId: legacy.id, month: '2026-06-01', hours: 80 },
+    { personId: lisa.id, projectId: legacy.id, month: '2026-07-01', hours: 80 },
+  ];
+
+  const allocations = await db
+    .insert(schema.allocations)
+    .values(allocationData.map((a) => ({ ...a, organizationId: orgId })))
+    .returning();
+  console.log(`Created ${allocations.length} allocations...`);
+
+  console.log(
+    `Seed complete. Created: 1 org, 3 departments, 4 disciplines, 5 people, 4 projects, ${allocations.length} allocations`,
+  );
+}
+
+seed()
+  .catch(console.error)
+  .finally(() => process.exit(0));
