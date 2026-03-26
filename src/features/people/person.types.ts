@@ -1,3 +1,4 @@
+import type { CapacityStatus } from '@/lib/capacity';
 import type * as schema from '@/db/schema';
 
 /** A person row as returned from the database */
@@ -21,4 +22,13 @@ export type PersonFilter = {
   disciplineId?: string;
   search?: string;
   includeArchived?: boolean;
+  withStatus?: boolean;
+};
+
+/** Person with computed allocation status for sidebar display */
+export type PersonWithStatus = PersonRow & {
+  departmentName: string;
+  disciplineAbbreviation: string;
+  status: CapacityStatus;
+  currentMonthSum: number;
 };

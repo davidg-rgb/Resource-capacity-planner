@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { personCreateSchema } from '@/features/people/person.schema';
-import { createPerson, listPeople } from '@/features/people/person.service';
+import { createPerson, listPeople, listPeopleWithStatus } from '@/features/people/person.service';
 import { handleApiError } from '@/lib/api-utils';
 import { getTenantId, requireRole } from '@/lib/auth';
 
@@ -15,6 +15,13 @@ export async function GET(request: NextRequest) {
       disciplineId: searchParams.get('disciplineId') ?? undefined,
       search: searchParams.get('search') ?? undefined,
     };
+
+    const withStatus = searchParams.get('withStatus') === 'true';
+
+    if (withStatus) {
+      const people = await listPeopleWithStatus(orgId, filters);
+      return NextResponse.json({ people });
+    }
 
     const people = await listPeople(orgId, filters);
     return NextResponse.json({ people });
