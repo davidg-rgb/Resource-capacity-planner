@@ -1,384 +1,714 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              colors: {
-                "error-dim": "#4e0309",
-                "surface-variant": "#d9e4e8",
-                "inverse-primary": "#cce6fb",
-                "surface-tint": "#496173",
-                "inverse-surface": "#0b0f10",
-                "on-surface": "#2a3437",
-                "primary-fixed": "#cce6fb",
-                "primary": "#496173",
-                "surface-container-lowest": "#ffffff",
-                "surface-container-high": "#e1eaec",
-                "surface-container-low": "#f0f4f6",
-                "secondary-dim": "#4c5459",
-                "secondary-fixed": "#dce4e9",
-                "surface": "#f8fafb",
-                "on-tertiary-fixed": "#42474a",
-                "on-tertiary-container": "#54595c",
-                "outline-variant": "#a9b4b7",
-                "on-primary-fixed-variant": "#465e70",
-                "surface-dim": "#cfdce0",
-                "surface-container-highest": "#d9e4e8",
-                "primary-container": "#cce6fb",
-                "surface-bright": "#f8fafb",
-                "tertiary": "#5b6063",
-                "on-primary-container": "#3d5466",
-                "secondary-container": "#dce4e9",
-                "on-secondary-fixed": "#394045",
-                "on-primary": "#f3f8ff",
-                "on-secondary-fixed-variant": "#555d61",
-                "on-background": "#2a3437",
-                "outline": "#727d80",
-                "on-surface-variant": "#566164",
-                "on-tertiary": "#f5f9fd",
-                "inverse-on-surface": "#9a9d9e",
-                "surface-container": "#e8eff1",
-                "on-error-container": "#752121",
-                "tertiary-container": "#eaeef2",
-                "primary-dim": "#3d5567",
-                "on-primary-fixed": "#2a4253",
-                "on-secondary-container": "#4b5358",
-                "on-tertiary-fixed-variant": "#5e6366",
-                "tertiary-fixed-dim": "#dce0e3",
-                "error": "#9f403d",
-                "error-container": "#fe8983",
-                "secondary-fixed-dim": "#ced5db",
-                "primary-fixed-dim": "#bed8ed",
-                "tertiary-dim": "#4f5457",
-                "tertiary-fixed": "#eaeef2",
-                "on-error": "#fff7f6",
-                "background": "#f8fafb",
-                "secondary": "#586065",
-                "on-secondary": "#f3faff"
-              },
-              fontFamily: {
-                "headline": ["Manrope"],
-                "body": ["Inter"],
-                "label": ["Inter"]
-              },
-              borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'error-dim': '#4e0309',
+              'surface-variant': '#d9e4e8',
+              'inverse-primary': '#cce6fb',
+              'surface-tint': '#496173',
+              'inverse-surface': '#0b0f10',
+              'on-surface': '#2a3437',
+              'primary-fixed': '#cce6fb',
+              primary: '#496173',
+              'surface-container-lowest': '#ffffff',
+              'surface-container-high': '#e1eaec',
+              'surface-container-low': '#f0f4f6',
+              'secondary-dim': '#4c5459',
+              'secondary-fixed': '#dce4e9',
+              surface: '#f8fafb',
+              'on-tertiary-fixed': '#42474a',
+              'on-tertiary-container': '#54595c',
+              'outline-variant': '#a9b4b7',
+              'on-primary-fixed-variant': '#465e70',
+              'surface-dim': '#cfdce0',
+              'surface-container-highest': '#d9e4e8',
+              'primary-container': '#cce6fb',
+              'surface-bright': '#f8fafb',
+              tertiary: '#5b6063',
+              'on-primary-container': '#3d5466',
+              'secondary-container': '#dce4e9',
+              'on-secondary-fixed': '#394045',
+              'on-primary': '#f3f8ff',
+              'on-secondary-fixed-variant': '#555d61',
+              'on-background': '#2a3437',
+              outline: '#727d80',
+              'on-surface-variant': '#566164',
+              'on-tertiary': '#f5f9fd',
+              'inverse-on-surface': '#9a9d9e',
+              'surface-container': '#e8eff1',
+              'on-error-container': '#752121',
+              'tertiary-container': '#eaeef2',
+              'primary-dim': '#3d5567',
+              'on-primary-fixed': '#2a4253',
+              'on-secondary-container': '#4b5358',
+              'on-tertiary-fixed-variant': '#5e6366',
+              'tertiary-fixed-dim': '#dce0e3',
+              error: '#9f403d',
+              'error-container': '#fe8983',
+              'secondary-fixed-dim': '#ced5db',
+              'primary-fixed-dim': '#bed8ed',
+              'tertiary-dim': '#4f5457',
+              'tertiary-fixed': '#eaeef2',
+              'on-error': '#fff7f6',
+              background: '#f8fafb',
+              secondary: '#586065',
+              'on-secondary': '#f3faff',
             },
+            fontFamily: {
+              headline: ['Manrope'],
+              body: ['Inter'],
+              label: ['Inter'],
+            },
+            borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem', full: '0.75rem' },
           },
-        }
-      </script>
-<style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafb; }
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        .tabular-nums { font-variant-numeric: tabular-nums; }
+        },
+      };
+    </script>
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8fafb;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+      }
+      .tabular-nums {
+        font-variant-numeric: tabular-nums;
+      }
     </style>
-</head>
-<body class="text-on-surface">
-<div class="flex min-h-screen">
-<!-- Side Navigation -->
-<aside class="w-64 flex flex-col h-screen border-r border-outline-variant/15 bg-[#f0f4f6] fixed left-0 top-0">
-<div class="px-6 py-8">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
-<span class="material-symbols-outlined text-white text-sm" data-icon="architecture">architecture</span>
-</div>
-<div>
-<h1 class="font-headline font-bold text-primary tracking-tight">Resource Planner</h1>
-<p class="text-[10px] uppercase tracking-widest text-outline">Nordic Precision</p>
-</div>
-</div>
-</div>
-<nav class="flex-1 px-4 space-y-1">
-<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-[#d9e4e8]/50 transition-colors rounded-sm font-body text-xs font-medium" href="#">
-<span class="material-symbols-outlined text-lg" data-icon="group">group</span>
-                    Resources
-                </a>
-<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-[#d9e4e8]/50 transition-colors rounded-sm font-body text-xs font-medium" href="#">
-<span class="material-symbols-outlined text-lg" data-icon="event_available">event_available</span>
-                    Allocations
-                </a>
-<!-- Active Item -->
-<a class="flex items-center gap-3 px-3 py-2 bg-[#d9e4e8] text-primary rounded-sm font-body text-xs font-semibold" href="#">
-<span class="material-symbols-outlined text-lg" data-icon="bar_chart">bar_chart</span>
-                    Capacity
-                </a>
-<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-[#d9e4e8]/50 transition-colors rounded-sm font-body text-xs font-medium" href="#">
-<span class="material-symbols-outlined text-lg" data-icon="flag">flag</span>
-                    Milestones
-                </a>
-<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-[#d9e4e8]/50 transition-colors rounded-sm font-body text-xs font-medium" href="#">
-<span class="material-symbols-outlined text-lg" data-icon="description">description</span>
-                    Reports
-                </a>
-</nav>
-<div class="p-4 border-t border-outline-variant/10">
-<button class="w-full bg-primary text-on-primary py-2.5 rounded-sm text-xs font-semibold flex items-center justify-center gap-2 mb-6">
-<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
-                    New Entry
-                </button>
-<div class="space-y-1">
-<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-primary transition-colors font-body text-xs" href="#">
-<span class="material-symbols-outlined text-lg" data-icon="help_outline">help_outline</span>
-                        Help
-                    </a>
-<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-primary transition-colors font-body text-xs" href="#">
-<span class="material-symbols-outlined text-lg" data-icon="archive">archive</span>
-                        Archive
-                    </a>
-</div>
-</div>
-</aside>
-<!-- Main Content Area -->
-<main class="ml-64 flex-1 bg-surface min-w-0">
-<!-- Top App Bar -->
-<header class="flex justify-between items-center w-full px-8 py-4 bg-surface border-b border-outline-variant/10 sticky top-0 z-10">
-<div class="flex items-center gap-8">
-<h2 class="text-xl font-headline font-semibold text-primary tracking-tighter">Nordic Capacity</h2>
-<nav class="hidden md:flex items-center gap-6">
-<a class="text-slate-500 hover:text-primary font-headline font-medium text-sm tracking-tight transition-colors" href="#">Input</a>
-<a class="text-slate-500 hover:text-primary font-headline font-medium text-sm tracking-tight transition-colors" href="#">Team</a>
-<a class="text-slate-500 hover:text-primary font-headline font-medium text-sm tracking-tight transition-colors" href="#">Projects</a>
-<a class="text-slate-500 hover:text-primary font-headline font-medium text-sm tracking-tight transition-colors" href="#">Data</a>
-<a class="text-primary border-b-2 border-primary pb-1 font-headline font-bold text-sm tracking-tight" href="#">Dashboard</a>
-</nav>
-</div>
-<div class="flex items-center gap-4">
-<div class="relative flex items-center bg-surface-container-low px-3 py-1.5 rounded-sm">
-<span class="material-symbols-outlined text-outline text-sm mr-2" data-icon="search">search</span>
-<input class="bg-transparent border-none text-xs focus:ring-0 w-48 font-body" placeholder="Search system..." type="text"/>
-</div>
-<button class="text-outline hover:text-primary transition-colors">
-<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
-</button>
-<button class="text-outline hover:text-primary transition-colors">
-<span class="material-symbols-outlined" data-icon="settings">settings</span>
-</button>
-<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden ml-2">
-<img alt="User profile" data-alt="professional headshot of a middle-aged male executive with glasses in a minimalist bright office environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp5O-K5EFFl3de2ajRQovoc-aYixpgqgLCJD5CWq30sQ-lXJ-CG4zFBO2JWUHsd7RK4QgcveHJXIvX4wWJH8dyKpx6KapsA2RuiH8QojBcrKlJ9koC82cpb7X2EieAABWpayFzituW7KdENJkW3da-jxsgkqRhOdP7VFV7Fm2Bk1j02T6EYH4q45lQUkMuWQ27BXY5AO4k-n4sz1xpDCcRBp51_w5s1CIX4550X62fzh-VstFUn3TcT-RQDlCxKO0zfhg9nC2Vofje"/>
-</div>
-</div>
-</header>
-<div class="p-8 max-w-[1440px] mx-auto">
-<div class="mb-8">
-<h3 class="font-headline text-2xl font-semibold text-on-surface">Management Overview</h3>
-<p class="text-on-surface-variant font-body text-sm mt-1">Operational capacity and resource health for Q2-Q3 2024.</p>
-</div>
-<!-- KPI Cards -->
-<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-<div class="bg-surface-container-lowest p-6 rounded-sm flex flex-col justify-between border-b-2 border-primary/10">
-<span class="text-xs font-body font-semibold text-outline-variant uppercase tracking-wider">Total Resources</span>
-<div class="flex items-end justify-between mt-4">
-<span class="text-3xl font-headline font-bold text-primary tabular-nums leading-none">240</span>
-<span class="text-[10px] bg-secondary-container px-2 py-0.5 rounded-full text-on-secondary-fixed">+4 New</span>
-</div>
-</div>
-<div class="bg-surface-container-lowest p-6 rounded-sm flex flex-col justify-between border-b-2 border-primary/10">
-<span class="text-xs font-body font-semibold text-outline-variant uppercase tracking-wider">Avg Utilization</span>
-<div class="flex items-end justify-between mt-4">
-<span class="text-3xl font-headline font-bold text-primary tabular-nums leading-none">92%</span>
-<span class="text-[10px] text-on-secondary-container font-medium">Optimal Range</span>
-</div>
-</div>
-<div class="bg-surface-container-lowest p-6 rounded-sm flex flex-col justify-between border-b-2 border-error/20">
-<span class="text-xs font-body font-semibold text-outline-variant uppercase tracking-wider">Overloaded</span>
-<div class="flex items-end justify-between mt-4">
-<span class="text-3xl font-headline font-bold text-error tabular-nums leading-none">12</span>
-<span class="text-[10px] bg-error-container/20 text-error px-2 py-0.5 rounded-full">High Priority</span>
-</div>
-</div>
-<div class="bg-surface-container-lowest p-6 rounded-sm flex flex-col justify-between border-b-2 border-outline/20">
-<span class="text-xs font-body font-semibold text-outline-variant uppercase tracking-wider">Unallocated</span>
-<div class="flex items-end justify-between mt-4">
-<span class="text-3xl font-headline font-bold text-on-surface-variant tabular-nums leading-none">4</span>
-<span class="text-[10px] text-outline font-medium">Available Bench</span>
-</div>
-</div>
-</div>
-<div class="grid grid-cols-12 gap-8">
-<!-- Main Area: Utilization Heat Map -->
-<div class="col-span-12 lg:col-span-8">
-<div class="bg-surface-container-lowest p-6 rounded-sm border-l-4 border-primary">
-<div class="flex justify-between items-center mb-6">
-<h4 class="font-headline font-semibold text-sm">Departmental Utilization Heat Map</h4>
-<div class="flex items-center gap-4 text-[10px] font-medium text-outline">
-<div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-surface-container-high"></div> &lt; 60%</div>
-<div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-primary/40"></div> 60-85%</div>
-<div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-primary"></div> 85-95%</div>
-<div class="flex items-center gap-1"><div class="w-2 h-2 rounded-full bg-error"></div> &gt; 95%</div>
-</div>
-</div>
-<div class="overflow-x-auto">
-<table class="w-full text-left font-body text-xs">
-<thead>
-<tr class="text-outline uppercase tracking-wider">
-<th class="pb-4 font-semibold">Department</th>
-<th class="pb-4 font-semibold text-center">Apr</th>
-<th class="pb-4 font-semibold text-center">May</th>
-<th class="pb-4 font-semibold text-center">Jun</th>
-<th class="pb-4 font-semibold text-center">Jul</th>
-<th class="pb-4 font-semibold text-center">Aug</th>
-<th class="pb-4 font-semibold text-center">Sep</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-outline-variant/10">
-<tr class="hover:bg-surface-container-low group transition-colors">
-<td class="py-4 font-medium text-on-surface">Electronics</td>
-<td class="p-2"><div class="bg-error text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">94%</div></td>
-<td class="p-2"><div class="bg-error text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">98%</div></td>
-<td class="p-2"><div class="bg-primary text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">91%</div></td>
-<td class="p-2"><div class="bg-primary text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">88%</div></td>
-<td class="p-2"><div class="bg-primary/60 text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">78%</div></td>
-<td class="p-2"><div class="bg-primary/40 text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">64%</div></td>
-</tr>
-<tr class="hover:bg-surface-container-low group transition-colors">
-<td class="py-4 font-medium text-on-surface">Drivetrain</td>
-<td class="p-2"><div class="bg-primary text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">86%</div></td>
-<td class="p-2"><div class="bg-primary text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">89%</div></td>
-<td class="p-2"><div class="bg-primary text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">90%</div></td>
-<td class="p-2"><div class="bg-primary text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">85%</div></td>
-<td class="p-2"><div class="bg-primary text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">82%</div></td>
-<td class="p-2"><div class="bg-primary/60 text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">76%</div></td>
-</tr>
-<tr class="hover:bg-surface-container-low group transition-colors">
-<td class="py-4 font-medium text-on-surface">Testing</td>
-<td class="p-2"><div class="bg-primary/40 text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">62%</div></td>
-<td class="p-2"><div class="bg-primary/40 text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">58%</div></td>
-<td class="p-2"><div class="bg-primary/40 text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">52%</div></td>
-<td class="p-2"><div class="bg-surface-container-high text-outline-variant font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">28%</div></td>
-<td class="p-2"><div class="bg-surface-container-high text-outline-variant font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">24%</div></td>
-<td class="p-2"><div class="bg-surface-container-high text-outline-variant font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">18%</div></td>
-</tr>
-<tr class="hover:bg-surface-container-low group transition-colors">
-<td class="py-4 font-medium text-on-surface">Software</td>
-<td class="p-2"><div class="bg-primary text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">92%</div></td>
-<td class="p-2"><div class="bg-primary text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">92%</div></td>
-<td class="p-2"><div class="bg-primary text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">91%</div></td>
-<td class="p-2"><div class="bg-primary text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">93%</div></td>
-<td class="p-2"><div class="bg-primary text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">90%</div></td>
-<td class="p-2"><div class="bg-primary text-white font-bold h-10 flex items-center justify-center rounded-sm tabular-nums">88%</div></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<!-- Capacity Alerts -->
-<div class="mt-8">
-<h4 class="font-headline font-semibold text-sm mb-4">Strategic Alerts</h4>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-<div class="bg-error-container/10 border border-error/10 p-4 rounded-sm flex items-start gap-4">
-<span class="material-symbols-outlined text-error" data-icon="warning">warning</span>
-<div>
-<p class="text-xs font-semibold text-on-error-container">Critical Load: Electronics</p>
-<p class="text-[11px] text-error mt-0.5">Electronics team over 90% in Apr-May. Milestone 'Alpha-V2' at risk.</p>
-</div>
-</div>
-<div class="bg-surface-container-high p-4 rounded-sm flex items-start gap-4">
-<span class="material-symbols-outlined text-outline" data-icon="trending_down">trending_down</span>
-<div>
-<p class="text-xs font-semibold text-on-surface">Under-utilization: Testing</p>
-<p class="text-[11px] text-outline mt-0.5">Testing drops below 30% from Jul. Reassignment recommended.</p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<!-- Side Rail: Discipline Bars -->
-<div class="col-span-12 lg:col-span-4 space-y-6">
-<div class="bg-surface-container-low p-6 rounded-sm border-t-2 border-primary/20">
-<h4 class="font-headline font-semibold text-sm mb-6">Discipline Utilization</h4>
-<div class="space-y-8">
-<!-- SW -->
-<div>
-<div class="flex justify-between items-center mb-2">
-<div class="flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-primary"></span>
-<span class="text-xs font-semibold font-body">SW (Software)</span>
-</div>
-<span class="text-xs font-bold tabular-nums">91%</span>
-</div>
-<div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
-<div class="bg-primary h-full w-[91%]"></div>
-</div>
-<div class="flex justify-between mt-1.5">
-<span class="text-[10px] text-outline font-medium">84 Available</span>
-<span class="text-[10px] text-outline font-medium">76.4 Assigned</span>
-</div>
-</div>
-<!-- HW -->
-<div>
-<div class="flex justify-between items-center mb-2">
-<div class="flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-error"></span>
-<span class="text-xs font-semibold font-body">HW (Hardware)</span>
-</div>
-<span class="text-xs font-bold tabular-nums">97%</span>
-</div>
-<div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
-<div class="bg-error h-full w-[97%]"></div>
-</div>
-<div class="flex justify-between mt-1.5">
-<span class="text-[10px] text-outline font-medium">52 Available</span>
-<span class="text-[10px] text-outline font-medium">50.4 Assigned</span>
-</div>
-</div>
-<!-- Mek -->
-<div>
-<div class="flex justify-between items-center mb-2">
-<div class="flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-outline"></span>
-<span class="text-xs font-semibold font-body">Mek (Mechanical)</span>
-</div>
-<span class="text-xs font-bold tabular-nums">64%</span>
-</div>
-<div class="w-full bg-surface-container-highest h-1.5 rounded-full overflow-hidden">
-<div class="bg-outline h-full w-[64%]"></div>
-</div>
-<div class="flex justify-between mt-1.5">
-<span class="text-[10px] text-outline font-medium">68 Available</span>
-<span class="text-[10px] text-outline font-medium">43.5 Assigned</span>
-</div>
-</div>
-</div>
-</div>
-<!-- Mini Project Snapshot -->
-<div class="bg-surface-container-lowest p-6 rounded-sm">
-<h4 class="font-headline font-semibold text-sm mb-4">Project Impact</h4>
-<div class="space-y-4">
-<div class="flex items-center justify-between p-3 bg-surface hover:bg-surface-container-low rounded transition-colors cursor-pointer border-l-2 border-outline-variant/20">
-<div>
-<p class="text-xs font-semibold">Autonomous Core</p>
-<p class="text-[10px] text-outline">Resource Heavy • Priority 1</p>
-</div>
-<span class="material-symbols-outlined text-outline text-lg" data-icon="chevron_right">chevron_right</span>
-</div>
-<div class="flex items-center justify-between p-3 bg-surface hover:bg-surface-container-low rounded transition-colors cursor-pointer border-l-2 border-outline-variant/20">
-<div>
-<p class="text-xs font-semibold">Drivetrain Refresh</p>
-<p class="text-[10px] text-outline">Optimized • Priority 2</p>
-</div>
-<span class="material-symbols-outlined text-outline text-lg" data-icon="chevron_right">chevron_right</span>
-</div>
-</div>
-</div>
-<!-- System Visual -->
-<div class="rounded-sm overflow-hidden h-40 relative group">
-<img class="w-full h-full object-cover" data-alt="clean industrial robotics laboratory with white sleek machinery and neutral lighting for technical professional atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq6OHDuUFQLGHgjHaS7NdM7EPdU9uVWpdfyMaIJbT73ESh1HgFgu5ing2XcAALEtBjxHRupbegQ5pfW7vXCFvU8vlVUzBnx-q8F_HoFwg8UNfNtkLPpOOU4pjhcPit1vR8HMbQ_BiTqveRtIxDY32dOOtmIDvG0lthSxdAWsGB_ZpNUHlKdYKb15d5nOhxyqbJgNNy82hxr4KvcL-zqxb3bSETLkw4v4XzyXWp3CEeA3g8IEEhxiDjngjdkXcEiW7TbgrQIVNGMNZT"/>
-<div class="absolute inset-0 bg-primary/20 group-hover:bg-primary/10 transition-colors"></div>
-<div class="absolute bottom-4 left-4">
-<span class="bg-primary text-on-primary text-[10px] px-2 py-1 rounded-full font-semibold uppercase">Precision Core</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-</main>
-</div>
-</body></html>
+  </head>
+  <body class="text-on-surface">
+    <div class="flex min-h-screen">
+      <!-- Side Navigation -->
+      <aside
+        class="border-outline-variant/15 fixed top-0 left-0 flex h-screen w-64 flex-col border-r bg-[#f0f4f6]"
+      >
+        <div class="px-6 py-8">
+          <div class="flex items-center gap-3">
+            <div class="bg-primary flex h-8 w-8 items-center justify-center rounded-sm">
+              <span class="material-symbols-outlined text-sm text-white" data-icon="architecture"
+                >architecture</span
+              >
+            </div>
+            <div>
+              <h1 class="font-headline text-primary font-bold tracking-tight">Resource Planner</h1>
+              <p class="text-outline text-[10px] tracking-widest uppercase">Nordic Precision</p>
+            </div>
+          </div>
+        </div>
+        <nav class="flex-1 space-y-1 px-4">
+          <a
+            class="font-body flex items-center gap-3 rounded-sm px-3 py-2 text-xs font-medium text-slate-600 transition-colors hover:bg-[#d9e4e8]/50"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-lg" data-icon="group">group</span>
+            Resources
+          </a>
+          <a
+            class="font-body flex items-center gap-3 rounded-sm px-3 py-2 text-xs font-medium text-slate-600 transition-colors hover:bg-[#d9e4e8]/50"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-lg" data-icon="event_available"
+              >event_available</span
+            >
+            Allocations
+          </a>
+          <!-- Active Item -->
+          <a
+            class="text-primary font-body flex items-center gap-3 rounded-sm bg-[#d9e4e8] px-3 py-2 text-xs font-semibold"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-lg" data-icon="bar_chart">bar_chart</span>
+            Capacity
+          </a>
+          <a
+            class="font-body flex items-center gap-3 rounded-sm px-3 py-2 text-xs font-medium text-slate-600 transition-colors hover:bg-[#d9e4e8]/50"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-lg" data-icon="flag">flag</span>
+            Milestones
+          </a>
+          <a
+            class="font-body flex items-center gap-3 rounded-sm px-3 py-2 text-xs font-medium text-slate-600 transition-colors hover:bg-[#d9e4e8]/50"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-lg" data-icon="description"
+              >description</span
+            >
+            Reports
+          </a>
+        </nav>
+        <div class="border-outline-variant/10 border-t p-4">
+          <button
+            class="bg-primary text-on-primary mb-6 flex w-full items-center justify-center gap-2 rounded-sm py-2.5 text-xs font-semibold"
+          >
+            <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+            New Entry
+          </button>
+          <div class="space-y-1">
+            <a
+              class="hover:text-primary font-body flex items-center gap-3 px-3 py-2 text-xs text-slate-500 transition-colors"
+              href="#"
+            >
+              <span class="material-symbols-outlined text-lg" data-icon="help_outline"
+                >help_outline</span
+              >
+              Help
+            </a>
+            <a
+              class="hover:text-primary font-body flex items-center gap-3 px-3 py-2 text-xs text-slate-500 transition-colors"
+              href="#"
+            >
+              <span class="material-symbols-outlined text-lg" data-icon="archive">archive</span>
+              Archive
+            </a>
+          </div>
+        </div>
+      </aside>
+      <!-- Main Content Area -->
+      <main class="bg-surface ml-64 min-w-0 flex-1">
+        <!-- Top App Bar -->
+        <header
+          class="bg-surface border-outline-variant/10 sticky top-0 z-10 flex w-full items-center justify-between border-b px-8 py-4"
+        >
+          <div class="flex items-center gap-8">
+            <h2 class="font-headline text-primary text-xl font-semibold tracking-tighter">
+              Nordic Capacity
+            </h2>
+            <nav class="hidden items-center gap-6 md:flex">
+              <a
+                class="hover:text-primary font-headline text-sm font-medium tracking-tight text-slate-500 transition-colors"
+                href="#"
+                >Input</a
+              >
+              <a
+                class="hover:text-primary font-headline text-sm font-medium tracking-tight text-slate-500 transition-colors"
+                href="#"
+                >Team</a
+              >
+              <a
+                class="hover:text-primary font-headline text-sm font-medium tracking-tight text-slate-500 transition-colors"
+                href="#"
+                >Projects</a
+              >
+              <a
+                class="hover:text-primary font-headline text-sm font-medium tracking-tight text-slate-500 transition-colors"
+                href="#"
+                >Data</a
+              >
+              <a
+                class="text-primary border-primary font-headline border-b-2 pb-1 text-sm font-bold tracking-tight"
+                href="#"
+                >Dashboard</a
+              >
+            </nav>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="bg-surface-container-low relative flex items-center rounded-sm px-3 py-1.5">
+              <span class="material-symbols-outlined text-outline mr-2 text-sm" data-icon="search"
+                >search</span
+              >
+              <input
+                class="font-body w-48 border-none bg-transparent text-xs focus:ring-0"
+                placeholder="Search system..."
+                type="text"
+              />
+            </div>
+            <button class="text-outline hover:text-primary transition-colors">
+              <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+            </button>
+            <button class="text-outline hover:text-primary transition-colors">
+              <span class="material-symbols-outlined" data-icon="settings">settings</span>
+            </button>
+            <div class="bg-surface-container-highest ml-2 h-8 w-8 overflow-hidden rounded-full">
+              <img
+                alt="User profile"
+                data-alt="professional headshot of a middle-aged male executive with glasses in a minimalist bright office environment"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp5O-K5EFFl3de2ajRQovoc-aYixpgqgLCJD5CWq30sQ-lXJ-CG4zFBO2JWUHsd7RK4QgcveHJXIvX4wWJH8dyKpx6KapsA2RuiH8QojBcrKlJ9koC82cpb7X2EieAABWpayFzituW7KdENJkW3da-jxsgkqRhOdP7VFV7Fm2Bk1j02T6EYH4q45lQUkMuWQ27BXY5AO4k-n4sz1xpDCcRBp51_w5s1CIX4550X62fzh-VstFUn3TcT-RQDlCxKO0zfhg9nC2Vofje"
+              />
+            </div>
+          </div>
+        </header>
+        <div class="mx-auto max-w-[1440px] p-8">
+          <div class="mb-8">
+            <h3 class="font-headline text-on-surface text-2xl font-semibold">
+              Management Overview
+            </h3>
+            <p class="text-on-surface-variant font-body mt-1 text-sm">
+              Operational capacity and resource health for Q2-Q3 2024.
+            </p>
+          </div>
+          <!-- KPI Cards -->
+          <div class="mb-8 grid grid-cols-1 gap-6 md:grid-cols-4">
+            <div
+              class="bg-surface-container-lowest border-primary/10 flex flex-col justify-between rounded-sm border-b-2 p-6"
+            >
+              <span
+                class="font-body text-outline-variant text-xs font-semibold tracking-wider uppercase"
+                >Total Resources</span
+              >
+              <div class="mt-4 flex items-end justify-between">
+                <span
+                  class="font-headline text-primary text-3xl leading-none font-bold tabular-nums"
+                  >240</span
+                >
+                <span
+                  class="bg-secondary-container text-on-secondary-fixed rounded-full px-2 py-0.5 text-[10px]"
+                  >+4 New</span
+                >
+              </div>
+            </div>
+            <div
+              class="bg-surface-container-lowest border-primary/10 flex flex-col justify-between rounded-sm border-b-2 p-6"
+            >
+              <span
+                class="font-body text-outline-variant text-xs font-semibold tracking-wider uppercase"
+                >Avg Utilization</span
+              >
+              <div class="mt-4 flex items-end justify-between">
+                <span
+                  class="font-headline text-primary text-3xl leading-none font-bold tabular-nums"
+                  >92%</span
+                >
+                <span class="text-on-secondary-container text-[10px] font-medium"
+                  >Optimal Range</span
+                >
+              </div>
+            </div>
+            <div
+              class="bg-surface-container-lowest border-error/20 flex flex-col justify-between rounded-sm border-b-2 p-6"
+            >
+              <span
+                class="font-body text-outline-variant text-xs font-semibold tracking-wider uppercase"
+                >Overloaded</span
+              >
+              <div class="mt-4 flex items-end justify-between">
+                <span class="font-headline text-error text-3xl leading-none font-bold tabular-nums"
+                  >12</span
+                >
+                <span class="bg-error-container/20 text-error rounded-full px-2 py-0.5 text-[10px]"
+                  >High Priority</span
+                >
+              </div>
+            </div>
+            <div
+              class="bg-surface-container-lowest border-outline/20 flex flex-col justify-between rounded-sm border-b-2 p-6"
+            >
+              <span
+                class="font-body text-outline-variant text-xs font-semibold tracking-wider uppercase"
+                >Unallocated</span
+              >
+              <div class="mt-4 flex items-end justify-between">
+                <span
+                  class="font-headline text-on-surface-variant text-3xl leading-none font-bold tabular-nums"
+                  >4</span
+                >
+                <span class="text-outline text-[10px] font-medium">Available Bench</span>
+              </div>
+            </div>
+          </div>
+          <div class="grid grid-cols-12 gap-8">
+            <!-- Main Area: Utilization Heat Map -->
+            <div class="col-span-12 lg:col-span-8">
+              <div class="bg-surface-container-lowest border-primary rounded-sm border-l-4 p-6">
+                <div class="mb-6 flex items-center justify-between">
+                  <h4 class="font-headline text-sm font-semibold">
+                    Departmental Utilization Heat Map
+                  </h4>
+                  <div class="text-outline flex items-center gap-4 text-[10px] font-medium">
+                    <div class="flex items-center gap-1">
+                      <div class="bg-surface-container-high h-2 w-2 rounded-full"></div>
+                      &lt; 60%
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <div class="bg-primary/40 h-2 w-2 rounded-full"></div>
+                      60-85%
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <div class="bg-primary h-2 w-2 rounded-full"></div>
+                      85-95%
+                    </div>
+                    <div class="flex items-center gap-1">
+                      <div class="bg-error h-2 w-2 rounded-full"></div>
+                      &gt; 95%
+                    </div>
+                  </div>
+                </div>
+                <div class="overflow-x-auto">
+                  <table class="font-body w-full text-left text-xs">
+                    <thead>
+                      <tr class="text-outline tracking-wider uppercase">
+                        <th class="pb-4 font-semibold">Department</th>
+                        <th class="pb-4 text-center font-semibold">Apr</th>
+                        <th class="pb-4 text-center font-semibold">May</th>
+                        <th class="pb-4 text-center font-semibold">Jun</th>
+                        <th class="pb-4 text-center font-semibold">Jul</th>
+                        <th class="pb-4 text-center font-semibold">Aug</th>
+                        <th class="pb-4 text-center font-semibold">Sep</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-outline-variant/10 divide-y">
+                      <tr class="hover:bg-surface-container-low group transition-colors">
+                        <td class="text-on-surface py-4 font-medium">Electronics</td>
+                        <td class="p-2">
+                          <div
+                            class="bg-error flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            94%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-error flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            98%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            91%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            88%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary/60 flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            78%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary/40 flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            64%
+                          </div>
+                        </td>
+                      </tr>
+                      <tr class="hover:bg-surface-container-low group transition-colors">
+                        <td class="text-on-surface py-4 font-medium">Drivetrain</td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            86%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            89%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            90%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            85%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            82%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary/60 flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            76%
+                          </div>
+                        </td>
+                      </tr>
+                      <tr class="hover:bg-surface-container-low group transition-colors">
+                        <td class="text-on-surface py-4 font-medium">Testing</td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary/40 flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            62%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary/40 flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            58%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary/40 flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            52%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-surface-container-high text-outline-variant flex h-10 items-center justify-center rounded-sm font-bold tabular-nums"
+                          >
+                            28%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-surface-container-high text-outline-variant flex h-10 items-center justify-center rounded-sm font-bold tabular-nums"
+                          >
+                            24%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-surface-container-high text-outline-variant flex h-10 items-center justify-center rounded-sm font-bold tabular-nums"
+                          >
+                            18%
+                          </div>
+                        </td>
+                      </tr>
+                      <tr class="hover:bg-surface-container-low group transition-colors">
+                        <td class="text-on-surface py-4 font-medium">Software</td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            92%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            92%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            91%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            93%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            90%
+                          </div>
+                        </td>
+                        <td class="p-2">
+                          <div
+                            class="bg-primary flex h-10 items-center justify-center rounded-sm font-bold text-white tabular-nums"
+                          >
+                            88%
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <!-- Capacity Alerts -->
+              <div class="mt-8">
+                <h4 class="font-headline mb-4 text-sm font-semibold">Strategic Alerts</h4>
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div
+                    class="bg-error-container/10 border-error/10 flex items-start gap-4 rounded-sm border p-4"
+                  >
+                    <span class="material-symbols-outlined text-error" data-icon="warning"
+                      >warning</span
+                    >
+                    <div>
+                      <p class="text-on-error-container text-xs font-semibold">
+                        Critical Load: Electronics
+                      </p>
+                      <p class="text-error mt-0.5 text-[11px]">
+                        Electronics team over 90% in Apr-May. Milestone 'Alpha-V2' at risk.
+                      </p>
+                    </div>
+                  </div>
+                  <div class="bg-surface-container-high flex items-start gap-4 rounded-sm p-4">
+                    <span class="material-symbols-outlined text-outline" data-icon="trending_down"
+                      >trending_down</span
+                    >
+                    <div>
+                      <p class="text-on-surface text-xs font-semibold">
+                        Under-utilization: Testing
+                      </p>
+                      <p class="text-outline mt-0.5 text-[11px]">
+                        Testing drops below 30% from Jul. Reassignment recommended.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Side Rail: Discipline Bars -->
+            <div class="col-span-12 space-y-6 lg:col-span-4">
+              <div class="bg-surface-container-low border-primary/20 rounded-sm border-t-2 p-6">
+                <h4 class="font-headline mb-6 text-sm font-semibold">Discipline Utilization</h4>
+                <div class="space-y-8">
+                  <!-- SW -->
+                  <div>
+                    <div class="mb-2 flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <span class="bg-primary h-2 w-2 rounded-full"></span>
+                        <span class="font-body text-xs font-semibold">SW (Software)</span>
+                      </div>
+                      <span class="text-xs font-bold tabular-nums">91%</span>
+                    </div>
+                    <div
+                      class="bg-surface-container-highest h-1.5 w-full overflow-hidden rounded-full"
+                    >
+                      <div class="bg-primary h-full w-[91%]"></div>
+                    </div>
+                    <div class="mt-1.5 flex justify-between">
+                      <span class="text-outline text-[10px] font-medium">84 Available</span>
+                      <span class="text-outline text-[10px] font-medium">76.4 Assigned</span>
+                    </div>
+                  </div>
+                  <!-- HW -->
+                  <div>
+                    <div class="mb-2 flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <span class="bg-error h-2 w-2 rounded-full"></span>
+                        <span class="font-body text-xs font-semibold">HW (Hardware)</span>
+                      </div>
+                      <span class="text-xs font-bold tabular-nums">97%</span>
+                    </div>
+                    <div
+                      class="bg-surface-container-highest h-1.5 w-full overflow-hidden rounded-full"
+                    >
+                      <div class="bg-error h-full w-[97%]"></div>
+                    </div>
+                    <div class="mt-1.5 flex justify-between">
+                      <span class="text-outline text-[10px] font-medium">52 Available</span>
+                      <span class="text-outline text-[10px] font-medium">50.4 Assigned</span>
+                    </div>
+                  </div>
+                  <!-- Mek -->
+                  <div>
+                    <div class="mb-2 flex items-center justify-between">
+                      <div class="flex items-center gap-2">
+                        <span class="bg-outline h-2 w-2 rounded-full"></span>
+                        <span class="font-body text-xs font-semibold">Mek (Mechanical)</span>
+                      </div>
+                      <span class="text-xs font-bold tabular-nums">64%</span>
+                    </div>
+                    <div
+                      class="bg-surface-container-highest h-1.5 w-full overflow-hidden rounded-full"
+                    >
+                      <div class="bg-outline h-full w-[64%]"></div>
+                    </div>
+                    <div class="mt-1.5 flex justify-between">
+                      <span class="text-outline text-[10px] font-medium">68 Available</span>
+                      <span class="text-outline text-[10px] font-medium">43.5 Assigned</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Mini Project Snapshot -->
+              <div class="bg-surface-container-lowest rounded-sm p-6">
+                <h4 class="font-headline mb-4 text-sm font-semibold">Project Impact</h4>
+                <div class="space-y-4">
+                  <div
+                    class="bg-surface hover:bg-surface-container-low border-outline-variant/20 flex cursor-pointer items-center justify-between rounded border-l-2 p-3 transition-colors"
+                  >
+                    <div>
+                      <p class="text-xs font-semibold">Autonomous Core</p>
+                      <p class="text-outline text-[10px]">Resource Heavy • Priority 1</p>
+                    </div>
+                    <span
+                      class="material-symbols-outlined text-outline text-lg"
+                      data-icon="chevron_right"
+                      >chevron_right</span
+                    >
+                  </div>
+                  <div
+                    class="bg-surface hover:bg-surface-container-low border-outline-variant/20 flex cursor-pointer items-center justify-between rounded border-l-2 p-3 transition-colors"
+                  >
+                    <div>
+                      <p class="text-xs font-semibold">Drivetrain Refresh</p>
+                      <p class="text-outline text-[10px]">Optimized • Priority 2</p>
+                    </div>
+                    <span
+                      class="material-symbols-outlined text-outline text-lg"
+                      data-icon="chevron_right"
+                      >chevron_right</span
+                    >
+                  </div>
+                </div>
+              </div>
+              <!-- System Visual -->
+              <div class="group relative h-40 overflow-hidden rounded-sm">
+                <img
+                  class="h-full w-full object-cover"
+                  data-alt="clean industrial robotics laboratory with white sleek machinery and neutral lighting for technical professional atmosphere"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq6OHDuUFQLGHgjHaS7NdM7EPdU9uVWpdfyMaIJbT73ESh1HgFgu5ing2XcAALEtBjxHRupbegQ5pfW7vXCFvU8vlVUzBnx-q8F_HoFwg8UNfNtkLPpOOU4pjhcPit1vR8HMbQ_BiTqveRtIxDY32dOOtmIDvG0lthSxdAWsGB_ZpNUHlKdYKb15d5nOhxyqbJgNNy82hxr4KvcL-zqxb3bSETLkw4v4XzyXWp3CEeA3g8IEEhxiDjngjdkXcEiW7TbgrQIVNGMNZT"
+                />
+                <div
+                  class="bg-primary/20 group-hover:bg-primary/10 absolute inset-0 transition-colors"
+                ></div>
+                <div class="absolute bottom-4 left-4">
+                  <span
+                    class="bg-primary text-on-primary rounded-full px-2 py-1 text-[10px] font-semibold uppercase"
+                    >Precision Core</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

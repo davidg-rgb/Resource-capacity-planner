@@ -38,18 +38,21 @@ The resource/capacity planning market is crowded but biased: nearly every tool i
 ### Direct Competitors
 
 **Float** (~4,500 customers, #1 on G2 for Resource Management)
+
 - Clean drag-and-drop scheduling UI, strong brand, built-in time tracking.
 - Task-based, calendar-driven approach optimized for short-term (day/week) visibility — weaker for 6–18 month capacity planning. Reporting frequently criticized as limited. Not suited for manufacturing or complex multi-layered projects. Views get crowded at scale.
 - Pricing: from $6/user/month (per-user, not per-resource).
 - Gap: Float is day/week-oriented. Our core use case is monthly planning across 18+ month horizons.
 
 **Runn** (~15k users, NZ-based)
+
 - Strong long-term capacity visualization, scenario planning, financial/profitability tracking, open API. Clean UI.
 - Still younger product with feature gaps. Limited native integrations. Primarily targets IT, consulting, and agencies. Oriented around billable hours/project profitability.
 - Pricing: ~$8/resource/month (per person managed, not per user).
 - Gap: Closest competitor on planning horizon but agency-shaped. No engineering discipline taxonomy.
 
 **Resource Guru** (UK-based)
+
 - Extreme simplicity, fast to implement. Good clash management.
 - Simplicity is the ceiling — teams outgrow it. Reporting only on premium plans. Not suited for large orgs.
 - Pricing: from ~$5/resource/month.
@@ -66,10 +69,11 @@ The resource/capacity planning market is crowded but biased: nearly every tool i
 ### The Market Gap
 
 Almost every tool is built around:
+
 1. **Agency model** — billable hours, client projects, margins. Core question: "are we billing enough?"
 2. **Enterprise PPM model** — portfolio management, strategic alignment. Core question: "are we investing in the right programs?"
 
-What's underserved is the **engineering operations model** — core question: *"Do we have the right people with the right disciplines available for our projects over the next 12–18 months?"*
+What's underserved is the **engineering operations model** — core question: _"Do we have the right people with the right disciplines available for our projects over the next 12–18 months?"_
 
 This world features: multi-disciplinary teams (SW, mechanical, electronics, test), program/platform-based project hierarchies, monthly planning granularity, capacity as hours available vs. hours planned (not billable vs. non-billable), 12–18 month planning horizons, and users who think in spreadsheets.
 
@@ -87,12 +91,12 @@ We win on: zero-friction Excel import onboarding, engineering-native taxonomy (d
 
 ### 2.1 Tenant-Level Roles
 
-| Role | Description |
-|---|---|
-| **Org Owner** | Creates the organization. Manages billing, subscription, and org settings. Full admin rights. |
-| **Admin** | Manages reference data (people, projects, programs, disciplines, departments). Handles bulk imports. Invites users. |
+| Role                       | Description                                                                                                                 |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Org Owner**              | Creates the organization. Manages billing, subscription, and org settings. Full admin rights.                               |
+| **Admin**                  | Manages reference data (people, projects, programs, disciplines, departments). Handles bulk imports. Invites users.         |
 | **Planner / Line Manager** | Primary user. Edits allocations for their people. Core workflow: open person → edit grid → next person → export flat table. |
-| **Viewer** | Read-only access to see plans, overview, and export data. |
+| **Viewer**                 | Read-only access to see plans, overview, and export data.                                                                   |
 
 ### 2.2 Scoping
 
@@ -111,13 +115,16 @@ All users belong to one tenant (organization). In MVP, all roles see all data wi
 ### 3.2 Core Entities
 
 **Organization (Tenant)**
+
 - Name, slug (for URL), subscription status
 - All entities below are scoped to an organization
 
 **User (Auth)**
+
 - Email, name, organization (FK), role (owner/admin/planner/viewer)
 
 **Person (Resource)**
+
 - Name (first, last)
 - Discipline (e.g., SW, Mechanical, Electronics, Test, Systems, HW, PT)
 - Department / Line Group (e.g., RoD, Operations)
@@ -127,15 +134,18 @@ All users belong to one tenant (organization). In MVP, all roles see all data wi
 > **Person ≠ User.** A Person is a resource being planned. A User logs into the app. A line manager (User) may manage 10 people (Persons) who never log in.
 
 **Project**
+
 - Name
 - Parent: Program or Product Family / Platform
 - Status (active, planned, archived)
 
 **Program / Platform**
+
 - Name, description
 - Single level of hierarchy above projects
 
 **Allocation (The Flat Table)**
+
 - Person (FK)
 - Project (FK)
 - Month (year-month, stored as first-of-month date, e.g., 2026-03-01)
@@ -178,6 +188,7 @@ The main editing interface. **One person at a time.** A line manager opens a per
 ```
 
 **Key elements:**
+
 - **Person selector** — prev/next arrows, dropdown, or sidebar list to navigate between people
 - **Person metadata** — name, discipline, department, target hours at top
 - **Project rows** — each row has a project dropdown. 5 rows by default (expandable). Selecting a project populates from existing flat-table data.
@@ -188,6 +199,7 @@ The main editing interface. **One person at a time.** A line manager opens a per
 - **Status row** — visual: green (OK), amber (near full), red (over), gray (very low)
 
 **Spreadsheet interactions (critical):**
+
 - Direct cell editing: click → type → Tab/Enter to navigate
 - Copy-paste: Ctrl+C/V compatible with Excel clipboard
 - Drag-to-fill: corner handle, drag to replicate values
@@ -195,6 +207,7 @@ The main editing interface. **One person at a time.** A line manager opens a per
 - Keyboard: arrow keys, Enter (commit + down), Tab (commit + right), Escape (cancel)
 
 **Save behavior:**
+
 - Auto-save on cell blur
 - On save: find/create/update/delete allocation record in flat table
 - Subtle "saved" indicator
@@ -238,11 +251,11 @@ Department-level and program-level capacity utilization. KPIs, heat map grid, al
 
 ### 5.1 Import Targets
 
-| Type | Purpose |
-|---|---|
-| **People** | Bulk load personnel: name, discipline, department, capacity |
-| **Projects** | Bulk load projects with program/platform |
-| **Allocations** | Bulk load the full allocation matrix |
+| Type            | Purpose                                                     |
+| --------------- | ----------------------------------------------------------- |
+| **People**      | Bulk load personnel: name, discipline, department, capacity |
+| **Projects**    | Bulk load projects with program/platform                    |
+| **Allocations** | Bulk load the full allocation matrix                        |
 
 ### 5.2 Supported Formats
 
@@ -327,11 +340,13 @@ Downloadable Excel templates per import type with headers, examples, and validat
 ## 9. Open Questions
 
 ### Product & Market
+
 1. Target customer profile — engineering only, or broader?
 2. Pricing model — per-resource, per-seat, or tiers?
 3. Naming and branding
 
 ### Functional
+
 4. Capacity target — 150h standard (per example) or varies? Part-time handling?
 5. Project hierarchy — one level (Project → Program) enough?
 6. Granularity — monthly only, or ever weekly?
@@ -339,6 +354,7 @@ Downloadable Excel templates per import type with headers, examples, and validat
 8. Project rows — 5 default expandable, or dynamic?
 
 ### Technical
+
 9. Data volume per tenant — expected people/projects/months?
 10. GDPR — employee name storage requirements? Data residency?
 

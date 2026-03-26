@@ -1,351 +1,569 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Nordic Capacity | Column Mapping</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              colors: {
-                "error-dim": "#4e0309",
-                "surface-variant": "#d9e4e8",
-                "inverse-primary": "#cce6fb",
-                "surface-tint": "#496173",
-                "inverse-surface": "#0b0f10",
-                "on-surface": "#2a3437",
-                "primary-fixed": "#cce6fb",
-                "primary": "#496173",
-                "surface-container-lowest": "#ffffff",
-                "surface-container-high": "#e1eaec",
-                "surface-container-low": "#f0f4f6",
-                "secondary-dim": "#4c5459",
-                "secondary-fixed": "#dce4e9",
-                "surface": "#f8fafb",
-                "on-tertiary-fixed": "#42474a",
-                "on-tertiary-container": "#54595c",
-                "outline-variant": "#a9b4b7",
-                "on-primary-fixed-variant": "#465e70",
-                "surface-dim": "#cfdce0",
-                "surface-container-highest": "#d9e4e8",
-                "primary-container": "#cce6fb",
-                "surface-bright": "#f8fafb",
-                "tertiary": "#5b6063",
-                "on-primary-container": "#3d5466",
-                "secondary-container": "#dce4e9",
-                "on-secondary-fixed": "#394045",
-                "on-primary": "#f3f8ff",
-                "on-secondary-fixed-variant": "#555d61",
-                "on-background": "#2a3437",
-                "outline": "#727d80",
-                "on-surface-variant": "#566164",
-                "on-tertiary": "#f5f9fd",
-                "inverse-on-surface": "#9a9d9e",
-                "surface-container": "#e8eff1",
-                "on-error-container": "#752121",
-                "tertiary-container": "#eaeef2",
-                "primary-dim": "#3d5567",
-                "on-primary-fixed": "#2a4253",
-                "on-secondary-container": "#4b5358",
-                "on-tertiary-fixed-variant": "#5e6366",
-                "tertiary-fixed-dim": "#dce0e3",
-                "error": "#9f403d",
-                "error-container": "#fe8983",
-                "secondary-fixed-dim": "#ced5db",
-                "primary-fixed-dim": "#bed8ed",
-                "tertiary-dim": "#4f5457",
-                "tertiary-fixed": "#eaeef2",
-                "on-error": "#fff7f6",
-                "background": "#f8fafb",
-                "secondary": "#586065",
-                "on-secondary": "#f3faff"
-              },
-              fontFamily: {
-                "headline": ["Manrope"],
-                "body": ["Inter"],
-                "label": ["Inter"]
-              },
-              borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Nordic Capacity | Column Mapping</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100..900;1,100..900&amp;family=Manrope:wght@200..800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'error-dim': '#4e0309',
+              'surface-variant': '#d9e4e8',
+              'inverse-primary': '#cce6fb',
+              'surface-tint': '#496173',
+              'inverse-surface': '#0b0f10',
+              'on-surface': '#2a3437',
+              'primary-fixed': '#cce6fb',
+              primary: '#496173',
+              'surface-container-lowest': '#ffffff',
+              'surface-container-high': '#e1eaec',
+              'surface-container-low': '#f0f4f6',
+              'secondary-dim': '#4c5459',
+              'secondary-fixed': '#dce4e9',
+              surface: '#f8fafb',
+              'on-tertiary-fixed': '#42474a',
+              'on-tertiary-container': '#54595c',
+              'outline-variant': '#a9b4b7',
+              'on-primary-fixed-variant': '#465e70',
+              'surface-dim': '#cfdce0',
+              'surface-container-highest': '#d9e4e8',
+              'primary-container': '#cce6fb',
+              'surface-bright': '#f8fafb',
+              tertiary: '#5b6063',
+              'on-primary-container': '#3d5466',
+              'secondary-container': '#dce4e9',
+              'on-secondary-fixed': '#394045',
+              'on-primary': '#f3f8ff',
+              'on-secondary-fixed-variant': '#555d61',
+              'on-background': '#2a3437',
+              outline: '#727d80',
+              'on-surface-variant': '#566164',
+              'on-tertiary': '#f5f9fd',
+              'inverse-on-surface': '#9a9d9e',
+              'surface-container': '#e8eff1',
+              'on-error-container': '#752121',
+              'tertiary-container': '#eaeef2',
+              'primary-dim': '#3d5567',
+              'on-primary-fixed': '#2a4253',
+              'on-secondary-container': '#4b5358',
+              'on-tertiary-fixed-variant': '#5e6366',
+              'tertiary-fixed-dim': '#dce0e3',
+              error: '#9f403d',
+              'error-container': '#fe8983',
+              'secondary-fixed-dim': '#ced5db',
+              'primary-fixed-dim': '#bed8ed',
+              'tertiary-dim': '#4f5457',
+              'tertiary-fixed': '#eaeef2',
+              'on-error': '#fff7f6',
+              background: '#f8fafb',
+              secondary: '#586065',
+              'on-secondary': '#f3faff',
             },
+            fontFamily: {
+              headline: ['Manrope'],
+              body: ['Inter'],
+              label: ['Inter'],
+            },
+            borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem', full: '0.75rem' },
           },
-        }
+        },
+      };
     </script>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .tabular-nums {
-            font-variant-numeric: tabular-nums;
-        }
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+      }
+      .tabular-nums {
+        font-variant-numeric: tabular-nums;
+      }
     </style>
-</head>
-<body class="bg-surface font-body text-on-surface">
-<!-- TopNavBar -->
-<nav class="sticky top-0 z-50 bg-[#f8fafb] dark:bg-slate-900 flex justify-between items-center w-full px-6 py-3 max-w-full">
-<div class="flex items-center gap-8">
-<span class="text-xl font-semibold text-[#496173] dark:text-slate-100 tracking-tighter font-headline">Nordic Capacity</span>
-<div class="hidden md:flex items-center gap-6">
-<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173] font-['Manrope'] font-medium text-sm tracking-tight transition-colors" href="#">Input</a>
-<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173] font-['Manrope'] font-medium text-sm tracking-tight transition-colors" href="#">Team</a>
-<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173] font-['Manrope'] font-medium text-sm tracking-tight transition-colors" href="#">Projects</a>
-<a class="text-[#496173] dark:text-white border-b-2 border-[#496173] dark:border-blue-400 pb-1 font-bold font-['Manrope'] text-sm tracking-tight" href="#">Data</a>
-<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173] font-['Manrope'] font-medium text-sm tracking-tight transition-colors" href="#">Dashboard</a>
-</div>
-</div>
-<div class="flex items-center gap-4">
-<button class="p-2 text-[#496173] hover:bg-[#f0f4f6] transition-colors rounded-sm">
-<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
-</button>
-<button class="p-2 text-[#496173] hover:bg-[#f0f4f6] transition-colors rounded-sm">
-<span class="material-symbols-outlined" data-icon="settings">settings</span>
-</button>
-<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden ml-2">
-<img alt="User profile" class="w-full h-full object-cover" data-alt="professional portrait of a man in a crisp white shirt with neutral lighting and blurred architectural background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKiG4HmuJMLxkwyFEV8_sBSsd0eIftzS7uFYze-Rva1dmxs1PZAyclLwjVZfkWQXWOifYu5_m54XLZsclx-LzR11HAGxULWtivNmfrjEGkOPSLmK6rB5U7qzCb-uq1fKx50ZVPB1jhK0739lfFfAafT3sHsOXDinYb1qg8xXV5BN1CU-6gHX0IVYVRW-ZMi51_XZUcSL2zZKc-ATEcforHhqBu4t6Ha2jtN1-_xktqP-sVCHVjWed6oUfT2Cy_Qc4Qgz3Ajp_TSgUL"/>
-</div>
-</div>
-</nav>
-<main class="max-w-[1440px] mx-auto flex h-[calc(100vh-60px)]">
-<!-- SideNavBar (Suppressed due to sub-page task focus, but kept structure for context) -->
-<aside class="hidden lg:flex flex-col h-full w-64 bg-[#f0f4f6] dark:bg-slate-950 border-r border-[#a9b4b7]/15">
-<div class="p-6">
-<h2 class="font-['Manrope'] font-bold text-[#496173] dark:text-slate-200">Resource Planner</h2>
-<p class="text-[10px] text-slate-500 font-medium tracking-widest uppercase">Nordic Precision</p>
-</div>
-<nav class="flex-1 px-3 space-y-1">
-<div class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#e2e8f0] dark:hover:bg-slate-900 rounded-sm font-['Inter'] text-xs font-medium cursor-pointer transition-all">
-<span class="material-symbols-outlined text-lg" data-icon="group">group</span>
-<span>Resources</span>
-</div>
-<div class="flex items-center gap-3 px-3 py-2 bg-[#d9e4e8] dark:bg-slate-800 text-[#496173] dark:text-white rounded-sm font-semibold font-['Inter'] text-xs cursor-pointer">
-<span class="material-symbols-outlined text-lg" data-icon="event_available">event_available</span>
-<span>Allocations</span>
-</div>
-<div class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#e2e8f0] dark:hover:bg-slate-900 rounded-sm font-['Inter'] text-xs font-medium cursor-pointer">
-<span class="material-symbols-outlined text-lg" data-icon="bar_chart">bar_chart</span>
-<span>Capacity</span>
-</div>
-<div class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#e2e8f0] dark:hover:bg-slate-900 rounded-sm font-['Inter'] text-xs font-medium cursor-pointer">
-<span class="material-symbols-outlined text-lg" data-icon="flag">flag</span>
-<span>Milestones</span>
-</div>
-<div class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#e2e8f0] dark:hover:bg-slate-900 rounded-sm font-['Inter'] text-xs font-medium cursor-pointer">
-<span class="material-symbols-outlined text-lg" data-icon="description">description</span>
-<span>Reports</span>
-</div>
-</nav>
-<div class="p-4 mt-auto border-t border-[#a9b4b7]/10">
-<button class="w-full flex items-center justify-center gap-2 bg-primary text-on-primary py-2 text-xs font-semibold rounded-sm shadow-sm">
-<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
-                    New Entry
-                </button>
-</div>
-</aside>
-<!-- Main Content Area -->
-<section class="flex-1 overflow-y-auto bg-surface p-8">
-<div class="max-w-5xl mx-auto">
-<!-- Header & Breadcrumbs -->
-<header class="mb-10">
-<div class="flex items-center gap-2 text-xs text-outline font-medium mb-4">
-<span class="hover:text-primary cursor-pointer">Data Management</span>
-<span class="material-symbols-outlined text-sm" data-icon="chevron_right">chevron_right</span>
-<span class="text-on-surface">Bulk Import</span>
-</div>
-<div class="flex justify-between items-end">
-<div>
-<h1 class="font-headline text-3xl font-semibold text-on-surface tracking-tight mb-2">Column Mapping</h1>
-<p class="text-on-surface-variant flex items-center gap-2">
-<span class="material-symbols-outlined text-base" data-icon="description">description</span>
-<span class="font-medium text-sm">Allocation_Data_Q1_2026.xlsx</span>
-<span class="text-xs px-1.5 py-0.5 bg-surface-container-high rounded text-outline tabular-nums">1,200 rows</span>
-</p>
-</div>
-<!-- Step Progress -->
-<div class="flex items-center gap-4">
-<div class="flex flex-col items-center gap-2">
-<div class="w-8 h-8 rounded-full bg-on-secondary-container text-white flex items-center justify-center text-xs">
-<span class="material-symbols-outlined text-base" data-icon="check">check</span>
-</div>
-<span class="text-[10px] font-bold uppercase tracking-widest text-on-secondary-container">Upload</span>
-</div>
-<div class="w-12 h-[2px] bg-primary mb-6"></div>
-<div class="flex flex-col items-center gap-2">
-<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center text-xs font-bold border-2 border-primary">2</div>
-<span class="text-[10px] font-bold uppercase tracking-widest text-primary">Mapping</span>
-</div>
-<div class="w-12 h-[2px] bg-surface-container-highest mb-6"></div>
-<div class="flex flex-col items-center gap-2 opacity-40">
-<div class="w-8 h-8 rounded-full bg-surface-container-highest text-outline flex items-center justify-center text-xs font-bold">3</div>
-<span class="text-[10px] font-bold uppercase tracking-widest text-outline">Validate</span>
-</div>
-<div class="w-12 h-[2px] bg-surface-container-highest mb-6"></div>
-<div class="flex flex-col items-center gap-2 opacity-40">
-<div class="w-8 h-8 rounded-full bg-surface-container-highest text-outline flex items-center justify-center text-xs font-bold">4</div>
-<span class="text-[10px] font-bold uppercase tracking-widest text-outline">Import</span>
-</div>
-</div>
-</div>
-</header>
-<!-- Mapping Card -->
-<div class="bg-surface-container-lowest rounded-sm ring-1 ring-outline-variant/15 overflow-hidden">
-<div class="grid grid-cols-12 bg-surface-container-low px-6 py-3 border-b border-outline-variant/10">
-<div class="col-span-4 text-xs font-semibold text-outline uppercase tracking-wider">Your Column (Source)</div>
-<div class="col-span-4 text-xs font-semibold text-outline uppercase tracking-wider">Maps To (System)</div>
-<div class="col-span-4 text-xs font-semibold text-outline uppercase tracking-wider">Data Preview</div>
-</div>
-<div class="divide-y divide-outline-variant/5">
-<!-- Row 1 -->
-<div class="grid grid-cols-12 px-6 py-4 items-center hover:bg-surface-container-low/50 transition-colors">
-<div class="col-span-4 flex items-center gap-3">
-<span class="material-symbols-outlined text-outline text-lg" data-icon="format_list_bulleted">format_list_bulleted</span>
-<span class="text-sm font-medium text-on-surface">Namn</span>
-</div>
-<div class="col-span-4 px-2">
-<div class="relative group">
-<select class="appearance-none w-full bg-surface-container-lowest border-b border-outline-variant text-sm py-1.5 pr-8 focus:ring-0 focus:border-primary">
-<option>Person Name</option>
-<option>Employee ID</option>
-<option>Contact Info</option>
-</select>
-<span class="material-symbols-outlined absolute right-0 top-1.5 text-lg pointer-events-none text-outline" data-icon="expand_more">expand_more</span>
-</div>
-</div>
-<div class="col-span-4 flex items-center justify-between">
-<span class="text-xs text-on-surface-variant italic">Andersson, Erik...</span>
-<span class="flex items-center gap-1 text-[10px] font-bold text-on-secondary-container bg-secondary-container px-2 py-0.5 rounded-full uppercase tracking-tighter">
-<span class="material-symbols-outlined text-xs" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                    Matched
-                                </span>
-</div>
-</div>
-<!-- Row 2 -->
-<div class="grid grid-cols-12 px-6 py-4 items-center hover:bg-surface-container-low/50 transition-colors">
-<div class="col-span-4 flex items-center gap-3">
-<span class="material-symbols-outlined text-outline text-lg" data-icon="category">category</span>
-<span class="text-sm font-medium text-on-surface">Projekt</span>
-</div>
-<div class="col-span-4 px-2">
-<div class="relative">
-<select class="appearance-none w-full bg-surface-container-lowest border-b border-outline-variant text-sm py-1.5 pr-8 focus:ring-0 focus:border-primary">
-<option>Project</option>
-<option>Client Name</option>
-<option>Cost Center</option>
-</select>
-<span class="material-symbols-outlined absolute right-0 top-1.5 text-lg pointer-events-none text-outline" data-icon="expand_more">expand_more</span>
-</div>
-</div>
-<div class="col-span-4 flex items-center justify-between">
-<span class="text-xs text-on-surface-variant italic">Nordic Wind Hub...</span>
-<span class="flex items-center gap-1 text-[10px] font-bold text-on-secondary-container bg-secondary-container px-2 py-0.5 rounded-full uppercase tracking-tighter">
-<span class="material-symbols-outlined text-xs" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                    Matched
-                                </span>
-</div>
-</div>
-<!-- Row 3 -->
-<div class="grid grid-cols-12 px-6 py-4 items-center hover:bg-surface-container-low/50 transition-colors">
-<div class="col-span-4 flex items-center gap-3">
-<span class="material-symbols-outlined text-outline text-lg" data-icon="schedule">schedule</span>
-<span class="text-sm font-medium text-on-surface">Timmar</span>
-</div>
-<div class="col-span-4 px-2">
-<div class="relative">
-<select class="appearance-none w-full bg-surface-container-lowest border-b border-outline-variant text-sm py-1.5 pr-8 focus:ring-0 focus:border-primary">
-<option>Planned Hours</option>
-<option>Actual Hours</option>
-<option>Budget</option>
-</select>
-<span class="material-symbols-outlined absolute right-0 top-1.5 text-lg pointer-events-none text-outline" data-icon="expand_more">expand_more</span>
-</div>
-</div>
-<div class="col-span-4 flex items-center justify-between">
-<span class="text-xs text-on-surface-variant tabular-nums">140, 160, 80...</span>
-<span class="flex items-center gap-1 text-[10px] font-bold text-on-secondary-container bg-secondary-container px-2 py-0.5 rounded-full uppercase tracking-tighter">
-<span class="material-symbols-outlined text-xs" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                    Matched
-                                </span>
-</div>
-</div>
-<!-- Row 4 -->
-<div class="grid grid-cols-12 px-6 py-4 items-center hover:bg-surface-container-low/50 transition-colors">
-<div class="col-span-4 flex items-center gap-3">
-<span class="material-symbols-outlined text-outline text-lg" data-icon="calendar_month">calendar_month</span>
-<span class="text-sm font-medium text-on-surface">Månad</span>
-</div>
-<div class="col-span-4 px-2">
-<div class="relative">
-<select class="appearance-none w-full bg-surface-container-lowest border-b border-outline-variant text-sm py-1.5 pr-8 focus:ring-0 focus:border-primary">
-<option>Month</option>
-<option>Start Date</option>
-<option>Quarter</option>
-</select>
-<span class="material-symbols-outlined absolute right-0 top-1.5 text-lg pointer-events-none text-outline" data-icon="expand_more">expand_more</span>
-</div>
-</div>
-<div class="col-span-4 flex items-center justify-between">
-<span class="text-xs text-on-surface-variant italic">Januari 2026...</span>
-<span class="flex items-center gap-1 text-[10px] font-bold text-on-secondary-container bg-secondary-container px-2 py-0.5 rounded-full uppercase tracking-tighter">
-<span class="material-symbols-outlined text-xs" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                    Matched
-                                </span>
-</div>
-</div>
-<!-- Row 5 -->
-<div class="grid grid-cols-12 px-6 py-4 items-center hover:bg-surface-container-low/50 transition-colors">
-<div class="col-span-4 flex items-center gap-3">
-<span class="material-symbols-outlined text-outline text-lg" data-icon="corporate_fare">corporate_fare</span>
-<span class="text-sm font-medium text-on-surface">Avdelning</span>
-</div>
-<div class="col-span-4 px-2">
-<div class="relative">
-<select class="appearance-none w-full bg-surface-container-lowest border-b border-outline-variant text-sm py-1.5 pr-8 focus:ring-0 focus:border-primary">
-<option>Department</option>
-<option>Business Unit</option>
-<option>Office Location</option>
-</select>
-<span class="material-symbols-outlined absolute right-0 top-1.5 text-lg pointer-events-none text-outline" data-icon="expand_more">expand_more</span>
-</div>
-</div>
-<div class="col-span-4 flex items-center justify-between">
-<span class="text-xs text-on-surface-variant italic">Engineering, HR...</span>
-<span class="flex items-center gap-1 text-[10px] font-bold text-on-secondary-container bg-secondary-container px-2 py-0.5 rounded-full uppercase tracking-tighter">
-<span class="material-symbols-outlined text-xs" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-                                    Matched
-                                </span>
-</div>
-</div>
-</div>
-<!-- Footer Info -->
-<div class="bg-surface p-4 border-t border-outline-variant/10 flex items-center gap-4">
-<span class="material-symbols-outlined text-primary text-xl" data-icon="info" style="font-variation-settings: 'FILL' 1;">info</span>
-<p class="text-xs text-on-surface-variant max-w-2xl leading-relaxed">
-                            We've automatically matched columns with similar names. Any column left unmatched or incorrectly mapped will result in validation errors in the next step.
-                        </p>
-</div>
-</div>
-<!-- Actions -->
-<div class="mt-12 flex justify-between items-center">
-<button class="flex items-center gap-2 px-6 py-2.5 text-primary text-sm font-semibold hover:bg-surface-container-high rounded-sm transition-all">
-<span class="material-symbols-outlined text-lg" data-icon="arrow_back">arrow_back</span>
-                        Back to Upload
-                    </button>
-<div class="flex items-center gap-3">
-<button class="px-6 py-2.5 bg-surface-variant text-on-surface-variant text-sm font-semibold rounded-sm hover:bg-surface-dim transition-all">
-                            Save as Draft
-                        </button>
-<button class="flex items-center gap-2 px-8 py-2.5 bg-primary text-on-primary text-sm font-semibold rounded-sm shadow-sm hover:opacity-90 transition-all">
-                            Continue to Validation
-                            <span class="material-symbols-outlined text-lg" data-icon="arrow_forward">arrow_forward</span>
-</button>
-</div>
-</div>
-</div>
-</section>
-</main>
-<!-- Contextual FAB (Suppressed on detail/transactional screens as per protocol) -->
-</body></html>
+  </head>
+  <body class="bg-surface font-body text-on-surface">
+    <!-- TopNavBar -->
+    <nav
+      class="sticky top-0 z-50 flex w-full max-w-full items-center justify-between bg-[#f8fafb] px-6 py-3 dark:bg-slate-900"
+    >
+      <div class="flex items-center gap-8">
+        <span
+          class="font-headline text-xl font-semibold tracking-tighter text-[#496173] dark:text-slate-100"
+          >Nordic Capacity</span
+        >
+        <div class="hidden items-center gap-6 md:flex">
+          <a
+            class="font-['Manrope'] text-sm font-medium tracking-tight text-slate-500 transition-colors hover:text-[#496173] dark:text-slate-400"
+            href="#"
+            >Input</a
+          >
+          <a
+            class="font-['Manrope'] text-sm font-medium tracking-tight text-slate-500 transition-colors hover:text-[#496173] dark:text-slate-400"
+            href="#"
+            >Team</a
+          >
+          <a
+            class="font-['Manrope'] text-sm font-medium tracking-tight text-slate-500 transition-colors hover:text-[#496173] dark:text-slate-400"
+            href="#"
+            >Projects</a
+          >
+          <a
+            class="border-b-2 border-[#496173] pb-1 font-['Manrope'] text-sm font-bold tracking-tight text-[#496173] dark:border-blue-400 dark:text-white"
+            href="#"
+            >Data</a
+          >
+          <a
+            class="font-['Manrope'] text-sm font-medium tracking-tight text-slate-500 transition-colors hover:text-[#496173] dark:text-slate-400"
+            href="#"
+            >Dashboard</a
+          >
+        </div>
+      </div>
+      <div class="flex items-center gap-4">
+        <button class="rounded-sm p-2 text-[#496173] transition-colors hover:bg-[#f0f4f6]">
+          <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+        </button>
+        <button class="rounded-sm p-2 text-[#496173] transition-colors hover:bg-[#f0f4f6]">
+          <span class="material-symbols-outlined" data-icon="settings">settings</span>
+        </button>
+        <div class="bg-surface-container-highest ml-2 h-8 w-8 overflow-hidden rounded-full">
+          <img
+            alt="User profile"
+            class="h-full w-full object-cover"
+            data-alt="professional portrait of a man in a crisp white shirt with neutral lighting and blurred architectural background"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKiG4HmuJMLxkwyFEV8_sBSsd0eIftzS7uFYze-Rva1dmxs1PZAyclLwjVZfkWQXWOifYu5_m54XLZsclx-LzR11HAGxULWtivNmfrjEGkOPSLmK6rB5U7qzCb-uq1fKx50ZVPB1jhK0739lfFfAafT3sHsOXDinYb1qg8xXV5BN1CU-6gHX0IVYVRW-ZMi51_XZUcSL2zZKc-ATEcforHhqBu4t6Ha2jtN1-_xktqP-sVCHVjWed6oUfT2Cy_Qc4Qgz3Ajp_TSgUL"
+          />
+        </div>
+      </div>
+    </nav>
+    <main class="mx-auto flex h-[calc(100vh-60px)] max-w-[1440px]">
+      <!-- SideNavBar (Suppressed due to sub-page task focus, but kept structure for context) -->
+      <aside
+        class="hidden h-full w-64 flex-col border-r border-[#a9b4b7]/15 bg-[#f0f4f6] lg:flex dark:bg-slate-950"
+      >
+        <div class="p-6">
+          <h2 class="font-['Manrope'] font-bold text-[#496173] dark:text-slate-200">
+            Resource Planner
+          </h2>
+          <p class="text-[10px] font-medium tracking-widest text-slate-500 uppercase">
+            Nordic Precision
+          </p>
+        </div>
+        <nav class="flex-1 space-y-1 px-3">
+          <div
+            class="flex cursor-pointer items-center gap-3 rounded-sm px-3 py-2 font-['Inter'] text-xs font-medium text-slate-600 transition-all hover:bg-[#e2e8f0] dark:text-slate-400 dark:hover:bg-slate-900"
+          >
+            <span class="material-symbols-outlined text-lg" data-icon="group">group</span>
+            <span>Resources</span>
+          </div>
+          <div
+            class="flex cursor-pointer items-center gap-3 rounded-sm bg-[#d9e4e8] px-3 py-2 font-['Inter'] text-xs font-semibold text-[#496173] dark:bg-slate-800 dark:text-white"
+          >
+            <span class="material-symbols-outlined text-lg" data-icon="event_available"
+              >event_available</span
+            >
+            <span>Allocations</span>
+          </div>
+          <div
+            class="flex cursor-pointer items-center gap-3 rounded-sm px-3 py-2 font-['Inter'] text-xs font-medium text-slate-600 hover:bg-[#e2e8f0] dark:text-slate-400 dark:hover:bg-slate-900"
+          >
+            <span class="material-symbols-outlined text-lg" data-icon="bar_chart">bar_chart</span>
+            <span>Capacity</span>
+          </div>
+          <div
+            class="flex cursor-pointer items-center gap-3 rounded-sm px-3 py-2 font-['Inter'] text-xs font-medium text-slate-600 hover:bg-[#e2e8f0] dark:text-slate-400 dark:hover:bg-slate-900"
+          >
+            <span class="material-symbols-outlined text-lg" data-icon="flag">flag</span>
+            <span>Milestones</span>
+          </div>
+          <div
+            class="flex cursor-pointer items-center gap-3 rounded-sm px-3 py-2 font-['Inter'] text-xs font-medium text-slate-600 hover:bg-[#e2e8f0] dark:text-slate-400 dark:hover:bg-slate-900"
+          >
+            <span class="material-symbols-outlined text-lg" data-icon="description"
+              >description</span
+            >
+            <span>Reports</span>
+          </div>
+        </nav>
+        <div class="mt-auto border-t border-[#a9b4b7]/10 p-4">
+          <button
+            class="bg-primary text-on-primary flex w-full items-center justify-center gap-2 rounded-sm py-2 text-xs font-semibold shadow-sm"
+          >
+            <span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+            New Entry
+          </button>
+        </div>
+      </aside>
+      <!-- Main Content Area -->
+      <section class="bg-surface flex-1 overflow-y-auto p-8">
+        <div class="mx-auto max-w-5xl">
+          <!-- Header & Breadcrumbs -->
+          <header class="mb-10">
+            <div class="text-outline mb-4 flex items-center gap-2 text-xs font-medium">
+              <span class="hover:text-primary cursor-pointer">Data Management</span>
+              <span class="material-symbols-outlined text-sm" data-icon="chevron_right"
+                >chevron_right</span
+              >
+              <span class="text-on-surface">Bulk Import</span>
+            </div>
+            <div class="flex items-end justify-between">
+              <div>
+                <h1
+                  class="font-headline text-on-surface mb-2 text-3xl font-semibold tracking-tight"
+                >
+                  Column Mapping
+                </h1>
+                <p class="text-on-surface-variant flex items-center gap-2">
+                  <span class="material-symbols-outlined text-base" data-icon="description"
+                    >description</span
+                  >
+                  <span class="text-sm font-medium">Allocation_Data_Q1_2026.xlsx</span>
+                  <span
+                    class="bg-surface-container-high text-outline rounded px-1.5 py-0.5 text-xs tabular-nums"
+                    >1,200 rows</span
+                  >
+                </p>
+              </div>
+              <!-- Step Progress -->
+              <div class="flex items-center gap-4">
+                <div class="flex flex-col items-center gap-2">
+                  <div
+                    class="bg-on-secondary-container flex h-8 w-8 items-center justify-center rounded-full text-xs text-white"
+                  >
+                    <span class="material-symbols-outlined text-base" data-icon="check">check</span>
+                  </div>
+                  <span
+                    class="text-on-secondary-container text-[10px] font-bold tracking-widest uppercase"
+                    >Upload</span
+                  >
+                </div>
+                <div class="bg-primary mb-6 h-[2px] w-12"></div>
+                <div class="flex flex-col items-center gap-2">
+                  <div
+                    class="bg-primary text-on-primary border-primary flex h-8 w-8 items-center justify-center rounded-full border-2 text-xs font-bold"
+                  >
+                    2
+                  </div>
+                  <span class="text-primary text-[10px] font-bold tracking-widest uppercase"
+                    >Mapping</span
+                  >
+                </div>
+                <div class="bg-surface-container-highest mb-6 h-[2px] w-12"></div>
+                <div class="flex flex-col items-center gap-2 opacity-40">
+                  <div
+                    class="bg-surface-container-highest text-outline flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold"
+                  >
+                    3
+                  </div>
+                  <span class="text-outline text-[10px] font-bold tracking-widest uppercase"
+                    >Validate</span
+                  >
+                </div>
+                <div class="bg-surface-container-highest mb-6 h-[2px] w-12"></div>
+                <div class="flex flex-col items-center gap-2 opacity-40">
+                  <div
+                    class="bg-surface-container-highest text-outline flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold"
+                  >
+                    4
+                  </div>
+                  <span class="text-outline text-[10px] font-bold tracking-widest uppercase"
+                    >Import</span
+                  >
+                </div>
+              </div>
+            </div>
+          </header>
+          <!-- Mapping Card -->
+          <div
+            class="bg-surface-container-lowest ring-outline-variant/15 overflow-hidden rounded-sm ring-1"
+          >
+            <div
+              class="bg-surface-container-low border-outline-variant/10 grid grid-cols-12 border-b px-6 py-3"
+            >
+              <div class="text-outline col-span-4 text-xs font-semibold tracking-wider uppercase">
+                Your Column (Source)
+              </div>
+              <div class="text-outline col-span-4 text-xs font-semibold tracking-wider uppercase">
+                Maps To (System)
+              </div>
+              <div class="text-outline col-span-4 text-xs font-semibold tracking-wider uppercase">
+                Data Preview
+              </div>
+            </div>
+            <div class="divide-outline-variant/5 divide-y">
+              <!-- Row 1 -->
+              <div
+                class="hover:bg-surface-container-low/50 grid grid-cols-12 items-center px-6 py-4 transition-colors"
+              >
+                <div class="col-span-4 flex items-center gap-3">
+                  <span
+                    class="material-symbols-outlined text-outline text-lg"
+                    data-icon="format_list_bulleted"
+                    >format_list_bulleted</span
+                  >
+                  <span class="text-on-surface text-sm font-medium">Namn</span>
+                </div>
+                <div class="col-span-4 px-2">
+                  <div class="group relative">
+                    <select
+                      class="bg-surface-container-lowest border-outline-variant focus:border-primary w-full appearance-none border-b py-1.5 pr-8 text-sm focus:ring-0"
+                    >
+                      <option>Person Name</option>
+                      <option>Employee ID</option>
+                      <option>Contact Info</option>
+                    </select>
+                    <span
+                      class="material-symbols-outlined text-outline pointer-events-none absolute top-1.5 right-0 text-lg"
+                      data-icon="expand_more"
+                      >expand_more</span
+                    >
+                  </div>
+                </div>
+                <div class="col-span-4 flex items-center justify-between">
+                  <span class="text-on-surface-variant text-xs italic">Andersson, Erik...</span>
+                  <span
+                    class="text-on-secondary-container bg-secondary-container flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-tighter uppercase"
+                  >
+                    <span
+                      class="material-symbols-outlined text-xs"
+                      data-icon="check_circle"
+                      style="font-variation-settings: 'FILL' 1"
+                      >check_circle</span
+                    >
+                    Matched
+                  </span>
+                </div>
+              </div>
+              <!-- Row 2 -->
+              <div
+                class="hover:bg-surface-container-low/50 grid grid-cols-12 items-center px-6 py-4 transition-colors"
+              >
+                <div class="col-span-4 flex items-center gap-3">
+                  <span class="material-symbols-outlined text-outline text-lg" data-icon="category"
+                    >category</span
+                  >
+                  <span class="text-on-surface text-sm font-medium">Projekt</span>
+                </div>
+                <div class="col-span-4 px-2">
+                  <div class="relative">
+                    <select
+                      class="bg-surface-container-lowest border-outline-variant focus:border-primary w-full appearance-none border-b py-1.5 pr-8 text-sm focus:ring-0"
+                    >
+                      <option>Project</option>
+                      <option>Client Name</option>
+                      <option>Cost Center</option>
+                    </select>
+                    <span
+                      class="material-symbols-outlined text-outline pointer-events-none absolute top-1.5 right-0 text-lg"
+                      data-icon="expand_more"
+                      >expand_more</span
+                    >
+                  </div>
+                </div>
+                <div class="col-span-4 flex items-center justify-between">
+                  <span class="text-on-surface-variant text-xs italic">Nordic Wind Hub...</span>
+                  <span
+                    class="text-on-secondary-container bg-secondary-container flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-tighter uppercase"
+                  >
+                    <span
+                      class="material-symbols-outlined text-xs"
+                      data-icon="check_circle"
+                      style="font-variation-settings: 'FILL' 1"
+                      >check_circle</span
+                    >
+                    Matched
+                  </span>
+                </div>
+              </div>
+              <!-- Row 3 -->
+              <div
+                class="hover:bg-surface-container-low/50 grid grid-cols-12 items-center px-6 py-4 transition-colors"
+              >
+                <div class="col-span-4 flex items-center gap-3">
+                  <span class="material-symbols-outlined text-outline text-lg" data-icon="schedule"
+                    >schedule</span
+                  >
+                  <span class="text-on-surface text-sm font-medium">Timmar</span>
+                </div>
+                <div class="col-span-4 px-2">
+                  <div class="relative">
+                    <select
+                      class="bg-surface-container-lowest border-outline-variant focus:border-primary w-full appearance-none border-b py-1.5 pr-8 text-sm focus:ring-0"
+                    >
+                      <option>Planned Hours</option>
+                      <option>Actual Hours</option>
+                      <option>Budget</option>
+                    </select>
+                    <span
+                      class="material-symbols-outlined text-outline pointer-events-none absolute top-1.5 right-0 text-lg"
+                      data-icon="expand_more"
+                      >expand_more</span
+                    >
+                  </div>
+                </div>
+                <div class="col-span-4 flex items-center justify-between">
+                  <span class="text-on-surface-variant text-xs tabular-nums">140, 160, 80...</span>
+                  <span
+                    class="text-on-secondary-container bg-secondary-container flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-tighter uppercase"
+                  >
+                    <span
+                      class="material-symbols-outlined text-xs"
+                      data-icon="check_circle"
+                      style="font-variation-settings: 'FILL' 1"
+                      >check_circle</span
+                    >
+                    Matched
+                  </span>
+                </div>
+              </div>
+              <!-- Row 4 -->
+              <div
+                class="hover:bg-surface-container-low/50 grid grid-cols-12 items-center px-6 py-4 transition-colors"
+              >
+                <div class="col-span-4 flex items-center gap-3">
+                  <span
+                    class="material-symbols-outlined text-outline text-lg"
+                    data-icon="calendar_month"
+                    >calendar_month</span
+                  >
+                  <span class="text-on-surface text-sm font-medium">Månad</span>
+                </div>
+                <div class="col-span-4 px-2">
+                  <div class="relative">
+                    <select
+                      class="bg-surface-container-lowest border-outline-variant focus:border-primary w-full appearance-none border-b py-1.5 pr-8 text-sm focus:ring-0"
+                    >
+                      <option>Month</option>
+                      <option>Start Date</option>
+                      <option>Quarter</option>
+                    </select>
+                    <span
+                      class="material-symbols-outlined text-outline pointer-events-none absolute top-1.5 right-0 text-lg"
+                      data-icon="expand_more"
+                      >expand_more</span
+                    >
+                  </div>
+                </div>
+                <div class="col-span-4 flex items-center justify-between">
+                  <span class="text-on-surface-variant text-xs italic">Januari 2026...</span>
+                  <span
+                    class="text-on-secondary-container bg-secondary-container flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-tighter uppercase"
+                  >
+                    <span
+                      class="material-symbols-outlined text-xs"
+                      data-icon="check_circle"
+                      style="font-variation-settings: 'FILL' 1"
+                      >check_circle</span
+                    >
+                    Matched
+                  </span>
+                </div>
+              </div>
+              <!-- Row 5 -->
+              <div
+                class="hover:bg-surface-container-low/50 grid grid-cols-12 items-center px-6 py-4 transition-colors"
+              >
+                <div class="col-span-4 flex items-center gap-3">
+                  <span
+                    class="material-symbols-outlined text-outline text-lg"
+                    data-icon="corporate_fare"
+                    >corporate_fare</span
+                  >
+                  <span class="text-on-surface text-sm font-medium">Avdelning</span>
+                </div>
+                <div class="col-span-4 px-2">
+                  <div class="relative">
+                    <select
+                      class="bg-surface-container-lowest border-outline-variant focus:border-primary w-full appearance-none border-b py-1.5 pr-8 text-sm focus:ring-0"
+                    >
+                      <option>Department</option>
+                      <option>Business Unit</option>
+                      <option>Office Location</option>
+                    </select>
+                    <span
+                      class="material-symbols-outlined text-outline pointer-events-none absolute top-1.5 right-0 text-lg"
+                      data-icon="expand_more"
+                      >expand_more</span
+                    >
+                  </div>
+                </div>
+                <div class="col-span-4 flex items-center justify-between">
+                  <span class="text-on-surface-variant text-xs italic">Engineering, HR...</span>
+                  <span
+                    class="text-on-secondary-container bg-secondary-container flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold tracking-tighter uppercase"
+                  >
+                    <span
+                      class="material-symbols-outlined text-xs"
+                      data-icon="check_circle"
+                      style="font-variation-settings: 'FILL' 1"
+                      >check_circle</span
+                    >
+                    Matched
+                  </span>
+                </div>
+              </div>
+            </div>
+            <!-- Footer Info -->
+            <div class="bg-surface border-outline-variant/10 flex items-center gap-4 border-t p-4">
+              <span
+                class="material-symbols-outlined text-primary text-xl"
+                data-icon="info"
+                style="font-variation-settings: 'FILL' 1"
+                >info</span
+              >
+              <p class="text-on-surface-variant max-w-2xl text-xs leading-relaxed">
+                We've automatically matched columns with similar names. Any column left unmatched or
+                incorrectly mapped will result in validation errors in the next step.
+              </p>
+            </div>
+          </div>
+          <!-- Actions -->
+          <div class="mt-12 flex items-center justify-between">
+            <button
+              class="text-primary hover:bg-surface-container-high flex items-center gap-2 rounded-sm px-6 py-2.5 text-sm font-semibold transition-all"
+            >
+              <span class="material-symbols-outlined text-lg" data-icon="arrow_back"
+                >arrow_back</span
+              >
+              Back to Upload
+            </button>
+            <div class="flex items-center gap-3">
+              <button
+                class="bg-surface-variant text-on-surface-variant hover:bg-surface-dim rounded-sm px-6 py-2.5 text-sm font-semibold transition-all"
+              >
+                Save as Draft
+              </button>
+              <button
+                class="bg-primary text-on-primary flex items-center gap-2 rounded-sm px-8 py-2.5 text-sm font-semibold shadow-sm transition-all hover:opacity-90"
+              >
+                Continue to Validation
+                <span class="material-symbols-outlined text-lg" data-icon="arrow_forward"
+                  >arrow_forward</span
+                >
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- Contextual FAB (Suppressed on detail/transactional screens as per protocol) -->
+  </body>
+</html>

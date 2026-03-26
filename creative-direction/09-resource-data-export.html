@@ -1,374 +1,559 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Nordic Capacity - Data Export</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              colors: {
-                "error-dim": "#4e0309",
-                "surface-variant": "#d9e4e8",
-                "inverse-primary": "#cce6fb",
-                "surface-tint": "#496173",
-                "inverse-surface": "#0b0f10",
-                "on-surface": "#2a3437",
-                "primary-fixed": "#cce6fb",
-                "primary": "#496173",
-                "surface-container-lowest": "#ffffff",
-                "surface-container-high": "#e1eaec",
-                "surface-container-low": "#f0f4f6",
-                "secondary-dim": "#4c5459",
-                "secondary-fixed": "#dce4e9",
-                "surface": "#f8fafb",
-                "on-tertiary-fixed": "#42474a",
-                "on-tertiary-container": "#54595c",
-                "outline-variant": "#a9b4b7",
-                "on-primary-fixed-variant": "#465e70",
-                "surface-dim": "#cfdce0",
-                "surface-container-highest": "#d9e4e8",
-                "primary-container": "#cce6fb",
-                "surface-bright": "#f8fafb",
-                "tertiary": "#5b6063",
-                "on-primary-container": "#3d5466",
-                "secondary-container": "#dce4e9",
-                "on-secondary-fixed": "#394045",
-                "on-primary": "#f3f8ff",
-                "on-secondary-fixed-variant": "#555d61",
-                "on-background": "#2a3437",
-                "outline": "#727d80",
-                "on-surface-variant": "#566164",
-                "on-tertiary": "#f5f9fd",
-                "inverse-on-surface": "#9a9d9e",
-                "surface-container": "#e8eff1",
-                "on-error-container": "#752121",
-                "tertiary-container": "#eaeef2",
-                "primary-dim": "#3d5567",
-                "on-primary-fixed": "#2a4253",
-                "on-secondary-container": "#4b5358",
-                "on-tertiary-fixed-variant": "#5e6366",
-                "tertiary-fixed-dim": "#dce0e3",
-                "error": "#9f403d",
-                "error-container": "#fe8983",
-                "secondary-fixed-dim": "#ced5db",
-                "primary-fixed-dim": "#bed8ed",
-                "tertiary-dim": "#4f5457",
-                "tertiary-fixed": "#eaeef2",
-                "on-error": "#fff7f6",
-                "background": "#f8fafb",
-                "secondary": "#586065",
-                "on-secondary": "#f3faff"
-              },
-              fontFamily: {
-                "headline": ["Manrope"],
-                "body": ["Inter"],
-                "label": ["Inter"]
-              },
-              borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Nordic Capacity - Data Export</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'error-dim': '#4e0309',
+              'surface-variant': '#d9e4e8',
+              'inverse-primary': '#cce6fb',
+              'surface-tint': '#496173',
+              'inverse-surface': '#0b0f10',
+              'on-surface': '#2a3437',
+              'primary-fixed': '#cce6fb',
+              primary: '#496173',
+              'surface-container-lowest': '#ffffff',
+              'surface-container-high': '#e1eaec',
+              'surface-container-low': '#f0f4f6',
+              'secondary-dim': '#4c5459',
+              'secondary-fixed': '#dce4e9',
+              surface: '#f8fafb',
+              'on-tertiary-fixed': '#42474a',
+              'on-tertiary-container': '#54595c',
+              'outline-variant': '#a9b4b7',
+              'on-primary-fixed-variant': '#465e70',
+              'surface-dim': '#cfdce0',
+              'surface-container-highest': '#d9e4e8',
+              'primary-container': '#cce6fb',
+              'surface-bright': '#f8fafb',
+              tertiary: '#5b6063',
+              'on-primary-container': '#3d5466',
+              'secondary-container': '#dce4e9',
+              'on-secondary-fixed': '#394045',
+              'on-primary': '#f3f8ff',
+              'on-secondary-fixed-variant': '#555d61',
+              'on-background': '#2a3437',
+              outline: '#727d80',
+              'on-surface-variant': '#566164',
+              'on-tertiary': '#f5f9fd',
+              'inverse-on-surface': '#9a9d9e',
+              'surface-container': '#e8eff1',
+              'on-error-container': '#752121',
+              'tertiary-container': '#eaeef2',
+              'primary-dim': '#3d5567',
+              'on-primary-fixed': '#2a4253',
+              'on-secondary-container': '#4b5358',
+              'on-tertiary-fixed-variant': '#5e6366',
+              'tertiary-fixed-dim': '#dce0e3',
+              error: '#9f403d',
+              'error-container': '#fe8983',
+              'secondary-fixed-dim': '#ced5db',
+              'primary-fixed-dim': '#bed8ed',
+              'tertiary-dim': '#4f5457',
+              'tertiary-fixed': '#eaeef2',
+              'on-error': '#fff7f6',
+              background: '#f8fafb',
+              secondary: '#586065',
+              'on-secondary': '#f3faff',
             },
+            fontFamily: {
+              headline: ['Manrope'],
+              body: ['Inter'],
+              label: ['Inter'],
+            },
+            borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem', full: '0.75rem' },
           },
-        }
+        },
+      };
     </script>
-<style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafb; }
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-            font-size: 1.25rem;
-        }
-        .tabular-nums {
-            font-variant-numeric: tabular-nums;
-        }
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #a9b4b744;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a9b4b788;
-        }
+    <style>
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f8fafb;
+      }
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        vertical-align: middle;
+        font-size: 1.25rem;
+      }
+      .tabular-nums {
+        font-variant-numeric: tabular-nums;
+      }
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #a9b4b744;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #a9b4b788;
+      }
     </style>
-</head>
-<body class="bg-surface font-body text-on-surface min-h-screen">
-<!-- Top Navigation Bar -->
-<header class="fixed top-0 left-0 right-0 z-50 bg-[#f8fafb] dark:bg-slate-900 flex justify-between items-center w-full px-6 py-3 max-w-full font-['Manrope'] font-medium text-sm tracking-tight border-b border-[#a9b4b7]/15">
-<div class="flex items-center gap-8">
-<span class="text-xl font-semibold text-[#496173] dark:text-slate-100 tracking-tighter">Nordic Capacity</span>
-<nav class="hidden md:flex gap-6">
-<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173] transition-colors" href="#">Input</a>
-<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173] transition-colors" href="#">Team</a>
-<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173] transition-colors" href="#">Projects</a>
-<a class="text-[#496173] dark:text-white border-b-2 border-[#496173] dark:border-blue-400 pb-1 font-bold" href="#">Data</a>
-<a class="text-slate-500 dark:text-slate-400 hover:text-[#496173] transition-colors" href="#">Dashboard</a>
-</nav>
-</div>
-<div class="flex items-center gap-4">
-<div class="relative hidden sm:block">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">search</span>
-<input class="pl-9 pr-4 py-1.5 bg-surface-container-low border-none text-xs rounded-sm focus:ring-1 focus:ring-primary w-64" placeholder="Global Search" type="text"/>
-</div>
-<button class="p-2 hover:bg-[#f0f4f6] dark:hover:bg-slate-800 transition-colors rounded-full">
-<span class="material-symbols-outlined text-primary" data-icon="notifications">notifications</span>
-</button>
-<button class="p-2 hover:bg-[#f0f4f6] dark:hover:bg-slate-800 transition-colors rounded-full">
-<span class="material-symbols-outlined text-primary" data-icon="settings">settings</span>
-</button>
-<div class="w-8 h-8 rounded-full overflow-hidden ml-2 bg-surface-container-highest">
-<img alt="User profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp5O-K5EFFl3de2ajRQovoc-aYixpgqgLCJD5CWq30sQ-lXJ-CG4zFBO2JWUHsd7RK4QgcveHJXIvX4wWJH8dyKpx6KapsA2RuiH8QojBcrKlJ9koC82cpb7X2EieAABWpayFzituW7KdENJkW3da-jxsgkqRhOdP7VFV7Fm2Bk1j02T6EYH4q45lQUkMuWQ27BXY5AO4k-n4sz1xpDCcRBp51_w5s1CIX4550X62fzh-VstFUn3TcT-RQDlCxKO0zfhg9nC2Vofje"/>
-</div>
-</div>
-</header>
-<div class="flex pt-[57px] min-h-screen">
-<!-- Side Navigation Bar -->
-<aside class="w-64 flex flex-col h-[calc(100vh-57px)] border-r border-outline-variant/15 bg-[#f0f4f6] fixed left-0 top-[57px]">
-<div class="px-6 py-8">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
-<span class="material-symbols-outlined text-white text-sm">architecture</span>
-</div>
-<div>
-<h1 class="font-headline font-bold text-primary tracking-tight">Resource Planner</h1>
-<p class="text-[10px] uppercase tracking-widest text-outline">Nordic Precision</p>
-</div>
-</div>
-</div>
-<nav class="flex-1 px-4 space-y-1">
-<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-[#d9e4e8]/50 transition-colors rounded-sm font-body text-xs font-medium" href="#">
-<span class="material-symbols-outlined text-lg">group</span>
-                    Resources
-                </a>
-<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-[#d9e4e8]/50 transition-colors rounded-sm font-body text-xs font-medium" href="#">
-<span class="material-symbols-outlined text-lg">event_available</span>
-                    Allocations
-                </a>
-<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-[#d9e4e8]/50 transition-colors rounded-sm font-body text-xs font-medium" href="#">
-<span class="material-symbols-outlined text-lg">bar_chart</span>
-                    Capacity
-                </a>
-<a class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-[#d9e4e8]/50 transition-colors rounded-sm font-body text-xs font-medium" href="#">
-<span class="material-symbols-outlined text-lg">flag</span>
-                    Milestones
-                </a>
-<a class="flex items-center gap-3 px-3 py-2 bg-[#d9e4e8] text-primary rounded-sm font-body text-xs font-semibold" href="#">
-<span class="material-symbols-outlined text-lg">description</span>
-                    Reports
-                </a>
-</nav>
-<div class="p-4 border-t border-outline-variant/10">
-<button class="w-full bg-primary text-on-primary py-2.5 rounded-sm text-xs font-semibold flex items-center justify-center gap-2 mb-6 shadow-sm hover:opacity-90 transition-opacity">
-<span class="material-symbols-outlined text-sm">add</span>
-                    New Entry
-                </button>
-<div class="space-y-1">
-<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-primary transition-colors font-body text-xs" href="#">
-<span class="material-symbols-outlined text-lg">help_outline</span>
-                        Help
-                    </a>
-<a class="flex items-center gap-3 px-3 py-2 text-slate-500 hover:text-primary transition-colors font-body text-xs" href="#">
-<span class="material-symbols-outlined text-lg">archive</span>
-                        Archive
-                    </a>
-</div>
-</div>
-</aside>
-<!-- Main Content Area -->
-<main class="ml-64 flex-1 p-8 max-w-[1440px] mx-auto w-full">
-<!-- Header Section -->
-<div class="mb-8">
-<div class="flex justify-between items-end">
-<div>
-<h1 class="text-3xl font-headline font-bold text-on-surface tracking-tight">Resource Data Export</h1>
-<p class="text-sm text-on-surface-variant font-body mt-1">Review and filter detailed allocation data for engineering programs.</p>
-</div>
-<button class="flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary font-semibold text-xs rounded-sm shadow-md hover:opacity-90 transition-opacity">
-<span class="material-symbols-outlined text-lg">download</span>
-                        Export to Excel
-                    </button>
-</div>
-</div>
-<!-- Filter Bar -->
-<div class="bg-surface-container-lowest p-5 rounded-sm shadow-sm border border-outline-variant/10 mb-6 flex flex-wrap items-center gap-4">
-<div class="flex-1 min-w-[140px]">
-<label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-1.5">Person</label>
-<select class="w-full bg-surface-container-low border-none rounded-sm text-xs py-2 px-3 focus:ring-1 focus:ring-primary appearance-none cursor-pointer">
-<option>All Personnel</option>
-<option>Lars Andersson</option>
-<option>Johan Nilsson</option>
-<option>Erik Forsberg</option>
-</select>
-</div>
-<div class="flex-1 min-w-[140px]">
-<label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-1.5">Discipline</label>
-<select class="w-full bg-surface-container-low border-none rounded-sm text-xs py-2 px-3 focus:ring-1 focus:ring-primary appearance-none cursor-pointer">
-<option>All Disciplines</option>
-<option>SW (Software)</option>
-<option>Mek (Mechanical)</option>
-<option>Elnik (Electrical)</option>
-</select>
-</div>
-<div class="flex-1 min-w-[140px]">
-<label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-1.5">Dept</label>
-<select class="w-full bg-surface-container-low border-none rounded-sm text-xs py-2 px-3 focus:ring-1 focus:ring-primary appearance-none cursor-pointer">
-<option>All Departments</option>
-<option>R&amp;D North</option>
-<option>Product Ops</option>
-<option>Core Platform</option>
-</select>
-</div>
-<div class="flex-1 min-w-[140px]">
-<label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-1.5">Project</label>
-<select class="w-full bg-surface-container-low border-none rounded-sm text-xs py-2 px-3 focus:ring-1 focus:ring-primary appearance-none cursor-pointer">
-<option>All Projects</option>
-<option>Aurora 2024</option>
-<option>Project Odin</option>
-<option>Beta Release</option>
-</select>
-</div>
-<div class="flex-1 min-w-[140px]">
-<label class="block text-[10px] font-bold text-outline uppercase tracking-wider mb-1.5">Date Range</label>
-<select class="w-full bg-surface-container-low border-none rounded-sm text-xs py-2 px-3 focus:ring-1 focus:ring-primary appearance-none cursor-pointer">
-<option>Q3 2024</option>
-<option>Q4 2024</option>
-<option>Full Year 2024</option>
-</select>
-</div>
-<div class="self-end pb-0.5">
-<button class="p-2 text-outline hover:text-primary transition-colors" title="Reset Filters">
-<span class="material-symbols-outlined">filter_list_off</span>
-</button>
-</div>
-</div>
-<!-- Data Table -->
-<div class="bg-surface-container-lowest rounded-sm shadow-sm border border-outline-variant/10 overflow-hidden">
-<table class="w-full text-left border-collapse text-xs">
-<thead>
-<tr class="bg-surface-container-low border-b border-outline-variant/15">
-<th class="px-6 py-4 font-bold text-primary uppercase tracking-wider cursor-pointer hover:bg-surface-container-high/50 transition-colors group">
-<div class="flex items-center gap-1.5">
-                                    Person
-                                    <span class="material-symbols-outlined text-sm opacity-30 group-hover:opacity-100">unfold_more</span>
-</div>
-</th>
-<th class="px-6 py-4 font-bold text-primary uppercase tracking-wider cursor-pointer hover:bg-surface-container-high/50 transition-colors group">
-<div class="flex items-center gap-1.5">
-                                    Discipline
-                                    <span class="material-symbols-outlined text-sm opacity-30 group-hover:opacity-100">unfold_more</span>
-</div>
-</th>
-<th class="px-6 py-4 font-bold text-primary uppercase tracking-wider cursor-pointer hover:bg-surface-container-high/50 transition-colors group">
-<div class="flex items-center gap-1.5">
-                                    Department
-                                    <span class="material-symbols-outlined text-sm opacity-30 group-hover:opacity-100">unfold_more</span>
-</div>
-</th>
-<th class="px-6 py-4 font-bold text-primary uppercase tracking-wider cursor-pointer hover:bg-surface-container-high/50 transition-colors group">
-<div class="flex items-center gap-1.5">
-                                    Project
-                                    <span class="material-symbols-outlined text-sm opacity-30 group-hover:opacity-100">unfold_more</span>
-</div>
-</th>
-<th class="px-6 py-4 font-bold text-primary uppercase tracking-wider cursor-pointer hover:bg-surface-container-high/50 transition-colors group">
-<div class="flex items-center gap-1.5">
-                                    Month
-                                    <span class="material-symbols-outlined text-sm opacity-30 group-hover:opacity-100">unfold_more</span>
-</div>
-</th>
-<th class="px-6 py-4 font-bold text-primary uppercase tracking-wider text-right cursor-pointer hover:bg-surface-container-high/50 transition-colors group">
-<div class="flex items-center justify-end gap-1.5">
-                                    Hours
-                                    <span class="material-symbols-outlined text-sm opacity-30 group-hover:opacity-100">unfold_more</span>
-</div>
-</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-outline-variant/10 text-on-surface">
-<tr class="hover:bg-surface-container-low/30 transition-colors">
-<td class="px-6 py-3.5 font-medium">Anders Dahlgren</td>
-<td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[10px] font-bold uppercase">SW</span></td>
-<td class="px-6 py-3.5 text-on-surface-variant">Digital R&amp;D</td>
-<td class="px-6 py-3.5 text-on-surface-variant">Project Aurora</td>
-<td class="px-6 py-3.5 text-on-surface-variant">Aug 2024</td>
-<td class="px-6 py-3.5 text-right font-bold tabular-nums">142.0</td>
-</tr>
-<tr class="hover:bg-surface-container-low/30 transition-colors">
-<td class="px-6 py-3.5 font-medium">Birgitta Lindqvist</td>
-<td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[10px] font-bold uppercase">Mek</span></td>
-<td class="px-6 py-3.5 text-on-surface-variant">Structures</td>
-<td class="px-6 py-3.5 text-on-surface-variant">Project Odin</td>
-<td class="px-6 py-3.5 text-on-surface-variant">Aug 2024</td>
-<td class="px-6 py-3.5 text-right font-bold tabular-nums">160.5</td>
-</tr>
-<tr class="hover:bg-surface-container-low/30 transition-colors">
-<td class="px-6 py-3.5 font-medium">Johan Eriksson</td>
-<td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[10px] font-bold uppercase">Elnik</span></td>
-<td class="px-6 py-3.5 text-on-surface-variant">Battery Mgmt</td>
-<td class="px-6 py-3.5 text-on-surface-variant">Project Aurora</td>
-<td class="px-6 py-3.5 text-on-surface-variant">Aug 2024</td>
-<td class="px-6 py-3.5 text-right font-bold tabular-nums">135.5</td>
-</tr>
-<tr class="hover:bg-surface-container-low/30 transition-colors">
-<td class="px-6 py-3.5 font-medium">Sofia Wallin</td>
-<td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[10px] font-bold uppercase">Mek</span></td>
-<td class="px-6 py-3.5 text-on-surface-variant">Interiors</td>
-<td class="px-6 py-3.5 text-on-surface-variant">Project Aurora</td>
-<td class="px-6 py-3.5 text-on-surface-variant">Sep 2024</td>
-<td class="px-6 py-3.5 text-right font-bold tabular-nums">124.0</td>
-</tr>
-<tr class="hover:bg-surface-container-low/30 transition-colors">
-<td class="px-6 py-3.5 font-medium">Lars Andersson</td>
-<td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[10px] font-bold uppercase">SW</span></td>
-<td class="px-6 py-3.5 text-on-surface-variant">Control SW</td>
-<td class="px-6 py-3.5 text-on-surface-variant">Project Balder</td>
-<td class="px-6 py-3.5 text-on-surface-variant">Sep 2024</td>
-<td class="px-6 py-3.5 text-right font-bold tabular-nums">158.0</td>
-</tr>
-<tr class="hover:bg-surface-container-low/30 transition-colors">
-<td class="px-6 py-3.5 font-medium">Maria Ström</td>
-<td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[10px] font-bold uppercase">Elnik</span></td>
-<td class="px-6 py-3.5 text-on-surface-variant">Harness Design</td>
-<td class="px-6 py-3.5 text-on-surface-variant">Project Freyja</td>
-<td class="px-6 py-3.5 text-on-surface-variant">Sep 2024</td>
-<td class="px-6 py-3.5 text-right font-bold tabular-nums">120.0</td>
-</tr>
-<tr class="hover:bg-surface-container-low/30 transition-colors">
-<td class="px-6 py-3.5 font-medium">Henrik Nyström</td>
-<td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[10px] font-bold uppercase">SW</span></td>
-<td class="px-6 py-3.5 text-on-surface-variant">UI/UX Dev</td>
-<td class="px-6 py-3.5 text-on-surface-variant">Project Aurora</td>
-<td class="px-6 py-3.5 text-on-surface-variant">Aug 2024</td>
-<td class="px-6 py-3.5 text-right font-bold tabular-nums">140.0</td>
-</tr>
-<tr class="hover:bg-surface-container-low/30 transition-colors">
-<td class="px-6 py-3.5 font-medium">Gunilla Sjögren</td>
-<td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed text-[10px] font-bold uppercase">Elnik</span></td>
-<td class="px-6 py-3.5 text-on-surface-variant">Sensors Dept</td>
-<td class="px-6 py-3.5 text-on-surface-variant">Project Balder</td>
-<td class="px-6 py-3.5 text-on-surface-variant">Aug 2024</td>
-<td class="px-6 py-3.5 text-right font-bold tabular-nums">168.0</td>
-</tr>
-</tbody>
-</table>
-</div>
-<!-- Table Footer Stats -->
-<div class="mt-4 flex justify-between items-center text-[11px] font-bold text-outline uppercase tracking-wider px-2">
-<div>Showing 8 of 145 items</div>
-<div class="flex items-center gap-2">
-<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                    Total Estimated Hours: <span class="text-on-surface tabular-nums ml-1">2,812.5</span>
-</div>
-</div>
-</main>
-</div>
-</body></html>
+  </head>
+  <body class="bg-surface font-body text-on-surface min-h-screen">
+    <!-- Top Navigation Bar -->
+    <header
+      class="fixed top-0 right-0 left-0 z-50 flex w-full max-w-full items-center justify-between border-b border-[#a9b4b7]/15 bg-[#f8fafb] px-6 py-3 font-['Manrope'] text-sm font-medium tracking-tight dark:bg-slate-900"
+    >
+      <div class="flex items-center gap-8">
+        <span class="text-xl font-semibold tracking-tighter text-[#496173] dark:text-slate-100"
+          >Nordic Capacity</span
+        >
+        <nav class="hidden gap-6 md:flex">
+          <a
+            class="text-slate-500 transition-colors hover:text-[#496173] dark:text-slate-400"
+            href="#"
+            >Input</a
+          >
+          <a
+            class="text-slate-500 transition-colors hover:text-[#496173] dark:text-slate-400"
+            href="#"
+            >Team</a
+          >
+          <a
+            class="text-slate-500 transition-colors hover:text-[#496173] dark:text-slate-400"
+            href="#"
+            >Projects</a
+          >
+          <a
+            class="border-b-2 border-[#496173] pb-1 font-bold text-[#496173] dark:border-blue-400 dark:text-white"
+            href="#"
+            >Data</a
+          >
+          <a
+            class="text-slate-500 transition-colors hover:text-[#496173] dark:text-slate-400"
+            href="#"
+            >Dashboard</a
+          >
+        </nav>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="relative hidden sm:block">
+          <span
+            class="material-symbols-outlined text-outline absolute top-1/2 left-3 -translate-y-1/2 text-sm"
+            >search</span
+          >
+          <input
+            class="bg-surface-container-low focus:ring-primary w-64 rounded-sm border-none py-1.5 pr-4 pl-9 text-xs focus:ring-1"
+            placeholder="Global Search"
+            type="text"
+          />
+        </div>
+        <button
+          class="rounded-full p-2 transition-colors hover:bg-[#f0f4f6] dark:hover:bg-slate-800"
+        >
+          <span class="material-symbols-outlined text-primary" data-icon="notifications"
+            >notifications</span
+          >
+        </button>
+        <button
+          class="rounded-full p-2 transition-colors hover:bg-[#f0f4f6] dark:hover:bg-slate-800"
+        >
+          <span class="material-symbols-outlined text-primary" data-icon="settings">settings</span>
+        </button>
+        <div class="bg-surface-container-highest ml-2 h-8 w-8 overflow-hidden rounded-full">
+          <img
+            alt="User profile"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBp5O-K5EFFl3de2ajRQovoc-aYixpgqgLCJD5CWq30sQ-lXJ-CG4zFBO2JWUHsd7RK4QgcveHJXIvX4wWJH8dyKpx6KapsA2RuiH8QojBcrKlJ9koC82cpb7X2EieAABWpayFzituW7KdENJkW3da-jxsgkqRhOdP7VFV7Fm2Bk1j02T6EYH4q45lQUkMuWQ27BXY5AO4k-n4sz1xpDCcRBp51_w5s1CIX4550X62fzh-VstFUn3TcT-RQDlCxKO0zfhg9nC2Vofje"
+          />
+        </div>
+      </div>
+    </header>
+    <div class="flex min-h-screen pt-[57px]">
+      <!-- Side Navigation Bar -->
+      <aside
+        class="border-outline-variant/15 fixed top-[57px] left-0 flex h-[calc(100vh-57px)] w-64 flex-col border-r bg-[#f0f4f6]"
+      >
+        <div class="px-6 py-8">
+          <div class="flex items-center gap-3">
+            <div class="bg-primary flex h-8 w-8 items-center justify-center rounded-sm">
+              <span class="material-symbols-outlined text-sm text-white">architecture</span>
+            </div>
+            <div>
+              <h1 class="font-headline text-primary font-bold tracking-tight">Resource Planner</h1>
+              <p class="text-outline text-[10px] tracking-widest uppercase">Nordic Precision</p>
+            </div>
+          </div>
+        </div>
+        <nav class="flex-1 space-y-1 px-4">
+          <a
+            class="font-body flex items-center gap-3 rounded-sm px-3 py-2 text-xs font-medium text-slate-600 transition-colors hover:bg-[#d9e4e8]/50"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-lg">group</span>
+            Resources
+          </a>
+          <a
+            class="font-body flex items-center gap-3 rounded-sm px-3 py-2 text-xs font-medium text-slate-600 transition-colors hover:bg-[#d9e4e8]/50"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-lg">event_available</span>
+            Allocations
+          </a>
+          <a
+            class="font-body flex items-center gap-3 rounded-sm px-3 py-2 text-xs font-medium text-slate-600 transition-colors hover:bg-[#d9e4e8]/50"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-lg">bar_chart</span>
+            Capacity
+          </a>
+          <a
+            class="font-body flex items-center gap-3 rounded-sm px-3 py-2 text-xs font-medium text-slate-600 transition-colors hover:bg-[#d9e4e8]/50"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-lg">flag</span>
+            Milestones
+          </a>
+          <a
+            class="text-primary font-body flex items-center gap-3 rounded-sm bg-[#d9e4e8] px-3 py-2 text-xs font-semibold"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-lg">description</span>
+            Reports
+          </a>
+        </nav>
+        <div class="border-outline-variant/10 border-t p-4">
+          <button
+            class="bg-primary text-on-primary mb-6 flex w-full items-center justify-center gap-2 rounded-sm py-2.5 text-xs font-semibold shadow-sm transition-opacity hover:opacity-90"
+          >
+            <span class="material-symbols-outlined text-sm">add</span>
+            New Entry
+          </button>
+          <div class="space-y-1">
+            <a
+              class="hover:text-primary font-body flex items-center gap-3 px-3 py-2 text-xs text-slate-500 transition-colors"
+              href="#"
+            >
+              <span class="material-symbols-outlined text-lg">help_outline</span>
+              Help
+            </a>
+            <a
+              class="hover:text-primary font-body flex items-center gap-3 px-3 py-2 text-xs text-slate-500 transition-colors"
+              href="#"
+            >
+              <span class="material-symbols-outlined text-lg">archive</span>
+              Archive
+            </a>
+          </div>
+        </div>
+      </aside>
+      <!-- Main Content Area -->
+      <main class="mx-auto ml-64 w-full max-w-[1440px] flex-1 p-8">
+        <!-- Header Section -->
+        <div class="mb-8">
+          <div class="flex items-end justify-between">
+            <div>
+              <h1 class="font-headline text-on-surface text-3xl font-bold tracking-tight">
+                Resource Data Export
+              </h1>
+              <p class="text-on-surface-variant font-body mt-1 text-sm">
+                Review and filter detailed allocation data for engineering programs.
+              </p>
+            </div>
+            <button
+              class="bg-primary text-on-primary flex items-center gap-2 rounded-sm px-5 py-2.5 text-xs font-semibold shadow-md transition-opacity hover:opacity-90"
+            >
+              <span class="material-symbols-outlined text-lg">download</span>
+              Export to Excel
+            </button>
+          </div>
+        </div>
+        <!-- Filter Bar -->
+        <div
+          class="bg-surface-container-lowest border-outline-variant/10 mb-6 flex flex-wrap items-center gap-4 rounded-sm border p-5 shadow-sm"
+        >
+          <div class="min-w-[140px] flex-1">
+            <label class="text-outline mb-1.5 block text-[10px] font-bold tracking-wider uppercase"
+              >Person</label
+            >
+            <select
+              class="bg-surface-container-low focus:ring-primary w-full cursor-pointer appearance-none rounded-sm border-none px-3 py-2 text-xs focus:ring-1"
+            >
+              <option>All Personnel</option>
+              <option>Lars Andersson</option>
+              <option>Johan Nilsson</option>
+              <option>Erik Forsberg</option>
+            </select>
+          </div>
+          <div class="min-w-[140px] flex-1">
+            <label class="text-outline mb-1.5 block text-[10px] font-bold tracking-wider uppercase"
+              >Discipline</label
+            >
+            <select
+              class="bg-surface-container-low focus:ring-primary w-full cursor-pointer appearance-none rounded-sm border-none px-3 py-2 text-xs focus:ring-1"
+            >
+              <option>All Disciplines</option>
+              <option>SW (Software)</option>
+              <option>Mek (Mechanical)</option>
+              <option>Elnik (Electrical)</option>
+            </select>
+          </div>
+          <div class="min-w-[140px] flex-1">
+            <label class="text-outline mb-1.5 block text-[10px] font-bold tracking-wider uppercase"
+              >Dept</label
+            >
+            <select
+              class="bg-surface-container-low focus:ring-primary w-full cursor-pointer appearance-none rounded-sm border-none px-3 py-2 text-xs focus:ring-1"
+            >
+              <option>All Departments</option>
+              <option>R&amp;D North</option>
+              <option>Product Ops</option>
+              <option>Core Platform</option>
+            </select>
+          </div>
+          <div class="min-w-[140px] flex-1">
+            <label class="text-outline mb-1.5 block text-[10px] font-bold tracking-wider uppercase"
+              >Project</label
+            >
+            <select
+              class="bg-surface-container-low focus:ring-primary w-full cursor-pointer appearance-none rounded-sm border-none px-3 py-2 text-xs focus:ring-1"
+            >
+              <option>All Projects</option>
+              <option>Aurora 2024</option>
+              <option>Project Odin</option>
+              <option>Beta Release</option>
+            </select>
+          </div>
+          <div class="min-w-[140px] flex-1">
+            <label class="text-outline mb-1.5 block text-[10px] font-bold tracking-wider uppercase"
+              >Date Range</label
+            >
+            <select
+              class="bg-surface-container-low focus:ring-primary w-full cursor-pointer appearance-none rounded-sm border-none px-3 py-2 text-xs focus:ring-1"
+            >
+              <option>Q3 2024</option>
+              <option>Q4 2024</option>
+              <option>Full Year 2024</option>
+            </select>
+          </div>
+          <div class="self-end pb-0.5">
+            <button
+              class="text-outline hover:text-primary p-2 transition-colors"
+              title="Reset Filters"
+            >
+              <span class="material-symbols-outlined">filter_list_off</span>
+            </button>
+          </div>
+        </div>
+        <!-- Data Table -->
+        <div
+          class="bg-surface-container-lowest border-outline-variant/10 overflow-hidden rounded-sm border shadow-sm"
+        >
+          <table class="w-full border-collapse text-left text-xs">
+            <thead>
+              <tr class="bg-surface-container-low border-outline-variant/15 border-b">
+                <th
+                  class="text-primary hover:bg-surface-container-high/50 group cursor-pointer px-6 py-4 font-bold tracking-wider uppercase transition-colors"
+                >
+                  <div class="flex items-center gap-1.5">
+                    Person
+                    <span
+                      class="material-symbols-outlined text-sm opacity-30 group-hover:opacity-100"
+                      >unfold_more</span
+                    >
+                  </div>
+                </th>
+                <th
+                  class="text-primary hover:bg-surface-container-high/50 group cursor-pointer px-6 py-4 font-bold tracking-wider uppercase transition-colors"
+                >
+                  <div class="flex items-center gap-1.5">
+                    Discipline
+                    <span
+                      class="material-symbols-outlined text-sm opacity-30 group-hover:opacity-100"
+                      >unfold_more</span
+                    >
+                  </div>
+                </th>
+                <th
+                  class="text-primary hover:bg-surface-container-high/50 group cursor-pointer px-6 py-4 font-bold tracking-wider uppercase transition-colors"
+                >
+                  <div class="flex items-center gap-1.5">
+                    Department
+                    <span
+                      class="material-symbols-outlined text-sm opacity-30 group-hover:opacity-100"
+                      >unfold_more</span
+                    >
+                  </div>
+                </th>
+                <th
+                  class="text-primary hover:bg-surface-container-high/50 group cursor-pointer px-6 py-4 font-bold tracking-wider uppercase transition-colors"
+                >
+                  <div class="flex items-center gap-1.5">
+                    Project
+                    <span
+                      class="material-symbols-outlined text-sm opacity-30 group-hover:opacity-100"
+                      >unfold_more</span
+                    >
+                  </div>
+                </th>
+                <th
+                  class="text-primary hover:bg-surface-container-high/50 group cursor-pointer px-6 py-4 font-bold tracking-wider uppercase transition-colors"
+                >
+                  <div class="flex items-center gap-1.5">
+                    Month
+                    <span
+                      class="material-symbols-outlined text-sm opacity-30 group-hover:opacity-100"
+                      >unfold_more</span
+                    >
+                  </div>
+                </th>
+                <th
+                  class="text-primary hover:bg-surface-container-high/50 group cursor-pointer px-6 py-4 text-right font-bold tracking-wider uppercase transition-colors"
+                >
+                  <div class="flex items-center justify-end gap-1.5">
+                    Hours
+                    <span
+                      class="material-symbols-outlined text-sm opacity-30 group-hover:opacity-100"
+                      >unfold_more</span
+                    >
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody class="divide-outline-variant/10 text-on-surface divide-y">
+              <tr class="hover:bg-surface-container-low/30 transition-colors">
+                <td class="px-6 py-3.5 font-medium">Anders Dahlgren</td>
+                <td class="px-6 py-3.5">
+                  <span
+                    class="bg-secondary-container text-on-secondary-fixed rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
+                    >SW</span
+                  >
+                </td>
+                <td class="text-on-surface-variant px-6 py-3.5">Digital R&amp;D</td>
+                <td class="text-on-surface-variant px-6 py-3.5">Project Aurora</td>
+                <td class="text-on-surface-variant px-6 py-3.5">Aug 2024</td>
+                <td class="px-6 py-3.5 text-right font-bold tabular-nums">142.0</td>
+              </tr>
+              <tr class="hover:bg-surface-container-low/30 transition-colors">
+                <td class="px-6 py-3.5 font-medium">Birgitta Lindqvist</td>
+                <td class="px-6 py-3.5">
+                  <span
+                    class="bg-secondary-container text-on-secondary-fixed rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
+                    >Mek</span
+                  >
+                </td>
+                <td class="text-on-surface-variant px-6 py-3.5">Structures</td>
+                <td class="text-on-surface-variant px-6 py-3.5">Project Odin</td>
+                <td class="text-on-surface-variant px-6 py-3.5">Aug 2024</td>
+                <td class="px-6 py-3.5 text-right font-bold tabular-nums">160.5</td>
+              </tr>
+              <tr class="hover:bg-surface-container-low/30 transition-colors">
+                <td class="px-6 py-3.5 font-medium">Johan Eriksson</td>
+                <td class="px-6 py-3.5">
+                  <span
+                    class="bg-secondary-container text-on-secondary-fixed rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
+                    >Elnik</span
+                  >
+                </td>
+                <td class="text-on-surface-variant px-6 py-3.5">Battery Mgmt</td>
+                <td class="text-on-surface-variant px-6 py-3.5">Project Aurora</td>
+                <td class="text-on-surface-variant px-6 py-3.5">Aug 2024</td>
+                <td class="px-6 py-3.5 text-right font-bold tabular-nums">135.5</td>
+              </tr>
+              <tr class="hover:bg-surface-container-low/30 transition-colors">
+                <td class="px-6 py-3.5 font-medium">Sofia Wallin</td>
+                <td class="px-6 py-3.5">
+                  <span
+                    class="bg-secondary-container text-on-secondary-fixed rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
+                    >Mek</span
+                  >
+                </td>
+                <td class="text-on-surface-variant px-6 py-3.5">Interiors</td>
+                <td class="text-on-surface-variant px-6 py-3.5">Project Aurora</td>
+                <td class="text-on-surface-variant px-6 py-3.5">Sep 2024</td>
+                <td class="px-6 py-3.5 text-right font-bold tabular-nums">124.0</td>
+              </tr>
+              <tr class="hover:bg-surface-container-low/30 transition-colors">
+                <td class="px-6 py-3.5 font-medium">Lars Andersson</td>
+                <td class="px-6 py-3.5">
+                  <span
+                    class="bg-secondary-container text-on-secondary-fixed rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
+                    >SW</span
+                  >
+                </td>
+                <td class="text-on-surface-variant px-6 py-3.5">Control SW</td>
+                <td class="text-on-surface-variant px-6 py-3.5">Project Balder</td>
+                <td class="text-on-surface-variant px-6 py-3.5">Sep 2024</td>
+                <td class="px-6 py-3.5 text-right font-bold tabular-nums">158.0</td>
+              </tr>
+              <tr class="hover:bg-surface-container-low/30 transition-colors">
+                <td class="px-6 py-3.5 font-medium">Maria Ström</td>
+                <td class="px-6 py-3.5">
+                  <span
+                    class="bg-secondary-container text-on-secondary-fixed rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
+                    >Elnik</span
+                  >
+                </td>
+                <td class="text-on-surface-variant px-6 py-3.5">Harness Design</td>
+                <td class="text-on-surface-variant px-6 py-3.5">Project Freyja</td>
+                <td class="text-on-surface-variant px-6 py-3.5">Sep 2024</td>
+                <td class="px-6 py-3.5 text-right font-bold tabular-nums">120.0</td>
+              </tr>
+              <tr class="hover:bg-surface-container-low/30 transition-colors">
+                <td class="px-6 py-3.5 font-medium">Henrik Nyström</td>
+                <td class="px-6 py-3.5">
+                  <span
+                    class="bg-secondary-container text-on-secondary-fixed rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
+                    >SW</span
+                  >
+                </td>
+                <td class="text-on-surface-variant px-6 py-3.5">UI/UX Dev</td>
+                <td class="text-on-surface-variant px-6 py-3.5">Project Aurora</td>
+                <td class="text-on-surface-variant px-6 py-3.5">Aug 2024</td>
+                <td class="px-6 py-3.5 text-right font-bold tabular-nums">140.0</td>
+              </tr>
+              <tr class="hover:bg-surface-container-low/30 transition-colors">
+                <td class="px-6 py-3.5 font-medium">Gunilla Sjögren</td>
+                <td class="px-6 py-3.5">
+                  <span
+                    class="bg-secondary-container text-on-secondary-fixed rounded-full px-2 py-0.5 text-[10px] font-bold uppercase"
+                    >Elnik</span
+                  >
+                </td>
+                <td class="text-on-surface-variant px-6 py-3.5">Sensors Dept</td>
+                <td class="text-on-surface-variant px-6 py-3.5">Project Balder</td>
+                <td class="text-on-surface-variant px-6 py-3.5">Aug 2024</td>
+                <td class="px-6 py-3.5 text-right font-bold tabular-nums">168.0</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Table Footer Stats -->
+        <div
+          class="text-outline mt-4 flex items-center justify-between px-2 text-[11px] font-bold tracking-wider uppercase"
+        >
+          <div>Showing 8 of 145 items</div>
+          <div class="flex items-center gap-2">
+            <span class="bg-primary h-1.5 w-1.5 rounded-full"></span>
+            Total Estimated Hours: <span class="text-on-surface ml-1 tabular-nums">2,812.5</span>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

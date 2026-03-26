@@ -12,6 +12,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** OWASP #1 (Broken Access Control). With row-level tenant isolation using `organization_id`, a single forgotten WHERE clause exposes another tenant's data.
 
 **Why this project is vulnerable:**
+
 - Drizzle ORM has no built-in mechanism to enforce that every query includes a `tenantId` filter. There is no middleware/interceptor that throws if a query omits the tenant filter.
 - 23 modules with ~75 service functions = 75+ places to forget the filter.
 - JOIN queries are especially dangerous: joining allocations to persons without filtering both tables on `organization_id` can leak rows.
@@ -19,6 +20,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Warning signs:** Any service function that takes raw IDs without also taking/validating `organizationId`. Any query that uses `.where(eq(table.id, id))` without also filtering on org.
 
 **Prevention:**
+
 - Create a `withTenant(db, orgId)` wrapper that returns a scoped query builder, used by every service function.
 - Add a database-level PostgreSQL RLS policy as a safety net even if the app layer also filters. Use `SET app.current_tenant` per request and enforce with RLS USING clause.
 - Write a lint rule or test that greps all `.select()` / `.update()` / `.delete()` calls and asserts `organization_id` is present.
@@ -29,6 +31,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** Every new table with `organization_id` needs its own RLS policy. Forgetting one table creates a silent data leak. PostgreSQL table owners bypass RLS by default.
 
 **Prevention:**
+
 - Use `FORCE ROW LEVEL SECURITY` on all tenant-scoped tables so even the table owner is subject to policies.
 - Add a migration-time check: a script that lists all tables with an `organization_id` column and verifies each has an RLS policy enabled.
 - Keep a checklist in the migration template.
@@ -39,6 +42,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** With Neon's PgBouncer connection pooling, if you set `app.current_tenant` via `SET` on a pooled connection, that context can leak to the next request that reuses that connection. This is the #1 cause of RLS-based multi-tenant data leaks in production.
 
 **Prevention:**
+
 - Use `SET LOCAL` (transaction-scoped) instead of `SET` (session-scoped) so the context is automatically cleared when the transaction ends.
 - Always wrap tenant-scoped queries in explicit transactions.
 - Alternatively, pass tenant ID as a query parameter rather than relying on session variables.
@@ -51,6 +55,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Warning signs:** Cache keys like `["persons"]` instead of `["persons", orgId]`. A user who belongs to two organizations sees stale data after switching.
 
 **Prevention:**
+
 - Establish a convention: every TanStack Query key starts with `[orgId, ...]`.
 - Clear the query cache on organization switch (`queryClient.clear()` in the Clerk org switch handler).
 - **Phase:** Foundation (Phase 1).
@@ -60,6 +65,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** The platform admin uses separate JWT auth from Clerk. If admin endpoints don't properly validate the admin JWT, or if admin routes are accessible with a Clerk session, an attacker could escalate privileges.
 
 **Prevention:**
+
 - Admin routes on a completely separate route prefix (`/admin/...`) with its own middleware that rejects Clerk tokens.
 - Never share service functions between tenant-scoped and admin-scoped code without explicit tenant parameter validation.
 - **Phase:** Foundation (Phase 1).
@@ -73,12 +79,14 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** 500 persons x 36 month columns = 18,000 cells per person grid view. While AG Grid handles this natively via row/column virtualization, React-specific anti-patterns destroy performance.
 
 **Common mistakes:**
+
 - Passing a new `rowData` array reference on every render (triggers full grid refresh).
 - Using heavy React components as cell renderers (each mounted in its own React root).
 - Using `autoHeight` on rows (creates complex DOM per cell).
 - Not enabling `immutableData` / `getRowId` (AG Grid can't diff efficiently).
 
 **Prevention:**
+
 - Use `getRowId` callback so AG Grid tracks rows by identity, not index.
 - Memoize `rowData` and `columnDefs` with `useMemo`.
 - Prefer plain JS cell renderers over React component renderers where possible.
@@ -91,6 +99,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** Neon compute scales to zero by default. First request after idle wakes the compute in 300-500ms. For a capacity planner where users check dashboards in the morning, every day starts with a cold start.
 
 **Prevention:**
+
 - Disable scale-to-zero on the production branch (Neon setting). Keeps compute warm. Cost: ~$19/month for always-on smallest compute.
 - Use Neon's serverless driver (`@neondatabase/serverless`) with WebSocket connections for edge functions, and pooled connection string for server-side rendering.
 - Set connection timeout to 10s (not default 5s) during development to survive cold starts without errors.
@@ -101,6 +110,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** Loading the Person Input Form requires: person data + all allocations for that person + all project names + target hours. Naive implementation makes one query per project row.
 
 **Prevention:**
+
 - Single query with JOIN: load all allocations for a person in one query, grouped by project.
 - Preload project names in a separate query (they change rarely, cache aggressively).
 - **Phase:** Person Input Form (Phase 1).
@@ -110,6 +120,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** Importing 500 persons with 12-month allocations = potentially 500 x N_projects x 12 allocation rows. A naive row-by-row insert becomes thousands of individual INSERTs.
 
 **Prevention:**
+
 - Use Drizzle's batch insert (`db.insert(allocations).values([...])`) with chunks of 500-1000 rows.
 - Wrap entire import in a single transaction for atomicity and performance.
 - Show progress to user (WebSocket or polling) for imports > 100 rows.
@@ -120,6 +131,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** Navigating between persons (prev/next) triggers a full data refetch each time if `staleTime` is too low.
 
 **Prevention:**
+
 - Set `staleTime: 30_000` (30s) for allocation data. The user who just loaded it likely hasn't changed it.
 - Prefetch adjacent persons (`queryClient.prefetchQuery`) on navigation for instant prev/next.
 - **Phase:** Person Input Form (Phase 1).
@@ -131,6 +143,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 ### P-INT-1: AG Grid Community Missing Features That Bite Later
 
 **Enterprise-only features you will eventually want but cannot use:**
+
 - **Server-Side Row Model**: Not needed at 500 rows, but if a tenant hits 2,000+ persons, client-side model struggles. Community only has Client-Side and Infinite row models.
 - **Clipboard (paste)**: Community supports copy but paste from clipboard is Enterprise-only. For a spreadsheet-replacement app, users will expect Ctrl+V to work. This is probably the single most painful limitation.
 - **Row Grouping / Pivoting**: Cannot group by department or discipline in the grid. Must build custom UI.
@@ -140,6 +153,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 - **Status Bar / Aggregation Footer**: Cannot show sum/average in a footer row natively.
 
 **Workarounds:**
+
 - Paste: Intercept `paste` browser event, parse clipboard text (tab-separated), and call `applyTransaction` to update cells. ~50 lines of custom code.
 - Excel export: Use SheetJS to build `.xlsx` from grid data (already in the stack).
 - Row grouping: Implement as a filtered view with custom UI, not grid-native grouping.
@@ -153,11 +167,13 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** Swedish headers (Avdelning, Befattning, Efternamn) with characters like A-O-A will corrupt if the Excel file is saved in older `.xls` (BIFF5/BIFF8) format or CSV without BOM.
 
 **Specific failure modes:**
+
 - `.xls` files (not `.xlsx`) use codepage-based encoding. SheetJS defaults to UTF-8 but older Excel saves as Windows-1252. "vagskran" becomes "vA$?gskran".
 - CSV files without UTF-8 BOM: Swedish characters silently corrupt.
 - Header matching fails: if "Avdelning" is encoded differently, the column mapper won't recognize it, and the import silently drops that column.
 
 **Prevention:**
+
 - Always specify `codepage: 65001` (UTF-8) when reading with SheetJS.
 - Normalize headers: trim whitespace, lowercase, and use a fuzzy/alias map (`{"avdelning": "department", "department": "department", "dept": "department"}`).
 - After reading, validate that expected columns were found. If < 50% of expected columns match, warn the user about possible encoding issues.
@@ -167,6 +183,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 ### P-INT-3: SheetJS Edge Cases in Real-World Excel Files
 
 **Risk:** Users' Excel files are messy. Production incidents from:
+
 - **Merged cells**: SheetJS unmerges them but only puts the value in the top-left cell. Other cells become `undefined`.
 - **Hidden rows/columns**: SheetJS reads them by default. Hidden "template" rows get imported as real data.
 - **Multiple sheets**: User puts data on Sheet2 but app reads Sheet1.
@@ -176,6 +193,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 - **Numbers as strings**: "100" stored as text vs. 100 as number.
 
 **Prevention:**
+
 - Read with `{cellDates: true, cellNF: true}` to get proper date objects.
 - Filter out rows where all relevant columns are empty.
 - Show preview step in import wizard: let user confirm data before committing.
@@ -188,11 +206,13 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** When a user logs in, `auth().orgId` can be `null` if no organization is active. The user might have multiple orgs or none. Every API route that does `auth().orgId` will throw or return wrong data if this isn't handled.
 
 **Specific scenarios:**
+
 - New user signs up but hasn't created/joined an org yet -> `orgId` is null.
 - User switches org via `<OrganizationSwitcher>` -> brief window where `orgId` reflects old org during the handshake.
 - Clerk middleware detects org slug mismatch in URL and attempts activation, which can fail silently if user isn't a member of that org.
 
 **Prevention:**
+
 - Wrap all API routes: if `!orgId`, return 403 with a clear error message ("No organization selected").
 - In middleware, redirect users without an active org to an org selection page.
 - Use `organizationSyncOptions` in `clerkMiddleware()` to sync org from URL slug.
@@ -202,11 +222,13 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 ### P-INT-5: Drizzle ORM Migration Footguns
 
 **Risk:** Drizzle's `drizzle-kit push` (dev mode) and `drizzle-kit generate` (migration mode) can produce destructive migrations:
+
 - Renaming a column generates DROP + ADD (data loss) instead of ALTER RENAME.
 - Changing a column type can silently drop data.
 - No built-in "are you sure?" for destructive changes.
 
 **Prevention:**
+
 - Always review generated SQL before applying migrations.
 - Never use `push` in production; only use `generate` + `migrate`.
 - Back up the database before running migrations (Neon has point-in-time recovery).
@@ -218,6 +240,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** Vercel Pro has a 60-second function timeout. A 500-person Excel import with validation against DB (check for duplicates, validate projects exist) can exceed this.
 
 **Prevention:**
+
 - Process imports in chunks with progress tracking.
 - Consider Vercel's streaming responses or background functions for long imports.
 - Keep the serverless function bundle small: SheetJS is ~1MB, ensure it's not duplicated across routes.
@@ -234,6 +257,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Warning signs:** Spending more than 2 weeks on auth/infrastructure before the Person Input Form works. Building features beyond MVP before first user test.
 
 **Prevention:**
+
 - Phase 1 must be: auth + one person grid + import. Nothing else.
 - Set a calendar deadline for first user test (not feature-complete, just usable).
 - The 270-item build checklist is a reference, not a sequential task list.
@@ -243,6 +267,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** Without code review, security bugs (missing tenant filter), performance bugs (N+1 queries), and logic bugs ship directly to production.
 
 **Prevention:**
+
 - Use AI agent as code reviewer: before merging, have the agent review for tenant isolation, error handling, and performance patterns.
 - Write integration tests for critical paths: tenant isolation, import, and allocation CRUD.
 - Use TypeScript strict mode and ESLint with security rules.
@@ -252,6 +277,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** If you get sick, lose motivation, or context-switch for 2 weeks, there's no one to maintain the service. Customers on a SaaS expect uptime.
 
 **Prevention:**
+
 - Comprehensive error monitoring (Sentry) from day 1.
 - Automated health checks and uptime monitoring.
 - Keep the architecture simple enough that you (or an AI agent) can resume after a gap.
@@ -262,6 +288,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** Solo developers test what they built, not what users will do. Edge cases in Excel import, concurrent editing, org switching, and browser compatibility go untested.
 
 **Prevention:**
+
 - Collect 5-10 real Excel files from potential users before building the import wizard.
 - Test with: Chrome, Firefox, Safari. AG Grid has known Safari quirks.
 - Write error-path tests: what happens when the DB is down? When Clerk is slow? When the Excel file is 50MB?
@@ -271,6 +298,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** Spending time on caching strategies, CDN configuration, or database tuning before having 10 users. Meanwhile, basic things like error messages, loading states, and empty states are missing.
 
 **Prevention:**
+
 - Rule: no performance optimization until a real user reports slowness or monitoring shows a problem.
 - Invest time in UX polish (loading skeletons, error boundaries, empty states) before infrastructure optimization.
 
@@ -279,6 +307,7 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 **Risk:** No logging strategy, no error tracking, no backup verification, no monitoring. First production incident becomes a crisis.
 
 **Prevention:**
+
 - Sentry from day 1 (already in stack).
 - Structured logging with tenant context in every log line.
 - Verify Neon's point-in-time recovery actually works by doing a test restore.
@@ -290,43 +319,43 @@ Stack: Next.js 15, PostgreSQL/Neon, Drizzle ORM, AG Grid Community, Clerk, Sheet
 
 ### Foundation Phase (Phase 1 - Before Any Features)
 
-| Pitfall | Prevention | Effort |
-|---------|-----------|--------|
-| P-CRIT-1: Missing tenant filter | `withTenant()` wrapper + RLS safety net | 1 day |
-| P-CRIT-2: RLS gaps on new tables | Migration template with RLS checklist | 2 hours |
-| P-CRIT-3: Connection pool contamination | `SET LOCAL` in transactions | 2 hours |
-| P-CRIT-4: Cache poisoning | `orgId` in all query keys + cache clear on switch | 2 hours |
-| P-CRIT-5: Admin JWT bypass | Separate middleware, separate route prefix | 4 hours |
-| P-INT-4: Clerk orgId null | Middleware redirect + API guard | 2 hours |
-| P-SOLO-6: No monitoring | Sentry + health check endpoint | 2 hours |
+| Pitfall                                 | Prevention                                        | Effort  |
+| --------------------------------------- | ------------------------------------------------- | ------- |
+| P-CRIT-1: Missing tenant filter         | `withTenant()` wrapper + RLS safety net           | 1 day   |
+| P-CRIT-2: RLS gaps on new tables        | Migration template with RLS checklist             | 2 hours |
+| P-CRIT-3: Connection pool contamination | `SET LOCAL` in transactions                       | 2 hours |
+| P-CRIT-4: Cache poisoning               | `orgId` in all query keys + cache clear on switch | 2 hours |
+| P-CRIT-5: Admin JWT bypass              | Separate middleware, separate route prefix        | 4 hours |
+| P-INT-4: Clerk orgId null               | Middleware redirect + API guard                   | 2 hours |
+| P-SOLO-6: No monitoring                 | Sentry + health check endpoint                    | 2 hours |
 
 ### Person Input Form Phase
 
-| Pitfall | Prevention | Effort |
-|---------|-----------|--------|
-| P-PERF-1: Grid re-renders | `getRowId`, memoization, plain JS renderers | Ongoing |
-| P-INT-1: AG Grid paste missing | Custom paste handler via browser event | 4 hours |
-| P-INT-1: AG Grid export missing | SheetJS-based `.xlsx` export | 2 hours |
-| P-PERF-3: N+1 queries | Single JOIN query for allocations | 1 hour |
-| P-PERF-5: Over-fetching on nav | staleTime + prefetch adjacent | 1 hour |
+| Pitfall                         | Prevention                                  | Effort  |
+| ------------------------------- | ------------------------------------------- | ------- |
+| P-PERF-1: Grid re-renders       | `getRowId`, memoization, plain JS renderers | Ongoing |
+| P-INT-1: AG Grid paste missing  | Custom paste handler via browser event      | 4 hours |
+| P-INT-1: AG Grid export missing | SheetJS-based `.xlsx` export                | 2 hours |
+| P-PERF-3: N+1 queries           | Single JOIN query for allocations           | 1 hour  |
+| P-PERF-5: Over-fetching on nav  | staleTime + prefetch adjacent               | 1 hour  |
 
 ### Import Wizard Phase
 
-| Pitfall | Prevention | Effort |
-|---------|-----------|--------|
-| P-INT-2: Swedish encoding | codepage setting + fuzzy header matching | 4 hours |
-| P-INT-3: Excel edge cases | Preview step + validation + empty row filtering | 1 day |
-| P-PERF-4: Bulk insert perf | Batch inserts in transaction | 2 hours |
-| P-INT-6: Vercel timeout | Chunked processing with progress | 4 hours |
+| Pitfall                    | Prevention                                      | Effort  |
+| -------------------------- | ----------------------------------------------- | ------- |
+| P-INT-2: Swedish encoding  | codepage setting + fuzzy header matching        | 4 hours |
+| P-INT-3: Excel edge cases  | Preview step + validation + empty row filtering | 1 day   |
+| P-PERF-4: Bulk insert perf | Batch inserts in transaction                    | 2 hours |
+| P-INT-6: Vercel timeout    | Chunked processing with progress                | 4 hours |
 
 ### Ongoing / Every Phase
 
-| Pitfall | Prevention | Effort |
-|---------|-----------|--------|
-| P-INT-5: Drizzle migrations | Review generated SQL, test on Neon branch | 15 min/migration |
-| P-SOLO-1: Scope creep | Calendar deadline for first user test | Discipline |
-| P-SOLO-2: No code review | AI agent review before merge | 10 min/PR |
-| P-SOLO-4: Happy path only | Collect real Excel files, test error paths | Ongoing |
+| Pitfall                     | Prevention                                 | Effort           |
+| --------------------------- | ------------------------------------------ | ---------------- |
+| P-INT-5: Drizzle migrations | Review generated SQL, test on Neon branch  | 15 min/migration |
+| P-SOLO-1: Scope creep       | Calendar deadline for first user test      | Discipline       |
+| P-SOLO-2: No code review    | AI agent review before merge               | 10 min/PR        |
+| P-SOLO-4: Happy path only   | Collect real Excel files, test error paths | Ongoing          |
 
 ---
 

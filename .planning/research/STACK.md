@@ -5,23 +5,23 @@
 
 ## Recommended Stack
 
-| Layer | ARCHITECTURE.md Choice | Recommended (March 2026) | Version | Confidence | Action |
-|-------|----------------------|--------------------------|---------|------------|--------|
-| Framework | Next.js 15 | **Next.js 16.2** | 16.2.x | HIGH | Upgrade |
-| Language | TypeScript 5.x | TypeScript 5.x | 5.7+ | HIGH | Keep |
-| Database | PostgreSQL 16 on Neon | PostgreSQL 17 on Neon | 17 | HIGH | Upgrade |
-| ORM | Drizzle 0.35+ | Drizzle 0.45.x (stable) | 0.45.1 | HIGH | Upgrade, skip v1 beta |
-| Auth | Clerk | Clerk (@clerk/nextjs v6) | 6.x | HIGH | Keep |
-| Grid | AG Grid Community 32.x | **AG Grid Community 35.x** | 35.2.0 | HIGH | Upgrade |
-| Styling | Tailwind CSS 4.x | Tailwind CSS 4.x | 4.1+ | HIGH | Keep |
-| State | TanStack Query 5.x | TanStack Query 5.x | 5.95.0 | HIGH | Keep |
-| Validation | Zod 3.x | **Zod 4.x** | 4.3.6 | HIGH | Upgrade |
-| Excel | SheetJS 0.20+ | SheetJS 0.20.3 (CDN) | 0.20.3 | MEDIUM | Keep, install from CDN |
-| Monitoring | Sentry | Sentry (@sentry/nextjs) | latest | HIGH | Keep |
-| Hosting | Vercel Pro | Vercel Pro | - | HIGH | Keep |
-| CI/CD | GitHub Actions | GitHub Actions | - | HIGH | Keep |
-| Linting | (not specified) | **Biome 2.x** or ESLint 9 | 2.3 / 9.x | MEDIUM | Add |
-| Testing | (not specified) | **Vitest + Playwright** | latest | HIGH | Add |
+| Layer      | ARCHITECTURE.md Choice | Recommended (March 2026)   | Version   | Confidence | Action                 |
+| ---------- | ---------------------- | -------------------------- | --------- | ---------- | ---------------------- |
+| Framework  | Next.js 15             | **Next.js 16.2**           | 16.2.x    | HIGH       | Upgrade                |
+| Language   | TypeScript 5.x         | TypeScript 5.x             | 5.7+      | HIGH       | Keep                   |
+| Database   | PostgreSQL 16 on Neon  | PostgreSQL 17 on Neon      | 17        | HIGH       | Upgrade                |
+| ORM        | Drizzle 0.35+          | Drizzle 0.45.x (stable)    | 0.45.1    | HIGH       | Upgrade, skip v1 beta  |
+| Auth       | Clerk                  | Clerk (@clerk/nextjs v6)   | 6.x       | HIGH       | Keep                   |
+| Grid       | AG Grid Community 32.x | **AG Grid Community 35.x** | 35.2.0    | HIGH       | Upgrade                |
+| Styling    | Tailwind CSS 4.x       | Tailwind CSS 4.x           | 4.1+      | HIGH       | Keep                   |
+| State      | TanStack Query 5.x     | TanStack Query 5.x         | 5.95.0    | HIGH       | Keep                   |
+| Validation | Zod 3.x                | **Zod 4.x**                | 4.3.6     | HIGH       | Upgrade                |
+| Excel      | SheetJS 0.20+          | SheetJS 0.20.3 (CDN)       | 0.20.3    | MEDIUM     | Keep, install from CDN |
+| Monitoring | Sentry                 | Sentry (@sentry/nextjs)    | latest    | HIGH       | Keep                   |
+| Hosting    | Vercel Pro             | Vercel Pro                 | -         | HIGH       | Keep                   |
+| CI/CD      | GitHub Actions         | GitHub Actions             | -         | HIGH       | Keep                   |
+| Linting    | (not specified)        | **Biome 2.x** or ESLint 9  | 2.3 / 9.x | MEDIUM     | Add                    |
+| Testing    | (not specified)        | **Vitest + Playwright**    | latest    | HIGH       | Add                    |
 
 ## Validation Notes
 
@@ -30,12 +30,14 @@
 Next.js 16.0 was released October 2025, with 16.2 following in March 2026. **Next.js 15 is now two major versions behind.**
 
 Key reasons to upgrade:
+
 - **Turbopack stable** for both dev and production builds (now the default bundler). ~400% faster `next dev` startup in 16.2.
 - **PPR (Partial Pre-Rendering)** is production-ready with cache components.
 - **React 19.2** integration with View Transitions and Activity features.
 - **Security**: CVE-2025-29927 (critical) requires Next.js 15.2.3+ minimum. CVE-2025-66478 in December 2025. Staying on latest is safest.
 
 Breaking changes from 15 to 16:
+
 - All async request APIs (`cookies()`, `headers()`, `params`, `searchParams`) now **must** be awaited; synchronous access fully removed.
 - `middleware.ts` filename deprecated, renamed to `proxy.ts`.
 - Automated codemods available: `npx @next/codemod@latest upgrade`.
@@ -53,6 +55,7 @@ Neon supports PostgreSQL 17 (and is adding 18 support). PG 17 offers better JSON
 Drizzle v1.0.0-beta.2 was released February 2025 but is **explicitly beta** with known breakage. The stable branch is at 0.45.1 (December 2025). Use this.
 
 Key improvements since 0.35:
+
 - Schema introspection reduced from 10s to <1s.
 - Validator packages consolidated into drizzle-orm (no separate `drizzle-zod` peer dep needed).
 - Identity columns now preferred over serial (PostgreSQL best practice).
@@ -63,6 +66,7 @@ Key improvements since 0.35:
 ### Clerk: Keep, Use @clerk/nextjs v6
 
 @clerk/nextjs v6 is mature and purpose-built for Next.js 15+. Key notes:
+
 - Requires Next.js 15.2.8+ and Node.js 20.9.0+.
 - `auth()` is now async (aligns with Next.js async APIs).
 - `ClerkProvider` no longer forces dynamic rendering by default -- enables PPR.
@@ -73,6 +77,7 @@ Key improvements since 0.35:
 ### AG Grid: Upgrade to 35.x (was 32.x)
 
 AG Grid is now at 35.2.0. Version 32 is three major versions behind. Notable changes:
+
 - v33 had **significant breaking changes** (modularization, reduced bundle size).
 - v35 adds filtering named date ranges, formula editor, BigInt support.
 - **Codemods available** from v31+ to automate migration.
@@ -83,6 +88,7 @@ AG Grid is now at 35.2.0. Version 32 is three major versions behind. Notable cha
 ### Tailwind CSS 4.x: Keep
 
 Tailwind v4.0 released January 2025, v4.1 April 2025. Current and stable.
+
 - Ground-up rewrite: 5x faster full builds, 100x faster incremental.
 - Uses CSS cascade layers, `@property`, and `color-mix()`.
 - Simplified setup: single CSS import, zero config.
@@ -97,6 +103,7 @@ At v5.95.0 and actively maintained. No v6 on the horizon. Features used in this 
 Zod 4.0 released July 2025, currently at 4.3.6. The `zod` npm package from v3.25.0 includes both Zod 3 and 4 at their respective subpaths, enabling gradual migration.
 
 Zod 4 improvements:
+
 - Significantly better performance and smaller bundle size.
 - Drizzle ORM integrates with Zod for schema validation (consolidated in recent Drizzle versions).
 - Ecosystem dominance vs alternatives (Valibot, ArkType) means best library support.
@@ -106,6 +113,7 @@ Zod 4 improvements:
 SheetJS 0.20.3 is the latest. **Important**: The npm `xlsx` package is stale at 0.18.5 (4 years old). Modern versions are distributed via `https://cdn.sheetjs.com`.
 
 Install with:
+
 ```bash
 npm install --save https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 ```
@@ -113,6 +121,7 @@ npm install --save https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
 ### Sentry: Keep
 
 @sentry/nextjs has mature Next.js integration with a wizard setup (`npx @sentry/wizard@latest -i nextjs`). Supports:
+
 - Server Components error capture via `onRequestError` hook in `instrumentation.ts`.
 - Auto-instrumented routes and API calls.
 - Session replay and performance tracing.
@@ -169,26 +178,29 @@ Minimum Next.js 13.2.0 required (well below our target).
 
 ### Testing
 
-| Tool | Purpose | Install |
-|------|---------|---------|
-| **Vitest** | Unit + component tests | `pnpm add -D vitest @vitejs/plugin-react jsdom` |
+| Tool                      | Purpose                  | Install                                                                                    |
+| ------------------------- | ------------------------ | ------------------------------------------------------------------------------------------ |
+| **Vitest**                | Unit + component tests   | `pnpm add -D vitest @vitejs/plugin-react jsdom`                                            |
 | **React Testing Library** | Component test utilities | `pnpm add -D @testing-library/react @testing-library/jest-dom @testing-library/user-event` |
-| **Playwright** | E2E tests | `pnpm add -D @playwright/test` |
-| **MSW** | API mocking | `pnpm add -D msw` |
+| **Playwright**            | E2E tests                | `pnpm add -D @playwright/test`                                                             |
+| **MSW**                   | API mocking              | `pnpm add -D msw`                                                                          |
 
 Notes:
+
 - Vitest cannot test async Server Components directly. Use Playwright for those.
 - MSW 2.x for mocking API routes and external services in tests.
 
 ### Linting & Formatting
 
 **Option A: Biome (recommended for new projects)**
+
 - 10-25x faster than ESLint + Prettier.
 - Single binary, single config file.
 - 97% Prettier-compatible formatting.
 - **Caveat**: Does not yet support `eslint-plugin-next` or `eslint-plugin-react-hooks` framework-specific rules.
 
 **Option B: ESLint 9 + Prettier (safer for Next.js)**
+
 - Full `eslint-plugin-next` support for Next.js-specific linting.
 - `eslint-plugin-react-hooks` catches hooks rule violations.
 - More configuration overhead but complete coverage.
@@ -197,13 +209,13 @@ Notes:
 
 ### Other Dev Tools
 
-| Tool | Purpose |
-|------|---------|
-| **pnpm** | Package manager (faster, stricter than npm) |
-| **Husky + lint-staged** | Pre-commit hooks for linting/formatting |
-| **knip** | Find unused dependencies, exports, and files |
-| **tsx** | Run TypeScript scripts directly (for seed scripts, etc.) |
-| **dotenv-cli** | Manage environment variables for local dev |
+| Tool                    | Purpose                                                  |
+| ----------------------- | -------------------------------------------------------- |
+| **pnpm**                | Package manager (faster, stricter than npm)              |
+| **Husky + lint-staged** | Pre-commit hooks for linting/formatting                  |
+| **knip**                | Find unused dependencies, exports, and files             |
+| **tsx**                 | Run TypeScript scripts directly (for seed scripts, etc.) |
+| **dotenv-cli**          | Manage environment variables for local dev               |
 
 ### Recommended package.json Scripts
 
@@ -227,19 +239,19 @@ Notes:
 
 ## What NOT to Use
 
-| Technology | Reason |
-|-----------|--------|
-| **Prisma** | Heavier than Drizzle, generates client code, slower cold starts on serverless. Drizzle is the correct choice for Neon serverless. |
-| **NextAuth / Auth.js** | More DIY than Clerk for multi-tenant org management. Clerk's organization primitives (invites, roles, org switching) would take weeks to replicate. |
-| **Redux / Zustand for server state** | TanStack Query handles server state. Only add Zustand if you need complex client-only UI state (unlikely for this app). |
-| **Jest** | Vitest is faster, simpler config, native ESM support. Jest requires more setup for TypeScript + ESM. |
-| **Cypress** | Playwright is faster, lighter, better DX for E2E. Cypress has larger bundle and slower execution. |
-| **AG Grid Enterprise** | $999/dev. Community edition covers all needed features (cell editing, clipboard, keyboard nav, filtering). Excel export handled by SheetJS. |
-| **Drizzle v1 beta** | Explicitly unstable. Known breakage. Use 0.45.x stable until v1 GA. |
-| **npm `xlsx` package** | Stale at 0.18.5. Install from SheetJS CDN instead (`cdn.sheetjs.com`). |
-| **Supabase** | Tempting but adds unnecessary abstraction over Postgres. Neon is purpose-built for serverless Postgres with better Drizzle integration and lower pricing post-Databricks acquisition. |
-| **tRPC** | Adds complexity for a solo-dev project. Next.js Server Actions + API routes with Zod validation achieve the same type safety with less abstraction. |
-| **Biome (for this project)** | Missing eslint-plugin-next rules. Use ESLint 9 for full Next.js coverage. Revisit when Biome adds framework support. |
+| Technology                           | Reason                                                                                                                                                                                |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Prisma**                           | Heavier than Drizzle, generates client code, slower cold starts on serverless. Drizzle is the correct choice for Neon serverless.                                                     |
+| **NextAuth / Auth.js**               | More DIY than Clerk for multi-tenant org management. Clerk's organization primitives (invites, roles, org switching) would take weeks to replicate.                                   |
+| **Redux / Zustand for server state** | TanStack Query handles server state. Only add Zustand if you need complex client-only UI state (unlikely for this app).                                                               |
+| **Jest**                             | Vitest is faster, simpler config, native ESM support. Jest requires more setup for TypeScript + ESM.                                                                                  |
+| **Cypress**                          | Playwright is faster, lighter, better DX for E2E. Cypress has larger bundle and slower execution.                                                                                     |
+| **AG Grid Enterprise**               | $999/dev. Community edition covers all needed features (cell editing, clipboard, keyboard nav, filtering). Excel export handled by SheetJS.                                           |
+| **Drizzle v1 beta**                  | Explicitly unstable. Known breakage. Use 0.45.x stable until v1 GA.                                                                                                                   |
+| **npm `xlsx` package**               | Stale at 0.18.5. Install from SheetJS CDN instead (`cdn.sheetjs.com`).                                                                                                                |
+| **Supabase**                         | Tempting but adds unnecessary abstraction over Postgres. Neon is purpose-built for serverless Postgres with better Drizzle integration and lower pricing post-Databricks acquisition. |
+| **tRPC**                             | Adds complexity for a solo-dev project. Next.js Server Actions + API routes with Zod validation achieve the same type safety with less abstraction.                                   |
+| **Biome (for this project)**         | Missing eslint-plugin-next rules. Use ESLint 9 for full Next.js coverage. Revisit when Biome adds framework support.                                                                  |
 
 ## Summary of Required Changes to ARCHITECTURE.md
 
@@ -254,6 +266,7 @@ Notes:
 9. **Add**: pnpm as package manager
 
 Sources:
+
 - [Next.js 16 Blog Post](https://nextjs.org/blog/next-16)
 - [Next.js 16.2 Blog Post](https://nextjs.org/blog/next-16-2)
 - [Next.js 16 Upgrade Guide](https://nextjs.org/docs/app/guides/upgrading/version-16)

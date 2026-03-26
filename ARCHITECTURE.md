@@ -42,65 +42,66 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 
 ### 2.1 Core Features
 
-| ID | Feature | Priority | Phase |
-|-------|---------|----------|-------|
-| F-001 | Multi-tenant organization with data isolation | Must | 1 |
-| F-002 | Auth: sign-up, login, org creation, user invitation | Must | 1 |
-| F-003 | Person Input Form with spreadsheet-grade grid editing | Must | 1 |
-| F-004 | Person navigation (prev/next, sidebar list with status dots) | Must | 1 |
-| F-005 | SUMMA + Target + Status rows with real-time calculation | Must | 1 |
-| F-006 | Bulk import with 4-step wizard (Upload, Map, Validate, Import) | Must | 1 |
-| F-007 | Column mapping with auto-detection of Swedish/English headers | Must | 1 |
-| F-008 | Import validation with error/warning categorization and suggestions | Must | 1 |
-| F-009 | Flat table view with sorting, filtering, and Excel/CSV export | Must | 1 |
-| F-010 | Admin UI for reference data (disciplines, departments, programs, projects) | Must | 1 |
-| F-011 | Person CRUD (name, discipline, department, target capacity) | Must | 1 |
-| F-012 | Project CRUD (name, program, status) | Must | 1 |
-| F-013 | Team Overview heat map (read-only, all people, color-coded) | Must | 2 |
-| F-014 | Project View (staffing per project, hours grid, summary row) | Must | 2 |
-| F-015 | Management Dashboard with KPI cards and departmental heat map | Should | 2 |
-| F-016 | Capacity alerts (overloaded, under-utilized) | Should | 2 |
-| F-017 | Discipline breakdown charts | Should | 2 |
-| F-018 | Stripe billing integration | Should | 1 |
-| F-019 | Downloadable import templates | Should | 1 |
-| F-020 | Auto-save on cell blur with conflict detection | Must | 1 |
-| F-021 | Spreadsheet interactions: clipboard, drag-to-fill, keyboard nav, range select (range fill: Should Phase 1, defer if AG Grid Community doesn't support natively) | Must | 1 |
-| F-022 | Department-level scoping (line manager sees only their people) | Should | 3 |
-| F-023 | SSO / SAML authentication | Could | 3 |
-| F-024 | Audit trail | Could | 3 |
-| F-025 | Public API | Could | 3 |
-| F-026 | Pivot/grid format import detection and unpivoting | Should | 1 |
-| F-027 | PDF export from Team Overview | Should | 2 |
-| F-028 | Onboarding wizard for new organizations | Should | 2 |
-| F-029 | Platform admin dashboard (all orgs overview, health metrics, subscription status) | Must | 1E |
-| F-030 | Tenant impersonation (log in as any user in any org for support/debugging, with full audit trail) | Must | 1E |
-| F-031 | Tenant management (create/suspend/reactivate/delete organizations) | Must | 1E |
-| F-032 | Manual subscription management (extend trials, apply credits, override plans) | Must | 1E |
-| F-033 | System health monitoring (error rates per tenant, import failure tracking, slow queries) | Should | 1E |
-| F-034 | Feature flags per tenant (beta features, premium tier features) | Should | 1E |
-| F-035 | Tenant data operations (export full tenant data, migrate, merge) | Should | 2 |
-| F-036 | Platform audit log (every platform admin action logged with who/what/when) | Must | 1E |
-| F-037 | Cross-tenant user management (reset passwords, unlock accounts, force logout) | Must | 1E |
-| F-038 | Announcements and maintenance notices to all tenants | Should | 2 |
+| ID    | Feature                                                                                                                                                         | Priority | Phase |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ----- |
+| F-001 | Multi-tenant organization with data isolation                                                                                                                   | Must     | 1     |
+| F-002 | Auth: sign-up, login, org creation, user invitation                                                                                                             | Must     | 1     |
+| F-003 | Person Input Form with spreadsheet-grade grid editing                                                                                                           | Must     | 1     |
+| F-004 | Person navigation (prev/next, sidebar list with status dots)                                                                                                    | Must     | 1     |
+| F-005 | SUMMA + Target + Status rows with real-time calculation                                                                                                         | Must     | 1     |
+| F-006 | Bulk import with 4-step wizard (Upload, Map, Validate, Import)                                                                                                  | Must     | 1     |
+| F-007 | Column mapping with auto-detection of Swedish/English headers                                                                                                   | Must     | 1     |
+| F-008 | Import validation with error/warning categorization and suggestions                                                                                             | Must     | 1     |
+| F-009 | Flat table view with sorting, filtering, and Excel/CSV export                                                                                                   | Must     | 1     |
+| F-010 | Admin UI for reference data (disciplines, departments, programs, projects)                                                                                      | Must     | 1     |
+| F-011 | Person CRUD (name, discipline, department, target capacity)                                                                                                     | Must     | 1     |
+| F-012 | Project CRUD (name, program, status)                                                                                                                            | Must     | 1     |
+| F-013 | Team Overview heat map (read-only, all people, color-coded)                                                                                                     | Must     | 2     |
+| F-014 | Project View (staffing per project, hours grid, summary row)                                                                                                    | Must     | 2     |
+| F-015 | Management Dashboard with KPI cards and departmental heat map                                                                                                   | Should   | 2     |
+| F-016 | Capacity alerts (overloaded, under-utilized)                                                                                                                    | Should   | 2     |
+| F-017 | Discipline breakdown charts                                                                                                                                     | Should   | 2     |
+| F-018 | Stripe billing integration                                                                                                                                      | Should   | 1     |
+| F-019 | Downloadable import templates                                                                                                                                   | Should   | 1     |
+| F-020 | Auto-save on cell blur with conflict detection                                                                                                                  | Must     | 1     |
+| F-021 | Spreadsheet interactions: clipboard, drag-to-fill, keyboard nav, range select (range fill: Should Phase 1, defer if AG Grid Community doesn't support natively) | Must     | 1     |
+| F-022 | Department-level scoping (line manager sees only their people)                                                                                                  | Should   | 3     |
+| F-023 | SSO / SAML authentication                                                                                                                                       | Could    | 3     |
+| F-024 | Audit trail                                                                                                                                                     | Could    | 3     |
+| F-025 | Public API                                                                                                                                                      | Could    | 3     |
+| F-026 | Pivot/grid format import detection and unpivoting                                                                                                               | Should   | 1     |
+| F-027 | PDF export from Team Overview                                                                                                                                   | Should   | 2     |
+| F-028 | Onboarding wizard for new organizations                                                                                                                         | Should   | 2     |
+| F-029 | Platform admin dashboard (all orgs overview, health metrics, subscription status)                                                                               | Must     | 1E    |
+| F-030 | Tenant impersonation (log in as any user in any org for support/debugging, with full audit trail)                                                               | Must     | 1E    |
+| F-031 | Tenant management (create/suspend/reactivate/delete organizations)                                                                                              | Must     | 1E    |
+| F-032 | Manual subscription management (extend trials, apply credits, override plans)                                                                                   | Must     | 1E    |
+| F-033 | System health monitoring (error rates per tenant, import failure tracking, slow queries)                                                                        | Should   | 1E    |
+| F-034 | Feature flags per tenant (beta features, premium tier features)                                                                                                 | Should   | 1E    |
+| F-035 | Tenant data operations (export full tenant data, migrate, merge)                                                                                                | Should   | 2     |
+| F-036 | Platform audit log (every platform admin action logged with who/what/when)                                                                                      | Must     | 1E    |
+| F-037 | Cross-tenant user management (reset passwords, unlock accounts, force logout)                                                                                   | Must     | 1E    |
+| F-038 | Announcements and maintenance notices to all tenants                                                                                                            | Should   | 2     |
 
 ### 2.2 User Roles & Journeys
 
 **Roles:**
 
-| Role | Permissions |
-|------|------------|
-| Org Owner | Full admin + billing + subscription management |
-| Admin | Manage reference data, handle imports, invite users |
-| Planner / Line Manager | Edit allocations for their people, view all data |
-| Viewer | Read-only access to all views, can export data |
+| Role                   | Permissions                                         |
+| ---------------------- | --------------------------------------------------- |
+| Org Owner              | Full admin + billing + subscription management      |
+| Admin                  | Manage reference data, handle imports, invite users |
+| Planner / Line Manager | Edit allocations for their people, view all data    |
+| Viewer                 | Read-only access to all views, can export data      |
 
 **Platform-Level Role (NOT a tenant role — separate auth system):**
 
-| Role | Permissions |
-|------|------------|
+| Role                         | Permissions                                                                                                                                                                                                                                                                                                                 |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Platform Admin (Super Admin) | Cross-tenant visibility and access. Can view all organizations, impersonate any user, manage subscriptions, suspend/reactivate orgs, view system health, manage feature flags, broadcast announcements. Authenticated via `platform_admins` table with `PLATFORM_ADMIN_SECRET`, completely separate from Clerk tenant auth. |
 
 **Journey 5: Platform Admin Resolves Support Ticket**
+
 1. Customer emails: "We accidentally deleted a project with allocations"
 2. Platform admin logs into platform admin panel (`/platform/*` routes)
 3. Searches for customer org by name → finds "Acme Engineering"
@@ -112,6 +113,7 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 9. Every action during impersonation is logged with the platform admin's identity
 
 **Journey 6: Platform Admin Onboards Enterprise Customer**
+
 1. Sales closes deal → platform admin creates org manually
 2. Sets subscription to "active" with custom plan (bypassing Stripe trial)
 3. Enables beta feature flags: "advanced-dashboard", "api-access"
@@ -119,6 +121,7 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 5. Sends welcome announcement visible only to that org
 
 **Journey 1: Line Manager Daily Workflow (Primary)**
+
 1. Log in → land on last-visited person input form
 2. Open person (from sidebar or prev/next) → review their allocation grid
 3. Edit cells: click/type hours, tab to next cell, drag-to-fill repeated values
@@ -128,6 +131,7 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 7. Go to Flat Table → filter by department → export to Excel for monthly report
 
 **Journey 2: Admin Bulk Import (Weekly/Monthly)**
+
 1. Navigate to Data tab → Bulk Import
 2. Upload .xlsx file with allocation data (Swedish headers: Namn, Projekt, Timmar, Månad, Avdelning)
 3. System auto-maps columns → admin confirms or adjusts mapping
@@ -137,6 +141,7 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 7. Import 820 rows → see success confirmation
 
 **Journey 3: Manager Dashboard Review (Phase 2)**
+
 1. Navigate to Dashboard tab
 2. See KPI cards: 240 total resources, 92% avg utilization, 12 overloaded, 4 unallocated
 3. Review departmental utilization heat map — Electronics at 98% in May (red)
@@ -144,6 +149,7 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 5. Click into overloaded department → see team overview filtered
 
 **Journey 4: New Organization Onboarding**
+
 1. Sign up with email → create organization (name, slug)
 2. Invited to add team members (email invites)
 3. Upload existing Excel spreadsheet → guided import flow
@@ -151,48 +157,48 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 
 ### 2.3 Constraints
 
-| Constraint | Detail |
-|-----------|--------|
-| Performance | Grid must render <200ms for 10 projects x 36 months. Team overview must load <1s for 500 people x 12 months. |
-| Data volume | 500 resources, 100 projects, 36-month window per tenant. Allocation table ~90K rows (at 5% density) to ~1.8M rows (100% density). Realistic: ~50-200K rows. |
-| Browser support | Chrome, Edge, Firefox latest-2. Safari latest. Desktop-first, responsive to 1024px minimum. |
-| Accessibility | WCAG 2.1 AA for navigation. Grid editing exempt from full accessibility due to spreadsheet interaction model. |
-| I18n | UI in English. Import system must handle Swedish column headers and month names. Future: full Swedish localization. |
-| Compliance | GDPR — employee names stored, requires data processing agreement. Tenant data isolation. Data residency: EU (primary). |
-| Team size | 1-3 developers. Architecture must support solo development velocity. |
-| Budget | Managed services over self-hosted. Minimize operational complexity. |
+| Constraint      | Detail                                                                                                                                                      |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Performance     | Grid must render <200ms for 10 projects x 36 months. Team overview must load <1s for 500 people x 12 months.                                                |
+| Data volume     | 500 resources, 100 projects, 36-month window per tenant. Allocation table ~90K rows (at 5% density) to ~1.8M rows (100% density). Realistic: ~50-200K rows. |
+| Browser support | Chrome, Edge, Firefox latest-2. Safari latest. Desktop-first, responsive to 1024px minimum.                                                                 |
+| Accessibility   | WCAG 2.1 AA for navigation. Grid editing exempt from full accessibility due to spreadsheet interaction model.                                               |
+| I18n            | UI in English. Import system must handle Swedish column headers and month names. Future: full Swedish localization.                                         |
+| Compliance      | GDPR — employee names stored, requires data processing agreement. Tenant data isolation. Data residency: EU (primary).                                      |
+| Team size       | 1-3 developers. Architecture must support solo development velocity.                                                                                        |
+| Budget          | Managed services over self-hosted. Minimize operational complexity.                                                                                         |
 
 ### 2.4 Integrations
 
-| Integration | Phase | Purpose |
-|------------|-------|---------|
-| Stripe | 1 | Subscription billing, plan management, usage metering |
-| Google OAuth | 1 | Social login |
-| SheetJS (xlsx) | 1 | Excel file parsing for import, Excel file generation for export |
-| Sentry | 1 | Error monitoring and performance tracking |
-| Resend / SendGrid | 1 | Transactional email (invites, password reset) |
-| Vercel Analytics | 1 | Web analytics and performance monitoring |
-| Jira | 3 | Project sync (future) |
-| HR Systems | 3 | People sync (future) |
+| Integration       | Phase | Purpose                                                         |
+| ----------------- | ----- | --------------------------------------------------------------- |
+| Stripe            | 1     | Subscription billing, plan management, usage metering           |
+| Google OAuth      | 1     | Social login                                                    |
+| SheetJS (xlsx)    | 1     | Excel file parsing for import, Excel file generation for export |
+| Sentry            | 1     | Error monitoring and performance tracking                       |
+| Resend / SendGrid | 1     | Transactional email (invites, password reset)                   |
+| Vercel Analytics  | 1     | Web analytics and performance monitoring                        |
+| Jira              | 3     | Project sync (future)                                           |
+| HR Systems        | 3     | People sync (future)                                            |
 
 ### 2.5 Open Questions / Resolved Ambiguities
 
-| # | Question | Resolution | Rationale |
-|---|----------|-----------|-----------|
-| A1 | Capacity target — fixed or per-person? | **Per-person**, defaulting to 160h/month for new resources. | PRD says "configurable per person" (150h, 160h, 80h for part-time). Screens show 150h target. Default to 160h (standard full-time) with override. |
-| A2 | Project hierarchy depth — one level enough? | **One level: Project → Program.** | Scoping doc explicitly states "single level of hierarchy above projects." Sufficient for engineering orgs. Deeper nesting adds complexity without clear value. |
-| A3 | Monthly only or weekly granularity? | **Monthly only for Phase 1-2.** Planning horizon is 12-18 months; monthly is the natural unit. | Screen 08 shows weekly inputs but that screen is an alternate view of the same data. The canonical unit is month. Weekly can be added as a sub-view in Phase 3. |
-| A4 | Historical data — view past allocations? | **Yes, read-only for past months.** Current month and forward are editable. Past months are locked. | Engineering managers need to compare plans vs. actuals. Past data should be preserved but not mutable. |
-| A5 | Project rows — fixed 5 or dynamic? | **Dynamic with minimum 1 empty row.** Add new rows via "Add project..." row at bottom. | Screen 04 shows an "Add project..." placeholder row. Dynamic is more flexible and matches spreadsheet behavior. |
-| A6 | Auto-save vs. explicit save? | **Auto-save on cell blur** with a manual "Save Worksheet" button as safety net. | Scoping doc says "auto-save on cell blur." Screen 04 shows "Save Worksheet" and "Discard Changes" buttons. Both are needed — auto-save for flow, explicit save for confidence. |
-| A7 | Top nav + side nav — which is primary? | **Top nav for primary view switching** (Input/Team/Projects/Data/Dashboard). **Side nav for contextual navigation** within views (Resources/Allocations/Capacity/Milestones/Reports + person list). | Both appear in prototypes. Top nav is consistent across all screens. Side nav content changes per context. |
-| A8 | Notification system scope? | **Phase 2.** Bell icon is present in all screens but notifications require alert infrastructure (capacity thresholds, import completion, etc.). | Placeholder icon in Phase 1. Real notifications in Phase 2 alongside dashboard. |
-| A9 | Dark mode? | **Phase 2.** Light theme first per creative direction. Dark mode class structure is in prototypes' Tailwind config. | Creative brief says "Light Theme First." Tailwind darkMode: "class" is already configured. Ship light, add dark via CSS variables toggle. |
-| A10 | AG Grid vs Handsontable? | **AG Grid Community Edition.** | See ADR-003 below for full analysis. |
-| A11 | Which sidebar items are MVP? | **Resources and Allocations only.** Capacity, Milestones, Reports are Phase 2+. | MVP focuses on person input form (allocations) and person management (resources). Other sidebar items map to Phase 2 features. |
-| A12 | "Program" field on import — is it required? | **Optional.** Projects can exist without a program. | Some orgs use flat project lists without program hierarchy. Import should accept both. |
-| A14 | Department-level scoping — Phase 2 (scope doc) or Phase 3? | **Phase 3 (intentional re-prioritization).** Scope doc specified department-level scoping as Phase 2. Architecture deliberately moves it to Phase 3 to prioritize Team Overview and Dashboard in Phase 2. This is an intentional re-prioritization, not an oversight. | Phase 2 is already dense with Team Overview (F-013), Project View (F-014), Dashboard (F-015), and Alerts (F-016). Adding role-based data filtering to every query would risk Phase 2 delivery. Department scoping is a natural fit for Phase 3 alongside SSO and audit trail (enterprise features). |
-| A13 | Free trial lifecycle — duration, expiry behavior, conversion? | **14-day free trial.** On expiry: read-only mode (users can view data and export, but cannot edit allocations, import data, or create/modify entities). Banner with upgrade CTA shown on every page. Trial-to-paid conversion via Stripe Checkout (`billingService.createCheckoutSession`). Platform admin can extend trials via `overrideSubscription(action: "extend_trial")`. | Scope doc specified "free trial with data import" but did not define expiry behavior. Read-only mode preserves data and trust while encouraging conversion. 14 days is standard SaaS trial length for tools that require data setup. |
+| #   | Question                                                      | Resolution                                                                                                                                                                                                                                                                                                                                                                       | Rationale                                                                                                                                                                                                                                                                                           |
+| --- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| A1  | Capacity target — fixed or per-person?                        | **Per-person**, defaulting to 160h/month for new resources.                                                                                                                                                                                                                                                                                                                      | PRD says "configurable per person" (150h, 160h, 80h for part-time). Screens show 150h target. Default to 160h (standard full-time) with override.                                                                                                                                                   |
+| A2  | Project hierarchy depth — one level enough?                   | **One level: Project → Program.**                                                                                                                                                                                                                                                                                                                                                | Scoping doc explicitly states "single level of hierarchy above projects." Sufficient for engineering orgs. Deeper nesting adds complexity without clear value.                                                                                                                                      |
+| A3  | Monthly only or weekly granularity?                           | **Monthly only for Phase 1-2.** Planning horizon is 12-18 months; monthly is the natural unit.                                                                                                                                                                                                                                                                                   | Screen 08 shows weekly inputs but that screen is an alternate view of the same data. The canonical unit is month. Weekly can be added as a sub-view in Phase 3.                                                                                                                                     |
+| A4  | Historical data — view past allocations?                      | **Yes, read-only for past months.** Current month and forward are editable. Past months are locked.                                                                                                                                                                                                                                                                              | Engineering managers need to compare plans vs. actuals. Past data should be preserved but not mutable.                                                                                                                                                                                              |
+| A5  | Project rows — fixed 5 or dynamic?                            | **Dynamic with minimum 1 empty row.** Add new rows via "Add project..." row at bottom.                                                                                                                                                                                                                                                                                           | Screen 04 shows an "Add project..." placeholder row. Dynamic is more flexible and matches spreadsheet behavior.                                                                                                                                                                                     |
+| A6  | Auto-save vs. explicit save?                                  | **Auto-save on cell blur** with a manual "Save Worksheet" button as safety net.                                                                                                                                                                                                                                                                                                  | Scoping doc says "auto-save on cell blur." Screen 04 shows "Save Worksheet" and "Discard Changes" buttons. Both are needed — auto-save for flow, explicit save for confidence.                                                                                                                      |
+| A7  | Top nav + side nav — which is primary?                        | **Top nav for primary view switching** (Input/Team/Projects/Data/Dashboard). **Side nav for contextual navigation** within views (Resources/Allocations/Capacity/Milestones/Reports + person list).                                                                                                                                                                              | Both appear in prototypes. Top nav is consistent across all screens. Side nav content changes per context.                                                                                                                                                                                          |
+| A8  | Notification system scope?                                    | **Phase 2.** Bell icon is present in all screens but notifications require alert infrastructure (capacity thresholds, import completion, etc.).                                                                                                                                                                                                                                  | Placeholder icon in Phase 1. Real notifications in Phase 2 alongside dashboard.                                                                                                                                                                                                                     |
+| A9  | Dark mode?                                                    | **Phase 2.** Light theme first per creative direction. Dark mode class structure is in prototypes' Tailwind config.                                                                                                                                                                                                                                                              | Creative brief says "Light Theme First." Tailwind darkMode: "class" is already configured. Ship light, add dark via CSS variables toggle.                                                                                                                                                           |
+| A10 | AG Grid vs Handsontable?                                      | **AG Grid Community Edition.**                                                                                                                                                                                                                                                                                                                                                   | See ADR-003 below for full analysis.                                                                                                                                                                                                                                                                |
+| A11 | Which sidebar items are MVP?                                  | **Resources and Allocations only.** Capacity, Milestones, Reports are Phase 2+.                                                                                                                                                                                                                                                                                                  | MVP focuses on person input form (allocations) and person management (resources). Other sidebar items map to Phase 2 features.                                                                                                                                                                      |
+| A12 | "Program" field on import — is it required?                   | **Optional.** Projects can exist without a program.                                                                                                                                                                                                                                                                                                                              | Some orgs use flat project lists without program hierarchy. Import should accept both.                                                                                                                                                                                                              |
+| A14 | Department-level scoping — Phase 2 (scope doc) or Phase 3?    | **Phase 3 (intentional re-prioritization).** Scope doc specified department-level scoping as Phase 2. Architecture deliberately moves it to Phase 3 to prioritize Team Overview and Dashboard in Phase 2. This is an intentional re-prioritization, not an oversight.                                                                                                            | Phase 2 is already dense with Team Overview (F-013), Project View (F-014), Dashboard (F-015), and Alerts (F-016). Adding role-based data filtering to every query would risk Phase 2 delivery. Department scoping is a natural fit for Phase 3 alongside SSO and audit trail (enterprise features). |
+| A13 | Free trial lifecycle — duration, expiry behavior, conversion? | **14-day free trial.** On expiry: read-only mode (users can view data and export, but cannot edit allocations, import data, or create/modify entities). Banner with upgrade CTA shown on every page. Trial-to-paid conversion via Stripe Checkout (`billingService.createCheckoutSession`). Platform admin can extend trials via `overrideSubscription(action: "extend_trial")`. | Scope doc specified "free trial with data import" but did not define expiry behavior. Read-only mode preserves data and trust while encouraging conversion. 14 days is standard SaaS trial length for tools that require data setup.                                                                |
 
 ---
 
@@ -203,10 +209,12 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 **Decision:** Build as a modular monolith within a single Next.js application.
 
 **Alternatives considered:**
+
 - Microservices (separate auth, allocation, import, export services)
 - Serverless functions (AWS Lambda / Vercel Functions per feature)
 
 **Rationale:**
+
 - Team size is 1-3 developers — microservices add deployment, networking, and debugging overhead with no benefit at this scale.
 - All features share the same database and the same domain model (allocations, people, projects). No natural service boundary exists.
 - Next.js API routes provide a clean module boundary without network hops.
@@ -217,11 +225,13 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 **Decision:** PostgreSQL on Neon (serverless) with Drizzle ORM.
 
 **Alternatives considered:**
+
 - Supabase (Postgres + auth + storage bundle)
 - PlanetScale (MySQL)
 - Prisma ORM
 
 **Rationale:**
+
 - PostgreSQL is the best fit for relational data with complex queries (aggregations across allocations, joins across tenants). The allocation table is highly relational.
 - Neon provides serverless Postgres with connection pooling, branching for dev/staging, and auto-scaling. Better cold-start than Supabase for Vercel deployments.
 - Drizzle over Prisma: Drizzle is SQL-first, generates better queries for complex aggregations (e.g., team overview requires GROUP BY person, month with conditional SUM). Prisma's abstraction can produce N+1 queries. Drizzle is also lighter weight and faster to boot.
@@ -232,11 +242,13 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 **Decision:** AG Grid Community Edition for the Person Input Form grid.
 
 **Alternatives considered:**
+
 - Handsontable (GPL + commercial license)
 - Custom React grid (react-data-grid, TanStack Table)
 - ProseMirror/Slate-based table editor
 
 **Rationale:**
+
 - AG Grid Community supports: direct cell editing, keyboard navigation (arrow keys, Tab, Enter), clipboard paste from Excel (text-based), column pinning (sticky project name column), custom cell renderers (for status row).
 - Drag-to-fill and range selection require AG Grid Enterprise. Decision: implement drag-to-fill as a custom feature on top of Community Edition (it's a mousedown + mousemove handler on a corner div). Range selection is Phase 1; range fill (type-to-fill-all) deferred to Phase 2 if custom implementation required.
 - Handsontable has a GPL license for open-source but requires a commercial license ($5K+/year) for SaaS. AG Grid Community is MIT-licensed.
@@ -247,11 +259,13 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 **Decision:** Next.js 15 with App Router, Server Components for pages, Client Components for interactive elements.
 
 **Alternatives considered:**
+
 - Next.js Pages Router
 - Remix
 - SvelteKit
 
 **Rationale:**
+
 - App Router provides server components for data-heavy pages (team overview, flat table) — reduces client bundle. Server Actions for form submissions and mutations.
 - Next.js has the strongest ecosystem for the chosen hosting (Vercel) and integrations (Clerk, Stripe).
 - Pages Router is legacy. Remix has smaller ecosystem. SvelteKit would require team Svelte expertise.
@@ -261,11 +275,13 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 **Decision:** Clerk for auth and user management.
 
 **Alternatives considered:**
+
 - Auth.js (NextAuth)
 - Supabase Auth
 - Custom JWT auth
 
 **Rationale:**
+
 - Clerk provides: pre-built sign-up/login UI, organization management (maps to tenants), user invitation flow, role management, Google OAuth, magic links. All MVP auth requirements are covered out-of-box.
 - Organization feature maps directly to multi-tenant model — each Clerk organization is a tenant.
 - Auth.js requires building invitation flows, org management, and role management from scratch.
@@ -276,11 +292,13 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 **Decision:** Tailwind CSS v4 with the design system tokens from the prototypes embedded in the config.
 
 **Alternatives considered:**
+
 - CSS Modules
 - Styled Components
 - Panda CSS
 
 **Rationale:**
+
 - All 8 screen prototypes are built with Tailwind and share an identical Tailwind config with the full Material Design 3-derived color system. Using the same tool ensures pixel-level fidelity to prototypes.
 - The 30+ color tokens (primary, surface, error, outline-variant, etc.) are already defined in the config. Copy the config, get the design system.
 - Manrope (headlines) + Inter (body) font families are already configured.
@@ -290,10 +308,12 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 **Decision:** Process Excel imports on the server using SheetJS (xlsx library). Generate Excel exports server-side.
 
 **Alternatives considered:**
+
 - Client-side processing (SheetJS in browser)
 - Dedicated worker service
 
 **Rationale:**
+
 - Import files can be large (1,200+ rows). Client-side processing blocks the UI thread and is memory-constrained on low-end devices.
 - Server-side processing allows validation against database (checking person names, project references) in the same request.
 - SheetJS runs in Node.js. No additional service needed.
@@ -303,26 +323,26 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 
 ## 4. Tech Stack
 
-| Layer | Technology | Version | Purpose |
-|-------|-----------|---------|---------|
-| **Framework** | Next.js | 15.x | Full-stack React framework, App Router |
-| **Language** | TypeScript | 5.x | Type safety across client and server |
-| **Database** | PostgreSQL | 16 | Primary data store |
-| **DB Hosting** | Neon | Serverless | Managed Postgres with connection pooling |
-| **ORM** | Drizzle | 0.35+ | SQL-first ORM, migrations, type-safe queries |
-| **Auth** | Clerk | Latest | Authentication, organizations, invites, roles |
-| **Grid** | AG Grid Community | 32.x | Spreadsheet-grade editing grid |
-| **Styling** | Tailwind CSS | 4.x | Utility-first CSS matching prototypes |
-| **State** | TanStack Query | 5.x | Server state management, caching, sync |
-| **Validation** | Zod | 3.x | Schema validation (API, forms, imports) |
-| **Excel** | SheetJS (xlsx) | 0.20+ | Excel import/export |
-| **Email** | Resend | Latest | Transactional email |
-| **Billing** | Stripe | Latest SDK | Subscriptions, metering |
-| **Monitoring** | Sentry | Latest | Error tracking, performance |
-| **Hosting** | Vercel | Pro | Frontend hosting, serverless functions |
-| **CI/CD** | GitHub Actions | - | Automated testing, deployment |
-| **Fonts** | Manrope + Inter | Variable | Design system typography via Google Fonts |
-| **Icons** | Material Symbols | Outlined | Icon set matching prototypes |
+| Layer          | Technology        | Version    | Purpose                                       |
+| -------------- | ----------------- | ---------- | --------------------------------------------- |
+| **Framework**  | Next.js           | 15.x       | Full-stack React framework, App Router        |
+| **Language**   | TypeScript        | 5.x        | Type safety across client and server          |
+| **Database**   | PostgreSQL        | 16         | Primary data store                            |
+| **DB Hosting** | Neon              | Serverless | Managed Postgres with connection pooling      |
+| **ORM**        | Drizzle           | 0.35+      | SQL-first ORM, migrations, type-safe queries  |
+| **Auth**       | Clerk             | Latest     | Authentication, organizations, invites, roles |
+| **Grid**       | AG Grid Community | 32.x       | Spreadsheet-grade editing grid                |
+| **Styling**    | Tailwind CSS      | 4.x        | Utility-first CSS matching prototypes         |
+| **State**      | TanStack Query    | 5.x        | Server state management, caching, sync        |
+| **Validation** | Zod               | 3.x        | Schema validation (API, forms, imports)       |
+| **Excel**      | SheetJS (xlsx)    | 0.20+      | Excel import/export                           |
+| **Email**      | Resend            | Latest     | Transactional email                           |
+| **Billing**    | Stripe            | Latest SDK | Subscriptions, metering                       |
+| **Monitoring** | Sentry            | Latest     | Error tracking, performance                   |
+| **Hosting**    | Vercel            | Pro        | Frontend hosting, serverless functions        |
+| **CI/CD**      | GitHub Actions    | -          | Automated testing, deployment                 |
+| **Fonts**      | Manrope + Inter   | Variable   | Design system typography via Google Fonts     |
+| **Icons**      | Material Symbols  | Outlined   | Icon set matching prototypes                  |
 
 ---
 
@@ -1038,6 +1058,7 @@ suggestMappings(headers: List<String>): List<ColumnMapping>
 ```
 
 Known header aliases:
+
 - Person Name: "Namn", "Name", "Person", "Resource", "Resurs"
 - Project: "Projekt", "Project"
 - Hours: "Timmar", "Hours", "Planerade timmar", "Planned Hours"
@@ -2062,24 +2083,25 @@ handlePaste(event: ClipboardEvent, gridApi: GridApi, orgId: String): Promise<Res
 
 ### Entity: Organization
 
-| Field | Type | Constraints |
-|-------|------|------------|
-| id | UUID | PK, auto-generated |
-| clerk_org_id | String | unique, required, Clerk organization reference |
-| name | String | required, max 100 |
-| slug | String | unique, required, max 50, lowercase, alphanumeric + hyphens |
-| subscription_status | Enum | "trial" / "active" / "past_due" / "cancelled" / "suspended", default "trial" |
-| stripe_customer_id | String | nullable, unique |
-| stripe_subscription_id | String | nullable |
-| suspended_at | Timestamp | nullable, set when org is suspended by platform admin |
-| suspended_reason | String | nullable, max 500 |
-| trial_ends_at | Timestamp | nullable, for manual trial extension by platform admin |
-| credit_balance_cents | Integer | default 0, for manual credits applied by platform admin |
-| platform_notes | String | nullable, max 2000, internal notes from platform admin |
-| created_at | Timestamp | auto-generated |
-| updated_at | Timestamp | auto-updated |
+| Field                  | Type      | Constraints                                                                  |
+| ---------------------- | --------- | ---------------------------------------------------------------------------- |
+| id                     | UUID      | PK, auto-generated                                                           |
+| clerk_org_id           | String    | unique, required, Clerk organization reference                               |
+| name                   | String    | required, max 100                                                            |
+| slug                   | String    | unique, required, max 50, lowercase, alphanumeric + hyphens                  |
+| subscription_status    | Enum      | "trial" / "active" / "past_due" / "cancelled" / "suspended", default "trial" |
+| stripe_customer_id     | String    | nullable, unique                                                             |
+| stripe_subscription_id | String    | nullable                                                                     |
+| suspended_at           | Timestamp | nullable, set when org is suspended by platform admin                        |
+| suspended_reason       | String    | nullable, max 500                                                            |
+| trial_ends_at          | Timestamp | nullable, for manual trial extension by platform admin                       |
+| credit_balance_cents   | Integer   | default 0, for manual credits applied by platform admin                      |
+| platform_notes         | String    | nullable, max 2000, internal notes from platform admin                       |
+| created_at             | Timestamp | auto-generated                                                               |
+| updated_at             | Timestamp | auto-updated                                                                 |
 
 Relationships:
+
 - Organization 1:N People (via people.organization_id)
 - Organization 1:N Projects (via projects.organization_id)
 - Organization 1:N Programs (via programs.organization_id)
@@ -2090,12 +2112,14 @@ Relationships:
 - Organization 1:N PlatformAuditLog (via platform_audit_log.target_org_id)
 
 Common queries:
+
 - getByClerkOrgId(clerkOrgId) — on every authenticated request
 - getBySlug(slug) — URL resolution
 - updateSubscription(orgId, status) — Stripe webhook
 - listAll(filters, pagination) — platform admin dashboard
 
 Indexes:
+
 - UNIQUE(clerk_org_id)
 - UNIQUE(slug)
 
@@ -2103,33 +2127,36 @@ Indexes:
 
 ### Entity: Person
 
-| Field | Type | Constraints |
-|-------|------|------------|
-| id | UUID | PK, auto-generated |
-| organization_id | UUID | FK → organizations.id, required |
-| first_name | String | required, max 100 |
-| last_name | String | required, max 100 |
-| discipline_id | UUID | FK → disciplines.id, required |
-| department_id | UUID | FK → departments.id, required |
-| target_hours_per_month | Integer | required, default 160, min 1, max 744 |
-| sort_order | Integer | default 0, used for prev/next navigation |
-| archived_at | Timestamp | nullable, set when soft-deleted |
-| created_at | Timestamp | auto-generated |
-| updated_at | Timestamp | auto-updated |
+| Field                  | Type      | Constraints                              |
+| ---------------------- | --------- | ---------------------------------------- |
+| id                     | UUID      | PK, auto-generated                       |
+| organization_id        | UUID      | FK → organizations.id, required          |
+| first_name             | String    | required, max 100                        |
+| last_name              | String    | required, max 100                        |
+| discipline_id          | UUID      | FK → disciplines.id, required            |
+| department_id          | UUID      | FK → departments.id, required            |
+| target_hours_per_month | Integer   | required, default 160, min 1, max 744    |
+| sort_order             | Integer   | default 0, used for prev/next navigation |
+| archived_at            | Timestamp | nullable, set when soft-deleted          |
+| created_at             | Timestamp | auto-generated                           |
+| updated_at             | Timestamp | auto-updated                             |
 
 Relationships:
+
 - Person N:1 Organization (via organization_id)
 - Person N:1 Discipline (via discipline_id)
 - Person N:1 Department (via department_id)
 - Person 1:N Allocations (via allocations.person_id)
 
 Common queries:
+
 - listByOrg(orgId, filters) — sidebar, admin, team overview
 - findById(orgId, personId) — input form
 - findAdjacent(orgId, currentId, direction) — prev/next nav
 - countActive(orgId) — dashboard KPI
 
 Indexes:
+
 - INDEX(organization_id, archived_at) — filtered listing
 - INDEX(organization_id, department_id) — department filtering
 - INDEX(organization_id, discipline_id) — discipline filtering
@@ -2139,28 +2166,31 @@ Indexes:
 
 ### Entity: Project
 
-| Field | Type | Constraints |
-|-------|------|------------|
-| id | UUID | PK, auto-generated |
-| organization_id | UUID | FK → organizations.id, required |
-| name | String | required, max 200 |
-| program_id | UUID | FK → programs.id, nullable |
-| status | Enum | "active" / "planned" / "archived", default "active" |
-| archived_at | Timestamp | nullable |
-| created_at | Timestamp | auto-generated |
-| updated_at | Timestamp | auto-updated |
+| Field           | Type      | Constraints                                         |
+| --------------- | --------- | --------------------------------------------------- |
+| id              | UUID      | PK, auto-generated                                  |
+| organization_id | UUID      | FK → organizations.id, required                     |
+| name            | String    | required, max 200                                   |
+| program_id      | UUID      | FK → programs.id, nullable                          |
+| status          | Enum      | "active" / "planned" / "archived", default "active" |
+| archived_at     | Timestamp | nullable                                            |
+| created_at      | Timestamp | auto-generated                                      |
+| updated_at      | Timestamp | auto-updated                                        |
 
 Relationships:
+
 - Project N:1 Organization (via organization_id)
 - Project N:1 Program (via program_id, optional)
 - Project 1:N Allocations (via allocations.project_id)
 
 Common queries:
+
 - listByOrg(orgId, filters) — dropdowns, admin
 - findById(orgId, projectId) — project view
 - listByProgram(orgId, programId) — program view
 
 Indexes:
+
 - INDEX(organization_id, status) — active project listing
 - UNIQUE(organization_id, name) — prevent duplicate project names within org
 - INDEX(program_id) — program grouping
@@ -2169,84 +2199,93 @@ Indexes:
 
 ### Entity: Program
 
-| Field | Type | Constraints |
-|-------|------|------------|
-| id | UUID | PK, auto-generated |
-| organization_id | UUID | FK → organizations.id, required |
-| name | String | required, max 200 |
-| description | String | nullable, max 500 |
-| created_at | Timestamp | auto-generated |
-| updated_at | Timestamp | auto-updated |
+| Field           | Type      | Constraints                     |
+| --------------- | --------- | ------------------------------- |
+| id              | UUID      | PK, auto-generated              |
+| organization_id | UUID      | FK → organizations.id, required |
+| name            | String    | required, max 200               |
+| description     | String    | nullable, max 500               |
+| created_at      | Timestamp | auto-generated                  |
+| updated_at      | Timestamp | auto-updated                    |
 
 Relationships:
+
 - Program N:1 Organization (via organization_id)
 - Program 1:N Projects (via projects.program_id)
 
 Common queries:
+
 - listByOrg(orgId) — dropdowns, admin
 - findById(orgId, programId)
 
 Indexes:
+
 - UNIQUE(organization_id, name)
 
 ---
 
 ### Entity: Department
 
-| Field | Type | Constraints |
-|-------|------|------------|
-| id | UUID | PK, auto-generated |
-| organization_id | UUID | FK → organizations.id, required |
-| name | String | required, max 100 |
-| created_at | Timestamp | auto-generated |
+| Field           | Type      | Constraints                     |
+| --------------- | --------- | ------------------------------- |
+| id              | UUID      | PK, auto-generated              |
+| organization_id | UUID      | FK → organizations.id, required |
+| name            | String    | required, max 100               |
+| created_at      | Timestamp | auto-generated                  |
 
 Relationships:
+
 - Department N:1 Organization
 - Department 1:N People
 
 Indexes:
+
 - UNIQUE(organization_id, name)
 
 ---
 
 ### Entity: Discipline
 
-| Field | Type | Constraints |
-|-------|------|------------|
-| id | UUID | PK, auto-generated |
-| organization_id | UUID | FK → organizations.id, required |
-| name | String | required, max 50, display name (e.g., "Software") |
-| abbreviation | String | required, max 10 (e.g., "SW", "Mek", "Elnik") |
-| created_at | Timestamp | auto-generated |
+| Field           | Type      | Constraints                                       |
+| --------------- | --------- | ------------------------------------------------- |
+| id              | UUID      | PK, auto-generated                                |
+| organization_id | UUID      | FK → organizations.id, required                   |
+| name            | String    | required, max 50, display name (e.g., "Software") |
+| abbreviation    | String    | required, max 10 (e.g., "SW", "Mek", "Elnik")     |
+| created_at      | Timestamp | auto-generated                                    |
 
 Relationships:
+
 - Discipline N:1 Organization
 - Discipline 1:N People
 
 Indexes:
+
 - UNIQUE(organization_id, abbreviation)
 
 ---
 
 ### Entity: Allocation (The Flat Table)
 
-| Field | Type | Constraints |
-|-------|------|------------|
-| id | UUID | PK, auto-generated |
-| organization_id | UUID | FK → organizations.id, required |
-| person_id | UUID | FK → people.id, required |
-| project_id | UUID | FK → projects.id, required |
-| month | Date | required, always first day of month (e.g., 2026-03-01) |
-| hours | Integer | required, min 0, max 744 |
-| created_at | Timestamp | auto-generated |
-| updated_at | Timestamp | auto-updated, used for optimistic locking |
+| Field           | Type      | Constraints                                            |
+| --------------- | --------- | ------------------------------------------------------ |
+| id              | UUID      | PK, auto-generated                                     |
+| organization_id | UUID      | FK → organizations.id, required                        |
+| person_id       | UUID      | FK → people.id, required                               |
+| project_id      | UUID      | FK → projects.id, required                             |
+| month           | Date      | required, always first day of month (e.g., 2026-03-01) |
+| hours           | Integer   | required, min 0, max 744                               |
+| created_at      | Timestamp | auto-generated                                         |
+| updated_at      | Timestamp | auto-updated, used for optimistic locking              |
 
 Relationships:
+
 - Allocation N:1 Organization (via organization_id)
 - Allocation N:1 Person (via person_id)
 - Allocation N:1 Project (via project_id)
 
 Common queries:
+
 - findByPersonAndRange(orgId, personId, startMonth, endMonth) — input form grid
 - aggregateByPerson(orgId, filters) — team overview heat map
 - findByProjectAndRange(orgId, projectId, start, end) — project view
@@ -2258,6 +2297,7 @@ Common queries:
 - disciplineUtilization(orgId) — discipline bars
 
 Indexes:
+
 - UNIQUE(organization_id, person_id, project_id, month) — prevents duplicate allocations
 - INDEX(organization_id, person_id, month) — person input form query
 - INDEX(organization_id, project_id, month) — project view query
@@ -2268,26 +2308,28 @@ Indexes:
 
 ### Entity: ImportSession (Transient)
 
-| Field | Type | Constraints |
-|-------|------|------------|
-| id | UUID | PK, auto-generated |
-| organization_id | UUID | FK → organizations.id, required |
-| user_id | String | Clerk user ID who initiated |
-| file_name | String | required |
-| status | Enum | "parsing" / "mapped" / "validated" / "importing" / "completed" / "failed" |
-| row_count | Integer | total rows in file |
-| parsed_data | JSONB | parsed file data (headers + rows) |
-| mappings | JSONB | column mappings |
-| validation_result | JSONB | validation results |
-| import_result | JSONB | final import results |
-| created_at | Timestamp | auto-generated |
-| expires_at | Timestamp | created_at + 24h |
+| Field             | Type      | Constraints                                                               |
+| ----------------- | --------- | ------------------------------------------------------------------------- |
+| id                | UUID      | PK, auto-generated                                                        |
+| organization_id   | UUID      | FK → organizations.id, required                                           |
+| user_id           | String    | Clerk user ID who initiated                                               |
+| file_name         | String    | required                                                                  |
+| status            | Enum      | "parsing" / "mapped" / "validated" / "importing" / "completed" / "failed" |
+| row_count         | Integer   | total rows in file                                                        |
+| parsed_data       | JSONB     | parsed file data (headers + rows)                                         |
+| mappings          | JSONB     | column mappings                                                           |
+| validation_result | JSONB     | validation results                                                        |
+| import_result     | JSONB     | final import results                                                      |
+| created_at        | Timestamp | auto-generated                                                            |
+| expires_at        | Timestamp | created_at + 24h                                                          |
 
 Common queries:
+
 - findById(sessionId) — resume import wizard
 - cleanup() — delete expired sessions (cron job)
 
 Indexes:
+
 - INDEX(organization_id, status)
 - INDEX(expires_at) — cleanup query
 
@@ -2295,26 +2337,29 @@ Indexes:
 
 ### Entity: PlatformAdmin
 
-| Field | Type | Constraints |
-|-------|------|------------|
-| id | UUID | PK, auto-generated |
-| email | String | unique, required, max 255 |
-| password_hash | String | required, bcrypt hash |
-| name | String | required, max 100 |
-| is_active | Boolean | required, default true |
-| last_login_at | Timestamp | nullable |
-| created_at | Timestamp | auto-generated |
-| updated_at | Timestamp | auto-updated |
+| Field         | Type      | Constraints               |
+| ------------- | --------- | ------------------------- |
+| id            | UUID      | PK, auto-generated        |
+| email         | String    | unique, required, max 255 |
+| password_hash | String    | required, bcrypt hash     |
+| name          | String    | required, max 100         |
+| is_active     | Boolean   | required, default true    |
+| last_login_at | Timestamp | nullable                  |
+| created_at    | Timestamp | auto-generated            |
+| updated_at    | Timestamp | auto-updated              |
 
 Relationships:
+
 - PlatformAdmin 1:N PlatformAuditLog (via platform_audit_log.admin_id)
 - PlatformAdmin 1:N ImpersonationSession (via impersonation_sessions.admin_id)
 
 Common queries:
+
 - findByEmail(email) — login
 - findById(id) — token verification
 
 Indexes:
+
 - UNIQUE(email)
 
 **Note:** This table is completely separate from Clerk users. Platform admins do NOT use Clerk for authentication. They have their own login flow with email/password, and JWTs signed with `PLATFORM_ADMIN_SECRET`.
@@ -2323,30 +2368,33 @@ Indexes:
 
 ### Entity: PlatformAuditLog
 
-| Field | Type | Constraints |
-|-------|------|------------|
-| id | UUID | PK, auto-generated |
-| admin_id | UUID | FK → platform_admins.id, required |
-| action | String | required, max 100 (e.g., "org_suspended", "impersonation_started", "subscription_override") |
-| target_org_id | UUID | FK → organizations.id, nullable (null for system-wide actions) |
-| target_user_id | String | nullable, Clerk user ID if action targets a specific user |
-| impersonation_session_id | UUID | FK → impersonation_sessions.id, nullable (set when action was during impersonation) |
-| details | JSONB | nullable, action-specific context (reason, before/after values, etc.) |
-| ip_address | String | nullable, max 45 |
-| user_agent | String | nullable, max 500 |
-| created_at | Timestamp | auto-generated |
+| Field                    | Type      | Constraints                                                                                 |
+| ------------------------ | --------- | ------------------------------------------------------------------------------------------- |
+| id                       | UUID      | PK, auto-generated                                                                          |
+| admin_id                 | UUID      | FK → platform_admins.id, required                                                           |
+| action                   | String    | required, max 100 (e.g., "org_suspended", "impersonation_started", "subscription_override") |
+| target_org_id            | UUID      | FK → organizations.id, nullable (null for system-wide actions)                              |
+| target_user_id           | String    | nullable, Clerk user ID if action targets a specific user                                   |
+| impersonation_session_id | UUID      | FK → impersonation_sessions.id, nullable (set when action was during impersonation)         |
+| details                  | JSONB     | nullable, action-specific context (reason, before/after values, etc.)                       |
+| ip_address               | String    | nullable, max 45                                                                            |
+| user_agent               | String    | nullable, max 500                                                                           |
+| created_at               | Timestamp | auto-generated                                                                              |
 
 Relationships:
+
 - PlatformAuditLog N:1 PlatformAdmin (via admin_id)
 - PlatformAuditLog N:1 Organization (via target_org_id, optional)
 - PlatformAuditLog N:1 ImpersonationSession (via impersonation_session_id, optional)
 
 Common queries:
+
 - findByFilters(adminId?, orgId?, action?, dateRange?, page, pageSize) — audit log viewer
 - findByImpersonationSession(sessionId) — review all actions during an impersonation
 - countByOrgAndAction(orgId, action, dateRange) — metrics
 
 Indexes:
+
 - INDEX(admin_id, created_at DESC) — admin activity history
 - INDEX(target_org_id, created_at DESC) — org action history
 - INDEX(action, created_at DESC) — action type filtering
@@ -2357,29 +2405,32 @@ Indexes:
 
 ### Entity: ImpersonationSession
 
-| Field | Type | Constraints |
-|-------|------|------------|
-| id | UUID | PK, auto-generated |
-| admin_id | UUID | FK → platform_admins.id, required |
-| target_org_id | UUID | FK → organizations.id, required |
-| target_user_id | String | required, Clerk user ID being impersonated |
-| token_hash | String | required, hashed session token |
-| started_at | Timestamp | auto-generated |
-| ended_at | Timestamp | nullable (null while active) |
-| expires_at | Timestamp | required, started_at + 1 hour (hard limit) |
-| action_count | Integer | default 0, incremented on each logged action |
+| Field          | Type      | Constraints                                  |
+| -------------- | --------- | -------------------------------------------- |
+| id             | UUID      | PK, auto-generated                           |
+| admin_id       | UUID      | FK → platform_admins.id, required            |
+| target_org_id  | UUID      | FK → organizations.id, required              |
+| target_user_id | String    | required, Clerk user ID being impersonated   |
+| token_hash     | String    | required, hashed session token               |
+| started_at     | Timestamp | auto-generated                               |
+| ended_at       | Timestamp | nullable (null while active)                 |
+| expires_at     | Timestamp | required, started_at + 1 hour (hard limit)   |
+| action_count   | Integer   | default 0, incremented on each logged action |
 
 Relationships:
+
 - ImpersonationSession N:1 PlatformAdmin (via admin_id)
 - ImpersonationSession N:1 Organization (via target_org_id)
 - ImpersonationSession 1:N PlatformAuditLog (via platform_audit_log.impersonation_session_id)
 
 Common queries:
+
 - getActiveSession(adminId) — check if admin has an active impersonation
 - findById(sessionId) — verify/end session
 - listByOrg(orgId) — audit: who impersonated this org
 
 Indexes:
+
 - INDEX(admin_id, ended_at) — active session lookup
 - INDEX(target_org_id, started_at DESC) — org impersonation history
 - INDEX(expires_at) — cleanup expired sessions
@@ -2388,26 +2439,29 @@ Indexes:
 
 ### Entity: FeatureFlag
 
-| Field | Type | Constraints |
-|-------|------|------------|
-| id | UUID | PK, auto-generated |
-| organization_id | UUID | FK → organizations.id, required |
-| flag_name | String | required, max 100 (e.g., "advanced-dashboard", "api-access", "beta-export") |
-| enabled | Boolean | required, default false |
-| set_by_admin_id | UUID | FK → platform_admins.id, required |
-| created_at | Timestamp | auto-generated |
-| updated_at | Timestamp | auto-updated |
+| Field           | Type      | Constraints                                                                 |
+| --------------- | --------- | --------------------------------------------------------------------------- |
+| id              | UUID      | PK, auto-generated                                                          |
+| organization_id | UUID      | FK → organizations.id, required                                             |
+| flag_name       | String    | required, max 100 (e.g., "advanced-dashboard", "api-access", "beta-export") |
+| enabled         | Boolean   | required, default false                                                     |
+| set_by_admin_id | UUID      | FK → platform_admins.id, required                                           |
+| created_at      | Timestamp | auto-generated                                                              |
+| updated_at      | Timestamp | auto-updated                                                                |
 
 Relationships:
+
 - FeatureFlag N:1 Organization (via organization_id)
 - FeatureFlag N:1 PlatformAdmin (via set_by_admin_id)
 
 Common queries:
+
 - getByOrg(orgId) — feature gating middleware
 - getByOrgAndFlag(orgId, flagName) — single flag check
 - listAllFlags() — admin overview
 
 Indexes:
+
 - UNIQUE(organization_id, flag_name) — one entry per flag per org
 - INDEX(flag_name) — find all orgs with a specific flag
 
@@ -2415,33 +2469,36 @@ Indexes:
 
 ### Entity: SystemAnnouncement
 
-| Field | Type | Constraints |
-|-------|------|------------|
-| id | UUID | PK, auto-generated |
-| title | String | required, max 200 |
-| body | String | required, max 2000 |
-| severity | Enum | "info" / "warning" / "critical", default "info" |
-| target_org_ids | UUID[] | nullable, if null applies to all orgs |
-| created_by_admin_id | UUID | FK → platform_admins.id, required |
-| starts_at | Timestamp | required, when to start showing |
-| expires_at | Timestamp | nullable, when to stop showing (null = manual removal) |
-| created_at | Timestamp | auto-generated |
-| updated_at | Timestamp | auto-updated |
+| Field               | Type      | Constraints                                            |
+| ------------------- | --------- | ------------------------------------------------------ |
+| id                  | UUID      | PK, auto-generated                                     |
+| title               | String    | required, max 200                                      |
+| body                | String    | required, max 2000                                     |
+| severity            | Enum      | "info" / "warning" / "critical", default "info"        |
+| target_org_ids      | UUID[]    | nullable, if null applies to all orgs                  |
+| created_by_admin_id | UUID      | FK → platform_admins.id, required                      |
+| starts_at           | Timestamp | required, when to start showing                        |
+| expires_at          | Timestamp | nullable, when to stop showing (null = manual removal) |
+| created_at          | Timestamp | auto-generated                                         |
+| updated_at          | Timestamp | auto-updated                                           |
 
 Relationships:
+
 - SystemAnnouncement N:1 PlatformAdmin (via created_by_admin_id)
 
 Common queries:
+
 - findActive(orgId?) — active announcements for a specific org (or all)
 - findAll(page, pageSize) — admin management view
 
 Indexes:
+
 - INDEX(starts_at, expires_at) — active announcement lookup
 - INDEX(created_by_admin_id) — admin's announcements
 
 ---
 
-*Note: The Organization entity's platform admin fields (`suspended_at`, `suspended_reason`, `trial_ends_at`, `credit_balance_cents`, `platform_notes`) are defined in the Organization entity above (Section 7). They are not repeated here to avoid duplication.*
+_Note: The Organization entity's platform admin fields (`suspended_at`, `suspended_reason`, `trial_ends_at`, `credit_balance_cents`, `platform_notes`) are defined in the Organization entity above (Section 7). They are not repeated here to avoid duplication._
 
 ---
 
@@ -3141,6 +3198,7 @@ User clicks cell in AllocationGrid
 ```
 
 Error branch — concurrent edit:
+
 ```
   → allocationQueries.upsert detects updated_at mismatch
     → Throw ConflictError
@@ -3151,6 +3209,7 @@ Error branch — concurrent edit:
 ```
 
 Error branch — validation failure:
+
 ```
   → allocationSchema.validate fails (hours > 744)
     → Throw ValidationError
@@ -3446,37 +3505,37 @@ Shared
 
 ### 10.2 External Dependencies (packages/services)
 
-| Package | Purpose | Version | License |
-|---------|---------|---------|---------|
-| next | Framework | 15.x | MIT |
-| react, react-dom | UI library | 19.x | MIT |
-| typescript | Type system | 5.x | Apache-2.0 |
-| drizzle-orm | ORM | 0.35+ | Apache-2.0 |
-| drizzle-kit | Migrations | 0.25+ | Apache-2.0 |
-| @neondatabase/serverless | Neon Postgres driver | Latest | Apache-2.0 |
-| @clerk/nextjs | Auth | Latest | MIT |
-| ag-grid-react, ag-grid-community | Grid component | 32.x | MIT |
-| @tanstack/react-query | Server state | 5.x | MIT |
-| zod | Validation | 3.x | MIT |
-| xlsx (SheetJS Community) | Excel I/O | 0.20+ | Apache-2.0 |
-| tailwindcss | CSS | 4.x | MIT |
-| @sentry/nextjs | Error monitoring | Latest | MIT |
-| stripe | Billing SDK | Latest | MIT |
-| resend | Email | Latest | MIT |
-| clsx | Class names | Latest | MIT |
-| date-fns | Date utilities | 3.x | MIT |
-| bcryptjs | Password hashing for platform admin accounts | 2.x | MIT |
-| jose | JWT signing/verification for platform admin tokens | 5.x | MIT |
+| Package                          | Purpose                                            | Version | License    |
+| -------------------------------- | -------------------------------------------------- | ------- | ---------- |
+| next                             | Framework                                          | 15.x    | MIT        |
+| react, react-dom                 | UI library                                         | 19.x    | MIT        |
+| typescript                       | Type system                                        | 5.x     | Apache-2.0 |
+| drizzle-orm                      | ORM                                                | 0.35+   | Apache-2.0 |
+| drizzle-kit                      | Migrations                                         | 0.25+   | Apache-2.0 |
+| @neondatabase/serverless         | Neon Postgres driver                               | Latest  | Apache-2.0 |
+| @clerk/nextjs                    | Auth                                               | Latest  | MIT        |
+| ag-grid-react, ag-grid-community | Grid component                                     | 32.x    | MIT        |
+| @tanstack/react-query            | Server state                                       | 5.x     | MIT        |
+| zod                              | Validation                                         | 3.x     | MIT        |
+| xlsx (SheetJS Community)         | Excel I/O                                          | 0.20+   | Apache-2.0 |
+| tailwindcss                      | CSS                                                | 4.x     | MIT        |
+| @sentry/nextjs                   | Error monitoring                                   | Latest  | MIT        |
+| stripe                           | Billing SDK                                        | Latest  | MIT        |
+| resend                           | Email                                              | Latest  | MIT        |
+| clsx                             | Class names                                        | Latest  | MIT        |
+| date-fns                         | Date utilities                                     | 3.x     | MIT        |
+| bcryptjs                         | Password hashing for platform admin accounts       | 2.x     | MIT        |
+| jose                             | JWT signing/verification for platform admin tokens | 5.x     | MIT        |
 
-| Service | Purpose | Tier |
-|---------|---------|------|
-| Vercel | Hosting | Pro ($20/mo) |
-| Neon | Database | Pro ($19/mo) |
-| Clerk | Auth | Pro ($25/mo) |
-| Stripe | Billing | Pay-per-use |
-| Sentry | Monitoring | Team ($26/mo) |
-| Resend | Email | Free tier → Pro |
-| GitHub | Source code, CI/CD | Team |
+| Service | Purpose            | Tier            |
+| ------- | ------------------ | --------------- |
+| Vercel  | Hosting            | Pro ($20/mo)    |
+| Neon    | Database           | Pro ($19/mo)    |
+| Clerk   | Auth               | Pro ($25/mo)    |
+| Stripe  | Billing            | Pay-per-use     |
+| Sentry  | Monitoring         | Team ($26/mo)   |
+| Resend  | Email              | Free tier → Pro |
+| GitHub  | Source code, CI/CD | Team            |
 
 ---
 
@@ -3548,75 +3607,80 @@ AppError (base)
   "error": "ERR_VALIDATION",
   "message": "Invalid allocation data",
   "details": {
-    "fields": [
-      { "field": "hours", "message": "Hours must be between 0 and 744" }
-    ]
+    "fields": [{ "field": "hours", "message": "Hours must be between 0 and 744" }]
   }
 }
 ```
 
 ### 11.2 Environment & Configuration
 
-| Variable | Required | Env | Description | Example |
-|----------|----------|-----|-------------|---------|
-| `DATABASE_URL` | Yes | All | Neon PostgreSQL connection string | `postgresql://user:pass@ep-xxx.neon.tech/dbname?sslmode=require` |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Yes | All | Clerk frontend key | `pk_test_...` |
-| `CLERK_SECRET_KEY` | Yes | All | Clerk backend key | `sk_test_...` |
-| `CLERK_WEBHOOK_SECRET` | Yes | All | Clerk webhook signing secret | `whsec_...` |
-| `STRIPE_SECRET_KEY` | Yes | Prod/Staging | Stripe API key | `sk_test_...` |
-| `STRIPE_WEBHOOK_SECRET` | Yes | Prod/Staging | Stripe webhook signing secret | `whsec_...` |
-| `STRIPE_PRICE_ID` | Yes | Prod/Staging | Stripe price ID for subscription plan | `price_...` |
-| `RESEND_API_KEY` | Yes | Prod/Staging | Email sending API key | `re_...` |
-| `SENTRY_DSN` | Yes | Prod/Staging | Sentry error tracking DSN | `https://xxx@sentry.io/xxx` |
-| `NEXT_PUBLIC_APP_URL` | Yes | All | Application base URL | `https://app.nordiccapacity.com` |
-| `NEXT_PUBLIC_CLERK_SIGN_IN_URL` | Yes | All | Clerk sign-in page path | `/sign-in` |
-| `NEXT_PUBLIC_CLERK_SIGN_UP_URL` | Yes | All | Clerk sign-up page path | `/sign-up` |
-| `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL` | Yes | All | Redirect after sign-in | `/input` |
-| `NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL` | Yes | All | Redirect after sign-up | `/onboarding` |
-| `IMPORT_MAX_FILE_SIZE_MB` | No | All | Maximum import file size (default: 10) | `10` |
-| `IMPORT_SESSION_TTL_HOURS` | No | All | Import session expiry (default: 24) | `24` |
-| `AUTOSAVE_DEBOUNCE_MS` | No | All | Auto-save debounce interval (default: 300) | `300` |
-| `PLATFORM_ADMIN_SECRET` | Yes | All | JWT signing key for platform admin tokens (min 64 chars, separate from any Clerk secret) | `a-very-long-random-secret-...` |
-| `PLATFORM_ADMIN_TOKEN_EXPIRY` | No | All | Platform admin JWT expiry (default: "8h") | `8h` |
-| `IMPERSONATION_MAX_DURATION_MINUTES` | No | All | Max impersonation session length (default: 60) | `60` |
+| Variable                              | Required | Env          | Description                                                                              | Example                                                          |
+| ------------------------------------- | -------- | ------------ | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `DATABASE_URL`                        | Yes      | All          | Neon PostgreSQL connection string                                                        | `postgresql://user:pass@ep-xxx.neon.tech/dbname?sslmode=require` |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`   | Yes      | All          | Clerk frontend key                                                                       | `pk_test_...`                                                    |
+| `CLERK_SECRET_KEY`                    | Yes      | All          | Clerk backend key                                                                        | `sk_test_...`                                                    |
+| `CLERK_WEBHOOK_SECRET`                | Yes      | All          | Clerk webhook signing secret                                                             | `whsec_...`                                                      |
+| `STRIPE_SECRET_KEY`                   | Yes      | Prod/Staging | Stripe API key                                                                           | `sk_test_...`                                                    |
+| `STRIPE_WEBHOOK_SECRET`               | Yes      | Prod/Staging | Stripe webhook signing secret                                                            | `whsec_...`                                                      |
+| `STRIPE_PRICE_ID`                     | Yes      | Prod/Staging | Stripe price ID for subscription plan                                                    | `price_...`                                                      |
+| `RESEND_API_KEY`                      | Yes      | Prod/Staging | Email sending API key                                                                    | `re_...`                                                         |
+| `SENTRY_DSN`                          | Yes      | Prod/Staging | Sentry error tracking DSN                                                                | `https://xxx@sentry.io/xxx`                                      |
+| `NEXT_PUBLIC_APP_URL`                 | Yes      | All          | Application base URL                                                                     | `https://app.nordiccapacity.com`                                 |
+| `NEXT_PUBLIC_CLERK_SIGN_IN_URL`       | Yes      | All          | Clerk sign-in page path                                                                  | `/sign-in`                                                       |
+| `NEXT_PUBLIC_CLERK_SIGN_UP_URL`       | Yes      | All          | Clerk sign-up page path                                                                  | `/sign-up`                                                       |
+| `NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL` | Yes      | All          | Redirect after sign-in                                                                   | `/input`                                                         |
+| `NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL` | Yes      | All          | Redirect after sign-up                                                                   | `/onboarding`                                                    |
+| `IMPORT_MAX_FILE_SIZE_MB`             | No       | All          | Maximum import file size (default: 10)                                                   | `10`                                                             |
+| `IMPORT_SESSION_TTL_HOURS`            | No       | All          | Import session expiry (default: 24)                                                      | `24`                                                             |
+| `AUTOSAVE_DEBOUNCE_MS`                | No       | All          | Auto-save debounce interval (default: 300)                                               | `300`                                                            |
+| `PLATFORM_ADMIN_SECRET`               | Yes      | All          | JWT signing key for platform admin tokens (min 64 chars, separate from any Clerk secret) | `a-very-long-random-secret-...`                                  |
+| `PLATFORM_ADMIN_TOKEN_EXPIRY`         | No       | All          | Platform admin JWT expiry (default: "8h")                                                | `8h`                                                             |
+| `IMPERSONATION_MAX_DURATION_MINUTES`  | No       | All          | Max impersonation session length (default: 60)                                           | `60`                                                             |
 
 ### 11.3 Naming Conventions
 
 **Files:**
+
 - TypeScript files: `kebab-case.ts` (e.g., `allocation.service.ts`, `date-utils.ts`)
 - React components: `kebab-case.tsx` (e.g., `allocation-grid.tsx`, `person-header.tsx`)
 - Component names inside files: `PascalCase` (e.g., `export function AllocationGrid()`)
 
 **Functions:**
+
 - `camelCase`, verb-first: `getPersonAllocations`, `createProject`, `validateMappedData`
 - Boolean functions: `is`/`has` prefix: `isMonthHeader`, `hasPermission`
 - Event handlers: `handle` prefix: `handleCellChange`, `handleImportClick`
 - Hooks: `use` prefix: `useAllocations`, `useGridAutosave`
 
 **Database tables and columns:**
+
 - Tables: `snake_case`, plural: `organizations`, `people`, `allocations`, `projects`
 - Columns: `snake_case`: `organization_id`, `first_name`, `target_hours_per_month`
 - Foreign keys: `referenced_table_singular_id`: `person_id`, `project_id`, `discipline_id`
 - Timestamps: `created_at`, `updated_at`, `archived_at`
 
 **API routes:**
+
 - `/api/v1/` prefix (omitted in Phase 1, added when public API launches in Phase 3)
 - Plural nouns: `/api/allocations`, `/api/people`, `/api/projects`
 - Actions as sub-resources: `/api/allocations/batch`, `/api/allocations/export`
 - IDs as path params: `/api/people/[id]`
 
 **Types and interfaces:**
+
 - `PascalCase`, no `I` prefix: `Person`, `Allocation`, `ProjectWithDetails`
 - Input types: `*Create`, `*Update`: `PersonCreate`, `ProjectUpdate`
 - Response types: `*WithStatus`, `*WithDetails`: `PersonWithStatus`, `ProjectWithProgram`
 - Enum-like: `type Role = "owner" | "admin" | "planner" | "viewer"`
 
 **CSS / Tailwind:**
+
 - Design token colors from prototype config (e.g., `text-primary`, `bg-surface-container-low`)
 - Custom classes in globals: `kebab-case` (e.g., `.tabular-nums`, `.focus-cell`)
 - No BEM, no CSS Modules — Tailwind utilities only
 
 **Zod schemas:**
+
 - Same file as type: `allocation.schema.ts` contains both `allocationCreateSchema` and type `AllocationCreate`
 - Schema names: `camelCase` + `Schema` suffix: `allocationCreateSchema`, `personUpdateSchema`
 
@@ -3629,6 +3693,7 @@ Platform admin authentication is intentionally isolated from the Clerk-based ten
 3. **Independent credential management** — platform admin passwords are hashed with bcrypt in the `platform_admins` table, not managed by Clerk.
 
 **Auth flow:**
+
 ```
 Platform Admin Login:
   1. POST /api/platform/auth { email, password }
@@ -3639,6 +3704,7 @@ Platform Admin Login:
 ```
 
 **Impersonation auth flow:**
+
 ```
 During Impersonation:
   1. Platform admin starts impersonation → receives impersonation token
@@ -3651,6 +3717,7 @@ During Impersonation:
 ```
 
 **Key security rules:**
+
 - Platform admin JWTs use a different secret (`PLATFORM_ADMIN_SECRET`) than any Clerk key
 - Impersonation tokens are separate from platform admin JWTs — they are short-lived (1 hour max) and scoped to a specific user+org
 - All impersonation actions are logged to the platform audit log, including the original platform admin's identity
@@ -3666,6 +3733,7 @@ During Impersonation:
 To add a new feature (e.g., "Milestones" from the sidebar):
 
 1. **Create the feature folder:**
+
    ```
    src/features/milestones/
    ├── milestone.service.ts
@@ -3675,6 +3743,7 @@ To add a new feature (e.g., "Milestones" from the sidebar):
    ```
 
 2. **Add the database table** in `src/db/schema.ts`:
+
    ```
    export const milestones = pgTable("milestones", {
      id: uuid("id").primaryKey().defaultRandom(),
@@ -3753,19 +3822,19 @@ No tenant-side code needs modification. The platform admin module is fully addit
 
 ## 13. Risk Register
 
-| # | Risk | Probability | Impact | Mitigation |
-|---|------|------------|--------|------------|
-| R1 | AG Grid Community lacks drag-to-fill, forcing custom implementation | High | Medium | Build custom drag-to-fill as a React overlay component. The core interaction is mousedown on corner handle → mousemove to extend selection → mouseup to fill. ~2-3 days of work. Prototype early in Phase 1. |
-| R2 | Excel clipboard interop produces garbled data (tab-delimited vs. system clipboard) | Medium | High | AG Grid Community supports text-based clipboard. Test with Excel 2019+, Google Sheets, LibreOffice. Handle both `\t` and `,` delimiters in paste handler. |
-| R3 | Neon serverless cold starts cause slow first query on grid load | Medium | Medium | Use Neon's connection pooling. Pre-warm with a health check ping on Vercel function warm-up. Cache person list in TanStack Query with staleTime of 5 minutes. |
-| R4 | Import of 1,200+ row Excel files exceeds Vercel function timeout (60s on Pro) | Medium | High | Process imports in chunks. Parse file synchronously (fast), validate in batches of 200 rows, execute insert in batches of 100 within a transaction. Total should complete in <30s for 1,200 rows. |
-| R5 | Concurrent editing by two planners on the same person's allocations | Medium | Medium | Optimistic locking via `updated_at` timestamp on each allocation row. On conflict, show toast "Another user modified this cell" and refetch. Phase 3 adds real-time conflict resolution via WebSocket. |
-| R6 | Swedish character encoding (å, ä, ö) breaks import parsing | Low | High | SheetJS handles Excel file encoding natively. For CSV imports, detect encoding (UTF-8, ISO-8859-1, Windows-1252) and convert. Test with real Swedish Excel files during import development. |
-| R7 | GDPR compliance — storing employee names requires data processing agreement | High | High | Build tenant-level data export (all data for an org as JSON/Excel) and data deletion (purge all org data) endpoints. Document in Terms of Service. EU data residency via Neon EU region. |
-| R8 | Clerk organization model doesn't map perfectly to tenant needs | Low | Medium | Clerk organizations support metadata, roles, and invitations which cover MVP needs. If limitations appear, sync Clerk org to internal `organizations` table and use internal table as source of truth. |
-| R9 | Grid performance degrades with 20+ project rows x 36 months | Medium | Medium | AG Grid handles this volume well (it virtualizes rows and columns). Keep DOM rows to visible viewport. For Team Overview (500 rows), use TanStack Virtual for row virtualization. |
-| R10 | Stripe integration complexity for per-resource billing | Low | Low | Start with flat-tier pricing (e.g., 3 tiers by resource count). Avoid per-resource metering in Phase 1. Report resource counts to Stripe metadata for future metering upgrade. |
-| R11 | Platform admin access is a security-critical attack surface — a compromised platform admin account can access all tenant data | High | Critical | Mitigations: (1) Separate auth system with its own secret (PLATFORM_ADMIN_SECRET), not Clerk. (2) Bcrypt password hashing with high cost factor. (3) Short-lived JWTs (8h). (4) Impersonation sessions capped at 1 hour with mandatory audit trail. (5) Every platform admin action logged with IP, user agent, timestamp. (6) Ability to instantly deactivate admin accounts (is_active flag). (7) No shared credentials between platform admin and tenant auth. (8) Platform admin UI served on separate route group (/platform/*) with its own layout, reducing XSS attack surface from tenant-uploaded content. (9) Consider adding MFA for platform admin login in Phase 2. |
+| #   | Risk                                                                                                                          | Probability | Impact   | Mitigation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| --- | ----------------------------------------------------------------------------------------------------------------------------- | ----------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1  | AG Grid Community lacks drag-to-fill, forcing custom implementation                                                           | High        | Medium   | Build custom drag-to-fill as a React overlay component. The core interaction is mousedown on corner handle → mousemove to extend selection → mouseup to fill. ~2-3 days of work. Prototype early in Phase 1.                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| R2  | Excel clipboard interop produces garbled data (tab-delimited vs. system clipboard)                                            | Medium      | High     | AG Grid Community supports text-based clipboard. Test with Excel 2019+, Google Sheets, LibreOffice. Handle both `\t` and `,` delimiters in paste handler.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| R3  | Neon serverless cold starts cause slow first query on grid load                                                               | Medium      | Medium   | Use Neon's connection pooling. Pre-warm with a health check ping on Vercel function warm-up. Cache person list in TanStack Query with staleTime of 5 minutes.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| R4  | Import of 1,200+ row Excel files exceeds Vercel function timeout (60s on Pro)                                                 | Medium      | High     | Process imports in chunks. Parse file synchronously (fast), validate in batches of 200 rows, execute insert in batches of 100 within a transaction. Total should complete in <30s for 1,200 rows.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| R5  | Concurrent editing by two planners on the same person's allocations                                                           | Medium      | Medium   | Optimistic locking via `updated_at` timestamp on each allocation row. On conflict, show toast "Another user modified this cell" and refetch. Phase 3 adds real-time conflict resolution via WebSocket.                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| R6  | Swedish character encoding (å, ä, ö) breaks import parsing                                                                    | Low         | High     | SheetJS handles Excel file encoding natively. For CSV imports, detect encoding (UTF-8, ISO-8859-1, Windows-1252) and convert. Test with real Swedish Excel files during import development.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| R7  | GDPR compliance — storing employee names requires data processing agreement                                                   | High        | High     | Build tenant-level data export (all data for an org as JSON/Excel) and data deletion (purge all org data) endpoints. Document in Terms of Service. EU data residency via Neon EU region.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| R8  | Clerk organization model doesn't map perfectly to tenant needs                                                                | Low         | Medium   | Clerk organizations support metadata, roles, and invitations which cover MVP needs. If limitations appear, sync Clerk org to internal `organizations` table and use internal table as source of truth.                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| R9  | Grid performance degrades with 20+ project rows x 36 months                                                                   | Medium      | Medium   | AG Grid handles this volume well (it virtualizes rows and columns). Keep DOM rows to visible viewport. For Team Overview (500 rows), use TanStack Virtual for row virtualization.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| R10 | Stripe integration complexity for per-resource billing                                                                        | Low         | Low      | Start with flat-tier pricing (e.g., 3 tiers by resource count). Avoid per-resource metering in Phase 1. Report resource counts to Stripe metadata for future metering upgrade.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| R11 | Platform admin access is a security-critical attack surface — a compromised platform admin account can access all tenant data | High        | Critical | Mitigations: (1) Separate auth system with its own secret (PLATFORM_ADMIN_SECRET), not Clerk. (2) Bcrypt password hashing with high cost factor. (3) Short-lived JWTs (8h). (4) Impersonation sessions capped at 1 hour with mandatory audit trail. (5) Every platform admin action logged with IP, user agent, timestamp. (6) Ability to instantly deactivate admin accounts (is_active flag). (7) No shared credentials between platform admin and tenant auth. (8) Platform admin UI served on separate route group (/platform/\*) with its own layout, reducing XSS attack surface from tenant-uploaded content. (9) Consider adding MFA for platform admin login in Phase 2. |
 
 ---
 
@@ -3776,6 +3845,7 @@ No tenant-side code needs modification. The platform admin module is fully addit
 **Goal:** Core infrastructure is running — auth, database, basic UI shell.
 
 **Modules:**
+
 - Next.js project setup with Tailwind config from prototypes
 - Drizzle schema: organizations, people, projects, programs, departments, disciplines, allocations
 - Database migrations and seed data
@@ -3788,6 +3858,7 @@ No tenant-side code needs modification. The platform admin module is fully addit
 **Dependencies:** None (foundational)
 
 **Definition of done:**
+
 - [ ] User can sign up, create an organization, and see the app shell
 - [ ] Database tables exist with correct indexes
 - [ ] Clerk webhook creates internal organization record with default disciplines/departments
@@ -3799,6 +3870,7 @@ No tenant-side code needs modification. The platform admin module is fully addit
 **Goal:** The primary editing interface is functional — the core value proposition.
 
 **Modules:**
+
 - Person CRUD (service, queries, API routes)
 - Allocation CRUD (service, queries, API routes, batch endpoint)
 - AG Grid integration with column definitions
@@ -3813,6 +3885,7 @@ No tenant-side code needs modification. The platform admin module is fully addit
 **Dependencies:** Phase 1A
 
 **Definition of done:**
+
 - [ ] Planner can open a person, see their allocation grid populated from the database
 - [ ] Editing a cell auto-saves to the database within 500ms of blur
 - [ ] SUMMA row updates in real time as cells change
@@ -3827,6 +3900,7 @@ No tenant-side code needs modification. The platform admin module is fully addit
 **Goal:** Users can bulk-load data from Excel and export for analysis.
 
 **Modules:**
+
 - Import wizard: upload, mapping, validation, execution (all 4 steps)
 - Import parser (Excel/CSV)
 - Column mapper with Swedish header detection
@@ -3839,6 +3913,7 @@ No tenant-side code needs modification. The platform admin module is fully addit
 **Dependencies:** Phase 1B (needs people and projects in DB to validate against)
 
 **Definition of done:**
+
 - [ ] Admin can upload an Excel file with Swedish headers and see auto-mapped columns
 - [ ] Validation step shows ready/warning/error counts with actionable suggestions
 - [ ] Import creates/updates allocations in a single transaction
@@ -3851,6 +3926,7 @@ No tenant-side code needs modification. The platform admin module is fully addit
 **Goal:** Reference data is manageable, billing is connected.
 
 **Modules:**
+
 - Admin UI for reference data (disciplines, departments, programs, projects, people)
 - Stripe integration: checkout session, webhook handler, subscription status
 - User invitation flow (via Clerk organizations)
@@ -3859,6 +3935,7 @@ No tenant-side code needs modification. The platform admin module is fully addit
 **Dependencies:** Phase 1A-1C
 
 **Definition of done:**
+
 - [ ] Admin can add/edit/delete disciplines, departments, programs, projects
 - [ ] Stripe checkout creates a subscription
 - [ ] Subscription status is reflected in the UI (trial/active/past_due)
@@ -3869,6 +3946,7 @@ No tenant-side code needs modification. The platform admin module is fully addit
 **Goal:** SaaS operator can administrate, support, and troubleshoot all tenant organizations before going live with paying customers.
 
 **Modules:**
+
 - Platform admin database tables (platform_admins, platform_audit_log, impersonation_sessions, feature_flags, system_announcements)
 - Platform admin auth (email/password login, JWT with PLATFORM_ADMIN_SECRET, separate from Clerk)
 - Platform admin service (listOrganizations, getOrgHealth, impersonateUser, suspendOrganization, reactivateOrganization, overrideSubscription, setFeatureFlags, getPlatformAuditLog)
@@ -3881,6 +3959,7 @@ No tenant-side code needs modification. The platform admin module is fully addit
 **Dependencies:** Phase 1A (database, auth infrastructure), Phase 1D (billing/subscription to override)
 
 **Definition of done:**
+
 - [ ] Seed script (`drizzle/seed.ts` or `scripts/create-platform-admin.ts`) creates the initial platform admin account using `createPlatformAdmin`. Must be run before first platform admin login.
 - [ ] Platform admin can log in via separate auth flow (not Clerk)
 - [ ] Platform admin dashboard shows all organizations with health metrics
@@ -3907,6 +3986,7 @@ No tenant-side code needs modification. The platform admin module is fully addit
 **Goal:** Read-only views for scanning team capacity and project staffing.
 
 **Modules:**
+
 - Team Overview heat map (component, API endpoint)
 - Heatmap cell renderer with color coding
 - Filter bar (discipline, department pills)
@@ -3917,6 +3997,7 @@ No tenant-side code needs modification. The platform admin module is fully addit
 **Dependencies:** Phase 1B
 
 **Definition of done:**
+
 - [ ] Team Overview shows all people grouped by department with color-coded month cells
 - [ ] Filters narrow the view by discipline and department
 - [ ] Clicking a person row navigates to their Input Form
@@ -3928,6 +4009,7 @@ No tenant-side code needs modification. The platform admin module is fully addit
 **Goal:** Management-level capacity intelligence.
 
 **Modules:**
+
 - Dashboard service (KPIs, department heat map, alerts, discipline breakdown)
 - KPI cards component (Total Resources, Avg Utilization, Overloaded, Unallocated)
 - Department utilization heat map (table with colored cells)
@@ -3938,6 +4020,7 @@ No tenant-side code needs modification. The platform admin module is fully addit
 **Dependencies:** Phase 2A (uses same aggregation queries)
 
 **Definition of done:**
+
 - [ ] Dashboard shows 4 KPI cards with correct values
 - [ ] Department heat map shows utilization % per department per month with color coding
 - [ ] At least 2 alert types fire: overloaded department and under-utilized team
@@ -3948,6 +4031,7 @@ No tenant-side code needs modification. The platform admin module is fully addit
 **Goal:** Enterprise readiness and stickiness features.
 
 **Modules:**
+
 - Department-level scoping (line manager sees only their people)
 - SSO / SAML via Clerk
 - Audit trail (who changed what, when)
@@ -4450,7 +4534,7 @@ No tenant-side code needs modification. The platform admin module is fully addit
 - [ ] `verifyPlatformAdminToken` rejects tokens for deactivated admins (is_active = false)
 - [ ] `requirePlatformAdmin(request): Promise<PlatformAdmin>` — implemented and matches spec
 - [ ] `requirePlatformAdmin` extracts Bearer token from Authorization header
-- [ ] `requirePlatformAdmin` called by all /api/platform/* route handlers — integration verified
+- [ ] `requirePlatformAdmin` called by all /api/platform/\* route handlers — integration verified
 
 ### Module: Impersonation Middleware
 
@@ -4492,8 +4576,8 @@ No tenant-side code needs modification. The platform admin module is fully addit
 - [ ] `PATCH /api/platform/announcements/[id]` — updates announcement
 - [ ] `DELETE /api/platform/announcements/[id]` — deletes announcement
 - [ ] `POST /api/platform/impersonation/end` — ends impersonation session
-- [ ] All /api/platform/* endpoints reject Clerk tokens (separation enforced)
-- [ ] All tenant /api/* endpoints reject platform admin tokens (separation enforced)
+- [ ] All /api/platform/\* endpoints reject Clerk tokens (separation enforced)
+- [ ] All tenant /api/\* endpoints reject platform admin tokens (separation enforced)
 
 ### Data Models: Platform Admin
 
@@ -4541,4 +4625,4 @@ No tenant-side code needs modification. The platform admin module is fully addit
 
 ---
 
-*End of Architecture Blueprint*
+_End of Architecture Blueprint_

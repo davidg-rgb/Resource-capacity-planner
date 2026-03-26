@@ -15,13 +15,13 @@ created: 2026-03-26
 
 ## Test Infrastructure
 
-| Property | Value |
-|----------|-------|
-| **Framework** | None (Phase 1 has no testable logic — Vitest added in Phase 2) |
-| **Config file** | None — Wave 0 installs CI pipeline |
-| **Quick run command** | `pnpm lint && pnpm typecheck` |
+| Property               | Value                                                            |
+| ---------------------- | ---------------------------------------------------------------- |
+| **Framework**          | None (Phase 1 has no testable logic — Vitest added in Phase 2)   |
+| **Config file**        | None — Wave 0 installs CI pipeline                               |
+| **Quick run command**  | `pnpm lint && pnpm typecheck`                                    |
 | **Full suite command** | `pnpm lint && pnpm typecheck && pnpm format:check && pnpm build` |
-| **Estimated runtime** | ~15 seconds |
+| **Estimated runtime**  | ~15 seconds                                                      |
 
 ---
 
@@ -36,15 +36,15 @@ created: 2026-03-26
 
 ## Per-Task Verification Map
 
-| Task ID | Plan | Wave | Requirement | Test Type | Automated Command | File Exists | Status |
-|---------|------|------|-------------|-----------|-------------------|-------------|--------|
-| 01-01-01 | 01 | 1 | FOUND-03 | CI | `pnpm build` | ❌ W0 | ⬜ pending |
-| 01-01-02 | 01 | 1 | FOUND-03 | CI | `pnpm lint` | ❌ W0 | ⬜ pending |
-| 01-01-03 | 01 | 1 | FOUND-03 | CI | `pnpm typecheck` | ❌ W0 | ⬜ pending |
-| 01-01-04 | 01 | 1 | FOUND-03 | CI | `pnpm format:check` | ❌ W0 | ⬜ pending |
-| 01-01-05 | 01 | 1 | FOUND-09 | CI | `pnpm build` (missing env = fail) | ❌ W0 | ⬜ pending |
+| Task ID  | Plan | Wave | Requirement | Test Type | Automated Command                 | File Exists | Status     |
+| -------- | ---- | ---- | ----------- | --------- | --------------------------------- | ----------- | ---------- |
+| 01-01-01 | 01   | 1    | FOUND-03    | CI        | `pnpm build`                      | ❌ W0       | ⬜ pending |
+| 01-01-02 | 01   | 1    | FOUND-03    | CI        | `pnpm lint`                       | ❌ W0       | ⬜ pending |
+| 01-01-03 | 01   | 1    | FOUND-03    | CI        | `pnpm typecheck`                  | ❌ W0       | ⬜ pending |
+| 01-01-04 | 01   | 1    | FOUND-03    | CI        | `pnpm format:check`               | ❌ W0       | ⬜ pending |
+| 01-01-05 | 01   | 1    | FOUND-09    | CI        | `pnpm build` (missing env = fail) | ❌ W0       | ⬜ pending |
 
-*Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
+_Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky_
 
 ---
 
@@ -54,17 +54,17 @@ created: 2026-03-26
 - [ ] `src/lib/env.ts` — env validation config (core deliverable)
 - [ ] `.env.example` — env documentation (core deliverable)
 
-*All gaps are core phase deliverables, not pre-existing infrastructure.*
+_All gaps are core phase deliverables, not pre-existing infrastructure._
 
 ---
 
 ## Manual-Only Verifications
 
-| Behavior | Requirement | Why Manual | Test Instructions |
-|----------|-------------|------------|-------------------|
-| `pnpm dev` shows blank page at localhost:3000 | FOUND-03 | Requires running dev server | Run `pnpm dev`, open browser to localhost:3000 |
-| Vercel preview deployment succeeds | FOUND-03 | Requires Vercel project linkage | Push to branch, verify preview URL loads |
-| All env vars documented in .env.example | FOUND-09 | Cross-reference against ARCHITECTURE.md 11.2 | Compare `.env.example` keys against Section 11.2 list |
+| Behavior                                      | Requirement | Why Manual                                   | Test Instructions                                     |
+| --------------------------------------------- | ----------- | -------------------------------------------- | ----------------------------------------------------- |
+| `pnpm dev` shows blank page at localhost:3000 | FOUND-03    | Requires running dev server                  | Run `pnpm dev`, open browser to localhost:3000        |
+| Vercel preview deployment succeeds            | FOUND-03    | Requires Vercel project linkage              | Push to branch, verify preview URL loads              |
+| All env vars documented in .env.example       | FOUND-09    | Cross-reference against ARCHITECTURE.md 11.2 | Compare `.env.example` keys against Section 11.2 list |
 
 ---
 

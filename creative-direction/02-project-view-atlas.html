@@ -1,372 +1,660 @@
-<!DOCTYPE html>
+<!doctype html>
 
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Nordic Capacity | Project Atlas</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "error-dim": "#4e0309",
-                        "surface-variant": "#d9e4e8",
-                        "inverse-primary": "#cce6fb",
-                        "surface-tint": "#496173",
-                        "inverse-surface": "#0b0f10",
-                        "on-surface": "#2a3437",
-                        "primary-fixed": "#cce6fb",
-                        "primary": "#496173",
-                        "surface-container-lowest": "#ffffff",
-                        "surface-container-high": "#e1eaec",
-                        "surface-container-low": "#f0f4f6",
-                        "secondary-dim": "#4c5459",
-                        "secondary-fixed": "#dce4e9",
-                        "surface": "#f8fafb",
-                        "on-tertiary-fixed": "#42474a",
-                        "on-tertiary-container": "#54595c",
-                        "outline-variant": "#a9b4b7",
-                        "on-primary-fixed-variant": "#465e70",
-                        "surface-dim": "#cfdce0",
-                        "surface-container-highest": "#d9e4e8",
-                        "primary-container": "#cce6fb",
-                        "surface-bright": "#f8fafb",
-                        "tertiary": "#5b6063",
-                        "on-primary-container": "#3d5466",
-                        "secondary-container": "#dce4e9",
-                        "on-secondary-fixed": "#394045",
-                        "on-primary": "#f3f8ff",
-                        "on-secondary-fixed-variant": "#555d61",
-                        "on-background": "#2a3437",
-                        "outline": "#727d80",
-                        "on-surface-variant": "#566164",
-                        "on-tertiary": "#f5f9fd",
-                        "inverse-on-surface": "#9a9d9e",
-                        "surface-container": "#e8eff1",
-                        "on-error-container": "#752121",
-                        "tertiary-container": "#eaeef2",
-                        "primary-dim": "#3d5567",
-                        "on-primary-fixed": "#2a4253",
-                        "on-secondary-container": "#4b5358",
-                        "on-tertiary-fixed-variant": "#5e6366",
-                        "tertiary-fixed-dim": "#dce0e3",
-                        "error": "#9f403d",
-                        "error-container": "#fe8983",
-                        "secondary-fixed-dim": "#ced5db",
-                        "primary-fixed-dim": "#bed8ed",
-                        "tertiary-dim": "#4f5457",
-                        "tertiary-fixed": "#eaeef2",
-                        "on-error": "#fff7f6",
-                        "background": "#f8fafb",
-                        "secondary": "#586065",
-                        "on-secondary": "#f3faff"
-                    },
-                    fontFamily: {
-                        "headline": ["Manrope"],
-                        "body": ["Inter"],
-                        "label": ["Inter"]
-                    },
-                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
-                },
+<html class="light" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Nordic Capacity | Project Atlas</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'error-dim': '#4e0309',
+              'surface-variant': '#d9e4e8',
+              'inverse-primary': '#cce6fb',
+              'surface-tint': '#496173',
+              'inverse-surface': '#0b0f10',
+              'on-surface': '#2a3437',
+              'primary-fixed': '#cce6fb',
+              primary: '#496173',
+              'surface-container-lowest': '#ffffff',
+              'surface-container-high': '#e1eaec',
+              'surface-container-low': '#f0f4f6',
+              'secondary-dim': '#4c5459',
+              'secondary-fixed': '#dce4e9',
+              surface: '#f8fafb',
+              'on-tertiary-fixed': '#42474a',
+              'on-tertiary-container': '#54595c',
+              'outline-variant': '#a9b4b7',
+              'on-primary-fixed-variant': '#465e70',
+              'surface-dim': '#cfdce0',
+              'surface-container-highest': '#d9e4e8',
+              'primary-container': '#cce6fb',
+              'surface-bright': '#f8fafb',
+              tertiary: '#5b6063',
+              'on-primary-container': '#3d5466',
+              'secondary-container': '#dce4e9',
+              'on-secondary-fixed': '#394045',
+              'on-primary': '#f3f8ff',
+              'on-secondary-fixed-variant': '#555d61',
+              'on-background': '#2a3437',
+              outline: '#727d80',
+              'on-surface-variant': '#566164',
+              'on-tertiary': '#f5f9fd',
+              'inverse-on-surface': '#9a9d9e',
+              'surface-container': '#e8eff1',
+              'on-error-container': '#752121',
+              'tertiary-container': '#eaeef2',
+              'primary-dim': '#3d5567',
+              'on-primary-fixed': '#2a4253',
+              'on-secondary-container': '#4b5358',
+              'on-tertiary-fixed-variant': '#5e6366',
+              'tertiary-fixed-dim': '#dce0e3',
+              error: '#9f403d',
+              'error-container': '#fe8983',
+              'secondary-fixed-dim': '#ced5db',
+              'primary-fixed-dim': '#bed8ed',
+              'tertiary-dim': '#4f5457',
+              'tertiary-fixed': '#eaeef2',
+              'on-error': '#fff7f6',
+              background: '#f8fafb',
+              secondary: '#586065',
+              'on-secondary': '#f3faff',
             },
-        }
+            fontFamily: {
+              headline: ['Manrope'],
+              body: ['Inter'],
+              label: ['Inter'],
+            },
+            borderRadius: { DEFAULT: '0.125rem', lg: '0.25rem', xl: '0.5rem', full: '0.75rem' },
+          },
+        },
+      };
     </script>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-            vertical-align: middle;
-        }
-        body { font-family: 'Inter', sans-serif; }
-        .font-tabular { font-variant-numeric: tabular-nums; }
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+        vertical-align: middle;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      .font-tabular {
+        font-variant-numeric: tabular-nums;
+      }
     </style>
-</head>
-<body class="bg-surface text-on-surface selection:bg-primary-container">
-<div class="flex h-screen overflow-hidden">
-<!-- SideNavBar -->
-<aside class="flex flex-col h-full border-r border-[#a9b4b7]/15 bg-[#f0f4f6] dark:bg-slate-950 w-64 docked left-0 transition-transform duration-200 ease-in-out shrink-0">
-<div class="px-6 py-8">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 bg-primary rounded-sm flex items-center justify-center text-on-primary font-bold">NP</div>
-<div>
-<h2 class="font-['Manrope'] font-bold text-[#496173] dark:text-slate-200 leading-none">Resource Planner</h2>
-<p class="text-[10px] text-outline font-medium tracking-widest uppercase mt-1">Nordic Precision</p>
-</div>
-</div>
-</div>
-<nav class="flex-1 px-3 space-y-1">
-<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#d9e4e8]/50 dark:hover:bg-slate-800/50 rounded-sm font-['Inter'] text-xs font-medium" href="#">
-<span class="material-symbols-outlined text-[18px]">group</span>
-                    Resources
-                </a>
-<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#d9e4e8]/50 dark:hover:bg-slate-800/50 rounded-sm font-['Inter'] text-xs font-medium" href="#">
-<span class="material-symbols-outlined text-[18px]">event_available</span>
-                    Allocations
-                </a>
-<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#d9e4e8]/50 dark:hover:bg-slate-800/50 rounded-sm font-['Inter'] text-xs font-medium" href="#">
-<span class="material-symbols-outlined text-[18px]">bar_chart</span>
-                    Capacity
-                </a>
-<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#d9e4e8]/50 dark:hover:bg-slate-800/50 rounded-sm font-['Inter'] text-xs font-medium" href="#">
-<span class="material-symbols-outlined text-[18px]">flag</span>
-                    Milestones
-                </a>
-<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#d9e4e8]/50 dark:hover:bg-slate-800/50 rounded-sm font-['Inter'] text-xs font-medium" href="#">
-<span class="material-symbols-outlined text-[18px]">description</span>
-                    Reports
-                </a>
-</nav>
-<div class="px-6 py-6 border-t border-[#a9b4b7]/15">
-<button class="w-full bg-primary text-on-primary py-2 rounded-sm text-xs font-semibold shadow-sm hover:opacity-90 transition-opacity">
-                    New Entry
-                </button>
-</div>
-<div class="px-3 py-4 space-y-1">
-<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#d9e4e8]/50 rounded-sm font-['Inter'] text-xs font-medium" href="#">
-<span class="material-symbols-outlined text-[18px]">help_outline</span>
-                    Help
-                </a>
-<a class="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-[#d9e4e8]/50 rounded-sm font-['Inter'] text-xs font-medium" href="#">
-<span class="material-symbols-outlined text-[18px]">archive</span>
-                    Archive
-                </a>
-</div>
-</aside>
-<!-- Main Content -->
-<main class="flex-1 flex flex-col min-w-0 bg-surface overflow-y-auto">
-<!-- TopNavBar -->
-<header class="flex justify-between items-center w-full px-8 py-4 bg-[#f8fafb] dark:bg-slate-900 sticky top-0 z-10 shrink-0">
-<div class="flex items-center gap-8">
-<span class="text-xl font-semibold text-[#496173] dark:text-slate-100 tracking-tighter font-['Manrope']">Nordic Capacity</span>
-<nav class="hidden md:flex items-center gap-6">
-<a class="text-slate-500 hover:text-[#496173] font-['Manrope'] font-medium text-sm tracking-tight transition-colors" href="#">Input</a>
-<a class="text-slate-500 hover:text-[#496173] font-['Manrope'] font-medium text-sm tracking-tight transition-colors" href="#">Team</a>
-<a class="text-[#496173] dark:text-white border-b-2 border-[#496173] pb-1 font-bold font-['Manrope'] text-sm tracking-tight" href="#">Projects</a>
-<a class="text-slate-500 hover:text-[#496173] font-['Manrope'] font-medium text-sm tracking-tight transition-colors" href="#">Data</a>
-<a class="text-slate-500 hover:text-[#496173] font-['Manrope'] font-medium text-sm tracking-tight transition-colors" href="#">Dashboard</a>
-</nav>
-</div>
-<div class="flex items-center gap-4">
-<div class="relative">
-<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
-<input class="pl-10 pr-4 py-1.5 bg-surface-container-low border-none focus:ring-1 focus:ring-primary rounded-sm text-sm w-64 transition-all" placeholder="Search projects..." type="text"/>
-</div>
-<button class="p-2 text-outline hover:bg-surface-container-low rounded-full transition-colors">
-<span class="material-symbols-outlined">notifications</span>
-</button>
-<button class="p-2 text-outline hover:bg-surface-container-low rounded-full transition-colors">
-<span class="material-symbols-outlined">settings</span>
-</button>
-<img alt="User profile" class="w-8 h-8 rounded-full border border-outline-variant/20" data-alt="professional portrait of a project manager in a minimalist studio setting with soft natural lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCAsx5Plc0r2kT2Pw26AC9ZcSuzTYs4gSQ8WRZTYWqnk6yrzCiOOy6fuSVJ6oIWrgHbV_OSRx2qCpBe3-T3HSi1Wso3f35HqJ5j5nWbBHkqLl7C4IU9_ViUgyTYZusC-MPyyM0jFrDbCCYgE90kmk8_cZYcCnJBRNCoNaM6tMlWQUQ6sBDd6ow48rKnicAYYKXfD2yhbXvdEle63ONHE3CEE-eVl2nTEHYqSA1JOV_wXGo75KuyCfAn3L3Mix7CR64I5dT75lFSqap"/>
-</div>
-</header>
-<!-- Project Header -->
-<section class="px-8 py-8">
-<div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
-<div>
-<div class="flex items-center gap-2 mb-1">
-<span class="text-xs font-semibold tracking-widest text-outline uppercase font-['Inter']">Program</span>
-<span class="text-xs font-bold text-primary font-['Inter'] bg-primary-container px-2 py-0.5 rounded-sm">P-Series</span>
-</div>
-<h1 class="text-4xl font-extrabold text-on-surface font-['Manrope'] tracking-tight">Project Atlas</h1>
-<p class="text-on-surface-variant mt-2 max-w-2xl font-['Inter']">High-performance structural optimization for next-generation aerospace components. Focused on iterative design cycles and load-bearing efficiency.</p>
-</div>
-<div class="flex gap-4">
-<div class="bg-surface-container-lowest p-5 rounded-sm shadow-[0_4px_20px_-4px_rgba(42,52,55,0.06)] min-w-[160px]">
-<p class="text-[10px] font-bold text-outline uppercase tracking-wider mb-1">Total Hours</p>
-<p class="text-2xl font-bold font-tabular text-on-surface">12,480 <span class="text-sm font-medium text-outline">hrs</span></p>
-</div>
-<div class="bg-surface-container-lowest p-5 rounded-sm shadow-[0_4px_20px_-4px_rgba(42,52,55,0.06)] min-w-[160px]">
-<p class="text-[10px] font-bold text-outline uppercase tracking-wider mb-1">Assigned</p>
-<p class="text-2xl font-bold font-tabular text-on-surface">14 <span class="text-sm font-medium text-outline">people</span></p>
-</div>
-<div class="bg-surface-container-lowest p-5 rounded-sm shadow-[0_4px_20px_-4px_rgba(42,52,55,0.06)] min-w-[160px]">
-<p class="text-[10px] font-bold text-outline uppercase tracking-wider mb-1">Disciplines</p>
-<div class="flex gap-1 mt-1">
-<span class="w-2.5 h-2.5 rounded-full bg-primary" title="SW"></span>
-<span class="w-2.5 h-2.5 rounded-full bg-outline" title="Mek"></span>
-<span class="w-2.5 h-2.5 rounded-full bg-tertiary" title="Elnik"></span>
-</div>
-<p class="text-xs font-medium text-on-surface-variant mt-1">SW, Mek, Elnik</p>
-</div>
-</div>
-</div>
-</section>
-<!-- Data Grid Section -->
-<section class="px-8 pb-12">
-<div class="bg-surface-container-lowest rounded-sm overflow-hidden border border-[#a9b4b7]/15">
-<div class="overflow-x-auto">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-surface-container-low">
-<th class="px-6 py-4 text-[11px] font-bold text-outline uppercase tracking-wider w-64 sticky left-0 bg-surface-container-low z-10 border-r border-[#a9b4b7]/10">Team Member</th>
-<th class="px-6 py-4 text-[11px] font-bold text-outline uppercase tracking-wider text-right">Jan</th>
-<th class="px-6 py-4 text-[11px] font-bold text-outline uppercase tracking-wider text-right">Feb</th>
-<th class="px-6 py-4 text-[11px] font-bold text-outline uppercase tracking-wider text-right">Mar</th>
-<th class="px-6 py-4 text-[11px] font-bold text-outline uppercase tracking-wider text-right">Apr</th>
-<th class="px-6 py-4 text-[11px] font-bold text-outline uppercase tracking-wider text-right">May</th>
-<th class="px-6 py-4 text-[11px] font-bold text-outline uppercase tracking-wider text-right">Jun</th>
-<th class="px-6 py-4 text-[11px] font-bold text-outline uppercase tracking-wider text-right">Jul</th>
-<th class="px-6 py-4 text-[11px] font-bold text-outline uppercase tracking-wider text-right">Aug</th>
-<th class="px-6 py-4 text-[11px] font-bold text-outline uppercase tracking-wider text-right bg-primary/5">Total</th>
-</tr>
-</thead>
-<tbody class="divide-y divide-[#a9b4b7]/10">
-<!-- Row 1 -->
-<tr class="group hover:bg-surface-container-low transition-colors">
-<td class="px-6 py-3 sticky left-0 bg-surface-container-lowest group-hover:bg-surface-container-low z-10 border-r border-[#a9b4b7]/10">
-<div class="flex items-center gap-3">
-<div class="flex flex-col">
-<span class="text-sm font-semibold text-on-surface">Lars Andersson</span>
-<span class="text-[10px] font-bold text-on-secondary-fixed bg-secondary-container px-1.5 py-0.5 rounded-full w-fit mt-0.5">SW</span>
-</div>
-</div>
-</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">160</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">140</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">160</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">120</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">160</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">160</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">80</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">160</td>
-<td class="px-6 py-3 text-sm font-tabular font-bold text-right text-primary bg-primary/5">1,140</td>
-</tr>
-<!-- Row 2 -->
-<tr class="group hover:bg-surface-container-low transition-colors">
-<td class="px-6 py-3 sticky left-0 bg-surface-container-lowest group-hover:bg-surface-container-low z-10 border-r border-[#a9b4b7]/10">
-<div class="flex items-center gap-3">
-<div class="flex flex-col">
-<span class="text-sm font-semibold text-on-surface">Maria Berg</span>
-<span class="text-[10px] font-bold text-on-secondary-fixed bg-secondary-container px-1.5 py-0.5 rounded-full w-fit mt-0.5">Mek</span>
-</div>
-</div>
-</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">80</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">80</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">40</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">80</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">80</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">80</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">40</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">40</td>
-<td class="px-6 py-3 text-sm font-tabular font-bold text-right text-primary bg-primary/5">520</td>
-</tr>
-<!-- Row 3 -->
-<tr class="group hover:bg-surface-container-low transition-colors">
-<td class="px-6 py-3 sticky left-0 bg-surface-container-lowest group-hover:bg-surface-container-low z-10 border-r border-[#a9b4b7]/10">
-<div class="flex items-center gap-3">
-<div class="flex flex-col">
-<span class="text-sm font-semibold text-on-surface">Erik Nielsen</span>
-<span class="text-[10px] font-bold text-on-secondary-fixed bg-secondary-container px-1.5 py-0.5 rounded-full w-fit mt-0.5">Elnik</span>
-</div>
-</div>
-</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">120</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">120</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">120</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">120</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">120</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">120</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">120</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">120</td>
-<td class="px-6 py-3 text-sm font-tabular font-bold text-right text-primary bg-primary/5">960</td>
-</tr>
-<!-- Row 4 -->
-<tr class="group hover:bg-surface-container-low transition-colors">
-<td class="px-6 py-3 sticky left-0 bg-surface-container-lowest group-hover:bg-surface-container-low z-10 border-r border-[#a9b4b7]/10">
-<div class="flex items-center gap-3">
-<div class="flex flex-col">
-<span class="text-sm font-semibold text-on-surface">Sofia Lind</span>
-<span class="text-[10px] font-bold text-on-secondary-fixed bg-secondary-container px-1.5 py-0.5 rounded-full w-fit mt-0.5">SW</span>
-</div>
-</div>
-</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">160</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">160</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">160</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">160</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">160</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">160</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">160</td>
-<td class="px-6 py-3 text-sm font-tabular text-right text-on-surface-variant">160</td>
-<td class="px-6 py-3 text-sm font-tabular font-bold text-right text-primary bg-primary/5">1,280</td>
-</tr>
-<!-- Summary Row -->
-<tr class="bg-surface-container-high font-bold border-t-2 border-outline-variant/10">
-<td class="px-6 py-4 sticky left-0 bg-surface-container-high z-10 border-r border-[#a9b4b7]/10 text-xs text-on-surface uppercase tracking-widest">Monthly Project Total</td>
-<td class="px-6 py-4 text-sm font-tabular text-right">520</td>
-<td class="px-6 py-4 text-sm font-tabular text-right">500</td>
-<td class="px-6 py-4 text-sm font-tabular text-right">480</td>
-<td class="px-6 py-4 text-sm font-tabular text-right">480</td>
-<td class="px-6 py-4 text-sm font-tabular text-right">520</td>
-<td class="px-6 py-4 text-sm font-tabular text-right">520</td>
-<td class="px-6 py-4 text-sm font-tabular text-right">400</td>
-<td class="px-6 py-4 text-sm font-tabular text-right">480</td>
-<td class="px-6 py-4 text-sm font-tabular text-right bg-primary text-on-primary">3,900</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-<div class="bg-surface-container-low p-6 rounded-sm">
-<h3 class="font-['Manrope'] font-semibold text-lg mb-4 text-on-surface">Allocation Trends</h3>
-<div class="h-48 flex items-end gap-3 px-2">
-<div class="flex-1 bg-primary/20 rounded-t-sm relative group h-[60%]">
-<div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-on-surface text-surface text-[10px] px-2 py-1 rounded">520h</div>
-</div>
-<div class="flex-1 bg-primary/20 rounded-t-sm relative group h-[55%]"></div>
-<div class="flex-1 bg-primary/20 rounded-t-sm relative group h-[50%]"></div>
-<div class="flex-1 bg-primary/20 rounded-t-sm relative group h-[50%]"></div>
-<div class="flex-1 bg-primary/30 rounded-t-sm relative group h-[65%]"></div>
-<div class="flex-1 bg-primary/30 rounded-t-sm relative group h-[65%]"></div>
-<div class="flex-1 bg-primary/20 rounded-t-sm relative group h-[40%]"></div>
-<div class="flex-1 bg-primary/30 rounded-t-sm relative group h-[55%]"></div>
-</div>
-<div class="flex justify-between mt-3 px-2">
-<span class="text-[10px] text-outline font-bold">JAN</span>
-<span class="text-[10px] text-outline font-bold">AUG</span>
-</div>
-</div>
-<div class="bg-surface-container-low p-6 rounded-sm">
-<h3 class="font-['Manrope'] font-semibold text-lg mb-4 text-on-surface">Discipline Distribution</h3>
-<div class="space-y-4">
-<div>
-<div class="flex justify-between text-xs font-bold mb-1.5 uppercase tracking-wider">
-<span class="text-on-surface-variant">Software (SW)</span>
-<span class="text-on-surface">62%</span>
-</div>
-<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
-<div class="bg-primary h-full w-[62%]"></div>
-</div>
-</div>
-<div>
-<div class="flex justify-between text-xs font-bold mb-1.5 uppercase tracking-wider">
-<span class="text-on-surface-variant">Mechanical (Mek)</span>
-<span class="text-on-surface">18%</span>
-</div>
-<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
-<div class="bg-outline h-full w-[18%]"></div>
-</div>
-</div>
-<div>
-<div class="flex justify-between text-xs font-bold mb-1.5 uppercase tracking-wider">
-<span class="text-on-surface-variant">Electronics (Elnik)</span>
-<span class="text-on-surface">20%</span>
-</div>
-<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
-<div class="bg-tertiary h-full w-[20%]"></div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-</main>
-</div>
-</body></html>
+  </head>
+  <body class="bg-surface text-on-surface selection:bg-primary-container">
+    <div class="flex h-screen overflow-hidden">
+      <!-- SideNavBar -->
+      <aside
+        class="docked left-0 flex h-full w-64 shrink-0 flex-col border-r border-[#a9b4b7]/15 bg-[#f0f4f6] transition-transform duration-200 ease-in-out dark:bg-slate-950"
+      >
+        <div class="px-6 py-8">
+          <div class="flex items-center gap-3">
+            <div
+              class="bg-primary text-on-primary flex h-8 w-8 items-center justify-center rounded-sm font-bold"
+            >
+              NP
+            </div>
+            <div>
+              <h2
+                class="font-['Manrope'] leading-none font-bold text-[#496173] dark:text-slate-200"
+              >
+                Resource Planner
+              </h2>
+              <p class="text-outline mt-1 text-[10px] font-medium tracking-widest uppercase">
+                Nordic Precision
+              </p>
+            </div>
+          </div>
+        </div>
+        <nav class="flex-1 space-y-1 px-3">
+          <a
+            class="flex items-center gap-3 rounded-sm px-3 py-2 font-['Inter'] text-xs font-medium text-slate-600 hover:bg-[#d9e4e8]/50 dark:text-slate-400 dark:hover:bg-slate-800/50"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-[18px]">group</span>
+            Resources
+          </a>
+          <a
+            class="flex items-center gap-3 rounded-sm px-3 py-2 font-['Inter'] text-xs font-medium text-slate-600 hover:bg-[#d9e4e8]/50 dark:text-slate-400 dark:hover:bg-slate-800/50"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-[18px]">event_available</span>
+            Allocations
+          </a>
+          <a
+            class="flex items-center gap-3 rounded-sm px-3 py-2 font-['Inter'] text-xs font-medium text-slate-600 hover:bg-[#d9e4e8]/50 dark:text-slate-400 dark:hover:bg-slate-800/50"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-[18px]">bar_chart</span>
+            Capacity
+          </a>
+          <a
+            class="flex items-center gap-3 rounded-sm px-3 py-2 font-['Inter'] text-xs font-medium text-slate-600 hover:bg-[#d9e4e8]/50 dark:text-slate-400 dark:hover:bg-slate-800/50"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-[18px]">flag</span>
+            Milestones
+          </a>
+          <a
+            class="flex items-center gap-3 rounded-sm px-3 py-2 font-['Inter'] text-xs font-medium text-slate-600 hover:bg-[#d9e4e8]/50 dark:text-slate-400 dark:hover:bg-slate-800/50"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-[18px]">description</span>
+            Reports
+          </a>
+        </nav>
+        <div class="border-t border-[#a9b4b7]/15 px-6 py-6">
+          <button
+            class="bg-primary text-on-primary w-full rounded-sm py-2 text-xs font-semibold shadow-sm transition-opacity hover:opacity-90"
+          >
+            New Entry
+          </button>
+        </div>
+        <div class="space-y-1 px-3 py-4">
+          <a
+            class="flex items-center gap-3 rounded-sm px-3 py-2 font-['Inter'] text-xs font-medium text-slate-600 hover:bg-[#d9e4e8]/50 dark:text-slate-400"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-[18px]">help_outline</span>
+            Help
+          </a>
+          <a
+            class="flex items-center gap-3 rounded-sm px-3 py-2 font-['Inter'] text-xs font-medium text-slate-600 hover:bg-[#d9e4e8]/50 dark:text-slate-400"
+            href="#"
+          >
+            <span class="material-symbols-outlined text-[18px]">archive</span>
+            Archive
+          </a>
+        </div>
+      </aside>
+      <!-- Main Content -->
+      <main class="bg-surface flex min-w-0 flex-1 flex-col overflow-y-auto">
+        <!-- TopNavBar -->
+        <header
+          class="sticky top-0 z-10 flex w-full shrink-0 items-center justify-between bg-[#f8fafb] px-8 py-4 dark:bg-slate-900"
+        >
+          <div class="flex items-center gap-8">
+            <span
+              class="font-['Manrope'] text-xl font-semibold tracking-tighter text-[#496173] dark:text-slate-100"
+              >Nordic Capacity</span
+            >
+            <nav class="hidden items-center gap-6 md:flex">
+              <a
+                class="font-['Manrope'] text-sm font-medium tracking-tight text-slate-500 transition-colors hover:text-[#496173]"
+                href="#"
+                >Input</a
+              >
+              <a
+                class="font-['Manrope'] text-sm font-medium tracking-tight text-slate-500 transition-colors hover:text-[#496173]"
+                href="#"
+                >Team</a
+              >
+              <a
+                class="border-b-2 border-[#496173] pb-1 font-['Manrope'] text-sm font-bold tracking-tight text-[#496173] dark:text-white"
+                href="#"
+                >Projects</a
+              >
+              <a
+                class="font-['Manrope'] text-sm font-medium tracking-tight text-slate-500 transition-colors hover:text-[#496173]"
+                href="#"
+                >Data</a
+              >
+              <a
+                class="font-['Manrope'] text-sm font-medium tracking-tight text-slate-500 transition-colors hover:text-[#496173]"
+                href="#"
+                >Dashboard</a
+              >
+            </nav>
+          </div>
+          <div class="flex items-center gap-4">
+            <div class="relative">
+              <span
+                class="material-symbols-outlined text-outline absolute top-1/2 left-3 -translate-y-1/2 text-[20px]"
+                >search</span
+              >
+              <input
+                class="bg-surface-container-low focus:ring-primary w-64 rounded-sm border-none py-1.5 pr-4 pl-10 text-sm transition-all focus:ring-1"
+                placeholder="Search projects..."
+                type="text"
+              />
+            </div>
+            <button
+              class="text-outline hover:bg-surface-container-low rounded-full p-2 transition-colors"
+            >
+              <span class="material-symbols-outlined">notifications</span>
+            </button>
+            <button
+              class="text-outline hover:bg-surface-container-low rounded-full p-2 transition-colors"
+            >
+              <span class="material-symbols-outlined">settings</span>
+            </button>
+            <img
+              alt="User profile"
+              class="border-outline-variant/20 h-8 w-8 rounded-full border"
+              data-alt="professional portrait of a project manager in a minimalist studio setting with soft natural lighting"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCAsx5Plc0r2kT2Pw26AC9ZcSuzTYs4gSQ8WRZTYWqnk6yrzCiOOy6fuSVJ6oIWrgHbV_OSRx2qCpBe3-T3HSi1Wso3f35HqJ5j5nWbBHkqLl7C4IU9_ViUgyTYZusC-MPyyM0jFrDbCCYgE90kmk8_cZYcCnJBRNCoNaM6tMlWQUQ6sBDd6ow48rKnicAYYKXfD2yhbXvdEle63ONHE3CEE-eVl2nTEHYqSA1JOV_wXGo75KuyCfAn3L3Mix7CR64I5dT75lFSqap"
+            />
+          </div>
+        </header>
+        <!-- Project Header -->
+        <section class="px-8 py-8">
+          <div class="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <div>
+              <div class="mb-1 flex items-center gap-2">
+                <span
+                  class="text-outline font-['Inter'] text-xs font-semibold tracking-widest uppercase"
+                  >Program</span
+                >
+                <span
+                  class="text-primary bg-primary-container rounded-sm px-2 py-0.5 font-['Inter'] text-xs font-bold"
+                  >P-Series</span
+                >
+              </div>
+              <h1 class="text-on-surface font-['Manrope'] text-4xl font-extrabold tracking-tight">
+                Project Atlas
+              </h1>
+              <p class="text-on-surface-variant mt-2 max-w-2xl font-['Inter']">
+                High-performance structural optimization for next-generation aerospace components.
+                Focused on iterative design cycles and load-bearing efficiency.
+              </p>
+            </div>
+            <div class="flex gap-4">
+              <div
+                class="bg-surface-container-lowest min-w-[160px] rounded-sm p-5 shadow-[0_4px_20px_-4px_rgba(42,52,55,0.06)]"
+              >
+                <p class="text-outline mb-1 text-[10px] font-bold tracking-wider uppercase">
+                  Total Hours
+                </p>
+                <p class="font-tabular text-on-surface text-2xl font-bold">
+                  12,480 <span class="text-outline text-sm font-medium">hrs</span>
+                </p>
+              </div>
+              <div
+                class="bg-surface-container-lowest min-w-[160px] rounded-sm p-5 shadow-[0_4px_20px_-4px_rgba(42,52,55,0.06)]"
+              >
+                <p class="text-outline mb-1 text-[10px] font-bold tracking-wider uppercase">
+                  Assigned
+                </p>
+                <p class="font-tabular text-on-surface text-2xl font-bold">
+                  14 <span class="text-outline text-sm font-medium">people</span>
+                </p>
+              </div>
+              <div
+                class="bg-surface-container-lowest min-w-[160px] rounded-sm p-5 shadow-[0_4px_20px_-4px_rgba(42,52,55,0.06)]"
+              >
+                <p class="text-outline mb-1 text-[10px] font-bold tracking-wider uppercase">
+                  Disciplines
+                </p>
+                <div class="mt-1 flex gap-1">
+                  <span class="bg-primary h-2.5 w-2.5 rounded-full" title="SW"></span>
+                  <span class="bg-outline h-2.5 w-2.5 rounded-full" title="Mek"></span>
+                  <span class="bg-tertiary h-2.5 w-2.5 rounded-full" title="Elnik"></span>
+                </div>
+                <p class="text-on-surface-variant mt-1 text-xs font-medium">SW, Mek, Elnik</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Data Grid Section -->
+        <section class="px-8 pb-12">
+          <div
+            class="bg-surface-container-lowest overflow-hidden rounded-sm border border-[#a9b4b7]/15"
+          >
+            <div class="overflow-x-auto">
+              <table class="w-full border-collapse text-left">
+                <thead>
+                  <tr class="bg-surface-container-low">
+                    <th
+                      class="text-outline bg-surface-container-low sticky left-0 z-10 w-64 border-r border-[#a9b4b7]/10 px-6 py-4 text-[11px] font-bold tracking-wider uppercase"
+                    >
+                      Team Member
+                    </th>
+                    <th
+                      class="text-outline px-6 py-4 text-right text-[11px] font-bold tracking-wider uppercase"
+                    >
+                      Jan
+                    </th>
+                    <th
+                      class="text-outline px-6 py-4 text-right text-[11px] font-bold tracking-wider uppercase"
+                    >
+                      Feb
+                    </th>
+                    <th
+                      class="text-outline px-6 py-4 text-right text-[11px] font-bold tracking-wider uppercase"
+                    >
+                      Mar
+                    </th>
+                    <th
+                      class="text-outline px-6 py-4 text-right text-[11px] font-bold tracking-wider uppercase"
+                    >
+                      Apr
+                    </th>
+                    <th
+                      class="text-outline px-6 py-4 text-right text-[11px] font-bold tracking-wider uppercase"
+                    >
+                      May
+                    </th>
+                    <th
+                      class="text-outline px-6 py-4 text-right text-[11px] font-bold tracking-wider uppercase"
+                    >
+                      Jun
+                    </th>
+                    <th
+                      class="text-outline px-6 py-4 text-right text-[11px] font-bold tracking-wider uppercase"
+                    >
+                      Jul
+                    </th>
+                    <th
+                      class="text-outline px-6 py-4 text-right text-[11px] font-bold tracking-wider uppercase"
+                    >
+                      Aug
+                    </th>
+                    <th
+                      class="text-outline bg-primary/5 px-6 py-4 text-right text-[11px] font-bold tracking-wider uppercase"
+                    >
+                      Total
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[#a9b4b7]/10">
+                  <!-- Row 1 -->
+                  <tr class="group hover:bg-surface-container-low transition-colors">
+                    <td
+                      class="bg-surface-container-lowest group-hover:bg-surface-container-low sticky left-0 z-10 border-r border-[#a9b4b7]/10 px-6 py-3"
+                    >
+                      <div class="flex items-center gap-3">
+                        <div class="flex flex-col">
+                          <span class="text-on-surface text-sm font-semibold">Lars Andersson</span>
+                          <span
+                            class="text-on-secondary-fixed bg-secondary-container mt-0.5 w-fit rounded-full px-1.5 py-0.5 text-[10px] font-bold"
+                            >SW</span
+                          >
+                        </div>
+                      </div>
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      160
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      140
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      160
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      120
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      160
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      160
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      80
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      160
+                    </td>
+                    <td
+                      class="font-tabular text-primary bg-primary/5 px-6 py-3 text-right text-sm font-bold"
+                    >
+                      1,140
+                    </td>
+                  </tr>
+                  <!-- Row 2 -->
+                  <tr class="group hover:bg-surface-container-low transition-colors">
+                    <td
+                      class="bg-surface-container-lowest group-hover:bg-surface-container-low sticky left-0 z-10 border-r border-[#a9b4b7]/10 px-6 py-3"
+                    >
+                      <div class="flex items-center gap-3">
+                        <div class="flex flex-col">
+                          <span class="text-on-surface text-sm font-semibold">Maria Berg</span>
+                          <span
+                            class="text-on-secondary-fixed bg-secondary-container mt-0.5 w-fit rounded-full px-1.5 py-0.5 text-[10px] font-bold"
+                            >Mek</span
+                          >
+                        </div>
+                      </div>
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      80
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      80
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      40
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      80
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      80
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      80
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      40
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      40
+                    </td>
+                    <td
+                      class="font-tabular text-primary bg-primary/5 px-6 py-3 text-right text-sm font-bold"
+                    >
+                      520
+                    </td>
+                  </tr>
+                  <!-- Row 3 -->
+                  <tr class="group hover:bg-surface-container-low transition-colors">
+                    <td
+                      class="bg-surface-container-lowest group-hover:bg-surface-container-low sticky left-0 z-10 border-r border-[#a9b4b7]/10 px-6 py-3"
+                    >
+                      <div class="flex items-center gap-3">
+                        <div class="flex flex-col">
+                          <span class="text-on-surface text-sm font-semibold">Erik Nielsen</span>
+                          <span
+                            class="text-on-secondary-fixed bg-secondary-container mt-0.5 w-fit rounded-full px-1.5 py-0.5 text-[10px] font-bold"
+                            >Elnik</span
+                          >
+                        </div>
+                      </div>
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      120
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      120
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      120
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      120
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      120
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      120
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      120
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      120
+                    </td>
+                    <td
+                      class="font-tabular text-primary bg-primary/5 px-6 py-3 text-right text-sm font-bold"
+                    >
+                      960
+                    </td>
+                  </tr>
+                  <!-- Row 4 -->
+                  <tr class="group hover:bg-surface-container-low transition-colors">
+                    <td
+                      class="bg-surface-container-lowest group-hover:bg-surface-container-low sticky left-0 z-10 border-r border-[#a9b4b7]/10 px-6 py-3"
+                    >
+                      <div class="flex items-center gap-3">
+                        <div class="flex flex-col">
+                          <span class="text-on-surface text-sm font-semibold">Sofia Lind</span>
+                          <span
+                            class="text-on-secondary-fixed bg-secondary-container mt-0.5 w-fit rounded-full px-1.5 py-0.5 text-[10px] font-bold"
+                            >SW</span
+                          >
+                        </div>
+                      </div>
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      160
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      160
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      160
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      160
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      160
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      160
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      160
+                    </td>
+                    <td class="font-tabular text-on-surface-variant px-6 py-3 text-right text-sm">
+                      160
+                    </td>
+                    <td
+                      class="font-tabular text-primary bg-primary/5 px-6 py-3 text-right text-sm font-bold"
+                    >
+                      1,280
+                    </td>
+                  </tr>
+                  <!-- Summary Row -->
+                  <tr
+                    class="bg-surface-container-high border-outline-variant/10 border-t-2 font-bold"
+                  >
+                    <td
+                      class="bg-surface-container-high text-on-surface sticky left-0 z-10 border-r border-[#a9b4b7]/10 px-6 py-4 text-xs tracking-widest uppercase"
+                    >
+                      Monthly Project Total
+                    </td>
+                    <td class="font-tabular px-6 py-4 text-right text-sm">520</td>
+                    <td class="font-tabular px-6 py-4 text-right text-sm">500</td>
+                    <td class="font-tabular px-6 py-4 text-right text-sm">480</td>
+                    <td class="font-tabular px-6 py-4 text-right text-sm">480</td>
+                    <td class="font-tabular px-6 py-4 text-right text-sm">520</td>
+                    <td class="font-tabular px-6 py-4 text-right text-sm">520</td>
+                    <td class="font-tabular px-6 py-4 text-right text-sm">400</td>
+                    <td class="font-tabular px-6 py-4 text-right text-sm">480</td>
+                    <td
+                      class="font-tabular bg-primary text-on-primary px-6 py-4 text-right text-sm"
+                    >
+                      3,900
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="mt-8 grid grid-cols-1 gap-8 md:grid-cols-2">
+            <div class="bg-surface-container-low rounded-sm p-6">
+              <h3 class="text-on-surface mb-4 font-['Manrope'] text-lg font-semibold">
+                Allocation Trends
+              </h3>
+              <div class="flex h-48 items-end gap-3 px-2">
+                <div class="bg-primary/20 group relative h-[60%] flex-1 rounded-t-sm">
+                  <div
+                    class="bg-on-surface text-surface absolute -top-8 left-1/2 -translate-x-1/2 rounded px-2 py-1 text-[10px] opacity-0 transition-opacity group-hover:opacity-100"
+                  >
+                    520h
+                  </div>
+                </div>
+                <div class="bg-primary/20 group relative h-[55%] flex-1 rounded-t-sm"></div>
+                <div class="bg-primary/20 group relative h-[50%] flex-1 rounded-t-sm"></div>
+                <div class="bg-primary/20 group relative h-[50%] flex-1 rounded-t-sm"></div>
+                <div class="bg-primary/30 group relative h-[65%] flex-1 rounded-t-sm"></div>
+                <div class="bg-primary/30 group relative h-[65%] flex-1 rounded-t-sm"></div>
+                <div class="bg-primary/20 group relative h-[40%] flex-1 rounded-t-sm"></div>
+                <div class="bg-primary/30 group relative h-[55%] flex-1 rounded-t-sm"></div>
+              </div>
+              <div class="mt-3 flex justify-between px-2">
+                <span class="text-outline text-[10px] font-bold">JAN</span>
+                <span class="text-outline text-[10px] font-bold">AUG</span>
+              </div>
+            </div>
+            <div class="bg-surface-container-low rounded-sm p-6">
+              <h3 class="text-on-surface mb-4 font-['Manrope'] text-lg font-semibold">
+                Discipline Distribution
+              </h3>
+              <div class="space-y-4">
+                <div>
+                  <div
+                    class="mb-1.5 flex justify-between text-xs font-bold tracking-wider uppercase"
+                  >
+                    <span class="text-on-surface-variant">Software (SW)</span>
+                    <span class="text-on-surface">62%</span>
+                  </div>
+                  <div class="bg-surface-container-high h-1.5 w-full overflow-hidden rounded-full">
+                    <div class="bg-primary h-full w-[62%]"></div>
+                  </div>
+                </div>
+                <div>
+                  <div
+                    class="mb-1.5 flex justify-between text-xs font-bold tracking-wider uppercase"
+                  >
+                    <span class="text-on-surface-variant">Mechanical (Mek)</span>
+                    <span class="text-on-surface">18%</span>
+                  </div>
+                  <div class="bg-surface-container-high h-1.5 w-full overflow-hidden rounded-full">
+                    <div class="bg-outline h-full w-[18%]"></div>
+                  </div>
+                </div>
+                <div>
+                  <div
+                    class="mb-1.5 flex justify-between text-xs font-bold tracking-wider uppercase"
+                  >
+                    <span class="text-on-surface-variant">Electronics (Elnik)</span>
+                    <span class="text-on-surface">20%</span>
+                  </div>
+                  <div class="bg-surface-container-high h-1.5 w-full overflow-hidden rounded-full">
+                    <div class="bg-tertiary h-full w-[20%]"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
