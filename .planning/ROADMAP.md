@@ -123,6 +123,13 @@ Plans:
 
 **Parallel with:** Phase 5 (reference data admin)
 
+**Plans:** 2 plans
+
+Plans:
+
+- [ ] 04-01-PLAN.md -- Person CRUD: TanStack Query setup, person service/schema/API routes, Team page UI
+- [ ] 04-02-PLAN.md -- Project CRUD: project service/schema/API routes, Projects page UI
+
 ---
 
 ### Phase 5: Reference Data Admin
