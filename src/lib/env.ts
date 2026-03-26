@@ -6,9 +6,9 @@ export const env = createEnv({
     NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
     // Database connection string (Neon PostgreSQL)
     DATABASE_URL: z.string().url(),
-    // Required in Phase 3+
-    CLERK_SECRET_KEY: z.string().min(1).optional(),
-    CLERK_WEBHOOK_SECRET: z.string().min(1).optional(),
+    // Clerk Authentication (REQUIRED)
+    CLERK_SECRET_KEY: z.string().min(1),
+    CLERK_WEBHOOK_SECRET: z.string().min(1),
     // Required in production (deferred from MVP)
     STRIPE_SECRET_KEY: z.string().min(1).optional(),
     STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
@@ -27,7 +27,7 @@ export const env = createEnv({
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url().optional(),
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1).optional(),
+    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().min(1),
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: z.string().default('/sign-in'),
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: z.string().default('/sign-up'),
     NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: z.string().default('/input'),
