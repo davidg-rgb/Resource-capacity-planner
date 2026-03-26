@@ -55,6 +55,16 @@ const SECTION_NAV: Record<string, NavSection[]> = {
       ],
     },
   ],
+  '/admin': [
+    {
+      heading: 'Reference Data',
+      items: [
+        { label: 'Disciplines', href: '/admin/disciplines' },
+        { label: 'Departments', href: '/admin/departments' },
+        { label: 'Programs', href: '/admin/programs' },
+      ],
+    },
+  ],
 };
 
 function getSectionKey(pathname: string): string {

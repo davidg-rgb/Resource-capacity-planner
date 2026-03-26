@@ -12,6 +12,7 @@ import {
   FolderKanban,
   Database,
   LayoutDashboard,
+  ShieldCheck,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -20,6 +21,7 @@ const NAV_ITEMS = [
   { label: 'Projects', href: '/projects', icon: FolderKanban },
   { label: 'Data', href: '/data', icon: Database },
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { label: 'Admin', href: '/admin/disciplines', icon: ShieldCheck },
 ] as const;
 
 export function TopNav() {
