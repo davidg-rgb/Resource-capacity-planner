@@ -79,7 +79,7 @@ export function useGridAutosave(personId: string) {
 
       // Handle conflicts if any
       if (result.conflicts.length > 0) {
-        handleConflicts(result.conflicts);
+        handleConflicts(result.conflicts, batchWithTimestamps);
       } else {
         // Only invalidate on clean save to avoid unnecessary refetches
         queryClient.invalidateQueries({ queryKey: ['allocations', personId] });
@@ -94,7 +94,7 @@ export function useGridAutosave(personId: string) {
    * Handle detected conflicts by prompting user to overwrite or refresh.
    */
   const handleConflicts = useCallback(
-    (conflicts: ConflictInfo[]) => {
+    async (conflicts: ConflictInfo[], originalBatch: AllocationUpsert[]) => {
       const conflictSummary = conflicts
         .map((c) => `${c.month}: server has ${c.serverHours}h`)
         .join(', ');
@@ -107,20 +107,29 @@ export function useGridAutosave(personId: string) {
 
       if (shouldOverwrite) {
         // Re-send conflicting cells without expectedUpdatedAt to force overwrite
-        const forceUpserts: AllocationUpsert[] = conflicts.map((c) => ({
-          personId,
-          projectId: c.projectId,
-          month: c.month,
-          hours: c.serverHours, // Will be overwritten by the pending value below
-        }));
+        const conflictKeys = new Set(conflicts.map((c) => `${c.projectId}:${c.month}`));
+        const forceUpserts: AllocationUpsert[] = originalBatch
+          .filter((a) => conflictKeys.has(`${a.projectId}:${a.month}`))
+          .map(({ expectedUpdatedAt: _ignored, ...rest }) => rest);
 
-        // We need to find the original pending values -- but they were already cleared.
-        // Instead, force-save with no expectedUpdatedAt by sending to the batch endpoint.
-        // The user chose to overwrite, so we refetch and let them re-edit.
-        // Simplest approach: just invalidate to refresh, then user can re-save.
+        try {
+          const res = await fetch('/api/allocations/batch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ allocations: forceUpserts }),
+          });
+          if (res.ok) {
+            const result: BatchUpsertResult = await res.json();
+            for (const [key, timestamp] of Object.entries(result.updatedTimestamps)) {
+              updatedAtMapRef.current.set(key, timestamp);
+            }
+          }
+        } catch {
+          // Force overwrite failed — fall through to invalidate
+        }
         queryClient.invalidateQueries({ queryKey: ['allocations', personId] });
       } else {
-        // User chose to refresh -- invalidate to get server data
+        // User chose to refresh — invalidate to get server data
         queryClient.invalidateQueries({ queryKey: ['allocations', personId] });
       }
     },
