@@ -93,26 +93,5 @@ export function useArchiveProject() {
   });
 }
 
-// ---------------------------------------------------------------------------
-// Reference data hooks (minimal read-only for form dropdowns)
-// ---------------------------------------------------------------------------
-
-interface Program {
-  id: string;
-  name: string;
-  description: string | null;
-  organizationId: string;
-}
-
-/** Fetch programs for the current tenant */
-export function usePrograms() {
-  return useQuery<Program[]>({
-    queryKey: ['programs'],
-    queryFn: async () => {
-      const res = await fetch('/api/programs');
-      if (!res.ok) throw new Error('Failed to fetch programs');
-      const data = await res.json();
-      return data.programs;
-    },
-  });
-}
+// Re-export reference data hooks for backward compatibility
+export { usePrograms } from './use-reference-data';

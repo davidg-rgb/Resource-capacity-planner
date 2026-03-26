@@ -95,45 +95,5 @@ export function useDeletePerson() {
   });
 }
 
-// ---------------------------------------------------------------------------
-// Reference data hooks (minimal read-only for form dropdowns)
-// ---------------------------------------------------------------------------
-
-interface Department {
-  id: string;
-  name: string;
-  organizationId: string;
-}
-
-interface Discipline {
-  id: string;
-  name: string;
-  abbreviation: string;
-  organizationId: string;
-}
-
-/** Fetch departments for the current tenant */
-export function useDepartments() {
-  return useQuery<Department[]>({
-    queryKey: ['departments'],
-    queryFn: async () => {
-      const res = await fetch('/api/departments');
-      if (!res.ok) throw new Error('Failed to fetch departments');
-      const data = await res.json();
-      return data.departments;
-    },
-  });
-}
-
-/** Fetch disciplines for the current tenant */
-export function useDisciplines() {
-  return useQuery<Discipline[]>({
-    queryKey: ['disciplines'],
-    queryFn: async () => {
-      const res = await fetch('/api/disciplines');
-      if (!res.ok) throw new Error('Failed to fetch disciplines');
-      const data = await res.json();
-      return data.disciplines;
-    },
-  });
-}
+// Re-export reference data hooks for backward compatibility
+export { useDepartments, useDisciplines } from './use-reference-data';
