@@ -4,11 +4,12 @@ import { db } from '@/db';
 import * as schema from '@/db/schema';
 import { normalizeMonth } from '@/lib/date-utils';
 
-import type { AllocationUpsert, BatchUpsertResult, FlatAllocation } from './allocation.types';
+import type { AllocationUpsert, BatchUpsertResult, ConflictInfo, FlatAllocation } from './allocation.types';
 
 /**
  * List all allocations for a person, joined with projects for project names.
  * Month values are normalized from YYYY-MM-DD to YYYY-MM.
+ * Includes updatedAt for optimistic concurrency conflict detection.
  */
 export async function listAllocationsForPerson(
   orgId: string,
@@ -22,6 +23,7 @@ export async function listAllocationsForPerson(
       projectName: schema.projects.name,
       month: schema.allocations.month,
       hours: schema.allocations.hours,
+      updatedAt: schema.allocations.updatedAt,
     })
     .from(schema.allocations)
     .innerJoin(schema.projects, eq(schema.allocations.projectId, schema.projects.id))
@@ -35,6 +37,7 @@ export async function listAllocationsForPerson(
   return rows.map((row) => ({
     ...row,
     month: normalizeMonth(row.month),
+    updatedAt: row.updatedAt.toISOString(),
   }));
 }
 
@@ -42,6 +45,9 @@ export async function listAllocationsForPerson(
  * Batch upsert allocations in a single transaction.
  * - hours > 0: INSERT or UPDATE (ON CONFLICT)
  * - hours === 0: DELETE the allocation row (zero-hour cleanup)
+ * - If expectedUpdatedAt is provided, checks for conflicts before upserting.
+ *   A conflict occurs when the server's updatedAt is newer than expectedUpdatedAt.
+ *   Omitting expectedUpdatedAt forces the upsert (backward compatible).
  */
 export async function batchUpsertAllocations(
   orgId: string,
@@ -51,6 +57,8 @@ export async function batchUpsertAllocations(
   let updated = 0;
   let deleted = 0;
   const errors: string[] = [];
+  const conflicts: ConflictInfo[] = [];
+  const updatedTimestamps: Record<string, string> = {};
 
   await db.transaction(async (tx) => {
     for (const alloc of allocations) {
@@ -75,6 +83,40 @@ export async function batchUpsertAllocations(
           deleted++;
         }
       } else {
+        // Conflict detection: if expectedUpdatedAt is provided, check server state first
+        if (alloc.expectedUpdatedAt) {
+          const existing = await tx
+            .select({
+              hours: schema.allocations.hours,
+              updatedAt: schema.allocations.updatedAt,
+            })
+            .from(schema.allocations)
+            .where(
+              and(
+                eq(schema.allocations.organizationId, orgId),
+                eq(schema.allocations.personId, alloc.personId),
+                eq(schema.allocations.projectId, alloc.projectId),
+                eq(schema.allocations.month, monthDate),
+              ),
+            );
+
+          if (existing.length > 0) {
+            const serverUpdatedAt = existing[0].updatedAt;
+            const expectedDate = new Date(alloc.expectedUpdatedAt);
+
+            if (serverUpdatedAt > expectedDate) {
+              // Conflict detected: server was modified after our last known state
+              conflicts.push({
+                projectId: alloc.projectId,
+                month: alloc.month,
+                serverHours: existing[0].hours,
+                serverUpdatedAt: serverUpdatedAt.toISOString(),
+              });
+              continue; // Skip this upsert
+            }
+          }
+        }
+
         // UPSERT: insert or update on conflict
         const result = await tx
           .insert(schema.allocations)
@@ -112,10 +154,14 @@ export async function batchUpsertAllocations(
           } else {
             updated++;
           }
+
+          // Track the new updatedAt for the client to update its map
+          const key = `${alloc.projectId}:${alloc.month}`;
+          updatedTimestamps[key] = row.updatedAt.toISOString();
         }
       }
     }
   });
 
-  return { created, updated, deleted, errors };
+  return { created, updated, deleted, errors, conflicts, updatedTimestamps };
 }
