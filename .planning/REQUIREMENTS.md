@@ -38,8 +38,8 @@
 - [x] **INPUT-03**: SUMMA row calculates sum of all project hours per month in real time (F-005)
 - [x] **INPUT-04**: Target row shows configurable monthly capacity target per person (default 160h) (F-005, A1)
 - [x] **INPUT-05**: Status row shows color-coded indicator per month: green (<90%), amber (90-100%), red (>100%), gray (no allocations) (F-005)
-- [ ] **INPUT-06**: Person sidebar lists all people grouped by department with status dots (F-004)
-- [ ] **INPUT-07**: Prev/next arrows navigate between people (F-004)
+- [x] **INPUT-06**: Person sidebar lists all people grouped by department with status dots (F-004)
+- [x] **INPUT-07**: Prev/next arrows navigate between people (F-004)
 - [x] **INPUT-08**: Dynamic project rows — "Add project..." row at bottom, minimum 1 empty row (A5)
 - [ ] **INPUT-09**: Drag-to-fill custom implementation to replicate value across months (F-021)
 - [ ] **INPUT-10**: Keyboard navigation: Tab, Enter, Arrow keys, Escape (F-021)
@@ -144,8 +144,8 @@
 | INPUT-03 | 6     | AG Grid Spike & Core Grid             | Pending |
 | INPUT-04 | 6     | AG Grid Spike & Core Grid             | Pending |
 | INPUT-05 | 6     | AG Grid Spike & Core Grid             | Pending |
-| INPUT-06 | 7     | Grid Polish & Navigation              | Pending |
-| INPUT-07 | 7     | Grid Polish & Navigation              | Pending |
+| INPUT-06 | 7     | Grid Polish & Navigation              | Complete |
+| INPUT-07 | 7     | Grid Polish & Navigation              | Complete |
 | INPUT-08 | 6     | AG Grid Spike & Core Grid             | Pending |
 | INPUT-09 | 7     | Grid Polish & Navigation              | Pending |
 | INPUT-10 | 7     | Grid Polish & Navigation              | Pending |

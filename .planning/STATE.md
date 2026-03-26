@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: Not started
-status: Ready to plan
-stopped_at: Completed 05-01-PLAN.md
-last_updated: "2026-03-26T21:52:36.001Z"
+current_plan: 1
+status: Executing Phase 07
+stopped_at: Completed 07-01-PLAN.md
+last_updated: "2026-03-26T23:40:12Z"
 progress:
   total_phases: 10
   completed_phases: 6
-  total_plans: 13
-  completed_plans: 13
+  total_plans: 16
+  completed_plans: 14
 ---
 
 # Nordic Capacity -- Project State
 
 ## Current Phase
 
-Phase 3 -- Authentication & App Shell (complete)
+Phase 7 -- Grid Polish & Navigation (in progress)
 
-Current Plan: Not started
+Current Plan: 1 of 3
 
 ## Phase Status
 
@@ -31,7 +31,7 @@ Current Plan: Not started
 | 4     | Person & Project CRUD                 | not started | --         | --        |
 | 5     | Reference Data Admin                  | not started | --         | --        |
 | 6     | AG Grid Spike & Core Grid             | not started | --         | --        |
-| 7     | Grid Polish & Navigation              | not started | --         | --        |
+| 7     | Grid Polish & Navigation              | in progress | 2026-03-26 | --        |
 | 8     | Import Wizard                         | not started | --         | --        |
 | 9     | Flat Table View & Export              | not started | --         | --        |
 | 10    | Platform Admin                        | not started | --         | --        |
@@ -70,6 +70,9 @@ Current Plan: Not started
 - Webhook handler uses explicit env.CLERK_WEBHOOK_SECRET (not Clerk SDK default env var)
 - [Phase 03]: Role validation allows org:viewer, org:planner, org:admin (cannot invite as org:owner -- only Clerk Dashboard can set owner)
 - [Phase 05]: Usage count checks at service layer before delete for clear error messages with counts
+- [Phase 07]: Single JOIN query for listPeopleWithStatus -- people + departments + disciplines + LEFT JOIN allocations with GROUP BY
+- [Phase 07]: Client-side search filtering in sidebar -- dataset is small (tens of people per org)
+- [Phase 07]: Adjacent person navigation uses full list scan -- simple approach for small datasets
 
 ## Performance Metrics
 
@@ -83,6 +86,7 @@ Current Plan: Not started
 | 03    | 03   | 2min     | 2     | 11    |
 | 03    | 04   | 2min     | 1     | 1     |
 | Phase 05 P01 | 3min | 2 tasks | 17 files |
+| 07    | 01   | 4min     | 2     | 9     |
 
 ## Active Context
 
@@ -94,8 +98,8 @@ Current Plan: Not started
 
 ## Last Session
 
-- **Stopped at:** Completed 05-01-PLAN.md
-- **Timestamp:** 2026-03-26T11:25:43Z
+- **Stopped at:** Completed 07-01-PLAN.md
+- **Timestamp:** 2026-03-26T23:40:12Z
 
 ---
 
