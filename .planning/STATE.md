@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: Not started
-status: Ready to plan
-stopped_at: Completed 03-04-PLAN.md (final plan in phase 03)
-last_updated: "2026-03-26T12:57:40.495Z"
+current_plan: 2
+status: Executing Phase 03
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-03-26T11:19:01.965Z"
 progress:
   total_phases: 10
   completed_phases: 3
   total_plans: 7
-  completed_plans: 7
+  completed_plans: 5
 ---
 
 # Nordic Capacity -- Project State
@@ -28,7 +28,7 @@ Current Plan: Not started
 | 1     | Project Scaffolding & Dev Environment | complete    | 2026-03-26 | 2026-03-26 |
 | 2     | Database Schema & Tenant Isolation    | complete    | 2026-03-26 | 2026-03-26 |
 | 3     | Authentication & App Shell            | in progress | 2026-03-26 | --        |
-| 4     | Person & Project CRUD                 | not started | --         | --        |
+| 4     | Person & Project CRUD                 | in progress | 2026-03-26 | --        |
 | 5     | Reference Data Admin                  | not started | --         | --        |
 | 6     | AG Grid Spike & Core Grid             | not started | --         | --        |
 | 7     | Grid Polish & Navigation              | not started | --         | --        |
@@ -46,12 +46,7 @@ Current Plan: Not started
 - FOUND-06: Error taxonomy with typed subclasses matching ARCHITECTURE.md
 - AUTH-06: getTenantId() and requireRole() Clerk auth helpers
 - AUTH-08: Clerk env vars promoted to required validation
-- AUTH-01: Sign up with email/password via Clerk (sign-up page)
-- AUTH-02: Log in and stay logged in via Clerk (sign-in page)
-- AUTH-03: Create organization during sign-up (webhook + org service)
-- AUTH-04: Clerk webhook creates internal org record with default disciplines/departments
-- AUTH-05: Protected routes redirect to sign-in via clerkMiddleware
-- AUTH-07: Admin can invite team members via Clerk organization invitation API
+- MGMT-01: Person CRUD with tenant-scoped API, soft-delete, TanStack Query hooks
 
 ## Decisions
 
@@ -66,9 +61,9 @@ Current Plan: Not started
 - Seed script uses own drizzle client (drizzle-orm/neon-http) outside Next.js context
 - Clerk org:* prefixed roles mapped via CLERK_ROLE_MAP lookup table
 - Error codes use ERR_ prefix convention for consistent API serialization
-- Default departments seeded on org creation: Engineering, Product, Operations
-- Webhook handler uses explicit env.CLERK_WEBHOOK_SECRET (not Clerk SDK default env var)
-- [Phase 03]: Role validation allows org:viewer, org:planner, org:admin (cannot invite as org:owner -- only Clerk Dashboard can set owner)
+- Manual Zod 4 schemas over drizzle-zod (Zod 4 compatibility uncertainty)
+- Direct db.select() in listPeople for flexible WHERE composition
+- Soft-delete via archivedAt instead of hard delete for people
 
 ## Performance Metrics
 
@@ -78,9 +73,7 @@ Current Plan: Not started
 | 02    | 01   | 4min     | 2     | 6     |
 | 02    | 02   | 2min     | 2     | 4     |
 | 03    | 01   | 2min     | 2     | 5     |
-| 03    | 02   | 2min     | 2     | 7     |
-| 03    | 03   | 2min     | 2     | 11    |
-| 03    | 04   | 2min     | 1     | 1     |
+| 04    | 01   | 3min     | 2     | 15    |
 
 ## Active Context
 
@@ -92,8 +85,8 @@ Current Plan: Not started
 
 ## Last Session
 
-- **Stopped at:** Completed 03-04-PLAN.md (final plan in phase 03)
-- **Timestamp:** 2026-03-26T11:25:43Z
+- **Stopped at:** Completed 04-01-PLAN.md
+- **Timestamp:** 2026-03-26T13:51:40Z
 
 ---
 
