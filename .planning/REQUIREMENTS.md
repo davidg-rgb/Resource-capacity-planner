@@ -17,7 +17,7 @@
 - [x] **FOUND-05**: Database migrations and development seed data on Neon PostgreSQL 17 (ADR-002)
 - [x] **FOUND-06**: Error taxonomy — AppError hierarchy: ValidationError, AuthError, ForbiddenError, NotFoundError, ConflictError, RateLimitError, InternalError (Section 11.1)
 - [x] **FOUND-07**: Health check endpoint returning 200 with DB connection status
-- [ ] **FOUND-08**: App shell — top nav (Input/Team/Projects/Data/Dashboard) + contextual side nav + main area (A7)
+- [x] **FOUND-08**: App shell — top nav (Input/Team/Projects/Data/Dashboard) + contextual side nav + main area (A7)
 - [x] **FOUND-09**: Environment configuration -- all env vars documented and validated at startup (Section 11.2)
 
 ### Authentication (AUTH)
