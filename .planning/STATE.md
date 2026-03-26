@@ -2,31 +2,31 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 2
-status: Executing Phase 02
-stopped_at: Completed 02-01-PLAN.md
-last_updated: "2026-03-26T09:44:03Z"
+current_plan: 3
+status: Phase 02 Complete
+stopped_at: Completed 02-02-PLAN.md
+last_updated: "2026-03-26T09:48:42Z"
 progress:
   total_phases: 10
-  completed_phases: 1
+  completed_phases: 2
   total_plans: 3
-  completed_plans: 2
+  completed_plans: 3
 ---
 
 # Nordic Capacity -- Project State
 
 ## Current Phase
 
-Phase 2 -- Database Schema & Tenant Isolation (in progress)
+Phase 2 -- Database Schema & Tenant Isolation (complete)
 
-Current Plan: 2 of 2
+Current Plan: 2 of 2 (all complete)
 
 ## Phase Status
 
 | Phase | Name                                  | Status      | Started    | Completed |
 | ----- | ------------------------------------- | ----------- | ---------- | --------- |
 | 1     | Project Scaffolding & Dev Environment | complete    | 2026-03-26 | 2026-03-26 |
-| 2     | Database Schema & Tenant Isolation    | in progress | 2026-03-26 | --        |
+| 2     | Database Schema & Tenant Isolation    | complete    | 2026-03-26 | 2026-03-26 |
 | 3     | Authentication & App Shell            | not started | --         | --        |
 | 4     | Person & Project CRUD                 | not started | --         | --        |
 | 5     | Reference Data Admin                  | not started | --         | --        |
@@ -40,6 +40,9 @@ Current Plan: 2 of 2
 
 - FOUND-03: Next.js 16 project setup with App Router, TypeScript, Tailwind CSS 4
 - FOUND-09: Environment configuration -- all env vars documented and validated at startup
+- FOUND-02: withTenant() ORM query wrapper enforcing tenant isolation on every database query
+- FOUND-05: Database migrations and development seed data on Neon PostgreSQL
+- FOUND-07: Health check endpoint returning 200 with DB connection status
 
 ## Decisions
 
@@ -50,6 +53,8 @@ Current Plan: 2 of 2
 - Used process.env.DATABASE_URL directly in db/index.ts for CLI/seed script compatibility
 - Single schema.ts file for all 13 tables per research recommendation
 - date('month', { mode: 'string' }) for allocations to avoid JS timezone issues
+- withTenant() returns chainable query builders (not middleware) for full Drizzle API flexibility
+- Seed script uses own drizzle client (drizzle-orm/neon-http) outside Next.js context
 
 ## Performance Metrics
 
@@ -57,6 +62,7 @@ Current Plan: 2 of 2
 | ----- | ---- | -------- | ----- | ----- |
 | 01    | 01   | 11min    | 2     | 21    |
 | 02    | 01   | 4min     | 2     | 6     |
+| 02    | 02   | 2min     | 2     | 4     |
 
 ## Active Context
 
@@ -68,8 +74,8 @@ Current Plan: 2 of 2
 
 ## Last Session
 
-- **Stopped at:** Completed 02-01-PLAN.md
-- **Timestamp:** 2026-03-26T09:44:03Z
+- **Stopped at:** Completed 02-02-PLAN.md
+- **Timestamp:** 2026-03-26T09:48:42Z
 
 ---
 

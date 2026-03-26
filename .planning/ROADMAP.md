@@ -56,12 +56,12 @@ Plans:
 
 **Parallel with:** None
 
-**Plans:** 2 plans
+**Plans:** 2/2 plans complete
 
 Plans:
 
 - [x] 02-01-PLAN.md -- Drizzle schema (13 tables), db client, deps, env update, Drizzle Kit config
-- [ ] 02-02-PLAN.md -- withTenant() wrapper, health check endpoint, migrations, seed script
+- [x] 02-02-PLAN.md -- withTenant() wrapper, health check endpoint, migrations, seed script
 
 ---
 
