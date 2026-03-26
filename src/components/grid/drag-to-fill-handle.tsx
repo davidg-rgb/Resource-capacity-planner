@@ -102,7 +102,8 @@ export function DragToFillHandle({
     const onCellFocused = (event: { column: { getColId: () => string } | null; rowIndex: number | null }) => {
       if (isDraggingRef.current) return; // Don't reposition during drag
 
-      const colId = event.column?.getColId();
+      const col = event.column;
+      const colId = typeof col === 'string' ? col : col?.getColId();
       const rowIndex = event.rowIndex;
 
       if (colId == null || rowIndex == null) {
@@ -161,10 +162,10 @@ export function DragToFillHandle({
       positionHandle(colId, rowIndex);
     };
 
-    gridApi.addEventListener('cellFocused', onCellFocused);
+    gridApi.addEventListener('cellFocused', onCellFocused as never);
 
     return () => {
-      gridApi.removeEventListener('cellFocused', onCellFocused);
+      gridApi.removeEventListener('cellFocused', onCellFocused as never);
     };
   }, [gridApi, months, currentMonth, positionHandle]);
 

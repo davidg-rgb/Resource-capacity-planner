@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 2 of 4
-status: Executing Phase 03
-stopped_at: Completed 07-03-PLAN.md
-last_updated: "2026-03-26T23:51:19.452Z"
+current_plan: 1
+status: Executing Phase 07
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-03-26T23:34:20.492Z"
 progress:
   total_phases: 10
-  completed_phases: 3
-  total_plans: 8
-  completed_plans: 5
+  completed_phases: 6
+  total_plans: 16
+  completed_plans: 13
 ---
 
 # Nordic Capacity -- Project State
 
 ## Current Phase
 
-Phase 7 -- Grid Polish & Navigation (in progress)
+Phase 3 -- Authentication & App Shell (complete)
 
-Current Plan: 1 of 3
+Current Plan: 1
 
 ## Phase Status
 
@@ -31,7 +31,7 @@ Current Plan: 1 of 3
 | 4     | Person & Project CRUD                 | not started | --         | --        |
 | 5     | Reference Data Admin                  | not started | --         | --        |
 | 6     | AG Grid Spike & Core Grid             | not started | --         | --        |
-| 7     | Grid Polish & Navigation              | in progress | 2026-03-26 | --        |
+| 7     | Grid Polish & Navigation              | not started | --         | --        |
 | 8     | Import Wizard                         | not started | --         | --        |
 | 9     | Flat Table View & Export              | not started | --         | --        |
 | 10    | Platform Admin                        | not started | --         | --        |
@@ -66,8 +66,10 @@ Current Plan: 1 of 3
 - Seed script uses own drizzle client (drizzle-orm/neon-http) outside Next.js context
 - Clerk org:* prefixed roles mapped via CLERK_ROLE_MAP lookup table
 - Error codes use ERR_ prefix convention for consistent API serialization
-- [Phase 07]: Optimistic concurrency via updatedAt comparison rather than version numbers
-- [Phase 07]: Custom AG Grid overlay with DOM queries for cell positioning (reliable across AG Grid versions)
+- Default departments seeded on org creation: Engineering, Product, Operations
+- Webhook handler uses explicit env.CLERK_WEBHOOK_SECRET (not Clerk SDK default env var)
+- [Phase 03]: Role validation allows org:viewer, org:planner, org:admin (cannot invite as org:owner -- only Clerk Dashboard can set owner)
+- [Phase 05]: Usage count checks at service layer before delete for clear error messages with counts
 
 ## Performance Metrics
 
@@ -77,7 +79,10 @@ Current Plan: 1 of 3
 | 02    | 01   | 4min     | 2     | 6     |
 | 02    | 02   | 2min     | 2     | 4     |
 | 03    | 01   | 2min     | 2     | 5     |
-| Phase 07 P03 | 4min | 2 tasks | 6 files |
+| 03    | 02   | 2min     | 2     | 7     |
+| 03    | 03   | 2min     | 2     | 11    |
+| 03    | 04   | 2min     | 1     | 1     |
+| Phase 05 P01 | 3min | 2 tasks | 17 files |
 
 ## Active Context
 
@@ -89,8 +94,8 @@ Current Plan: 1 of 3
 
 ## Last Session
 
-- **Stopped at:** Completed 07-03-PLAN.md
-- **Timestamp:** 2026-03-26T11:18:08Z
+- **Stopped at:** Completed 05-01-PLAN.md
+- **Timestamp:** 2026-03-26T11:25:43Z
 
 ---
 
