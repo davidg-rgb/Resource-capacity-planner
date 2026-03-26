@@ -28,7 +28,7 @@
 - [x] **AUTH-04**: Clerk webhook creates internal organization record with default disciplines/departments (F-002)
 - [x] **AUTH-05**: All protected routes redirect to sign-in when unauthenticated (F-002)
 - [x] **AUTH-06**: Tenant context middleware — `getTenantId()`, `requireRole()` on every API route (Section 6)
-- [ ] **AUTH-07**: Admin can invite users to the organization via Clerk (F-002)
+- [x] **AUTH-07**: Admin can invite users to the organization via Clerk (F-002)
 - [x] **AUTH-08**: Role-based access: Org Owner, Admin, Planner/Line Manager, Viewer (Section 2.2)
 
 ### Person Input Form (INPUT)

@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 3 of 4
-status: Executing Phase 03
-stopped_at: Completed 03-02-PLAN.md and 03-03-PLAN.md (parallel)
-last_updated: "2026-03-26T11:25:43.013Z"
+current_plan: 4 of 4
+status: Phase 03 Complete
+stopped_at: Completed 03-04-PLAN.md (final plan in phase 03)
+last_updated: "2026-03-26T11:30:30.146Z"
 progress:
   total_phases: 10
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 7
-  completed_plans: 5
+  completed_plans: 7
 ---
 
 # Nordic Capacity -- Project State
 
 ## Current Phase
 
-Phase 3 -- Authentication & App Shell (in progress)
+Phase 3 -- Authentication & App Shell (complete)
 
-Current Plan: 3 of 4
+Current Plan: 4 of 4
 
 ## Phase Status
 
@@ -51,6 +51,7 @@ Current Plan: 3 of 4
 - AUTH-03: Create organization during sign-up (webhook + org service)
 - AUTH-04: Clerk webhook creates internal org record with default disciplines/departments
 - AUTH-05: Protected routes redirect to sign-in via clerkMiddleware
+- AUTH-07: Admin can invite team members via Clerk organization invitation API
 
 ## Decisions
 
@@ -67,6 +68,7 @@ Current Plan: 3 of 4
 - Error codes use ERR_ prefix convention for consistent API serialization
 - Default departments seeded on org creation: Engineering, Product, Operations
 - Webhook handler uses explicit env.CLERK_WEBHOOK_SECRET (not Clerk SDK default env var)
+- [Phase 03]: Role validation allows org:viewer, org:planner, org:admin (cannot invite as org:owner -- only Clerk Dashboard can set owner)
 
 ## Performance Metrics
 
@@ -78,6 +80,7 @@ Current Plan: 3 of 4
 | 03    | 01   | 2min     | 2     | 5     |
 | 03    | 02   | 2min     | 2     | 7     |
 | 03    | 03   | 2min     | 2     | 11    |
+| 03    | 04   | 2min     | 1     | 1     |
 
 ## Active Context
 
@@ -89,7 +92,7 @@ Current Plan: 3 of 4
 
 ## Last Session
 
-- **Stopped at:** Completed 03-02-PLAN.md and 03-03-PLAN.md (Wave 2 parallel)
+- **Stopped at:** Completed 03-04-PLAN.md (final plan in phase 03)
 - **Timestamp:** 2026-03-26T11:25:43Z
 
 ---
