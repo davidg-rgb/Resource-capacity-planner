@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: Not started
-status: Ready to plan
-stopped_at: Phase 3 UI-SPEC approved
-last_updated: "2026-03-26T10:27:48.721Z"
+current_plan: 2
+status: Executing Phase 03
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-03-26T11:19:01.965Z"
 progress:
   total_phases: 10
   completed_phases: 2
-  total_plans: 3
-  completed_plans: 3
+  total_plans: 7
+  completed_plans: 4
 ---
 
 # Nordic Capacity -- Project State
 
 ## Current Phase
 
-Phase 2 -- Database Schema & Tenant Isolation (complete)
+Phase 3 -- Authentication & App Shell (in progress)
 
-Current Plan: Not started
+Current Plan: 2 of 4
 
 ## Phase Status
 
@@ -27,7 +27,7 @@ Current Plan: Not started
 | ----- | ------------------------------------- | ----------- | ---------- | --------- |
 | 1     | Project Scaffolding & Dev Environment | complete    | 2026-03-26 | 2026-03-26 |
 | 2     | Database Schema & Tenant Isolation    | complete    | 2026-03-26 | 2026-03-26 |
-| 3     | Authentication & App Shell            | not started | --         | --        |
+| 3     | Authentication & App Shell            | in progress | 2026-03-26 | --        |
 | 4     | Person & Project CRUD                 | not started | --         | --        |
 | 5     | Reference Data Admin                  | not started | --         | --        |
 | 6     | AG Grid Spike & Core Grid             | not started | --         | --        |
@@ -43,6 +43,9 @@ Current Plan: Not started
 - FOUND-02: withTenant() ORM query wrapper enforcing tenant isolation on every database query
 - FOUND-05: Database migrations and development seed data on Neon PostgreSQL
 - FOUND-07: Health check endpoint returning 200 with DB connection status
+- FOUND-06: Error taxonomy with typed subclasses matching ARCHITECTURE.md
+- AUTH-06: getTenantId() and requireRole() Clerk auth helpers
+- AUTH-08: Clerk env vars promoted to required validation
 
 ## Decisions
 
@@ -55,6 +58,8 @@ Current Plan: Not started
 - date('month', { mode: 'string' }) for allocations to avoid JS timezone issues
 - withTenant() returns chainable query builders (not middleware) for full Drizzle API flexibility
 - Seed script uses own drizzle client (drizzle-orm/neon-http) outside Next.js context
+- Clerk org:* prefixed roles mapped via CLERK_ROLE_MAP lookup table
+- Error codes use ERR_ prefix convention for consistent API serialization
 
 ## Performance Metrics
 
@@ -63,6 +68,7 @@ Current Plan: Not started
 | 01    | 01   | 11min    | 2     | 21    |
 | 02    | 01   | 4min     | 2     | 6     |
 | 02    | 02   | 2min     | 2     | 4     |
+| 03    | 01   | 2min     | 2     | 5     |
 
 ## Active Context
 
@@ -74,8 +80,8 @@ Current Plan: Not started
 
 ## Last Session
 
-- **Stopped at:** Phase 3 UI-SPEC approved
-- **Timestamp:** 2026-03-26T09:48:42Z
+- **Stopped at:** Completed 03-01-PLAN.md
+- **Timestamp:** 2026-03-26T11:18:08Z
 
 ---
 
