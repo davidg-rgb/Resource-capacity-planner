@@ -95,14 +95,17 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [x] Project CRUD — create, read, update, archive (MGMT-02 / F-012) — Phase 4
 - [x] Admin UI for reference data: disciplines, departments, programs (MGMT-03/04/05 / F-010) — Phase 5
 
+- [x] Person Input Form with AG Grid — months as columns, projects as rows, editable hours (INPUT-01/02 / F-003) — Phase 6
+- [x] SUMMA + Target + Status rows with real-time calculation (INPUT-03/04/05 / F-005) — Phase 6
+- [x] Auto-save on cell blur with debounced batch upsert (INPUT-13 / F-020) — Phase 6
+- [x] Dynamic project rows — "Add project" at bottom (INPUT-08) — Phase 6
+- [x] Past months read-only, current + future editable (INPUT-12) — Phase 6
+
 ### Active — MVP (Milestone 1)
 
-**Person Input Form (Core Value):**
+**Person Input Form (Polish):**
 
-- [ ] Person Input Form with AG Grid spreadsheet editing (F-003)
 - [ ] Person navigation: prev/next, sidebar list with status dots (F-004)
-- [ ] SUMMA + Target + Status rows with real-time calculation (F-005)
-- [ ] Auto-save on cell blur with conflict detection (F-020)
 - [ ] Spreadsheet interactions: clipboard, drag-to-fill, keyboard nav (F-021)
 
 **Import & Export:**
@@ -168,4 +171,4 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 
 ---
 
-_Last updated: 2026-03-26 — Phase 5 complete (Reference data admin — disciplines, departments, programs CRUD with role gating and delete protection)_
+_Last updated: 2026-03-26 — Phase 6 complete (AG Grid Person Input Form — core product value with editable hours, SUMMA/Target/Status rows, auto-save)_
