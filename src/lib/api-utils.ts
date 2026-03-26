@@ -34,6 +34,16 @@ export function handleApiError(error: unknown): NextResponse {
     return NextResponse.json(conflict.toJSON(), { status: 409 });
   }
 
+  // Postgres foreign_key_violation (code 23503)
+  if (
+    error instanceof Error &&
+    'code' in error &&
+    (error as Record<string, unknown>).code === '23503'
+  ) {
+    const conflict = new ConflictError('Cannot delete: this record is referenced by other data');
+    return NextResponse.json(conflict.toJSON(), { status: 409 });
+  }
+
   // Unknown errors — log and return generic 500
   console.error('Unhandled API error:', error);
   return NextResponse.json({ error: 'ERR_INTERNAL', message: 'Internal server error' }, { status: 500 });

@@ -114,6 +114,26 @@ export function withTenant(orgId: string) {
         .set(data)
         .where(and(eq(schema.programs.id, id), eq(schema.programs.organizationId, orgId))),
 
+    /** Update a department (only if owned by this organization) */
+    updateDepartment: (
+      id: string,
+      data: Partial<Omit<typeof schema.departments.$inferInsert, 'id' | 'organizationId'>>,
+    ) =>
+      db
+        .update(schema.departments)
+        .set(data)
+        .where(and(eq(schema.departments.id, id), eq(schema.departments.organizationId, orgId))),
+
+    /** Update a discipline (only if owned by this organization) */
+    updateDiscipline: (
+      id: string,
+      data: Partial<Omit<typeof schema.disciplines.$inferInsert, 'id' | 'organizationId'>>,
+    ) =>
+      db
+        .update(schema.disciplines)
+        .set(data)
+        .where(and(eq(schema.disciplines.id, id), eq(schema.disciplines.organizationId, orgId))),
+
     // -----------------------------------------------------------------------
     // Delete helpers — verify org ownership
     // -----------------------------------------------------------------------
@@ -129,6 +149,24 @@ export function withTenant(orgId: string) {
       db
         .delete(schema.projects)
         .where(and(eq(schema.projects.id, id), eq(schema.projects.organizationId, orgId))),
+
+    /** Delete a department (only if owned by this organization) */
+    deleteDepartment: (id: string) =>
+      db
+        .delete(schema.departments)
+        .where(and(eq(schema.departments.id, id), eq(schema.departments.organizationId, orgId))),
+
+    /** Delete a discipline (only if owned by this organization) */
+    deleteDiscipline: (id: string) =>
+      db
+        .delete(schema.disciplines)
+        .where(and(eq(schema.disciplines.id, id), eq(schema.disciplines.organizationId, orgId))),
+
+    /** Delete a program (only if owned by this organization) */
+    deleteProgram: (id: string) =>
+      db
+        .delete(schema.programs)
+        .where(and(eq(schema.programs.id, id), eq(schema.programs.organizationId, orgId))),
 
     /** Delete an allocation (only if owned by this organization) */
     deleteAllocation: (id: string) =>
