@@ -21,6 +21,7 @@ import { StatusCell } from '@/components/grid/cell-renderers/status-cell';
 import { ProjectCell } from '@/components/grid/cell-renderers/project-cell';
 import { parseClipboardText, mapPasteToGridCells } from '@/lib/clipboard-handler';
 import { tabToNextCell, navigateToNextCell } from '@/hooks/use-keyboard-nav';
+import { DragToFillHandle } from '@/components/grid/drag-to-fill-handle';
 
 type AllocationGridProps = {
   allocations: FlatAllocation[];
@@ -41,9 +42,11 @@ export function AllocationGrid({
   onCellChange,
   onAddProject,
 }: AllocationGridProps) {
-  const gridRef = useRef<GridApi | null>(null);
   const gridContainerRef = useRef<HTMLDivElement>(null);
   const localRowDataRef = useRef<GridRow[]>([]);
+
+  // GridApi as state (not ref) so DragToFillHandle re-renders when API becomes available
+  const [gridApi, setGridApi] = useState<GridApi | null>(null);
 
   // Generate 12 months: 6 months back + current + 5 months forward
   const currentMonth = useMemo(() => getCurrentMonth(), []);
@@ -116,6 +119,31 @@ export function AllocationGrid({
   localRowDataRef.current = localRowData;
 
   // ---------------------------------------------------------------------------
+  // Drag-to-fill callback: update local state and trigger autosave for each cell
+  // ---------------------------------------------------------------------------
+  const handleFill = useCallback(
+    (cells: { projectId: string; month: string; hours: number }[]) => {
+      // Batch update local state
+      setLocalRowData((prev) => {
+        const updated = [...prev];
+        for (const cell of cells) {
+          const idx = updated.findIndex((r) => r.projectId === cell.projectId);
+          if (idx !== -1) {
+            updated[idx] = { ...updated[idx], [cell.month]: cell.hours };
+          }
+        }
+        return updated;
+      });
+
+      // Trigger autosave for each filled cell
+      for (const cell of cells) {
+        onCellChange({ projectId: cell.projectId, month: cell.month, hours: cell.hours });
+      }
+    },
+    [onCellChange],
+  );
+
+  // ---------------------------------------------------------------------------
   // Clipboard paste handler
   // ---------------------------------------------------------------------------
   useEffect(() => {
@@ -127,10 +155,9 @@ export function AllocationGrid({
       if (!text) return;
       e.preventDefault();
 
-      const api = gridRef.current;
-      if (!api) return;
+      if (!gridApi) return;
 
-      const focusedCell = api.getFocusedCell();
+      const focusedCell = gridApi.getFocusedCell();
       if (!focusedCell) return;
 
       const colId = focusedCell.column.getColId();
@@ -179,7 +206,7 @@ export function AllocationGrid({
 
     container.addEventListener('paste', handlePaste);
     return () => container.removeEventListener('paste', handlePaste);
-  }, [months, currentMonth, onCellChange]);
+  }, [months, currentMonth, onCellChange, gridApi]);
 
   // Custom components map
   const components = useMemo(
@@ -194,7 +221,7 @@ export function AllocationGrid({
   );
 
   return (
-    <div ref={gridContainerRef} className="h-[600px] w-full outline-none" tabIndex={0}>
+    <div ref={gridContainerRef} className="relative h-[600px] w-full outline-none" tabIndex={0}>
       <AgGridReact
         modules={modules}
         rowData={localRowData}
@@ -209,7 +236,7 @@ export function AllocationGrid({
         tabToNextCell={tabToNextCell}
         navigateToNextCell={navigateToNextCell}
         onGridReady={(params: GridReadyEvent) => {
-          gridRef.current = params.api;
+          setGridApi(params.api);
         }}
         getRowId={(params) => params.data.projectId}
         defaultColDef={{
@@ -218,6 +245,14 @@ export function AllocationGrid({
           resizable: true,
         }}
         domLayout="autoHeight"
+      />
+      <DragToFillHandle
+        gridApi={gridApi}
+        gridContainerRef={gridContainerRef}
+        months={months}
+        currentMonth={currentMonth}
+        localRowData={localRowData}
+        onFill={handleFill}
       />
     </div>
   );
