@@ -187,6 +187,13 @@ Plans:
 
 **Parallel with:** None (critical path — full focus)
 
+**Plans:** 2 plans
+
+Plans:
+
+- [ ] 06-01-PLAN.md -- Backend: AG Grid deps, allocation feature module, API routes, capacity/date utils
+- [ ] 06-02-PLAN.md -- Frontend: AG Grid component, pinned rows, cell renderers, auto-save hook, person input page
+
 ---
 
 ### Phase 7: Grid Polish & Navigation
