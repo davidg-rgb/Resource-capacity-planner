@@ -91,6 +91,8 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [x] App shell with top nav + side nav routing (A7 / FOUND-08) — Phase 3
 - [x] Error taxonomy — AppError hierarchy (FOUND-06) — Phase 3
 - [x] Tenant context middleware — getTenantId(), requireRole() (AUTH-06) — Phase 3
+- [x] Person CRUD — create, read, update, soft-delete (MGMT-01 / F-011) — Phase 4
+- [x] Project CRUD — create, read, update, archive (MGMT-02 / F-012) — Phase 4
 
 ### Active — MVP (Milestone 1)
 
@@ -101,8 +103,6 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [ ] SUMMA + Target + Status rows with real-time calculation (F-005)
 - [ ] Auto-save on cell blur with conflict detection (F-020)
 - [ ] Spreadsheet interactions: clipboard, drag-to-fill, keyboard nav (F-021)
-- [ ] Person CRUD (F-011)
-- [ ] Project CRUD (F-012)
 
 **Import & Export:**
 
@@ -171,4 +171,4 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 
 ---
 
-_Last updated: 2026-03-26 — Phase 3 complete (Clerk auth, app shell, error taxonomy, role-based access)_
+_Last updated: 2026-03-26 — Phase 4 complete (Person & Project CRUD with TanStack Query, tenant-scoped API routes, Team + Projects pages)_
