@@ -1,9 +1,9 @@
-// Next.js middleware file
+// Next.js 16 proxy file (was middleware.ts in Next.js 15)
 // Phase 1: minimal config. Clerk auth added in Phase 3.
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export function middleware(_request: NextRequest) {
+export function proxy(_request: NextRequest) {
   return NextResponse.next();
 }
 

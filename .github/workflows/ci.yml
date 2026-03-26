@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type check
+        run: pnpm typecheck
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Build
+        run: pnpm build
+        env:
+          DATABASE_URL: 'postgresql://dummy:dummy@localhost:5432/dummy'
+          CLERK_SECRET_KEY: 'sk_test_dummy'
+          CLERK_WEBHOOK_SECRET: 'whsec_dummy'
+          PLATFORM_ADMIN_SECRET: 'a-dummy-secret-that-is-at-least-sixty-four-characters-long-for-validation-purposes'
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'pk_test_dummy'
+          NEXT_PUBLIC_APP_URL: 'http://localhost:3000'
