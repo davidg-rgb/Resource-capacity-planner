@@ -220,12 +220,12 @@ Plans:
 
 **Parallel with:** Phase 8 (Import/Export — once grid API is stable)
 
-**Plans:** 1/3 plans complete
+**Plans:** 1/3 plans executed
 
 Plans:
 
-- [x] 07-01-PLAN.md -- Person sidebar with department grouping, status dots, and prev/next navigation (DONE)
-- [ ] 07-02-PLAN.md -- Keyboard navigation (Tab/Enter/Arrow/Escape) and clipboard paste handler
+- [ ] 07-01-PLAN.md -- Person sidebar with department grouping, status dots, and prev/next navigation
+- [x] 07-02-PLAN.md -- Keyboard navigation (Tab/Enter/Arrow/Escape) and clipboard paste handler
 - [ ] 07-03-PLAN.md -- Custom drag-to-fill handle overlay and conflict detection
 
 ---
