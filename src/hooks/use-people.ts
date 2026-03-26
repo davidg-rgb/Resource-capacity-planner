@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import type { PersonRow } from '@/features/people/person.types';
+import type { PersonRow, PersonWithStatus } from '@/features/people/person.types';
 import type { PersonUpdate } from '@/features/people/person.schema';
 
 // ---------------------------------------------------------------------------
@@ -19,6 +19,22 @@ export function usePeople(filters?: Record<string, string>) {
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.message ?? 'Failed to fetch people');
+      }
+      const data = await res.json();
+      return data.people;
+    },
+  });
+}
+
+/** Fetch tenant-scoped people with computed allocation status */
+export function usePeopleWithStatus() {
+  return useQuery<PersonWithStatus[]>({
+    queryKey: ['people', { withStatus: 'true' }],
+    queryFn: async () => {
+      const res = await fetch('/api/people?withStatus=true');
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message ?? 'Failed to fetch people with status');
       }
       const data = await res.json();
       return data.people;

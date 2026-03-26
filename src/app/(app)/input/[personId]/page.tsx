@@ -6,6 +6,7 @@ import { useAllocations, usePersonDetail } from '@/hooks/use-allocations';
 import { useGridAutosave } from '@/hooks/use-grid-autosave';
 import { useProjects } from '@/hooks/use-projects';
 import { AllocationGrid } from '@/components/grid/allocation-grid';
+import { PersonHeader } from '@/components/person/person-header';
 
 /** Person Input Form -- the core product interface. */
 export default function PersonInputPage({
@@ -63,14 +64,12 @@ export default function PersonInputPage({
 
   return (
     <div className="space-y-4">
-      <div>
-        <h1 className="font-headline text-2xl font-semibold tracking-tight text-on-surface">
-          {person.firstName} {person.lastName}
-        </h1>
-        <p className="text-sm text-on-surface-variant">
-          Target: {person.targetHoursPerMonth}h/month
-        </p>
-      </div>
+      <PersonHeader
+        personId={personId}
+        firstName={person.firstName}
+        lastName={person.lastName}
+        targetHours={person.targetHoursPerMonth}
+      />
 
       <AllocationGrid
         allocations={allocations ?? []}
