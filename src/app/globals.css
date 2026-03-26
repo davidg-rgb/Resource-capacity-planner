@@ -19,4 +19,19 @@
 
   --radius-sm: 2px;
   --radius-md: 6px;
+
+  /* Additional surface tones for shell chrome */
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-highest: #d9e4e8;
+  --color-surface-dim: #cfdce0;
+
+  /* Secondary palette for badges/containers */
+  --color-secondary: #586065;
+  --color-secondary-container: #dce4e9;
+  --color-on-secondary: #f3faff;
+
+  /* Additional semantic colors */
+  --color-on-primary-container: #3d5466;
+  --color-on-error-container: #752121;
+  --color-error-container: #fe8983;
 }
