@@ -43,32 +43,50 @@ Declared values (must be multiples of 4):
 | 3xl | 64px | Page-level vertical spacing |
 
 Exceptions:
-- Top nav height: 57px (fixed, derived from py-3 + content height per prototype-08)
+- Top nav height: 56px (composed: py-3 [12px top + 12px bottom] + 32px content row = 56px)
 - Sidebar width: 256px (w-64, consistent across prototypes 01/06)
 - Sidebar width (person list variant): 288px (w-72, prototype-08)
 - Main content max-width: 1440px (mx-auto max-w-[1440px])
 
-Source: All spacing values extracted from prototypes 01, 06, 08 which share identical shell chrome dimensions.
+Source: All spacing values extracted from prototypes 01, 06, 08 which share identical shell chrome dimensions. Top nav height adjusted from prototype's 57px to 56px to comply with 4px grid.
 
 ---
 
 ## Typography
 
+4 font sizes, 2 font weights:
+
 | Role | Family | Size | Weight | Line Height | Tracking |
 |------|--------|------|--------|-------------|----------|
-| Display | Manrope | 30px (text-3xl) | 700 (bold) | 1.2 | tight |
+| Display | Manrope | 30px (text-3xl) | 600 (semibold) | 1.2 | tight |
 | Heading | Manrope | 24px (text-2xl) | 600 (semibold) | 1.2 | tight |
-| Subheading | Manrope | 14px (text-sm) | 600 (semibold) | 1.4 | tight |
 | Body | Inter | 14px (text-sm) | 400 (regular) | 1.5 | normal |
-| Label | Inter | 12px (text-xs) | 500 (medium) | 1.4 | normal |
-| Caption | Inter | 10px (text-[10px]) | 600 (semibold) | 1.3 | widest, uppercase |
-| Nav item | Manrope | 14px (text-sm) | 500 (medium) | 1.4 | tight |
-| Nav item (active) | Manrope | 14px (text-sm) | 700 (bold) | 1.4 | tight |
-| App title | Manrope | 20px (text-xl) | 600 (semibold) | 1.2 | tighter |
+| Small | Inter | 12px (text-xs) | 400 (regular) | 1.4 | normal |
+
+### Role Mapping
+
+Each UI element maps to one of the 4 sizes and 2 weights:
+
+| Element | Size | Weight | Notes |
+|---------|------|--------|-------|
+| Page display heading | 30px | 600 | Manrope |
+| Section heading | 24px | 600 | Manrope |
+| App title ("Nordic Capacity") | 24px | 600 | Manrope, primary color, tighter tracking |
+| Subheading | 14px | 600 | Manrope, tight tracking |
+| Body text | 14px | 400 | Inter |
+| Nav item (inactive) | 14px | 400 | Manrope, tight tracking |
+| Nav item (active) | 14px | 600 | Manrope, tight tracking |
+| Label / form label | 12px | 400 | Inter |
+| Caption / metadata | 12px | 600 | Inter, uppercase, widest tracking |
+| Section label (sidebar) | 12px | 600 | Manrope, uppercase, widest tracking |
+| Button text | 12px | 600 | Inter |
+| Breadcrumb text | 12px | 600 | uppercase, widest tracking |
+
+Weight constraint: Only `400` (regular) and `600` (semibold) are permitted. No other weights may be used.
 
 Data presentation: `font-variant-numeric: tabular-nums` for all numeric columns (utility class `.tabular-nums`).
 
-Source: Prototypes 01, 06, 08 consistently use these exact sizes and weights. Caption style (10px/semibold/widest/uppercase) is used for section labels, breadcrumbs, and metadata labels.
+Source: Prototypes 01, 06, 08. Weight-500 (medium) elements remapped to 400. Weight-700 (bold) elements remapped to 600. Sizes 10px collapsed into 12px (small). App title moved from 20px to 24px (heading size).
 
 ---
 
@@ -114,14 +132,25 @@ The prototypes use a slightly different Material Design 3 palette (e.g. `surface
 | Property | Value |
 |----------|-------|
 | Position | `sticky top-0 z-50` |
-| Height | 57px (py-3 + content) |
+| Height | 56px (py-3 [12px] + 32px content row + 12px = 56px) |
 | Background | `surface` (#fafcff) |
 | Border | Bottom, `outline-variant` at 15% opacity |
-| Left section | App title "Nordic Capacity" (Manrope, 20px, semibold, tighter, primary color) |
+| Left section | App title "Nordic Capacity" (Manrope, 24px, semibold, tighter, primary color) |
 | Center section | Nav items: Input, Team, Projects, Data, Dashboard (Manrope, 14px) |
 | Right section | Search input, notifications icon, settings icon, user avatar (32px circle) |
-| Active indicator | Bottom border 2px primary color + bold weight on active item |
+| Active indicator | Bottom border 2px primary color + semibold weight on active item |
 | Inactive style | text-slate-500, hover:text-primary |
+
+#### Icon-Only Actions (Accessibility)
+
+All icon-only interactive elements in the top nav right section must have both an `aria-label` attribute and a visible tooltip on hover:
+
+| Element | aria-label | Tooltip text |
+|---------|------------|--------------|
+| Notifications icon button | "Notifications" | "Notifications" |
+| Settings icon button | "Settings" | "Settings" |
+
+Tooltip implementation: Use a `title` attribute for MVP, or a custom tooltip component (positioned below the icon, 4px gap, `surface-container-high` background, 12px text, rounded-sm, 150ms delay).
 
 ### Side Nav Bar
 
@@ -132,11 +161,11 @@ The prototypes use a slightly different Material Design 3 palette (e.g. `surface
 | Background | `surface-container-low` (#f3f5fa) |
 | Border | Right, `outline-variant` at 15% opacity |
 | Header | Logo icon (32px, bg-primary, rounded-sm) + "Resource Planner" title + "Nordic Precision" subtitle |
-| Nav items | Material icon (18px) + label (Inter, 12px, medium), rounded-sm, px-3 py-2 |
-| Active item | bg-surface-container-high, text-primary, font-semibold |
+| Nav items | Material icon (18px) + label (Inter, 12px, regular), rounded-sm, px-3 py-2 |
+| Active item | bg-surface-container-high, text-primary, font-semibold (600) |
 | Hover | bg-surface-container-high at 50% opacity |
 | Footer | Border-top separator, primary CTA button ("New Entry"), Help + Archive links |
-| Section labels | Manrope, 10px, uppercase, widest tracking, outline color |
+| Section labels | Manrope, 12px, uppercase, widest tracking, semibold (600), outline color |
 
 ### Main Content Area
 
@@ -151,7 +180,7 @@ The prototypes use a slightly different Material Design 3 palette (e.g. `surface
 
 | Property | Value |
 |----------|-------|
-| Typography | 10px, uppercase, widest tracking, medium weight |
+| Typography | 12px, uppercase, widest tracking, semibold (600) |
 | Color | `outline` for inactive, `primary` for current |
 | Separator | " / " (forward slash with spaces) |
 | Position | Above page heading, mb-2 |
@@ -177,14 +206,14 @@ Clerk pre-built components are used (D-01). Minimal custom styling needed.
 | Size | 32px (h-8 w-8) |
 | Shape | Fully rounded (rounded-full) |
 | Border | `outline-variant` at 20% opacity |
-| Fallback | Initials in `surface-container-highest` background, 10px bold text |
+| Fallback | Initials in `surface-container-highest` background, 12px semibold text |
 
 ### Primary Button
 
 | Property | Value |
 |----------|-------|
 | Background | `primary` (#496173) |
-| Text | `on-primary` (#ffffff), Inter 12px semibold |
+| Text | `on-primary` (#ffffff), Inter 12px semibold (600) |
 | Padding | px-4 py-2 |
 | Border radius | 2px (rounded-sm) |
 | Hover | opacity-90 |
@@ -196,7 +225,7 @@ Clerk pre-built components are used (D-01). Minimal custom styling needed.
 |----------|-------|
 | Background | transparent |
 | Border | `outline-variant` at 30% opacity |
-| Text | `primary`, Inter 12px semibold |
+| Text | `primary`, Inter 12px semibold (600) |
 | Hover | bg-surface-container-low |
 | Border radius | 2px (rounded-sm) |
 
