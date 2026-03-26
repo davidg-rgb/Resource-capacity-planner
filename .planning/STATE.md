@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: Not started
 status: Ready to plan
-stopped_at: Completed 03-04-PLAN.md (final plan in phase 03)
-last_updated: "2026-03-26T14:06:26.185Z"
+stopped_at: Completed 05-01-PLAN.md
+last_updated: "2026-03-26T16:09:43.110Z"
 progress:
   total_phases: 10
   completed_phases: 4
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 11
+  completed_plans: 10
 ---
 
 # Nordic Capacity -- Project State
@@ -69,6 +69,7 @@ Current Plan: Not started
 - Default departments seeded on org creation: Engineering, Product, Operations
 - Webhook handler uses explicit env.CLERK_WEBHOOK_SECRET (not Clerk SDK default env var)
 - [Phase 03]: Role validation allows org:viewer, org:planner, org:admin (cannot invite as org:owner -- only Clerk Dashboard can set owner)
+- [Phase 05]: Usage count checks at service layer before delete for clear error messages with counts
 
 ## Performance Metrics
 
@@ -81,6 +82,7 @@ Current Plan: Not started
 | 03    | 02   | 2min     | 2     | 7     |
 | 03    | 03   | 2min     | 2     | 11    |
 | 03    | 04   | 2min     | 1     | 1     |
+| Phase 05 P01 | 3min | 2 tasks | 17 files |
 
 ## Active Context
 
@@ -92,7 +94,7 @@ Current Plan: Not started
 
 ## Last Session
 
-- **Stopped at:** Completed 03-04-PLAN.md (final plan in phase 03)
+- **Stopped at:** Completed 05-01-PLAN.md
 - **Timestamp:** 2026-03-26T11:25:43Z
 
 ---

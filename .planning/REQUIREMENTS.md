@@ -52,9 +52,9 @@
 
 - [ ] **MGMT-01**: Person CRUD — create, read, update, delete persons with name, discipline, department, target capacity (F-011)
 - [x] **MGMT-02**: Project CRUD — create, read, update, archive projects with name, program, status (F-012)
-- [ ] **MGMT-03**: Admin UI for reference data: disciplines CRUD (F-010)
-- [ ] **MGMT-04**: Admin UI for reference data: departments CRUD (F-010)
-- [ ] **MGMT-05**: Admin UI for reference data: programs CRUD (F-010)
+- [x] **MGMT-03**: Admin UI for reference data: disciplines CRUD (F-010)
+- [x] **MGMT-04**: Admin UI for reference data: departments CRUD (F-010)
+- [x] **MGMT-05**: Admin UI for reference data: programs CRUD (F-010)
 
 ### Import & Export (IMPEX)
 
