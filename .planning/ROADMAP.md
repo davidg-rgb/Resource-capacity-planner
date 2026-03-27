@@ -327,14 +327,14 @@ Plans:
 
 **Parallel with:** Phase 4, 5, 6, 7, 8, 9 (fully independent from tenant-facing features)
 
-**Plans:** 4 plans
+**Plans:** 4/4 plans complete
 
 Plans:
 
 - [x] 10-01-PLAN.md -- Platform auth foundation: deps, JWT helpers, audit utility, login/logout/me APIs, proxy update, seed script (DONE)
-- [ ] 10-02-PLAN.md -- Platform shell, dashboard, tenant management, subscription management (UI + API)
+- [x] 10-02-PLAN.md -- Platform shell, dashboard, tenant management, subscription management (UI + API) (DONE)
 - [x] 10-03-PLAN.md -- Impersonation service, user management, audit log query (services + API routes) (DONE)
-- [ ] 10-04-PLAN.md -- Users page, audit log page, impersonation UI wiring, impersonation banner
+- [x] 10-04-PLAN.md -- Users page, audit log page, impersonation UI wiring, impersonation banner (DONE)
 
 ---
 

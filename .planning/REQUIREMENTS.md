@@ -76,14 +76,14 @@
 
 - [ ] **PLAT-01**: Platform admin auth — separate email/password login with own JWT, not Clerk (F-029)
 - [x] **PLAT-02**: Platform admin dashboard showing all organizations with health metrics (F-029)
-- [ ] **PLAT-03**: Tenant impersonation — log in as any user in any org with visible banner (F-030)
-- [ ] **PLAT-04**: Every impersonation action logged in platform audit log with admin identity (F-030, F-036)
-- [ ] **PLAT-05**: Impersonation sessions expire after 1 hour max (F-030)
+- [x] **PLAT-03**: Tenant impersonation — log in as any user in any org with visible banner (F-030)
+- [x] **PLAT-04**: Every impersonation action logged in platform audit log with admin identity (F-030, F-036)
+- [x] **PLAT-05**: Impersonation sessions expire after 1 hour max (F-030)
 - [x] **PLAT-06**: Tenant management — create, suspend, reactivate, delete organizations (F-031)
 - [x] **PLAT-07**: Manual subscription management — extend trials, override status (F-032)
 - [ ] **PLAT-08**: Platform audit log — every admin action with who/what/when/IP (F-036)
-- [ ] **PLAT-09**: Cross-tenant user management — reset passwords, force logout via Clerk SDK (F-037)
-- [ ] **PLAT-10**: Auth separation verified — no tenant endpoint accessible with platform token and vice versa (F-029)
+- [x] **PLAT-09**: Cross-tenant user management — reset passwords, force logout via Clerk SDK (F-037)
+- [x] **PLAT-10**: Auth separation verified — no tenant endpoint accessible with platform token and vice versa (F-029)
 - [ ] **PLAT-11**: Seed script creates initial platform admin account (Phase 1E definition of done)
 
 ---
