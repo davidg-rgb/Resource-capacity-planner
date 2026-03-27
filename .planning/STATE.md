@@ -34,7 +34,7 @@ Current Plan: 2 of 4
 | 7     | Grid Polish & Navigation              | not started | --         | --        |
 | 8     | Import Wizard                         | not started | --         | --        |
 | 9     | Flat Table View & Export              | not started | --         | --        |
-| 10    | Platform Admin                        | not started | --         | --        |
+| 10    | Platform Admin                        | in progress | 2026-03-27 | --        |
 
 ## Completed Requirements
 
@@ -46,6 +46,10 @@ Current Plan: 2 of 4
 - FOUND-06: Error taxonomy with typed subclasses matching ARCHITECTURE.md
 - AUTH-06: getTenantId() and requireRole() Clerk auth helpers
 - AUTH-08: Clerk env vars promoted to required validation
+- PLAT-01: Platform admin separate JWT auth with login/logout/me endpoints
+- PLAT-08: Platform audit log -- logPlatformAction utility
+- PLAT-10: Auth separation -- Clerk middleware bypasses platform routes
+- PLAT-11: Seed script creates initial platform admin account
 
 ## Decisions
 
@@ -60,6 +64,10 @@ Current Plan: 2 of 4
 - Seed script uses own drizzle client (drizzle-orm/neon-http) outside Next.js context
 - Clerk org:* prefixed roles mapped via CLERK_ROLE_MAP lookup table
 - Error codes use ERR_ prefix convention for consistent API serialization
+- jose library for platform JWT (lightweight, Edge-compatible, HS256)
+- Platform auth uses httpOnly cookie for CSRF safety
+- PLATFORM_ADMIN_SECRET made required (was optional)
+- Created handleApiError utility (missing from codebase, needed by API routes)
 
 ## Performance Metrics
 
@@ -69,6 +77,7 @@ Current Plan: 2 of 4
 | 02    | 01   | 4min     | 2     | 6     |
 | 02    | 02   | 2min     | 2     | 4     |
 | 03    | 01   | 2min     | 2     | 5     |
+| 10    | 01   | 3min     | 2     | 12    |
 
 ## Active Context
 
@@ -80,8 +89,8 @@ Current Plan: 2 of 4
 
 ## Last Session
 
-- **Stopped at:** Completed 03-01-PLAN.md
-- **Timestamp:** 2026-03-26T11:18:08Z
+- **Stopped at:** Completed 10-01-PLAN.md
+- **Timestamp:** 2026-03-27T12:33:00Z
 
 ---
 
