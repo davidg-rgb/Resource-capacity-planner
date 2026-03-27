@@ -58,7 +58,7 @@
 
 ### Import & Export (IMPEX)
 
-- [ ] **IMPEX-01**: 4-step import wizard: Upload → Map → Validate → Import (F-006)
+- [x] **IMPEX-01**: 4-step import wizard: Upload → Map → Validate → Import (F-006)
 - [x] **IMPEX-02**: Upload accepts .xlsx, .xls, and .csv files (F-006)
 - [ ] **IMPEX-03**: Column mapping with auto-detection of Swedish headers (Namn, Projekt, Timmar, Månad, Avdelning) and English headers (F-007)
 - [ ] **IMPEX-04**: Validation step shows ready/warning/error counts with actionable suggestions (F-008)
