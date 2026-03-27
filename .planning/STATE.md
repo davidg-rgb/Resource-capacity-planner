@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 2
+current_plan: 2 of 4
 status: Executing Phase 03
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-03-26T11:19:01.965Z"
+stopped_at: Completed 10-02-PLAN.md
+last_updated: "2026-03-27T12:45:52.113Z"
 progress:
   total_phases: 10
   completed_phases: 2
   total_plans: 7
-  completed_plans: 4
+  completed_plans: 5
 ---
 
 # Nordic Capacity -- Project State
@@ -60,6 +60,9 @@ Current Plan: 2 of 4
 - Seed script uses own drizzle client (drizzle-orm/neon-http) outside Next.js context
 - Clerk org:* prefixed roles mapped via CLERK_ROLE_MAP lookup table
 - Error codes use ERR_ prefix convention for consistent API serialization
+- [Phase 10]: Dashboard counts people records as users metric (not Clerk API) for performance
+- [Phase 10]: Tenant delete requires typing org name to confirm (destructive action safety)
+- [Phase 10]: Login page uses separate layout.tsx to bypass PlatformShell auth check
 
 ## Performance Metrics
 
@@ -69,6 +72,7 @@ Current Plan: 2 of 4
 | 02    | 01   | 4min     | 2     | 6     |
 | 02    | 02   | 2min     | 2     | 4     |
 | 03    | 01   | 2min     | 2     | 5     |
+| Phase 10 P02 | 5min | 2 tasks | 21 files |
 
 ## Active Context
 
@@ -80,7 +84,7 @@ Current Plan: 2 of 4
 
 ## Last Session
 
-- **Stopped at:** Completed 03-01-PLAN.md
+- **Stopped at:** Completed 10-02-PLAN.md
 - **Timestamp:** 2026-03-26T11:18:08Z
 
 ---
