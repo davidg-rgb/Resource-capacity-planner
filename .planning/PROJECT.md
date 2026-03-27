@@ -107,16 +107,19 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [x] Custom drag-to-fill across months (INPUT-09 / F-021) — Phase 7
 - [x] Conflict detection with overwrite/refresh prompt (INPUT-14 / F-020) — Phase 7
 
+- [x] Bulk import 4-step wizard (F-006 / IMPEX-01) — Phase 8
+- [x] Column mapping with Swedish/English auto-detection (F-007 / IMPEX-03) — Phase 8
+- [x] Import validation with error/warning + suggestions (F-008 / IMPEX-04/05) — Phase 8
+- [x] Pivot/grid format detection and unpivoting (F-026 / IMPEX-06) — Phase 8
+- [x] Server-side Excel processing with SheetJS (ADR-007 / IMPEX-08) — Phase 8
+- [x] Swedish encoding handling + merged cells (IMPEX-09/10) — Phase 8
+- [x] Downloadable import templates (F-019 / IMPEX-13) — Phase 8
+
 ### Active — MVP (Milestone 1)
 
 **Import & Export:**
 
-- [ ] Bulk import 4-step wizard (F-006)
-- [ ] Column mapping with Swedish/English auto-detection (F-007)
-- [ ] Import validation with error/warning + suggestions (F-008)
-- [ ] Pivot/grid format detection and unpivoting (F-026)
 - [ ] Flat table view with sorting, filtering, Excel/CSV export (F-009)
-- [ ] Downloadable import templates (F-019)
 
 **Platform Admin (SaaS Operations):**
 
