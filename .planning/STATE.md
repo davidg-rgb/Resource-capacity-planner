@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: Not started
-status: Ready to plan
-stopped_at: Phase 9 context gathered
-last_updated: "2026-03-27T11:20:34.882Z"
+current_plan: 1 of 2
+status: Executing Phase 09
+stopped_at: Completed 09-01-PLAN.md
+last_updated: "2026-03-27T11:40:35Z"
 progress:
   total_phases: 10
   completed_phases: 8
-  total_plans: 20
-  completed_plans: 20
+  total_plans: 22
+  completed_plans: 21
 ---
 
 # Nordic Capacity -- Project State
@@ -33,7 +33,7 @@ Current Plan: Not started
 | 6     | AG Grid Spike & Core Grid             | not started | --         | --        |
 | 7     | Grid Polish & Navigation              | not started | --         | --        |
 | 8     | Import Wizard                         | not started | --         | --        |
-| 9     | Flat Table View & Export              | not started | --         | --        |
+| 9     | Flat Table View & Export              | in progress | 2026-03-27 | --        |
 | 10    | Platform Admin                        | not started | --         | --        |
 
 ## Completed Requirements
@@ -75,6 +75,8 @@ Current Plan: Not started
 - [Phase 08]: Wizard state managed with single useState -- no context needed for single-page wizard
 - [Phase 08]: StepMap prevents duplicate target field assignments by clearing previous column
 - [Phase 08]: StepValidate computes effective status overlay from user fixes rather than mutating validation rows
+- [Phase 09]: Shared buildFlatConditions helper ensures count query matches data query filters
+- [Phase 09]: Buffer wrapped in Uint8Array for NextResponse body compatibility
 
 ## Performance Metrics
 
@@ -91,6 +93,7 @@ Current Plan: Not started
 | Phase 08 P01 | 4min | 2 tasks | 5 files |
 | Phase 08 P03 | 5min | 2 tasks | 6 files |
 | Phase 08 P04 | 5min | 3 tasks | 4 files |
+| 09    | 01   | 3min     | 2     | 4     |
 
 ## Active Context
 
@@ -102,8 +105,8 @@ Current Plan: Not started
 
 ## Last Session
 
-- **Stopped at:** Phase 9 context gathered
-- **Timestamp:** 2026-03-26T11:25:43Z
+- **Stopped at:** Completed 09-01-PLAN.md
+- **Timestamp:** 2026-03-27T11:40:35Z
 
 ---
 

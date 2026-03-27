@@ -68,8 +68,8 @@
 - [x] **IMPEX-08**: Server-side Excel processing — files processed on server, not client (ADR-007)
 - [x] **IMPEX-09**: Handle Swedish character encoding (å, ä, ö) in .xls files (Research: codepage pitfall)
 - [x] **IMPEX-10**: Handle merged cells, hidden rows, formula cells gracefully (Research: pitfall)
-- [ ] **IMPEX-11**: Flat table view with sorting, filtering, pagination for all allocation data (F-009)
-- [ ] **IMPEX-12**: Excel/CSV export with current filters applied (F-009)
+- [x] **IMPEX-11**: Flat table view with sorting, filtering, pagination for all allocation data (F-009)
+- [x] **IMPEX-12**: Excel/CSV export with current filters applied (F-009)
 - [x] **IMPEX-13**: Downloadable import templates with headers and example data (F-019)
 
 ### Platform Admin (PLAT)
