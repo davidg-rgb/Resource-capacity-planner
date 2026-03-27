@@ -1,7 +1,14 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+interface ImpersonateUser {
+  id: string;
+  email: string | null;
+  firstName: string | null;
+  lastName: string | null;
+}
 
 interface TenantDetail {
   id: string;
@@ -44,6 +51,13 @@ export default function TenantDetailPage() {
   // Delete dialog
   const [showDelete, setShowDelete] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState('');
+
+  // Impersonation
+  const [impersonateQuery, setImpersonateQuery] = useState('');
+  const [impersonateResults, setImpersonateResults] = useState<ImpersonateUser[]>([]);
+  const [impersonateLoading, setImpersonateLoading] = useState(false);
+  const [impersonateError, setImpersonateError] = useState('');
+  const impersonateDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchTenant = useCallback(async () => {
     try {
@@ -112,6 +126,57 @@ export default function TenantDetailPage() {
     }
   }
 
+  // Impersonation user search
+  useEffect(() => {
+    if (impersonateDebounce.current) clearTimeout(impersonateDebounce.current);
+    if (!impersonateQuery.trim()) {
+      setImpersonateResults([]);
+      return;
+    }
+    impersonateDebounce.current = setTimeout(async () => {
+      setImpersonateLoading(true);
+      try {
+        const res = await fetch(
+          `/api/platform/users?query=${encodeURIComponent(impersonateQuery)}`,
+        );
+        if (!res.ok) throw new Error('Search failed');
+        const data: ImpersonateUser[] = await res.json();
+        setImpersonateResults(data);
+      } catch {
+        setImpersonateResults([]);
+      } finally {
+        setImpersonateLoading(false);
+      }
+    }, 300);
+    return () => {
+      if (impersonateDebounce.current) clearTimeout(impersonateDebounce.current);
+    };
+  }, [impersonateQuery]);
+
+  async function handleImpersonate(userId: string) {
+    setImpersonateError('');
+    setActionLoading(true);
+    try {
+      const res = await fetch('/api/platform/impersonation', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetUserId: userId, targetOrgId: orgId }),
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error ?? 'Impersonation failed');
+      }
+      const data = await res.json();
+      if (data.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (err) {
+      setImpersonateError(err instanceof Error ? err.message : 'Impersonation failed');
+    } finally {
+      setActionLoading(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="space-y-4">
@@ -129,7 +194,8 @@ export default function TenantDetailPage() {
 
   if (!tenant) return null;
 
-  const canSuspend = tenant.subscriptionStatus === 'active' || tenant.subscriptionStatus === 'trial';
+  const canSuspend =
+    tenant.subscriptionStatus === 'active' || tenant.subscriptionStatus === 'trial';
   const canReactivate = tenant.subscriptionStatus === 'suspended';
 
   return (
@@ -157,11 +223,13 @@ export default function TenantDetailPage() {
           </div>
           <div>
             <dt className="text-sm font-medium text-slate-500">People Count</dt>
-            <dd className="mt-1 text-sm tabular-nums text-slate-900">{tenant.userCount}</dd>
+            <dd className="mt-1 text-sm text-slate-900 tabular-nums">{tenant.userCount}</dd>
           </div>
           <div>
             <dt className="text-sm font-medium text-slate-500">Created</dt>
-            <dd className="mt-1 text-sm text-slate-900">{new Date(tenant.createdAt).toLocaleDateString()}</dd>
+            <dd className="mt-1 text-sm text-slate-900">
+              {new Date(tenant.createdAt).toLocaleDateString()}
+            </dd>
           </div>
           <div>
             <dt className="text-sm font-medium text-slate-500">Trial Ends</dt>
@@ -171,7 +239,7 @@ export default function TenantDetailPage() {
           </div>
           <div>
             <dt className="text-sm font-medium text-slate-500">Credit Balance</dt>
-            <dd className="mt-1 text-sm tabular-nums text-slate-900">
+            <dd className="mt-1 text-sm text-slate-900 tabular-nums">
               ${(tenant.creditBalanceCents / 100).toFixed(2)}
             </dd>
           </div>
@@ -217,13 +285,6 @@ export default function TenantDetailPage() {
         >
           Delete
         </button>
-        <button
-          disabled
-          title="Coming in next plan"
-          className="cursor-not-allowed rounded-md bg-slate-300 px-4 py-2 text-sm font-medium text-slate-500"
-        >
-          Impersonate
-        </button>
       </div>
 
       {/* Suspend Dialog */}
@@ -246,7 +307,10 @@ export default function TenantDetailPage() {
               Confirm Suspend
             </button>
             <button
-              onClick={() => { setShowSuspend(false); setSuspendReason(''); }}
+              onClick={() => {
+                setShowSuspend(false);
+                setSuspendReason('');
+              }}
               className="rounded-md bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100"
             >
               Cancel
@@ -278,7 +342,10 @@ export default function TenantDetailPage() {
               Confirm Delete
             </button>
             <button
-              onClick={() => { setShowDelete(false); setDeleteConfirm(''); }}
+              onClick={() => {
+                setShowDelete(false);
+                setDeleteConfirm('');
+              }}
               className="rounded-md bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100"
             >
               Cancel
@@ -287,10 +354,52 @@ export default function TenantDetailPage() {
         </div>
       )}
 
-      {/* User list placeholder */}
+      {/* Impersonate User */}
       <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-2 text-lg font-semibold text-slate-800">Users in this organization</h2>
-        <p className="text-sm text-slate-500">User list available in the Users page.</p>
+        <h2 className="mb-4 text-lg font-semibold text-slate-800">Impersonate User</h2>
+        <input
+          type="text"
+          value={impersonateQuery}
+          onChange={(e) => setImpersonateQuery(e.target.value)}
+          placeholder="Search for a user to impersonate..."
+          className="mb-3 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+        />
+        {impersonateError && (
+          <div className="mb-3 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {impersonateError}
+          </div>
+        )}
+        {impersonateLoading ? (
+          <div className="h-10 animate-pulse rounded bg-slate-200" />
+        ) : impersonateResults.length > 0 ? (
+          <div className="divide-y divide-slate-100 rounded-md border border-slate-200">
+            {impersonateResults.map((user) => (
+              <div key={user.id} className="flex items-center justify-between px-3 py-2">
+                <div>
+                  <span className="text-sm text-slate-800">
+                    {[user.firstName, user.lastName].filter(Boolean).join(' ') || 'N/A'}
+                  </span>
+                  <span className="ml-2 font-mono text-xs text-slate-500">
+                    {user.email ?? user.id}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleImpersonate(user.id)}
+                  disabled={actionLoading}
+                  className="rounded bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800 hover:bg-amber-200 disabled:opacity-50"
+                >
+                  Impersonate
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : impersonateQuery.trim() ? (
+          <p className="text-sm text-slate-500">No users found</p>
+        ) : (
+          <p className="text-sm text-slate-500">
+            Search for a user by name or email to begin impersonation.
+          </p>
+        )}
       </div>
     </div>
   );
