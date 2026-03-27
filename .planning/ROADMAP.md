@@ -264,8 +264,8 @@ Plans:
 Plans:
 
 - [x] 08-01-PLAN.md -- Import feature module: types, SheetJS parsing, format detection, templates
-- [x] 08-02-PLAN.md -- Validation service, fuzzy matching, import execution, API routes
-- [ ] 08-03-PLAN.md -- Wizard shell, upload step UI, TanStack Query hooks, data page update
+- [ ] 08-02-PLAN.md -- Validation service, fuzzy matching, import execution, API routes
+- [x] 08-03-PLAN.md -- Wizard shell, upload step UI, TanStack Query hooks, data page update
 - [ ] 08-04-PLAN.md -- Map, Validate, Import step UIs, full wizard wiring
 
 ---
