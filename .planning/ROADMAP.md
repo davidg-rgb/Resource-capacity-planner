@@ -93,14 +93,14 @@ Plans:
 
 **Parallel with:** None
 
-**Plans:** 4 plans
+**Plans:** 4/4 plans complete
 
 Plans:
 
 - [x] 03-01-PLAN.md -- Error taxonomy, auth helpers, Clerk deps, env config
-- [ ] 03-02-PLAN.md -- Clerk integration: proxy.ts, ClerkProvider, sign-in/sign-up, webhook, org service
-- [ ] 03-03-PLAN.md -- App shell: top nav, side nav, breadcrumbs, (app) layout, placeholder pages
-- [ ] 03-04-PLAN.md -- Invite API endpoint with role-based access control
+- [x] 03-02-PLAN.md -- Clerk integration: proxy.ts, ClerkProvider, sign-in/sign-up, webhook, org service (DONE)
+- [x] 03-03-PLAN.md -- App shell: top nav, side nav, breadcrumbs, (app) layout, placeholder pages (DONE)
+- [x] 03-04-PLAN.md -- Invite API endpoint with role-based access control
 
 ---
 
@@ -123,6 +123,13 @@ Plans:
 
 **Parallel with:** Phase 5 (reference data admin)
 
+**Plans:** 2 plans
+
+Plans:
+
+- [ ] 04-01-PLAN.md -- Person CRUD: TanStack Query setup, person service/schema/API routes, Team page UI
+- [ ] 04-02-PLAN.md -- Project CRUD: project service/schema/API routes, Projects page UI
+
 ---
 
 ### Phase 5: Reference Data Admin
@@ -144,6 +151,13 @@ Plans:
 **Dependencies:** Phase 3
 
 **Parallel with:** Phase 4 (Person & Project CRUD)
+
+**Plans:** 2/2 plans complete
+
+Plans:
+
+- [x] 05-01-PLAN.md -- Backend: withTenant helpers, feature modules, API routes for disciplines/departments/programs CRUD
+- [x] 05-02-PLAN.md -- Frontend: reference data hooks, admin CRUD pages, navigation integration
 
 ---
 
@@ -173,6 +187,13 @@ Plans:
 
 **Parallel with:** None (critical path — full focus)
 
+**Plans:** 2 plans
+
+Plans:
+
+- [x] 06-01-PLAN.md -- Backend: AG Grid deps, allocation feature module, API routes, capacity/date utils (DONE)
+- [x] 06-02-PLAN.md -- Frontend: AG Grid component, pinned rows, cell renderers, auto-save hook, person input page
+
 ---
 
 ### Phase 7: Grid Polish & Navigation
@@ -198,6 +219,14 @@ Plans:
 **Dependencies:** Phase 6
 
 **Parallel with:** Phase 8 (Import/Export — once grid API is stable)
+
+**Plans:** 1/3 plans executed
+
+Plans:
+
+- [ ] 07-01-PLAN.md -- Person sidebar with department grouping, status dots, and prev/next navigation
+- [x] 07-02-PLAN.md -- Keyboard navigation (Tab/Enter/Arrow/Escape) and clipboard paste handler
+- [ ] 07-03-PLAN.md -- Custom drag-to-fill handle overlay and conflict detection
 
 ---
 
@@ -230,6 +259,15 @@ Plans:
 
 **Parallel with:** Phase 7 (grid polish)
 
+**Plans:** 4/4 plans complete
+
+Plans:
+
+- [x] 08-01-PLAN.md -- Import feature module: types, SheetJS parsing, format detection, templates
+- [x] 08-02-PLAN.md -- Validation service, fuzzy matching, import execution, API routes
+- [x] 08-03-PLAN.md -- Wizard shell, upload step UI, TanStack Query hooks, data page update
+- [x] 08-04-PLAN.md -- Map, Validate, Import step UIs, full wizard wiring
+
 ---
 
 ### Phase 9: Flat Table View & Export
@@ -250,6 +288,13 @@ Plans:
 **Dependencies:** Phase 6
 
 **Parallel with:** Phase 7, Phase 8
+
+**Plans:** 2/2 plans complete
+
+Plans:
+
+- [x] 09-01-PLAN.md -- Backend: flat table types, service functions (list/count/export), API routes
+- [x] 09-02-PLAN.md -- Frontend: AG Grid flat table, filter bar, pagination, export button, data page restructure
 
 ---
 
@@ -281,6 +326,15 @@ Plans:
 **Dependencies:** Phase 2 (needs DB schema), Phase 3 (needs Clerk integration for user management)
 
 **Parallel with:** Phase 4, 5, 6, 7, 8, 9 (fully independent from tenant-facing features)
+
+**Plans:** 4 plans
+
+Plans:
+
+- [ ] 10-01-PLAN.md -- Platform auth foundation: deps, JWT helpers, audit utility, login/logout/me APIs, proxy update, seed script
+- [ ] 10-02-PLAN.md -- Platform shell, dashboard, tenant management, subscription management (UI + API)
+- [ ] 10-03-PLAN.md -- Impersonation service, user management, audit log query (services + API routes)
+- [ ] 10-04-PLAN.md -- Users page, audit log page, impersonation UI wiring, impersonation banner
 
 ---
 

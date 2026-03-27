@@ -17,7 +17,7 @@ export const env = createEnv({
     RESEND_API_KEY: z.string().min(1).optional(),
     SENTRY_DSN: z.string().url().optional(),
     // Platform admin
-    PLATFORM_ADMIN_SECRET: z.string().min(64).optional(),
+    PLATFORM_ADMIN_SECRET: z.string().min(64),
     PLATFORM_ADMIN_TOKEN_EXPIRY: z.string().default('8h'),
     IMPERSONATION_MAX_DURATION_MINUTES: z.coerce.number().default(60),
     // Tuning
