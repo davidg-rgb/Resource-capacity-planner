@@ -126,7 +126,7 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [x] Platform audit log (F-036 / PLAT-08) — Phase 10
 - [x] Cross-tenant user management via Clerk SDK (F-037 / PLAT-09) — Phase 10
 
-### Active — Post-MVP (Milestone 2)
+### Active — v2.0 (Milestone 2)
 
 - [ ] Team Overview heat map (F-013)
 - [ ] Project View staffing grid (F-014)
