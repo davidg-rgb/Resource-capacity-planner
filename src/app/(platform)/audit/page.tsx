@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 
 interface AuditEntry {
   id: string;
-  adminId: string;
+  adminName: string;
+  adminEmail: string;
   action: string;
   targetOrgId: string | null;
   targetUserId: string | null;
@@ -186,9 +187,7 @@ export default function AuditLogPage() {
                   <td className="px-4 py-3 whitespace-nowrap text-slate-600 tabular-nums">
                     {new Date(entry.createdAt).toLocaleString()}
                   </td>
-                  <td className="px-4 py-3 font-mono text-xs text-slate-800">
-                    {entry.adminId.slice(0, 12)}...
-                  </td>
+                  <td className="px-4 py-3 font-mono text-xs text-slate-800">{entry.adminName}</td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${

@@ -16,7 +16,7 @@ export async function startImpersonation(
   const expiresAt = new Date(Date.now() + env.IMPERSONATION_MAX_DURATION_MINUTES * 60 * 1000);
 
   const client = await clerkClient();
-  const actorToken = await client.actorTokens.createActorToken({
+  const actorToken = await client.actorTokens.create({
     userId: targetUserId,
     actor: { sub: `platform-admin:${adminId}` },
     expiresInSeconds: env.IMPERSONATION_MAX_DURATION_MINUTES * 60,
