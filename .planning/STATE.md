@@ -2,24 +2,24 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: Not started
-status: Ready to plan
-stopped_at: Phase 10 context gathered
-last_updated: "2026-03-27T12:11:38.883Z"
+current_plan: 2
+status: Executing Phase 03
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-03-26T11:19:01.965Z"
 progress:
   total_phases: 10
-  completed_phases: 9
-  total_plans: 22
-  completed_plans: 22
+  completed_phases: 2
+  total_plans: 7
+  completed_plans: 4
 ---
 
 # Nordic Capacity -- Project State
 
 ## Current Phase
 
-Phase 3 -- Authentication & App Shell (complete)
+Phase 3 -- Authentication & App Shell (in progress)
 
-Current Plan: Not started
+Current Plan: 2 of 4
 
 ## Phase Status
 
@@ -33,8 +33,8 @@ Current Plan: Not started
 | 6     | AG Grid Spike & Core Grid             | not started | --         | --        |
 | 7     | Grid Polish & Navigation              | not started | --         | --        |
 | 8     | Import Wizard                         | not started | --         | --        |
-| 9     | Flat Table View & Export              | complete    | 2026-03-27 | 2026-03-27 |
-| 10    | Platform Admin                        | not started | --         | --        |
+| 9     | Flat Table View & Export              | not started | --         | --        |
+| 10    | Platform Admin                        | in progress | 2026-03-27 | --        |
 
 ## Completed Requirements
 
@@ -46,12 +46,10 @@ Current Plan: Not started
 - FOUND-06: Error taxonomy with typed subclasses matching ARCHITECTURE.md
 - AUTH-06: getTenantId() and requireRole() Clerk auth helpers
 - AUTH-08: Clerk env vars promoted to required validation
-- AUTH-01: Sign up with email/password via Clerk (sign-up page)
-- AUTH-02: Log in and stay logged in via Clerk (sign-in page)
-- AUTH-03: Create organization during sign-up (webhook + org service)
-- AUTH-04: Clerk webhook creates internal org record with default disciplines/departments
-- AUTH-05: Protected routes redirect to sign-in via clerkMiddleware
-- AUTH-07: Admin can invite team members via Clerk organization invitation API
+- PLAT-01: Platform admin separate JWT auth with login/logout/me endpoints
+- PLAT-08: Platform audit log -- logPlatformAction utility
+- PLAT-10: Auth separation -- Clerk middleware bypasses platform routes
+- PLAT-11: Seed script creates initial platform admin account
 
 ## Decisions
 
@@ -66,19 +64,10 @@ Current Plan: Not started
 - Seed script uses own drizzle client (drizzle-orm/neon-http) outside Next.js context
 - Clerk org:* prefixed roles mapped via CLERK_ROLE_MAP lookup table
 - Error codes use ERR_ prefix convention for consistent API serialization
-- Default departments seeded on org creation: Engineering, Product, Operations
-- Webhook handler uses explicit env.CLERK_WEBHOOK_SECRET (not Clerk SDK default env var)
-- [Phase 03]: Role validation allows org:viewer, org:planner, org:admin (cannot invite as org:owner -- only Clerk Dashboard can set owner)
-- [Phase 05]: Usage count checks at service layer before delete for clear error messages with counts
-- [Phase 08]: SheetJS 0.20.3 installed from CDN (not npm 0.18.5) for security
-- [Phase 08]: CP1252 default codepage with UTF-8 re-parse fallback for garbled Swedish
-- [Phase 08]: Wizard state managed with single useState -- no context needed for single-page wizard
-- [Phase 08]: StepMap prevents duplicate target field assignments by clearing previous column
-- [Phase 08]: StepValidate computes effective status overlay from user fixes rather than mutating validation rows
-- [Phase 09]: Shared buildFlatConditions helper ensures count query matches data query filters
-- [Phase 09]: Buffer wrapped in Uint8Array for NextResponse body compatibility
-- [Phase 09]: URL search params as single source of truth for flat table filter/pagination state
-- [Phase 09]: Export button inside FlatTable component for filter state access
+- jose library for platform JWT (lightweight, Edge-compatible, HS256)
+- Platform auth uses httpOnly cookie for CSRF safety
+- PLATFORM_ADMIN_SECRET made required (was optional)
+- Created handleApiError utility (missing from codebase, needed by API routes)
 
 ## Performance Metrics
 
@@ -88,15 +77,7 @@ Current Plan: Not started
 | 02    | 01   | 4min     | 2     | 6     |
 | 02    | 02   | 2min     | 2     | 4     |
 | 03    | 01   | 2min     | 2     | 5     |
-| 03    | 02   | 2min     | 2     | 7     |
-| 03    | 03   | 2min     | 2     | 11    |
-| 03    | 04   | 2min     | 1     | 1     |
-| Phase 05 P01 | 3min | 2 tasks | 17 files |
-| Phase 08 P01 | 4min | 2 tasks | 5 files |
-| Phase 08 P03 | 5min | 2 tasks | 6 files |
-| Phase 08 P04 | 5min | 3 tasks | 4 files |
-| 09    | 01   | 3min     | 2     | 4     |
-| Phase 09 P02 | 4min | 2 tasks | 6 files |
+| 10    | 01   | 3min     | 2     | 12    |
 
 ## Active Context
 
@@ -108,8 +89,8 @@ Current Plan: Not started
 
 ## Last Session
 
-- **Stopped at:** Phase 10 context gathered
-- **Timestamp:** 2026-03-27T11:40:35Z
+- **Stopped at:** Completed 10-01-PLAN.md
+- **Timestamp:** 2026-03-27T12:33:00Z
 
 ---
 

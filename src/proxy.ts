@@ -1,16 +1,17 @@
+// Next.js 16 proxy file (was middleware.ts in Next.js 15)
+// Clerk auth with platform admin route exclusion.
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
 const isPublicRoute = createRouteMatcher([
-  '/',
   '/sign-in(.*)',
   '/sign-up(.*)',
-  '/onboarding',
-  '/api/health',
-  '/api/webhooks/(.*)',
+  '/api/health(.*)',
+  '/platform(.*)',
+  '/api/platform(.*)',
 ]);
 
-export default clerkMiddleware(async (auth, req) => {
-  if (!isPublicRoute(req)) {
+export const proxy = clerkMiddleware(async (auth, request) => {
+  if (!isPublicRoute(request)) {
     await auth.protect();
   }
 });
