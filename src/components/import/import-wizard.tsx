@@ -1,16 +1,23 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 
 import type {
   ColumnMapping,
+  ImportRow,
   ParsedFile,
+  UserFixes,
   WizardState,
   WizardStep,
 } from '@/features/import/import.types';
+import { unpivotData } from '@/features/import/import.utils';
+import { useValidateRows, useExecuteImport } from '@/hooks/use-import';
 import { WizardStepper } from '@/components/import/wizard-stepper';
 import { StepUpload } from '@/components/import/step-upload';
+import { StepMap } from '@/components/import/step-map';
+import { StepValidate } from '@/components/import/step-validate';
+import { StepImport } from '@/components/import/step-import';
 
 const STEP_ORDER: WizardStep[] = ['upload', 'map', 'validate', 'import'];
 
@@ -18,6 +25,35 @@ const STEP_ORDER: WizardStep[] = ['upload', 'map', 'validate', 'import'];
 function getCompletedSteps(currentStep: WizardStep): WizardStep[] {
   const idx = STEP_ORDER.indexOf(currentStep);
   return STEP_ORDER.slice(0, idx);
+}
+
+/**
+ * Convert allRows to ImportRow[] using column mappings (flat format).
+ */
+function mapRowsToImportRows(
+  allRows: unknown[][],
+  mappings: ColumnMapping[],
+): ImportRow[] {
+  const personIdx = mappings.find((m) => m.targetField === 'personName')?.sourceIndex;
+  const projectIdx = mappings.find((m) => m.targetField === 'projectName')?.sourceIndex;
+  const monthIdx = mappings.find((m) => m.targetField === 'month')?.sourceIndex;
+  const hoursIdx = mappings.find((m) => m.targetField === 'hours')?.sourceIndex;
+  const deptIdx = mappings.find((m) => m.targetField === 'department')?.sourceIndex;
+  const discIdx = mappings.find((m) => m.targetField === 'discipline')?.sourceIndex;
+
+  if (personIdx === undefined || projectIdx === undefined || monthIdx === undefined || hoursIdx === undefined) {
+    return [];
+  }
+
+  return allRows.map((row, i): ImportRow => ({
+    rowIndex: i + 2, // +2: 1-indexed + header row
+    personName: String(row[personIdx] ?? '').trim(),
+    projectName: String(row[projectIdx] ?? '').trim(),
+    month: String(row[monthIdx] ?? '').trim(),
+    hours: Number(row[hoursIdx]) || 0,
+    department: deptIdx !== undefined ? String(row[deptIdx] ?? '').trim() || undefined : undefined,
+    discipline: discIdx !== undefined ? String(row[discIdx] ?? '').trim() || undefined : undefined,
+  }));
 }
 
 const INITIAL_STATE: WizardState = {
@@ -34,8 +70,13 @@ const INITIAL_STATE: WizardState = {
 export function ImportWizard() {
   const [state, setState] = useState<WizardState>(INITIAL_STATE);
 
+  const validateMutation = useValidateRows();
+  const executeMutation = useExecuteImport();
+
   const currentStepIndex = STEP_ORDER.indexOf(state.step);
   const completedSteps = getCompletedSteps(state.step);
+
+  // ----- Step handlers -----
 
   const handleFileUploaded = useCallback((parsedFile: ParsedFile, mappings: ColumnMapping[]) => {
     setState((prev) => ({
@@ -46,35 +87,116 @@ export function ImportWizard() {
     }));
   }, []);
 
+  const handleMappingsChange = useCallback((mappings: ColumnMapping[]) => {
+    setState((prev) => ({ ...prev, columnMappings: mappings }));
+  }, []);
+
+  const handleMappingsConfirmed = useCallback(async () => {
+    if (!state.parsedFile) return;
+
+    // Advance to validate step immediately (show loading state)
+    setState((prev) => ({ ...prev, step: 'validate', validationResult: null }));
+
+    // Build ImportRow[] from raw data + mappings
+    let importRows: ImportRow[];
+    if (state.parsedFile.formatInfo.isPivot) {
+      importRows = unpivotData(
+        state.parsedFile.allRows,
+        state.parsedFile.headers,
+        state.parsedFile.formatInfo,
+        state.columnMappings,
+      );
+    } else {
+      importRows = mapRowsToImportRows(state.parsedFile.allRows, state.columnMappings);
+    }
+
+    try {
+      const result = await validateMutation.mutateAsync({ rows: importRows });
+      setState((prev) => ({ ...prev, validationResult: result, userFixes: {} }));
+    } catch {
+      // Error handled by mutation state; go back to map step
+      setState((prev) => ({ ...prev, step: 'map' }));
+    }
+  }, [state.parsedFile, state.columnMappings, validateMutation]);
+
+  const handleUserFixesChange = useCallback((fixes: UserFixes) => {
+    setState((prev) => ({ ...prev, userFixes: fixes }));
+  }, []);
+
+  const handleValidationConfirmed = useCallback(() => {
+    setState((prev) => ({ ...prev, step: 'import', importStatus: 'idle', importResult: null }));
+  }, []);
+
+  const handleExecuteImport = useCallback(async () => {
+    if (!state.validationResult) return;
+
+    setState((prev) => ({ ...prev, importStatus: 'importing' }));
+
+    // Build execute payload from validation rows + user fixes
+    const rows = state.validationResult.rows
+      .filter((r) => r.status === 'ready' || r.status === 'warning')
+      .map((r) => {
+        const fix = state.userFixes[r.rowIndex];
+        return {
+          rowIndex: r.rowIndex,
+          personId: fix?.personId ?? r.personMatch.matchId ?? '',
+          projectId: fix?.projectId ?? r.projectMatch.matchId ?? '',
+          month: r.data.month,
+          hours: fix?.hours ?? r.data.hours,
+        };
+      });
+
+    try {
+      const result = await executeMutation.mutateAsync({ rows });
+      setState((prev) => ({ ...prev, importStatus: 'success', importResult: result }));
+    } catch (err) {
+      setState((prev) => ({
+        ...prev,
+        importStatus: 'error',
+        importResult: {
+          imported: 0,
+          skipped: 0,
+          warnings: [],
+          error: err instanceof Error ? err.message : 'Import failed',
+        },
+      }));
+    }
+  }, [state.validationResult, state.userFixes, executeMutation]);
+
   const handleBack = useCallback(() => {
     setState((prev) => {
       const idx = STEP_ORDER.indexOf(prev.step);
       if (idx <= 0) return prev;
-      return { ...prev, step: STEP_ORDER[idx - 1] };
+
+      const prevStep = STEP_ORDER[idx - 1];
+
+      // Per D-02: back navigation preserves state at every step
+      switch (prev.step) {
+        case 'map':
+          // Back to upload: keep parsedFile
+          return { ...prev, step: prevStep };
+        case 'validate':
+          // Back to map: keep columnMappings, clear validationResult
+          return { ...prev, step: prevStep, validationResult: null };
+        case 'import':
+          // Back to validate: only if idle or error. Keep validationResult.
+          if (prev.importStatus === 'idle' || prev.importStatus === 'error') {
+            return { ...prev, step: prevStep, importStatus: 'idle', importResult: null };
+          }
+          return prev; // Block back during importing/success
+        default:
+          return prev;
+      }
     });
   }, []);
 
-  const handleNext = useCallback(() => {
-    setState((prev) => {
-      const idx = STEP_ORDER.indexOf(prev.step);
-      if (idx >= STEP_ORDER.length - 1) return prev;
-      return { ...prev, step: STEP_ORDER[idx + 1] };
-    });
-  }, []);
+  // Count ready rows for import step
+  const readyCount = state.validationResult
+    ? state.validationResult.rows.filter((r) => r.status === 'ready' || r.status === 'warning').length
+    : 0;
 
-  /** Whether the current step has enough data to advance */
-  const canAdvance = (() => {
-    switch (state.step) {
-      case 'upload':
-        return state.parsedFile !== null;
-      case 'map':
-        return state.columnMappings.length > 0;
-      case 'validate':
-        return state.validationResult !== null && state.validationResult.summary.errors === 0;
-      case 'import':
-        return false; // Last step, no next
-    }
-  })();
+  // Back button should be hidden during importing
+  const showBack = currentStepIndex > 0 && state.importStatus !== 'importing' && state.importStatus !== 'success';
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -87,27 +209,50 @@ export function ImportWizard() {
       {/* Step content */}
       <div className="min-h-[300px]">
         {state.step === 'upload' && <StepUpload onFileUploaded={handleFileUploaded} />}
-        {state.step === 'map' && (
-          <div className="border-outline-variant text-on-surface-variant rounded-md border p-8 text-center">
-            Map step (Plan 04)
-          </div>
+
+        {state.step === 'map' && state.parsedFile && (
+          <StepMap
+            headers={state.parsedFile.headers}
+            sampleRows={state.parsedFile.sampleRows}
+            mappings={state.columnMappings}
+            onMappingsChange={handleMappingsChange}
+            onNext={handleMappingsConfirmed}
+          />
         )}
+
         {state.step === 'validate' && (
-          <div className="border-outline-variant text-on-surface-variant rounded-md border p-8 text-center">
-            Validate step (Plan 04)
-          </div>
+          <>
+            {validateMutation.isPending || !state.validationResult ? (
+              <div className="flex flex-col items-center py-10">
+                <Loader2 className="text-primary h-8 w-8 animate-spin" />
+                <p className="text-on-surface-variant mt-3 text-sm">Validating rows...</p>
+              </div>
+            ) : (
+              <StepValidate
+                validationResult={state.validationResult}
+                userFixes={state.userFixes}
+                onUserFixesChange={handleUserFixesChange}
+                onNext={handleValidationConfirmed}
+              />
+            )}
+          </>
         )}
+
         {state.step === 'import' && (
-          <div className="border-outline-variant text-on-surface-variant rounded-md border p-8 text-center">
-            Import step (Plan 04)
-          </div>
+          <StepImport
+            importStatus={state.importStatus}
+            importResult={state.importResult}
+            readyCount={readyCount}
+            onExecute={handleExecuteImport}
+            onBack={handleBack}
+          />
         )}
       </div>
 
-      {/* Back / Next navigation */}
+      {/* Back navigation */}
       <div className="border-outline-variant mt-6 flex items-center justify-between border-t pt-4">
         <div>
-          {currentStepIndex > 0 && (
+          {showBack && (
             <button
               type="button"
               onClick={handleBack}
@@ -118,20 +263,7 @@ export function ImportWizard() {
             </button>
           )}
         </div>
-        <div>
-          {/* Next button visible on steps 2-3 (map, validate). Step 1 advances via upload. */}
-          {currentStepIndex > 0 && currentStepIndex < STEP_ORDER.length - 1 && (
-            <button
-              type="button"
-              onClick={handleNext}
-              disabled={!canAdvance}
-              className="bg-primary text-on-primary hover:bg-primary/90 inline-flex items-center gap-1.5 rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
-            >
-              Next
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          )}
-        </div>
+        <div />
       </div>
     </div>
   );
