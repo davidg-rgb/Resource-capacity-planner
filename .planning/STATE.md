@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 current_plan: Not started
 status: Ready to plan
-stopped_at: Completed 08-03-PLAN.md
-last_updated: "2026-03-27T10:37:40.874Z"
+stopped_at: Completed 08-04-PLAN.md
+last_updated: "2026-03-27T10:46:43.764Z"
 progress:
   total_phases: 10
-  completed_phases: 7
+  completed_phases: 8
   total_plans: 20
-  completed_plans: 18
+  completed_plans: 20
 ---
 
 # Nordic Capacity -- Project State
@@ -73,6 +73,8 @@ Current Plan: Not started
 - [Phase 08]: SheetJS 0.20.3 installed from CDN (not npm 0.18.5) for security
 - [Phase 08]: CP1252 default codepage with UTF-8 re-parse fallback for garbled Swedish
 - [Phase 08]: Wizard state managed with single useState -- no context needed for single-page wizard
+- [Phase 08]: StepMap prevents duplicate target field assignments by clearing previous column
+- [Phase 08]: StepValidate computes effective status overlay from user fixes rather than mutating validation rows
 
 ## Performance Metrics
 
@@ -88,6 +90,7 @@ Current Plan: Not started
 | Phase 05 P01 | 3min | 2 tasks | 17 files |
 | Phase 08 P01 | 4min | 2 tasks | 5 files |
 | Phase 08 P03 | 5min | 2 tasks | 6 files |
+| Phase 08 P04 | 5min | 3 tasks | 4 files |
 
 ## Active Context
 
@@ -99,7 +102,7 @@ Current Plan: Not started
 
 ## Last Session
 
-- **Stopped at:** Completed 08-03-PLAN.md
+- **Stopped at:** Completed 08-04-PLAN.md
 - **Timestamp:** 2026-03-26T11:25:43Z
 
 ---
