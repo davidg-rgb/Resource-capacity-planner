@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_plan: 1 of 2
-status: Executing Phase 09
-stopped_at: Completed 09-01-PLAN.md
-last_updated: "2026-03-27T11:40:35Z"
+current_plan: Not started
+status: Phase 09 Complete
+stopped_at: Completed 09-02-PLAN.md
+last_updated: "2026-03-27T11:53:27.437Z"
 progress:
   total_phases: 10
-  completed_phases: 8
+  completed_phases: 9
   total_plans: 22
-  completed_plans: 21
+  completed_plans: 22
 ---
 
 # Nordic Capacity -- Project State
@@ -33,7 +33,7 @@ Current Plan: Not started
 | 6     | AG Grid Spike & Core Grid             | not started | --         | --        |
 | 7     | Grid Polish & Navigation              | not started | --         | --        |
 | 8     | Import Wizard                         | not started | --         | --        |
-| 9     | Flat Table View & Export              | in progress | 2026-03-27 | --        |
+| 9     | Flat Table View & Export              | complete    | 2026-03-27 | 2026-03-27 |
 | 10    | Platform Admin                        | not started | --         | --        |
 
 ## Completed Requirements
@@ -77,6 +77,8 @@ Current Plan: Not started
 - [Phase 08]: StepValidate computes effective status overlay from user fixes rather than mutating validation rows
 - [Phase 09]: Shared buildFlatConditions helper ensures count query matches data query filters
 - [Phase 09]: Buffer wrapped in Uint8Array for NextResponse body compatibility
+- [Phase 09]: URL search params as single source of truth for flat table filter/pagination state
+- [Phase 09]: Export button inside FlatTable component for filter state access
 
 ## Performance Metrics
 
@@ -94,6 +96,7 @@ Current Plan: Not started
 | Phase 08 P03 | 5min | 2 tasks | 6 files |
 | Phase 08 P04 | 5min | 3 tasks | 4 files |
 | 09    | 01   | 3min     | 2     | 4     |
+| Phase 09 P02 | 4min | 2 tasks | 6 files |
 
 ## Active Context
 
@@ -105,7 +108,7 @@ Current Plan: Not started
 
 ## Last Session
 
-- **Stopped at:** Completed 09-01-PLAN.md
+- **Stopped at:** Completed 09-02-PLAN.md
 - **Timestamp:** 2026-03-27T11:40:35Z
 
 ---
