@@ -1,5 +1,6 @@
 import 'dotenv/config';
 
+import bcrypt from 'bcryptjs';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/neon-http';
 
@@ -160,6 +161,32 @@ async function seed() {
     .values(allocationData.map((a) => ({ ...a, organizationId: orgId })))
     .returning();
   console.log(`Created ${allocations.length} allocations...`);
+
+  // g) Create platform admin account (if env vars set)
+  const platformEmail = process.env.PLATFORM_ADMIN_EMAIL;
+  const platformPassword = process.env.PLATFORM_ADMIN_PASSWORD;
+
+  if (platformEmail && platformPassword) {
+    const existingAdmin = await db
+      .select()
+      .from(schema.platformAdmins)
+      .where(eq(schema.platformAdmins.email, platformEmail))
+      .limit(1);
+
+    if (existingAdmin.length === 0) {
+      const passwordHash = await bcrypt.hash(platformPassword, 12);
+      await db.insert(schema.platformAdmins).values({
+        email: platformEmail,
+        passwordHash,
+        name: 'Platform Admin',
+      });
+      console.log('Created platform admin account.');
+    } else {
+      console.log('Platform admin already exists, skipping.');
+    }
+  } else {
+    console.log('Skipping platform admin (PLATFORM_ADMIN_EMAIL/PASSWORD not set).');
+  }
 
   console.log(
     `Seed complete. Created: 1 org, 3 departments, 4 disciplines, 5 people, 4 projects, ${allocations.length} allocations`,
