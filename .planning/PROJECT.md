@@ -118,16 +118,13 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [x] Flat table view with sorting, filtering, pagination (F-009 / IMPEX-11) — Phase 9
 - [x] Excel/CSV export with current filters applied (F-009 / IMPEX-12) — Phase 9
 
-### Active — MVP (Milestone 1)
-
-**Platform Admin (SaaS Operations):**
-
-- [ ] Platform admin dashboard (F-029)
-- [ ] Tenant impersonation with audit trail (F-030)
-- [ ] Tenant management: create/suspend/reactivate/delete (F-031)
-- [ ] Manual subscription management (F-032)
-- [ ] Platform audit log (F-036)
-- [ ] Cross-tenant user management (F-037)
+- [x] Platform admin auth with separate JWT, isolated from Clerk (PLAT-01/10/11) — Phase 10
+- [x] Platform admin dashboard with org metrics (F-029 / PLAT-02) — Phase 10
+- [x] Tenant impersonation via Clerk Actor Tokens with banner (F-030 / PLAT-03/04/05) — Phase 10
+- [x] Tenant management: create/suspend/reactivate/delete (F-031 / PLAT-06) — Phase 10
+- [x] Manual subscription management (F-032 / PLAT-07) — Phase 10
+- [x] Platform audit log (F-036 / PLAT-08) — Phase 10
+- [x] Cross-tenant user management via Clerk SDK (F-037 / PLAT-09) — Phase 10
 
 ### Active — Post-MVP (Milestone 2)
 
