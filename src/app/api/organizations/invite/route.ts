@@ -1,11 +1,20 @@
-import { clerkClient } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/lib/auth';
 import { AppError, ValidationError } from '@/lib/errors';
 
 export async function POST(req: NextRequest) {
   try {
-    const { orgId, userId } = await requireRole('admin');
+    // requireRole checks permission (admin+) and returns the internal DB UUID
+    const { userId } = await requireRole('admin');
+
+    // Get the Clerk org ID (e.g. "org_xxx") directly from the session
+    const { orgId: clerkOrgId } = await auth();
+    if (!clerkOrgId) {
+      throw new ValidationError('No organization membership', {
+        fields: [{ field: 'organization', message: 'Must be a member of an organization' }],
+      });
+    }
 
     const body = await req.json();
     const { emailAddress, role } = body as { emailAddress?: string; role?: string };
@@ -22,7 +31,7 @@ export async function POST(req: NextRequest) {
 
     const client = await clerkClient();
     const invitation = await client.organizations.createOrganizationInvitation({
-      organizationId: orgId,
+      organizationId: clerkOrgId,
       emailAddress,
       role: clerkRole,
       inviterUserId: userId,

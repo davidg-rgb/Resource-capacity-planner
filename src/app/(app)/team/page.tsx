@@ -99,6 +99,10 @@ export default function TeamPage() {
         setErrors((prev) => ({ ...prev, firstName: 'First name is required' }));
         return;
       }
+      if (!form.lastName.trim()) {
+        setErrors((prev) => ({ ...prev, lastName: 'Last name is required' }));
+        return;
+      }
       if (editingId) {
         await updatePerson.mutateAsync({ id: editingId, data: form });
         setSuccessMsg('Person updated successfully');
@@ -113,7 +117,11 @@ export default function TeamPage() {
 
   const handleDelete = useCallback(
     async (person: PersonRow) => {
-      if (!window.confirm(`Are you sure you want to remove ${person.firstName} ${person.lastName}? This will archive them.`)) {
+      if (
+        !window.confirm(
+          `Are you sure you want to remove ${person.firstName} ${person.lastName}? This will archive them.`,
+        )
+      ) {
         return;
       }
       await deletePerson.mutateAsync(person.id);
@@ -127,10 +135,8 @@ export default function TeamPage() {
 
   // ---- department / discipline name lookup ----
 
-  const departmentName = (id: string) =>
-    departments?.find((d) => d.id === id)?.name ?? '--';
-  const disciplineName = (id: string) =>
-    disciplines?.find((d) => d.id === id)?.name ?? '--';
+  const departmentName = (id: string) => departments?.find((d) => d.id === id)?.name ?? '--';
+  const disciplineName = (id: string) => disciplines?.find((d) => d.id === id)?.name ?? '--';
 
   // ---- render ----
 
@@ -140,17 +146,17 @@ export default function TeamPage() {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-headline text-3xl font-semibold tracking-tight text-on-surface">
+          <h1 className="font-headline text-on-surface text-3xl font-semibold tracking-tight">
             Team
           </h1>
-          <p className="mt-1 text-sm text-on-surface-variant">
+          <p className="text-on-surface-variant mt-1 text-sm">
             Manage people in your organization.
           </p>
         </div>
         {canEdit && (
           <button
             onClick={openCreate}
-            className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-on-primary shadow-sm hover:bg-primary/90"
+            className="bg-primary text-on-primary hover:bg-primary/90 inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium shadow-sm"
           >
             <Plus size={16} />
             Add Person
@@ -160,16 +166,16 @@ export default function TeamPage() {
 
       {/* Success toast */}
       {successMsg && (
-        <div className="mt-4 rounded-md bg-green-50 border border-green-200 p-3 text-sm font-medium text-green-800">
+        <div className="mt-4 rounded-md border border-green-200 bg-green-50 p-3 text-sm font-medium text-green-800">
           {successMsg}
         </div>
       )}
 
       {/* Form dialog */}
       {showForm && (
-        <div className="mt-4 rounded-lg border border-outline-variant bg-surface-container p-4">
+        <div className="border-outline-variant bg-surface-container mt-4 rounded-lg border p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-headline text-lg font-semibold text-on-surface">
+            <h2 className="font-headline text-on-surface text-lg font-semibold">
               {editingId ? 'Edit Person' : 'New Person'}
             </h2>
             <button onClick={closeForm} className="text-on-surface-variant hover:text-on-surface">
@@ -179,7 +185,7 @@ export default function TeamPage() {
 
           <form onSubmit={handleSubmit} className="grid gap-3 sm:grid-cols-2">
             <label className="block">
-              <span className="text-sm font-medium text-on-surface">First Name</span>
+              <span className="text-on-surface text-sm font-medium">First Name</span>
               <input
                 type="text"
                 required
@@ -187,32 +193,44 @@ export default function TeamPage() {
                 value={form.firstName}
                 onChange={(e) => {
                   updateField('firstName', e.target.value);
-                  if (errors.firstName) setErrors((prev) => { delete prev.firstName; return { ...prev }; });
+                  if (errors.firstName)
+                    setErrors((prev) => {
+                      delete prev.firstName;
+                      return { ...prev };
+                    });
                 }}
-                className="mt-1 block w-full rounded-sm border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:outline-none"
+                className="border-outline-variant bg-surface text-on-surface placeholder:text-on-surface-variant focus:border-primary mt-1 block w-full rounded-sm border px-3 py-2 text-sm focus:outline-none"
               />
-              {errors.firstName && <p className="text-sm text-red-600 mt-1">{errors.firstName}</p>}
+              {errors.firstName && <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>}
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-on-surface">Last Name</span>
+              <span className="text-on-surface text-sm font-medium">Last Name</span>
               <input
                 type="text"
                 required
                 maxLength={100}
                 value={form.lastName}
-                onChange={(e) => updateField('lastName', e.target.value)}
-                className="mt-1 block w-full rounded-sm border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:outline-none"
+                onChange={(e) => {
+                  updateField('lastName', e.target.value);
+                  if (errors.lastName)
+                    setErrors((prev) => {
+                      delete prev.lastName;
+                      return { ...prev };
+                    });
+                }}
+                className="border-outline-variant bg-surface text-on-surface placeholder:text-on-surface-variant focus:border-primary mt-1 block w-full rounded-sm border px-3 py-2 text-sm focus:outline-none"
               />
+              {errors.lastName && <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>}
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-on-surface">Department</span>
+              <span className="text-on-surface text-sm font-medium">Department</span>
               <select
                 required
                 value={form.departmentId}
                 onChange={(e) => updateField('departmentId', e.target.value)}
-                className="mt-1 block w-full rounded-sm border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface focus:border-primary focus:outline-none"
+                className="border-outline-variant bg-surface text-on-surface focus:border-primary mt-1 block w-full rounded-sm border px-3 py-2 text-sm focus:outline-none"
               >
                 <option value="">Select department...</option>
                 {departments?.map((d) => (
@@ -224,12 +242,12 @@ export default function TeamPage() {
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-on-surface">Discipline</span>
+              <span className="text-on-surface text-sm font-medium">Discipline</span>
               <select
                 required
                 value={form.disciplineId}
                 onChange={(e) => updateField('disciplineId', e.target.value)}
-                className="mt-1 block w-full rounded-sm border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface focus:border-primary focus:outline-none"
+                className="border-outline-variant bg-surface text-on-surface focus:border-primary mt-1 block w-full rounded-sm border px-3 py-2 text-sm focus:outline-none"
               >
                 <option value="">Select discipline...</option>
                 {disciplines?.map((d) => (
@@ -241,14 +259,14 @@ export default function TeamPage() {
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-on-surface">Target Hours / Month</span>
+              <span className="text-on-surface text-sm font-medium">Target Hours / Month</span>
               <input
                 type="number"
                 min={1}
                 max={744}
                 value={form.targetHoursPerMonth}
                 onChange={(e) => updateField('targetHoursPerMonth', Number(e.target.value))}
-                className="mt-1 block w-full rounded-sm border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface tabular-nums focus:border-primary focus:outline-none"
+                className="border-outline-variant bg-surface text-on-surface focus:border-primary mt-1 block w-full rounded-sm border px-3 py-2 text-sm tabular-nums focus:outline-none"
               />
             </label>
 
@@ -256,14 +274,14 @@ export default function TeamPage() {
               <button
                 type="submit"
                 disabled={createPerson.isPending || updatePerson.isPending}
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-on-primary shadow-sm hover:bg-primary/90 disabled:opacity-50"
+                className="bg-primary text-on-primary hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium shadow-sm disabled:opacity-50"
               >
                 {editingId ? 'Update' : 'Create'}
               </button>
               <button
                 type="button"
                 onClick={closeForm}
-                className="rounded-md border border-outline-variant px-4 py-2 text-sm font-medium text-on-surface hover:bg-surface-container"
+                className="border-outline-variant text-on-surface hover:bg-surface-container rounded-md border px-4 py-2 text-sm font-medium"
               >
                 Cancel
               </button>
@@ -275,13 +293,13 @@ export default function TeamPage() {
       {/* Loading state */}
       {isLoading && (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <div className="border-primary h-8 w-8 animate-spin rounded-full border-4 border-t-transparent" />
         </div>
       )}
 
       {/* Error state */}
       {error && (
-        <div className="mt-4 rounded-md bg-error-container p-3 text-sm text-on-error-container">
+        <div className="bg-error-container text-on-error-container mt-4 rounded-md p-3 text-sm">
           Failed to load people: {error.message}
         </div>
       )}
@@ -290,13 +308,13 @@ export default function TeamPage() {
       {!isLoading && !error && (
         <div className="mt-6 overflow-x-auto">
           {people && people.length === 0 ? (
-            <p className="py-8 text-center text-sm text-on-surface-variant">
+            <p className="text-on-surface-variant py-8 text-center text-sm">
               No people yet. Click &quot;Add Person&quot; to get started.
             </p>
           ) : (
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-outline-variant text-on-surface-variant">
+                <tr className="border-outline-variant text-on-surface-variant border-b">
                   <th className="py-2 pr-4 font-medium">Name</th>
                   <th className="py-2 pr-4 font-medium">Department</th>
                   <th className="py-2 pr-4 font-medium">Discipline</th>
@@ -304,7 +322,7 @@ export default function TeamPage() {
                   {canEdit && <th className="py-2 font-medium">Actions</th>}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-outline-variant">
+              <tbody className="divide-outline-variant divide-y">
                 {people?.map((person) => (
                   <tr key={person.id} className="text-on-surface">
                     <td className="py-2.5 pr-4 font-medium">
@@ -318,7 +336,7 @@ export default function TeamPage() {
                         <div className="flex gap-1">
                           <button
                             onClick={() => openEdit(person)}
-                            className="rounded p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                            className="text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded p-1"
                             title="Edit"
                           >
                             <Pencil size={16} />
@@ -326,7 +344,7 @@ export default function TeamPage() {
                           <button
                             onClick={() => handleDelete(person)}
                             disabled={deletePerson.isPending}
-                            className="rounded p-1 text-on-surface-variant hover:bg-error-container hover:text-on-error-container disabled:opacity-50"
+                            className="text-on-surface-variant hover:bg-error-container hover:text-on-error-container rounded p-1 disabled:opacity-50"
                             title="Delete"
                           >
                             <Trash2 size={16} />

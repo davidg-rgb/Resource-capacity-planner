@@ -9,11 +9,7 @@ import { AllocationGrid } from '@/components/grid/allocation-grid';
 import { PersonHeader } from '@/components/person/person-header';
 
 /** Person Input Form -- the core product interface. */
-export default function PersonInputPage({
-  params,
-}: {
-  params: Promise<{ personId: string }>;
-}) {
+export default function PersonInputPage({ params }: { params: Promise<{ personId: string }> }) {
   // Next.js 16: params is a Promise, unwrap with React 19 use()
   const { personId } = use(params);
   const { data: allocations, isLoading: allocLoading } = useAllocations(personId);
@@ -26,18 +22,16 @@ export default function PersonInputPage({
     if (allocations) initUpdatedAtFromAllocations(allocations);
   }, [allocations, initUpdatedAtFromAllocations]);
   const [showProjectSelector, setShowProjectSelector] = useState(false);
-  const [addedProjects, setAddedProjects] = useState<
-    { projectId: string; projectName: string }[]
-  >([]);
+  const [addedProjects, setAddedProjects] = useState<{ projectId: string; projectName: string }[]>(
+    [],
+  );
 
   if (allocLoading || personLoading) {
-    return (
-      <div className="p-6 text-on-surface-variant">Loading allocations...</div>
-    );
+    return <div className="text-on-surface-variant p-6">Loading allocations...</div>;
   }
 
   if (!person) {
-    return <div className="p-6 text-error">Person not found</div>;
+    return <div className="text-error p-6">Person not found</div>;
   }
 
   const handleAddProject = () => {
@@ -60,10 +54,7 @@ export default function PersonInputPage({
     }
 
     // Add to local state -- transformToGridRows will create a zero-hour row
-    setAddedProjects((prev) => [
-      ...prev,
-      { projectId, projectName: project.name },
-    ]);
+    setAddedProjects((prev) => [...prev, { projectId, projectName: project.name }]);
     setShowProjectSelector(false);
   };
 
@@ -86,12 +77,10 @@ export default function PersonInputPage({
       />
 
       {showProjectSelector && projects && (
-        <div className="rounded-lg border border-outline-variant bg-surface p-4">
-          <p className="mb-2 text-sm font-medium text-on-surface">
-            Select a project to add:
-          </p>
+        <div className="border-outline-variant bg-surface rounded-lg border p-4">
+          <p className="text-on-surface mb-2 text-sm font-medium">Select a project to add:</p>
           <select
-            className="w-full rounded border border-outline-variant bg-surface p-2 text-sm text-on-surface"
+            className="border-outline-variant bg-surface text-on-surface w-full rounded border p-2 text-sm"
             onChange={(e) => handleProjectSelected(e.target.value)}
             defaultValue=""
           >
@@ -101,6 +90,7 @@ export default function PersonInputPage({
             {projects
               .filter(
                 (p) =>
+                  p.status === 'active' &&
                   !allocations?.some((a) => a.projectId === p.id) &&
                   !addedProjects.some((a) => a.projectId === p.id),
               )
