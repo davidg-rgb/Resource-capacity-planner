@@ -52,6 +52,7 @@ export type ParsedFile = {
   formatInfo: FormatInfo;
   sheetName: string;
   encodingWarning?: string; // Set if Swedish chars look garbled
+  hiddenRowsSkipped?: number; // Count of hidden rows filtered out
 };
 
 /** A single flat import row after mapping + unpivoting */

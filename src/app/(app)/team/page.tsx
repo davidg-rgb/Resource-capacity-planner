@@ -1,7 +1,8 @@
 'use client';
 
+import { useAuth } from '@clerk/nextjs';
 import { Pencil, Plus, Trash2, X } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import type { PersonRow } from '@/features/people/person.types';
@@ -39,6 +40,9 @@ const EMPTY_FORM: FormState = {
 // ---------------------------------------------------------------------------
 
 export default function TeamPage() {
+  const { orgRole } = useAuth();
+  const canEdit = orgRole === 'org:admin' || orgRole === 'org:owner' || orgRole === 'org:planner';
+
   const { data: people, isLoading, error } = usePeople();
   const { data: departments } = useDepartments();
   const { data: disciplines } = useDisciplines();
@@ -50,6 +54,16 @@ export default function TeamPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [successMsg, setSuccessMsg] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // ---- success toast auto-clear ----
+
+  useEffect(() => {
+    if (!successMsg) return;
+    const timer = setTimeout(() => setSuccessMsg(''), 3000);
+    return () => clearTimeout(timer);
+  }, [successMsg]);
 
   // ---- helpers ----
 
@@ -80,10 +94,17 @@ export default function TeamPage() {
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
+      setErrors({});
+      if (!form.firstName.trim()) {
+        setErrors((prev) => ({ ...prev, firstName: 'First name is required' }));
+        return;
+      }
       if (editingId) {
         await updatePerson.mutateAsync({ id: editingId, data: form });
+        setSuccessMsg('Person updated successfully');
       } else {
         await createPerson.mutateAsync(form);
+        setSuccessMsg('Person created successfully');
       }
       closeForm();
     },
@@ -96,6 +117,7 @@ export default function TeamPage() {
         return;
       }
       await deletePerson.mutateAsync(person.id);
+      setSuccessMsg(`${person.firstName} ${person.lastName} removed`);
     },
     [deletePerson],
   );
@@ -125,14 +147,23 @@ export default function TeamPage() {
             Manage people in your organization.
           </p>
         </div>
-        <button
-          onClick={openCreate}
-          className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-on-primary shadow-sm hover:bg-primary/90"
-        >
-          <Plus size={16} />
-          Add Person
-        </button>
+        {canEdit && (
+          <button
+            onClick={openCreate}
+            className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-on-primary shadow-sm hover:bg-primary/90"
+          >
+            <Plus size={16} />
+            Add Person
+          </button>
+        )}
       </div>
+
+      {/* Success toast */}
+      {successMsg && (
+        <div className="mt-4 rounded-md bg-green-50 border border-green-200 p-3 text-sm font-medium text-green-800">
+          {successMsg}
+        </div>
+      )}
 
       {/* Form dialog */}
       {showForm && (
@@ -154,9 +185,13 @@ export default function TeamPage() {
                 required
                 maxLength={100}
                 value={form.firstName}
-                onChange={(e) => updateField('firstName', e.target.value)}
+                onChange={(e) => {
+                  updateField('firstName', e.target.value);
+                  if (errors.firstName) setErrors((prev) => { delete prev.firstName; return { ...prev }; });
+                }}
                 className="mt-1 block w-full rounded-sm border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:outline-none"
               />
+              {errors.firstName && <p className="text-sm text-red-600 mt-1">{errors.firstName}</p>}
             </label>
 
             <label className="block">
@@ -266,7 +301,7 @@ export default function TeamPage() {
                   <th className="py-2 pr-4 font-medium">Department</th>
                   <th className="py-2 pr-4 font-medium">Discipline</th>
                   <th className="py-2 pr-4 font-medium tabular-nums">Target h/mo</th>
-                  <th className="py-2 font-medium">Actions</th>
+                  {canEdit && <th className="py-2 font-medium">Actions</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant">
@@ -278,25 +313,27 @@ export default function TeamPage() {
                     <td className="py-2.5 pr-4">{departmentName(person.departmentId)}</td>
                     <td className="py-2.5 pr-4">{disciplineName(person.disciplineId)}</td>
                     <td className="py-2.5 pr-4 tabular-nums">{person.targetHoursPerMonth}</td>
-                    <td className="py-2.5">
-                      <div className="flex gap-1">
-                        <button
-                          onClick={() => openEdit(person)}
-                          className="rounded p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
-                          title="Edit"
-                        >
-                          <Pencil size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(person)}
-                          disabled={deletePerson.isPending}
-                          className="rounded p-1 text-on-surface-variant hover:bg-error-container hover:text-on-error-container disabled:opacity-50"
-                          title="Delete"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
+                    {canEdit && (
+                      <td className="py-2.5">
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => openEdit(person)}
+                            className="rounded p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                            title="Edit"
+                          >
+                            <Pencil size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(person)}
+                            disabled={deletePerson.isPending}
+                            className="rounded p-1 text-on-surface-variant hover:bg-error-container hover:text-on-error-container disabled:opacity-50"
+                            title="Delete"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

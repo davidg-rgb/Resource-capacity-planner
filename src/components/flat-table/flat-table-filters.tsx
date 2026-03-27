@@ -1,6 +1,5 @@
 'use client';
 
-import { usePeople } from '@/hooks/use-people';
 import { useDepartments } from '@/hooks/use-reference-data';
 import { useProjects } from '@/hooks/use-projects';
 
@@ -10,7 +9,6 @@ type FlatTableFiltersProps = {
 };
 
 export function FlatTableFilters({ filters, onFilterChange }: FlatTableFiltersProps) {
-  const { data: people } = usePeople();
   const { data: departments } = useDepartments();
   const { data: projects } = useProjects();
 
@@ -18,24 +16,19 @@ export function FlatTableFilters({ filters, onFilterChange }: FlatTableFiltersPr
 
   return (
     <div className="flex flex-wrap items-end gap-3">
-      {/* Person filter */}
+      {/* Person filter (searchable text input) */}
       <div className="flex flex-col gap-1">
         <label htmlFor="filter-person" className="text-on-surface-variant text-xs font-medium">
           Person
         </label>
-        <select
+        <input
           id="filter-person"
-          value={filters.personId ?? ''}
-          onChange={(e) => onFilterChange('personId', e.target.value || undefined)}
+          type="text"
+          placeholder="Search by name..."
+          value={filters.personName ?? ''}
+          onChange={(e) => onFilterChange('personName', e.target.value || undefined)}
           className="border-outline-variant bg-surface text-on-surface min-w-[160px] rounded-md border px-2 py-1.5 text-sm"
-        >
-          <option value="">All people</option>
-          {people?.map((p) => (
-            <option key={p.id} value={p.id}>
-              {p.firstName} {p.lastName}
-            </option>
-          ))}
-        </select>
+        />
       </div>
 
       {/* Project filter */}
@@ -111,7 +104,7 @@ export function FlatTableFilters({ filters, onFilterChange }: FlatTableFiltersPr
         <button
           type="button"
           onClick={() => {
-            onFilterChange('personId', undefined);
+            onFilterChange('personName', undefined);
             onFilterChange('projectId', undefined);
             onFilterChange('departmentId', undefined);
             onFilterChange('monthFrom', undefined);

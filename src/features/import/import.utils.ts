@@ -4,6 +4,7 @@
  * Server-side only -- these functions process Excel/CSV buffers using SheetJS.
  */
 
+import { findBestMatch } from 'string-similarity';
 import * as XLSX from 'xlsx';
 
 import type {
@@ -167,6 +168,30 @@ export function autoDetectMappings(headers: string[]): ColumnMapping[] {
         autoDetected: true,
         swedish: false,
       };
+    }
+
+    // Fuzzy fallback: compare header against all dictionary keys
+    const allKeys = [
+      ...Object.keys(SWEDISH_HEADER_MAP),
+      ...Object.keys(ENGLISH_HEADER_MAP),
+    ];
+    if (allKeys.length > 0) {
+      const { bestMatch, bestMatchIndex } = findBestMatch(normalized, allKeys);
+      if (bestMatch.rating >= 0.6) {
+        const matchedKey = allKeys[bestMatchIndex];
+        const entry =
+          SWEDISH_HEADER_MAP[matchedKey] ?? ENGLISH_HEADER_MAP[matchedKey];
+        if (entry && !assignedTargets.has(entry.target)) {
+          assignedTargets.add(entry.target);
+          return {
+            sourceIndex: index,
+            sourceHeader: header,
+            targetField: entry.target,
+            autoDetected: true,
+            swedish: matchedKey in SWEDISH_HEADER_MAP,
+          };
+        }
+      }
     }
 
     // No match -- ignored column
@@ -412,9 +437,12 @@ export function parseExcelBuffer(buffer: Buffer, codepage?: number): ParsedFile 
     blankrows: false,
   });
 
-  // Filter out hidden rows
+  // Filter out hidden rows and track count
+  let hiddenRowsSkipped = 0;
   if (hiddenRows.size > 0) {
+    const before = jsonData.length;
     jsonData = jsonData.filter((_, idx) => !hiddenRows.has(idx));
+    hiddenRowsSkipped = before - jsonData.length;
   }
 
   if (jsonData.length === 0) {
@@ -425,6 +453,7 @@ export function parseExcelBuffer(buffer: Buffer, codepage?: number): ParsedFile 
       totalRows: 0,
       formatInfo: { isPivot: false, monthColumns: [] },
       sheetName,
+      hiddenRowsSkipped,
     };
   }
 
@@ -454,7 +483,9 @@ export function parseExcelBuffer(buffer: Buffer, codepage?: number): ParsedFile 
       blankrows: false,
     });
     if (newHiddenRows.size > 0) {
+      const before = jsonData.length;
       jsonData = jsonData.filter((_, idx) => !newHiddenRows.has(idx));
+      hiddenRowsSkipped = before - jsonData.length;
     }
 
     // Check if re-parse fixed the issue
@@ -490,5 +521,6 @@ export function parseExcelBuffer(buffer: Buffer, codepage?: number): ParsedFile 
     formatInfo,
     sheetName,
     encodingWarning,
+    hiddenRowsSkipped,
   };
 }

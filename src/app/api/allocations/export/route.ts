@@ -8,11 +8,12 @@ import type { FlatTableFilters } from '@/features/allocations/allocation.types';
 
 export async function GET(request: NextRequest) {
   try {
+    // All authenticated org members can read/export (including viewers)
     const orgId = await getTenantId();
     const params = request.nextUrl.searchParams;
 
     const filters: FlatTableFilters = {
-      personId: params.get('personId') ?? undefined,
+      personName: params.get('personName') ?? undefined,
       projectId: params.get('projectId') ?? undefined,
       departmentId: params.get('departmentId') ?? undefined,
       monthFrom: params.get('monthFrom') ?? undefined,

@@ -1,7 +1,7 @@
-import { count, eq, sql } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 import { db } from '@/db';
-import { organizations, people } from '@/db/schema';
+import { organizations } from '@/db/schema';
 import { NotFoundError } from '@/lib/errors';
 
 export interface TenantListItem {
@@ -75,6 +75,23 @@ export async function getTenantDetail(orgId: string): Promise<TenantDetail> {
 
   if (!org) throw new NotFoundError('Organization', orgId);
   return org;
+}
+
+/**
+ * Create a new tenant organization.
+ */
+export async function createTenant(data: { name: string; slug: string }): Promise<{ id: string }> {
+  const [org] = await db
+    .insert(organizations)
+    .values({
+      clerkOrgId: `pending_${data.slug}_${Date.now()}`,
+      name: data.name,
+      slug: data.slug,
+      subscriptionStatus: 'active',
+    })
+    .returning({ id: organizations.id });
+
+  return { id: org.id };
 }
 
 /**

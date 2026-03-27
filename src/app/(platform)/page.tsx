@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 interface DashboardMetrics {
   totalOrgs: number;
   totalUsers: number;
+  totalAllocations: number;
+  totalPeople: number;
   orgsByStatus: Record<string, number>;
   recentlyActive: Array<{
     id: string;
@@ -89,11 +91,13 @@ export default function PlatformDashboardPage() {
     <div>
       <h1 className="mb-6 font-headline text-2xl font-semibold text-slate-900">Dashboard</h1>
 
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <MetricCard title="Total Organizations" value={metrics?.totalOrgs ?? 0} loading={loading} />
-        <MetricCard title="Total Users" value={metrics?.totalUsers ?? 0} loading={loading} />
+        <MetricCard title="Total People" value={metrics?.totalPeople ?? 0} loading={loading} />
+        <MetricCard title="Total Allocations" value={metrics?.totalAllocations ?? 0} loading={loading} />
         <MetricCard title="Active Orgs" value={activeOrgs} loading={loading} />
         <MetricCard title="Trial Orgs" value={trialOrgs} loading={loading} />
+        <MetricCard title="Suspended" value={metrics?.orgsByStatus?.suspended ?? 0} loading={loading} />
       </div>
 
       <div>

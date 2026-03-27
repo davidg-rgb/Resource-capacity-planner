@@ -23,7 +23,7 @@ export function FlatTable() {
 
   // Read filter state from URL search params
   const filters = {
-    personId: searchParams.get('personId') ?? undefined,
+    personName: searchParams.get('personName') ?? undefined,
     projectId: searchParams.get('projectId') ?? undefined,
     departmentId: searchParams.get('departmentId') ?? undefined,
     monthFrom: searchParams.get('monthFrom') ?? undefined,
@@ -58,7 +58,7 @@ export function FlatTable() {
   // Build export URL from current filter params (excluding page/pageSize)
   const buildExportUrl = (format: 'xlsx' | 'csv') => {
     const exportParams = new URLSearchParams();
-    if (filters.personId) exportParams.set('personId', filters.personId);
+    if (filters.personName) exportParams.set('personName', filters.personName);
     if (filters.projectId) exportParams.set('projectId', filters.projectId);
     if (filters.departmentId) exportParams.set('departmentId', filters.departmentId);
     if (filters.monthFrom) exportParams.set('monthFrom', filters.monthFrom);

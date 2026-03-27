@@ -37,7 +37,7 @@ const modules = [AllCommunityModule];
 export function AllocationGrid({
   allocations,
   targetHours,
-  personId,
+  personId: _personId,
   addedProjects,
   onCellChange,
   onAddProject,
@@ -48,7 +48,7 @@ export function AllocationGrid({
   // GridApi as state (not ref) so DragToFillHandle re-renders when API becomes available
   const [gridApi, setGridApi] = useState<GridApi | null>(null);
 
-  // Generate 12 months: 6 months back + current + 5 months forward
+  // Generate 24 months: 6 months back + current + 17 months forward
   const currentMonth = useMemo(() => getCurrentMonth(), []);
   const months = useMemo(() => {
     const [y, m] = currentMonth.split('-').map(Number);
@@ -59,7 +59,7 @@ export function AllocationGrid({
       startY--;
     }
     const startMonth = `${startY}-${String(startM).padStart(2, '0')}`;
-    return generateMonthRange(startMonth, 12);
+    return generateMonthRange(startMonth, 24);
   }, [currentMonth]);
 
   const columnDefs = useMemo(
@@ -116,7 +116,9 @@ export function AllocationGrid({
   );
 
   // Keep ref in sync for stale-closure-safe paste handler
-  localRowDataRef.current = localRowData;
+  useEffect(() => {
+    localRowDataRef.current = localRowData;
+  }, [localRowData]);
 
   // ---------------------------------------------------------------------------
   // Drag-to-fill callback: update local state and trigger autosave for each cell

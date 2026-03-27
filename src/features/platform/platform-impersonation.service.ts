@@ -6,13 +6,21 @@ import { and, eq, gt, isNull } from 'drizzle-orm';
 import { db } from '@/db';
 import { impersonationSessions, platformAdmins } from '@/db/schema';
 import { env } from '@/lib/env';
-import { NotFoundError } from '@/lib/errors';
+import { ConflictError, NotFoundError } from '@/lib/errors';
 
 export async function startImpersonation(
   adminId: string,
   targetUserId: string,
   targetOrgId: string,
 ) {
+  // Prevent overlapping impersonation sessions for this admin
+  const activeSessions = await listActiveSessions(adminId);
+  if (activeSessions.length > 0) {
+    throw new ConflictError('You already have an active impersonation session. End it before starting a new one.', {
+      activeSessionId: activeSessions[0].id,
+    });
+  }
+
   const expiresAt = new Date(Date.now() + env.IMPERSONATION_MAX_DURATION_MINUTES * 60 * 1000);
 
   const client = await clerkClient();
@@ -22,7 +30,7 @@ export async function startImpersonation(
     expiresInSeconds: env.IMPERSONATION_MAX_DURATION_MINUTES * 60,
   });
 
-  const tokenHash = createHash('sha256').update(actorToken.token).digest('hex');
+  const tokenHash = createHash('sha256').update(actorToken.token ?? '').digest('hex');
 
   const [session] = await db
     .insert(impersonationSessions)

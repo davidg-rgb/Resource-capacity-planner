@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface Tenant {
   id: string;
@@ -35,21 +35,53 @@ export default function TenantsPage() {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showCreate, setShowCreate] = useState(false);
+  const [createName, setCreateName] = useState('');
+  const [createSlug, setCreateSlug] = useState('');
+  const [createLoading, setCreateLoading] = useState(false);
+  const [createError, setCreateError] = useState('');
+
+  const fetchTenants = useCallback(async () => {
+    try {
+      const res = await fetch('/api/platform/tenants');
+      if (!res.ok) throw new Error('Failed to fetch tenants');
+      setTenants(await res.json());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    async function fetchTenants() {
-      try {
-        const res = await fetch('/api/platform/tenants');
-        if (!res.ok) throw new Error('Failed to fetch tenants');
-        setTenants(await res.json());
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
-      } finally {
-        setLoading(false);
-      }
-    }
     fetchTenants();
-  }, []);
+  }, [fetchTenants]);
+
+  async function handleCreateTenant(e: React.FormEvent) {
+    e.preventDefault();
+    setCreateLoading(true);
+    setCreateError('');
+    try {
+      const res = await fetch('/api/platform/tenants', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: createName, slug: createSlug }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message ?? 'Failed to create organization');
+      }
+      setShowCreate(false);
+      setCreateName('');
+      setCreateSlug('');
+      setLoading(true);
+      await fetchTenants();
+    } catch (err) {
+      setCreateError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setCreateLoading(false);
+    }
+  }
 
   if (error) {
     return (
@@ -59,7 +91,67 @@ export default function TenantsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 font-headline text-2xl font-semibold text-slate-900">Tenants</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <h1 className="font-headline text-2xl font-semibold text-slate-900">Tenants</h1>
+        <button
+          onClick={() => setShowCreate(true)}
+          className="rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-900"
+        >
+          Create Organization
+        </button>
+      </div>
+
+      {/* Create Organization Modal */}
+      {showCreate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
+            <h3 className="mb-4 text-lg font-semibold text-slate-900">Create Organization</h3>
+            {createError && (
+              <div className="mb-4 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{createError}</div>
+            )}
+            <form onSubmit={handleCreateTenant}>
+              <div className="mb-4">
+                <label className="mb-1 block text-sm font-medium text-slate-700">Name</label>
+                <input
+                  type="text"
+                  value={createName}
+                  onChange={(e) => setCreateName(e.target.value)}
+                  placeholder="Acme Corp"
+                  required
+                  className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="mb-1 block text-sm font-medium text-slate-700">Slug</label>
+                <input
+                  type="text"
+                  value={createSlug}
+                  onChange={(e) => setCreateSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                  placeholder="acme-corp"
+                  required
+                  className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-mono focus:border-slate-500 focus:outline-none"
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => { setShowCreate(false); setCreateError(''); }}
+                  className="rounded-md bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={createLoading || !createName || !createSlug}
+                  className="rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-900 disabled:opacity-50"
+                >
+                  {createLoading ? 'Creating...' : 'Create'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className="space-y-3">

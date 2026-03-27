@@ -31,7 +31,7 @@ export function useUploadFile() {
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.message ?? 'Failed to upload file');
+        throw new Error(err.error || err.message || 'Failed to upload file');
       }
 
       return res.json();

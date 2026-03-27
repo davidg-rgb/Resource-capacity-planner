@@ -1,7 +1,8 @@
 'use client';
 
+import { useAuth } from '@clerk/nextjs';
 import { Archive, Pencil, Plus, X } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import type { ProjectRow } from '@/features/projects/project.types';
@@ -54,6 +55,9 @@ function StatusBadge({ status }: { status: string }) {
 // ---------------------------------------------------------------------------
 
 export default function ProjectsPage() {
+  const { orgRole } = useAuth();
+  const canEdit = orgRole === 'org:admin' || orgRole === 'org:owner' || orgRole === 'org:planner';
+
   const { data: projects, isLoading, error } = useProjects();
   const { data: programs } = usePrograms();
 
@@ -64,6 +68,16 @@ export default function ProjectsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [successMsg, setSuccessMsg] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // ---- success toast auto-clear ----
+
+  useEffect(() => {
+    if (!successMsg) return;
+    const timer = setTimeout(() => setSuccessMsg(''), 3000);
+    return () => clearTimeout(timer);
+  }, [successMsg]);
 
   // ---- helpers ----
 
@@ -92,6 +106,11 @@ export default function ProjectsPage() {
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
+      setErrors({});
+      if (!form.name.trim()) {
+        setErrors((prev) => ({ ...prev, name: 'Project name is required' }));
+        return;
+      }
       const payload = {
         name: form.name,
         programId: form.programId || null,
@@ -99,8 +118,10 @@ export default function ProjectsPage() {
       };
       if (editingId) {
         await updateProject.mutateAsync({ id: editingId, data: payload });
+        setSuccessMsg('Project updated successfully');
       } else {
         await createProject.mutateAsync(payload);
+        setSuccessMsg('Project created successfully');
       }
       closeForm();
     },
@@ -117,6 +138,7 @@ export default function ProjectsPage() {
         return;
       }
       await archiveProject.mutateAsync(project.id);
+      setSuccessMsg(`${project.name} archived`);
     },
     [archiveProject],
   );
@@ -144,14 +166,23 @@ export default function ProjectsPage() {
             Manage projects in your organization.
           </p>
         </div>
-        <button
-          onClick={openCreate}
-          className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-on-primary shadow-sm hover:bg-primary/90"
-        >
-          <Plus size={16} />
-          Add Project
-        </button>
+        {canEdit && (
+          <button
+            onClick={openCreate}
+            className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-on-primary shadow-sm hover:bg-primary/90"
+          >
+            <Plus size={16} />
+            Add Project
+          </button>
+        )}
       </div>
+
+      {/* Success toast */}
+      {successMsg && (
+        <div className="mt-4 rounded-md bg-green-50 border border-green-200 p-3 text-sm font-medium text-green-800">
+          {successMsg}
+        </div>
+      )}
 
       {/* Form dialog */}
       {showForm && (
@@ -173,9 +204,13 @@ export default function ProjectsPage() {
                 required
                 maxLength={200}
                 value={form.name}
-                onChange={(e) => updateField('name', e.target.value)}
+                onChange={(e) => {
+                  updateField('name', e.target.value);
+                  if (errors.name) setErrors((prev) => { delete prev.name; return { ...prev }; });
+                }}
                 className="mt-1 block w-full rounded-sm border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:outline-none"
               />
+              {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
             </label>
 
             <label className="block">
@@ -254,7 +289,7 @@ export default function ProjectsPage() {
                   <th className="py-2 pr-4 font-medium">Name</th>
                   <th className="py-2 pr-4 font-medium">Program</th>
                   <th className="py-2 pr-4 font-medium">Status</th>
-                  <th className="py-2 font-medium">Actions</th>
+                  {canEdit && <th className="py-2 font-medium">Actions</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-outline-variant">
@@ -265,25 +300,27 @@ export default function ProjectsPage() {
                     <td className="py-2.5 pr-4">
                       <StatusBadge status={project.status} />
                     </td>
-                    <td className="py-2.5">
-                      <div className="flex gap-1">
-                        <button
-                          onClick={() => openEdit(project)}
-                          className="rounded p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
-                          title="Edit"
-                        >
-                          <Pencil size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleArchive(project)}
-                          disabled={archiveProject.isPending}
-                          className="rounded p-1 text-on-surface-variant hover:bg-error-container hover:text-on-error-container disabled:opacity-50"
-                          title="Archive"
-                        >
-                          <Archive size={16} />
-                        </button>
-                      </div>
-                    </td>
+                    {canEdit && (
+                      <td className="py-2.5">
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => openEdit(project)}
+                            className="rounded p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                            title="Edit"
+                          >
+                            <Pencil size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleArchive(project)}
+                            disabled={archiveProject.isPending}
+                            className="rounded p-1 text-on-surface-variant hover:bg-error-container hover:text-on-error-container disabled:opacity-50"
+                            title="Archive"
+                          >
+                            <Archive size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

@@ -61,7 +61,7 @@ export type FlatTableRow = {
 
 /** Filters for the flat allocation table */
 export type FlatTableFilters = {
-  personId?: string;
+  personName?: string;
   projectId?: string;
   departmentId?: string;
   monthFrom?: string; // YYYY-MM

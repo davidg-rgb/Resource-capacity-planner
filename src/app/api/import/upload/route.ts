@@ -48,15 +48,16 @@ export async function POST(request: NextRequest) {
     const parsedFile = parseExcelBuffer(buffer, codepage);
     const mappings = autoDetectMappings(parsedFile.headers);
 
-    // Exclude allRows from response (only send preview)
     void orgId; // orgId validated but not needed for parsing
     return NextResponse.json({
       headers: parsedFile.headers,
       sampleRows: parsedFile.sampleRows,
+      allRows: parsedFile.allRows,
       totalRows: parsedFile.totalRows,
       formatInfo: parsedFile.formatInfo,
       sheetName: parsedFile.sheetName,
       encodingWarning: parsedFile.encodingWarning,
+      hiddenRowsSkipped: parsedFile.hiddenRowsSkipped,
       suggestedMappings: mappings,
     });
   } catch (error) {

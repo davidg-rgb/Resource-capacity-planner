@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 
 import { useAllocations, usePersonDetail } from '@/hooks/use-allocations';
 import { useGridAutosave } from '@/hooks/use-grid-autosave';
@@ -19,7 +19,12 @@ export default function PersonInputPage({
   const { data: allocations, isLoading: allocLoading } = useAllocations(personId);
   const { data: person, isLoading: personLoading } = usePersonDetail(personId);
   const { data: projects } = useProjects();
-  const { handleCellChange } = useGridAutosave(personId);
+  const { handleCellChange, initUpdatedAtFromAllocations } = useGridAutosave(personId);
+
+  // Seed conflict-detection updatedAt map when allocations load (GAP-CONF-001)
+  useEffect(() => {
+    if (allocations) initUpdatedAtFromAllocations(allocations);
+  }, [allocations, initUpdatedAtFromAllocations]);
   const [showProjectSelector, setShowProjectSelector] = useState(false);
   const [addedProjects, setAddedProjects] = useState<
     { projectId: string; projectName: string }[]

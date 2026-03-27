@@ -6,6 +6,31 @@ import * as schema from '@/db/schema';
 
 import { AuthError, ForbiddenError } from './errors';
 
+export interface ActorInfo {
+  /** The platform admin identifier from the actor token (e.g. "platform-admin:<id>") */
+  actorId: string;
+  /** Whether this session is an impersonation session */
+  isImpersonation: true;
+}
+
+/**
+ * Check if the current session is an impersonation session (Clerk actor token).
+ * Returns actor info if impersonating, null otherwise.
+ *
+ * During impersonation, all actions are tracked by the impersonation session
+ * (stored in impersonationSessions table with actionCount). The actor claim
+ * contains the platform admin's identity as `{ sub: "platform-admin:<adminId>" }`.
+ */
+export async function getActorInfo(): Promise<ActorInfo | null> {
+  const session = await auth();
+  const actor = (session as Record<string, unknown>).actor as { sub?: string } | undefined;
+  if (!actor?.sub) return null;
+  return {
+    actorId: actor.sub,
+    isImpersonation: true,
+  };
+}
+
 export type Role = 'viewer' | 'planner' | 'admin' | 'owner';
 
 export const ROLE_HIERARCHY: Record<Role, number> = {

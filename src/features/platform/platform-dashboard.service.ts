@@ -1,11 +1,13 @@
-import { count, eq, gte, sql } from 'drizzle-orm';
+import { count, gte, sql } from 'drizzle-orm';
 
 import { db } from '@/db';
-import { organizations, people } from '@/db/schema';
+import { allocations, organizations, people } from '@/db/schema';
 
 export interface DashboardMetrics {
   totalOrgs: number;
   totalUsers: number;
+  totalAllocations: number;
+  totalPeople: number;
   orgsByStatus: Record<string, number>;
   recentlyActive: Array<{
     id: string;
@@ -27,8 +29,14 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
   const [orgCountResult] = await db.select({ value: count() }).from(organizations);
   const totalOrgs = orgCountResult?.value ?? 0;
 
-  const [userCountResult] = await db.select({ value: count() }).from(people);
-  const totalUsers = userCountResult?.value ?? 0;
+  const [peopleCountResult] = await db.select({ value: count() }).from(people);
+  const totalPeople = peopleCountResult?.value ?? 0;
+
+  const [allocationCountResult] = await db.select({ value: count() }).from(allocations);
+  const totalAllocations = allocationCountResult?.value ?? 0;
+
+  // totalUsers here is the people count (DB records), not Clerk users
+  const totalUsers = totalPeople;
 
   const statusCounts = await db
     .select({
@@ -59,5 +67,5 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     .orderBy(sql`${organizations.updatedAt} DESC`)
     .limit(10);
 
-  return { totalOrgs, totalUsers, orgsByStatus, recentlyActive };
+  return { totalOrgs, totalUsers, totalAllocations, totalPeople, orgsByStatus, recentlyActive };
 }

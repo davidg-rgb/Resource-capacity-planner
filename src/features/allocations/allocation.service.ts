@@ -1,4 +1,4 @@
-import { and, eq, gte, lte, sql } from 'drizzle-orm';
+import { and, eq, gte, ilike, lte, sql } from 'drizzle-orm';
 import * as XLSX from 'xlsx';
 
 import { db } from '@/db';
@@ -185,8 +185,13 @@ export async function batchUpsertAllocations(
 function buildFlatConditions(orgId: string, filters: FlatTableFilters) {
   const conditions = [eq(schema.allocations.organizationId, orgId)];
 
-  if (filters.personId) {
-    conditions.push(eq(schema.allocations.personId, filters.personId));
+  if (filters.personName) {
+    conditions.push(
+      ilike(
+        sql`${schema.people.firstName} || ' ' || ${schema.people.lastName}`,
+        `%${filters.personName}%`,
+      ),
+    );
   }
   if (filters.projectId) {
     conditions.push(eq(schema.allocations.projectId, filters.projectId));

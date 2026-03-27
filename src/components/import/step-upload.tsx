@@ -189,6 +189,18 @@ export function StepUpload({ onFileUploaded }: StepUploadProps) {
         </div>
       )}
 
+      {/* Hidden rows warning */}
+      {parsedFile?.hiddenRowsSkipped != null && parsedFile.hiddenRowsSkipped > 0 && (
+        <div className="border-warning bg-warning-container rounded-md border px-4 py-3">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="text-on-warning-container h-4 w-4 shrink-0" />
+            <p className="text-on-warning-container text-sm">
+              {parsedFile.hiddenRowsSkipped} hidden row{parsedFile.hiddenRowsSkipped === 1 ? ' was' : 's were'} skipped during import.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Encoding warning */}
       {parsedFile?.encodingWarning && (
         <div className="border-warning bg-warning-container rounded-md border px-4 py-3">
