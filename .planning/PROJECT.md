@@ -115,11 +115,10 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [x] Swedish encoding handling + merged cells (IMPEX-09/10) — Phase 8
 - [x] Downloadable import templates (F-019 / IMPEX-13) — Phase 8
 
+- [x] Flat table view with sorting, filtering, pagination (F-009 / IMPEX-11) — Phase 9
+- [x] Excel/CSV export with current filters applied (F-009 / IMPEX-12) — Phase 9
+
 ### Active — MVP (Milestone 1)
-
-**Import & Export:**
-
-- [ ] Flat table view with sorting, filtering, Excel/CSV export (F-009)
 
 **Platform Admin (SaaS Operations):**
 
