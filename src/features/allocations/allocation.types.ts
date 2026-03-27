@@ -48,3 +48,33 @@ export type BatchUpsertResult = {
   conflicts: ConflictInfo[];
   updatedTimestamps: Record<string, string>;
 };
+
+/** A row in the flat allocation table (all joins resolved) */
+export type FlatTableRow = {
+  personName: string;
+  departmentName: string;
+  projectName: string;
+  programName: string | null;
+  month: string; // YYYY-MM
+  hours: number;
+};
+
+/** Filters for the flat allocation table */
+export type FlatTableFilters = {
+  personId?: string;
+  projectId?: string;
+  departmentId?: string;
+  monthFrom?: string; // YYYY-MM
+  monthTo?: string; // YYYY-MM
+};
+
+/** Paginated response for the flat table API */
+export type FlatTableResponse = {
+  rows: FlatTableRow[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  };
+};
