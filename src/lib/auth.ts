@@ -1,4 +1,8 @@
 import { auth } from '@clerk/nextjs/server';
+import { eq } from 'drizzle-orm';
+
+import { db } from '@/db';
+import * as schema from '@/db/schema';
 
 import { AuthError, ForbiddenError } from './errors';
 
@@ -21,13 +25,21 @@ const CLERK_ROLE_MAP: Record<string, Role> = {
 /**
  * Extract the tenant (organization) ID from the current Clerk session.
  * Throws AuthError if no session, ForbiddenError if no org membership.
- * The returned orgId is the Clerk org ID -- use it with withTenant() for DB queries.
+ * Resolves the Clerk org ID to the internal UUID for DB queries.
  */
 export async function getTenantId(): Promise<string> {
   const { userId, orgId } = await auth();
   if (!userId) throw new AuthError('Not authenticated');
   if (!orgId) throw new ForbiddenError('No organization membership');
-  return orgId;
+
+  const [org] = await db
+    .select({ id: schema.organizations.id })
+    .from(schema.organizations)
+    .where(eq(schema.organizations.clerkOrgId, orgId))
+    .limit(1);
+
+  if (!org) throw new ForbiddenError('Organization not found in database');
+  return org.id;
 }
 
 /**
@@ -40,9 +52,9 @@ export async function requireRole(minimumRole: Role): Promise<{
   userId: string;
   role: Role;
 }> {
-  const { userId, orgId, orgRole } = await auth();
+  const { userId, orgId: clerkOrgId, orgRole } = await auth();
   if (!userId) throw new AuthError('Not authenticated');
-  if (!orgId) throw new ForbiddenError('No organization membership');
+  if (!clerkOrgId) throw new ForbiddenError('No organization membership');
 
   const role = CLERK_ROLE_MAP[orgRole ?? ''];
   if (!role) throw new ForbiddenError('Unknown role');
@@ -50,5 +62,12 @@ export async function requireRole(minimumRole: Role): Promise<{
     throw new ForbiddenError(`${minimumRole} role required for this action`);
   }
 
-  return { orgId, userId, role };
+  const [org] = await db
+    .select({ id: schema.organizations.id })
+    .from(schema.organizations)
+    .where(eq(schema.organizations.clerkOrgId, clerkOrgId))
+    .limit(1);
+
+  if (!org) throw new ForbiddenError('Organization not found in database');
+  return { orgId: org.id, userId, role };
 }
