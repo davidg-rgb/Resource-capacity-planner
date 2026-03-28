@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Visibility & Insights
-status: verifying
-stopped_at: Completed 13-02-PLAN.md
-last_updated: "2026-03-28T12:52:23.774Z"
+status: executing
+stopped_at: Completed 14-01-PLAN.md
+last_updated: "2026-03-28T13:08:36.675Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 7
   completed_phases: 3
-  total_plans: 6
-  completed_plans: 6
+  total_plans: 8
+  completed_plans: 7
   percent: 0
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Real-time visibility into team capacity, project staffing, and resource utilization
-**Current focus:** Phase 13 — Dashboard & Charts
+**Current focus:** Phase 14 — Alerts & Project View
 
 ## Current Position
 
-Phase: 14
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 14 (Alerts & Project View) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
 Last activity: 2026-03-28
 
 Progress: [░░░░░░░░░░] 0% (v2.0)
@@ -75,6 +75,8 @@ Key architectural notes for v2.0:
 - [Phase 12]: URL-based filter state (searchParams) for shareable heat map filter configurations
 - [Phase 13-dashboard-charts]: COUNT FILTER for single-pass overloaded/underutilized aggregation; division-by-zero returns 0 utilization
 - [Phase 13]: Split dashboard into server shell + client DashboardContent for Suspense/useSearchParams compatibility
+- [Phase 14]: Alert count badge uses 30s staleTime with refetchOnWindowFocus for near-real-time updates
+- [Phase 14]: Grid autosave invalidates alert caches across all three code paths (clean, error, conflict)
 
 ### Pending Todos
 
@@ -88,8 +90,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-28T12:48:32.213Z
-Stopped at: Completed 13-02-PLAN.md
+Last session: 2026-03-28T13:08:36.670Z
+Stopped at: Completed 14-01-PLAN.md
 Resume file: None
 
 ---

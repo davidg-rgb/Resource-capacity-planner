@@ -36,10 +36,10 @@
 
 ### Alerts
 
-- [ ] **ALRT-01**: User can view a list of overloaded (>100%) and underutilized (<50%) people for the current period
-- [ ] **ALRT-02**: Alert badge in top nav shows count of active capacity alerts
-- [ ] **ALRT-03**: Each alert links to the affected person's input form
-- [ ] **ALRT-04**: Alerts are computed on demand from current allocation data (no separate storage)
+- [x] **ALRT-01**: User can view a list of overloaded (>100%) and underutilized (<50%) people for the current period
+- [x] **ALRT-02**: Alert badge in top nav shows count of active capacity alerts
+- [x] **ALRT-03**: Each alert links to the affected person's input form
+- [x] **ALRT-04**: Alerts are computed on demand from current allocation data (no separate storage)
 
 ### Charts
 
@@ -117,10 +117,10 @@
 | DASH-02 | Phase 13 | Complete |
 | DASH-03 | Phase 13 | Complete |
 | DASH-04 | Phase 13 | Complete |
-| ALRT-01 | Phase 14 | Pending |
-| ALRT-02 | Phase 14 | Pending |
-| ALRT-03 | Phase 14 | Pending |
-| ALRT-04 | Phase 14 | Pending |
+| ALRT-01 | Phase 14 | Complete |
+| ALRT-02 | Phase 14 | Complete |
+| ALRT-03 | Phase 14 | Complete |
+| ALRT-04 | Phase 14 | Complete |
 | CHRT-01 | Phase 13 | Complete |
 | CHRT-02 | Phase 13 | Complete |
 | CHRT-03 | Phase 13 | Complete |
