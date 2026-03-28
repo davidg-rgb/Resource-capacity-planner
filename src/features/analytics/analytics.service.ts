@@ -2,8 +2,19 @@ import { sql } from 'drizzle-orm';
 
 import { db } from '@/db';
 import { generateMonthRange } from '@/lib/date-utils';
-
 import { ValidationError } from '@/lib/errors';
+
+import type {
+  CapacityAlert,
+  DashboardKPIs,
+  DepartmentGroup,
+  DepartmentUtilization,
+  DisciplineBreakdown,
+  HeatMapPerson,
+  HeatMapResponse,
+  ProjectStaffingPerson,
+  ProjectStaffingResponse,
+} from './analytics.types';
 
 const MAX_MONTH_RANGE = 36;
 const MONTH_RE = /^\d{4}-\d{2}$/;
@@ -21,18 +32,6 @@ export function validateMonthRange(from: string | null, to: string | null): { fr
   }
   return { from, to };
 }
-
-import type {
-  CapacityAlert,
-  DashboardKPIs,
-  DepartmentGroup,
-  DepartmentUtilization,
-  DisciplineBreakdown,
-  HeatMapPerson,
-  HeatMapResponse,
-  ProjectStaffingPerson,
-  ProjectStaffingResponse,
-} from './analytics.types';
 
 /**
  * Compute the number of months between two YYYY-MM strings (inclusive).

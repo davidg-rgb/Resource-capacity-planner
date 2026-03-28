@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Building2,
@@ -47,7 +48,7 @@ export function PlatformSidebar({ adminName, adminEmail }: PlatformSidebarProps)
 
       <nav className="flex-1 space-y-1 px-2 py-4">
         {NAV_ITEMS.map(({ label, href, icon: Icon }) => (
-          <a
+          <Link
             key={href}
             href={href}
             className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
@@ -58,7 +59,7 @@ export function PlatformSidebar({ adminName, adminEmail }: PlatformSidebarProps)
           >
             <Icon className="h-5 w-5 flex-shrink-0" />
             {label}
-          </a>
+          </Link>
         ))}
       </nav>
 

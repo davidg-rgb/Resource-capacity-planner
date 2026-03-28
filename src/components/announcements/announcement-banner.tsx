@@ -19,7 +19,11 @@ export function AnnouncementBanner() {
 
   const { data: announcements } = useQuery<Announcement[]>({
     queryKey: ['announcements', 'active'],
-    queryFn: () => fetch('/api/announcements/active').then((r) => r.json()),
+    queryFn: async () => {
+      const r = await fetch('/api/announcements/active');
+      if (!r.ok) throw new Error(`Announcements fetch failed: ${r.status}`);
+      return r.json();
+    },
     staleTime: 5 * 60 * 1000,
   });
 

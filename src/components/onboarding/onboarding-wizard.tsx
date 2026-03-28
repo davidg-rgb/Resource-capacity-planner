@@ -93,7 +93,8 @@ export function OnboardingWizard() {
 
   const handleSkipAll = useCallback(async () => {
     try {
-      await fetch('/api/onboarding/complete', { method: 'POST' });
+      const res = await fetch('/api/onboarding/complete', { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       router.push('/input');
     } catch {
       toast.error('Failed to complete onboarding');

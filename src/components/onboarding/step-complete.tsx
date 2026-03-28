@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, CheckCircle } from 'lucide-react';
+import { ArrowRight, CheckCircle, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface StepCompleteProps {
@@ -13,15 +13,26 @@ interface StepCompleteProps {
 
 export function StepComplete({ departmentCount, disciplineCount, personCount }: StepCompleteProps) {
   const calledRef = useRef(false);
+  const [completed, setCompleted] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  async function markComplete() {
+    try {
+      setFailed(false);
+      const res = await fetch('/api/onboarding/complete', { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setCompleted(true);
+    } catch {
+      setFailed(true);
+      toast.error('Failed to mark onboarding as complete');
+    }
+  }
 
   // Mark onboarding complete on mount
   useEffect(() => {
     if (calledRef.current) return;
     calledRef.current = true;
-
-    fetch('/api/onboarding/complete', { method: 'POST' }).catch(() => {
-      toast.error('Failed to mark onboarding as complete');
-    });
+    markComplete();
   }, []);
 
   const parts: string[] = [];
@@ -30,6 +41,32 @@ export function StepComplete({ departmentCount, disciplineCount, personCount }: 
   if (disciplineCount > 0)
     parts.push(`${disciplineCount} discipline${disciplineCount !== 1 ? 's' : ''}`);
   if (personCount > 0) parts.push(`${personCount} ${personCount !== 1 ? 'people' : 'person'}`);
+
+  if (failed) {
+    return (
+      <div className="flex flex-col items-center space-y-4 py-4">
+        <p className="text-on-surface-variant text-sm">
+          Failed to finalize onboarding. Please retry.
+        </p>
+        <button
+          onClick={markComplete}
+          className="bg-primary text-on-primary hover:bg-primary/90 flex items-center gap-2 rounded px-6 py-2.5 text-sm font-medium transition-colors"
+        >
+          <RefreshCw className="h-4 w-4" />
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!completed) {
+    return (
+      <div className="flex flex-col items-center py-8">
+        <div className="bg-surface-container h-8 w-8 animate-pulse rounded-full" />
+        <p className="text-on-surface-variant mt-3 text-sm">Finalizing setup...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center space-y-6 py-4">
@@ -55,7 +92,7 @@ export function StepComplete({ departmentCount, disciplineCount, personCount }: 
           <ArrowRight className="h-4 w-4" />
         </Link>
         <Link
-          href="/team"
+          href="/dashboard/team"
           className="border-outline-variant text-on-surface hover:bg-surface-container flex items-center justify-center gap-2 rounded border px-6 py-2.5 text-sm font-medium transition-colors"
         >
           View Team Overview

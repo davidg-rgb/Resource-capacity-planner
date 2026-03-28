@@ -18,11 +18,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { HeatMapPDF } from '@/components/pdf/heat-map-pdf';
 import { db } from '@/db';
 import { organizations } from '@/db/schema';
-import { getTeamHeatMap } from '@/features/analytics/analytics.service';
+import { getTeamHeatMap, validateMonthRange } from '@/features/analytics/analytics.service';
 import { getOrgFlags } from '@/features/flags/flag.service';
 import { getTenantId } from '@/lib/auth';
-
-const MONTH_PATTERN = /^\d{4}-\d{2}$/;
+import { handleApiError } from '@/lib/api-utils';
 
 export async function GET(request: NextRequest) {
   try {
@@ -37,17 +36,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Parse and validate query params
+    // Parse and validate query params (max 36 months)
     const params = request.nextUrl.searchParams;
-    const from = params.get('from');
-    const to = params.get('to');
-
-    if (!from || !to || !MONTH_PATTERN.test(from) || !MONTH_PATTERN.test(to)) {
-      return NextResponse.json(
-        { error: 'Missing or invalid from/to params (expected YYYY-MM)' },
-        { status: 400 },
-      );
-    }
+    const { from, to } = validateMonthRange(params.get('from'), params.get('to'));
 
     // Fetch org name for PDF header
     const [org] = await db
@@ -77,10 +68,6 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('[PDF Export] Failed to generate team heatmap PDF:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate PDF' },
-      { status: 500 },
-    );
+    return handleApiError(error);
   }
 }

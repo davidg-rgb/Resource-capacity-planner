@@ -15,7 +15,7 @@ export function StatusCell(props: ICellRendererParams) {
       />
     );
   }
-  const { bg } = getStatusColor(status);
+  const { dot } = getStatusColor(status);
   const labels: Record<string, string> = {
     healthy: 'Under capacity (<85%)',
     warning: 'Near capacity (85-99%)',
@@ -23,7 +23,7 @@ export function StatusCell(props: ICellRendererParams) {
   };
   return (
     <span
-      className={`inline-block h-3 w-3 rounded-full ${bg}`}
+      className={`inline-block h-3 w-3 rounded-full ${dot}`}
       title={labels[status] ?? ''}
     />
   );

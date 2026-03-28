@@ -32,23 +32,14 @@ export function calculateStatus(sumHours: number, targetHours: number): Capacity
 }
 
 /**
- * Calculate utilization as a percentage.
- * Returns 0 if targetHours is 0 (avoids division by zero).
- */
-export function calculateUtilization(totalHours: number, targetHours: number): number {
-  if (targetHours === 0) return 0;
-  return Math.round((totalHours / targetHours) * 100 * 10) / 10;
-}
-
-/**
  * Map a capacity status to Tailwind CSS color classes.
  */
-export function getStatusColor(status: CapacityStatus): { bg: string; text: string } {
-  const colors: Record<CapacityStatus, { bg: string; text: string }> = {
-    healthy:    { bg: 'bg-green-50', text: 'text-emerald-800' },
-    warning:    { bg: 'bg-amber-50', text: 'text-amber-800' },
-    overloaded: { bg: 'bg-error/10', text: 'text-error' },
-    empty:      { bg: 'bg-surface-container-low', text: 'text-outline' },
+export function getStatusColor(status: CapacityStatus): { bg: string; text: string; dot: string } {
+  const colors: Record<CapacityStatus, { bg: string; text: string; dot: string }> = {
+    healthy:    { bg: 'bg-green-50', text: 'text-emerald-800', dot: 'bg-green-500' },
+    warning:    { bg: 'bg-amber-50', text: 'text-amber-800', dot: 'bg-amber-500' },
+    overloaded: { bg: 'bg-red-50', text: 'text-red-800', dot: 'bg-red-500' },
+    empty:      { bg: 'bg-gray-50', text: 'text-gray-500', dot: 'bg-gray-300' },
   };
   return colors[status];
 }

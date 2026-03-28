@@ -17,8 +17,18 @@ interface DashboardMetrics {
   }>;
 }
 
-// SystemHealthMetrics type imported from service to avoid duplication
-type SystemHealthMetrics = import('@/features/platform/platform-health.service').SystemHealthMetrics;
+interface SystemHealthMetrics {
+  dbLatencyMs: number;
+  dbConnected: boolean;
+  activeConnections: number;
+  recentErrors: number;
+  memoryUsageMb: { rss: number; heapUsed: number; heapTotal: number };
+  version: string;
+  uptime: number;
+  timestamp: string;
+}
+// Matches SystemHealthMetrics in platform-health.service.ts — kept inline to avoid
+// pulling server-only imports into this 'use client' component.
 
 function formatUptime(seconds: number): string {
   const hours = Math.floor(seconds / 3600);
