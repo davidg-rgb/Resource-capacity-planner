@@ -29,7 +29,7 @@
 - [x] **Phase 12: Team Overview Heat Map** - Headline capacity heat map showing all people x months with utilization color-coding (completed 2026-03-28)
 - [x] **Phase 13: Dashboard & Charts** - Management KPI dashboard with departmental utilization and discipline breakdown charts (completed 2026-03-28)
 - [x] **Phase 14: Alerts & Project View** - Capacity alert system and project-centric staffing view (completed 2026-03-28)
-- [ ] **Phase 15: PDF Export** - Exportable Team Overview heat map as landscape PDF document
+- [x] **Phase 15: PDF Export** - Exportable Team Overview heat map as landscape PDF document (completed 2026-03-28)
 - [ ] **Phase 16: Onboarding & Announcements** - New-tenant onboarding wizard and platform-wide announcement system
 - [ ] **Phase 17: Platform Operations** - System health monitoring and tenant data operations (export/purge)
 
@@ -107,7 +107,7 @@ Plans:
   3. PDF header/footer includes org name, date range, and generation timestamp
 **Plans**: 1 plan
 Plans:
-- [ ] 15-01-PLAN.md — react-pdf template components, API route for PDF generation, export button on Team Overview
+- [x] 15-01-PLAN.md — react-pdf template components, API route for PDF generation, export button on Team Overview
 
 ### Phase 16: Onboarding & Announcements
 **Goal**: New tenants get guided setup, and platform admins can communicate with all tenants through announcements
@@ -154,7 +154,7 @@ Phases execute in numeric order: 11 -> 11.x -> 12 -> 12.x -> ... -> 17
 | 12. Team Overview Heat Map | v2.0 | 2/2 | Complete    | 2026-03-28 |
 | 13. Dashboard & Charts | v2.0 | 2/2 | Complete    | 2026-03-28 |
 | 14. Alerts & Project View | v2.0 | 2/2 | Complete    | 2026-03-28 |
-| 15. PDF Export | v2.0 | 0/1 | Not started | - |
+| 15. PDF Export | v2.0 | 1/1 | Complete   | 2026-03-28 |
 | 16. Onboarding & Announcements | v2.0 | 0/? | Not started | - |
 | 17. Platform Operations | v2.0 | 0/? | Not started | - |
 

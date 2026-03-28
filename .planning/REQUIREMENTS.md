@@ -49,9 +49,9 @@
 
 ### PDF Export
 
-- [ ] **PDF-01**: User can export the Team Overview heat map as a PDF document
-- [ ] **PDF-02**: PDF renders in landscape orientation with department grouping and color legend
-- [ ] **PDF-03**: PDF includes org name, date range, and generation timestamp as header/footer
+- [x] **PDF-01**: User can export the Team Overview heat map as a PDF document
+- [x] **PDF-02**: PDF renders in landscape orientation with department grouping and color legend
+- [x] **PDF-03**: PDF includes org name, date range, and generation timestamp as header/footer
 
 ### Onboarding
 
@@ -124,9 +124,9 @@
 | CHRT-01 | Phase 13 | Complete |
 | CHRT-02 | Phase 13 | Complete |
 | CHRT-03 | Phase 13 | Complete |
-| PDF-01 | Phase 15 | Pending |
-| PDF-02 | Phase 15 | Pending |
-| PDF-03 | Phase 15 | Pending |
+| PDF-01 | Phase 15 | Complete |
+| PDF-02 | Phase 15 | Complete |
+| PDF-03 | Phase 15 | Complete |
 | ONBR-01 | Phase 16 | Pending |
 | ONBR-02 | Phase 16 | Pending |
 | ONBR-03 | Phase 16 | Pending |
