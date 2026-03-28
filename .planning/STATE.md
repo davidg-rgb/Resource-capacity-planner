@@ -3,11 +3,11 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Visibility & Insights
 current_plan: Not started
-status: Defining requirements
-stopped_at: Milestone v2.0 started
+status: Ready to plan
+stopped_at: Roadmap created for v2.0
 last_updated: "2026-03-28T00:00:00.000Z"
 progress:
-  total_phases: 0
+  total_phases: 7
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -15,49 +15,71 @@ progress:
 
 # Nordic Capacity -- Project State
 
-## Current Phase
+## Project Reference
 
-Not started (defining requirements)
+See: .planning/PROJECT.md (updated 2026-03-28)
 
-Current Plan: —
+**Core value:** Real-time visibility into team capacity, project staffing, and resource utilization
+**Current focus:** Phase 11 - Infrastructure & Feature Flags
+
+## Current Position
+
+Phase: 11 (first of 7 in v2.0) -- Infrastructure & Feature Flags
+Plan: 0 of ? in current phase (not yet planned)
+Status: Ready to plan
+Last activity: 2026-03-28 -- Roadmap created for v2.0 milestone
+
+Progress: [░░░░░░░░░░] 0% (v2.0)
 
 ## Phase Status
 
 | Phase | Name | Status | Started | Completed |
 | ----- | ---- | ------ | ------- | --------- |
+| 11 | Infrastructure & Feature Flags | Not started | - | - |
+| 12 | Team Overview Heat Map | Not started | - | - |
+| 13 | Dashboard & Charts | Not started | - | - |
+| 14 | Alerts & Project View | Not started | - | - |
+| 15 | PDF Export | Not started | - | - |
+| 16 | Onboarding & Announcements | Not started | - | - |
+| 17 | Platform Operations | Not started | - | - |
 
-## Completed Requirements
+## Performance Metrics
 
-(Carried from v1.0 — see MILESTONES.md for full list)
+**Velocity (v1.0 baseline):**
+- v1.0: 26 plans across 10 phases (shipped 2026-03-27)
 
-## Decisions
+**By Phase:** Updated after plan completion.
 
-- Used ESLint defineConfig/globalIgnores API instead of FlatCompat (circular reference with eslint-config-next 16)
-- Kept TypeScript 5.9.3 from create-next-app instead of pinning to 5.7 (both 5.x, stable)
-- Used `eslint .` instead of `next lint` (path with & character causes failure)
-- proxy.ts exports named `proxy` function per Next.js 16 API (not `middleware`)
-- Used process.env.DATABASE_URL directly in db/index.ts for CLI/seed script compatibility
-- Single schema.ts file for all 13 tables per research recommendation
-- date('month', { mode: 'string' }) for allocations to avoid JS timezone issues
-- withTenant() returns chainable query builders (not middleware) for full Drizzle API flexibility
-- Seed script uses own drizzle client (drizzle-orm/neon-http) outside Next.js context
-- Clerk org:* prefixed roles mapped via CLERK_ROLE_MAP lookup table
-- Error codes use ERR_ prefix convention for consistent API serialization
-- [Phase 10]: Dashboard counts people records as users metric (not Clerk API) for performance
-- [Phase 10]: Tenant delete requires typing org name to confirm (destructive action safety)
-- [Phase 10]: Login page uses separate layout.tsx to bypass PlatformShell auth check
-- [Phase 10]: Impersonation on tenant detail uses user search + pick pattern (not raw user ID input)
-- [Phase 10]: Auth separation is architectural (Clerk + platform middleware) — no additional code needed
+## Accumulated Context
 
-## Active Context
+### Decisions
 
-- Milestone: v2.0 Visibility & Insights
-- Previous milestone: v1.0 MVP (shipped 2026-03-27, 60 requirements, 10 phases, 26 plans)
+Decisions logged in PROJECT.md Key Decisions table.
 
-## Last Session
+Key architectural notes for v2.0:
+- Analytics service (aggregation SQL) is critical path -- built in Phase 12, reused by 13-15
+- Heat map: pure HTML/CSS table with Tailwind, NOT AG Grid
+- Charts: Recharts 3.x; heat map: custom CSS grid or @nivo/heatmap
+- PDF: @react-pdf/renderer (no Puppeteer -- Vercel 50MB limit)
+- Feature flags at route level, not component level, max 3-4 flags
+- Alerts computed on demand (no background jobs)
+- All v2.0 features are read-only computed views over existing allocations table
 
-- **Stopped at:** Milestone v2.0 started
-- **Timestamp:** 2026-03-28
+### Pending Todos
+
+None yet.
+
+### Blockers/Concerns
+
+- PDF export: chart-to-image serialization pipeline needs prototyping (Phase 15)
+- Nivo heat map performance at 200+ people x 18 months (3,600 cells) -- benchmark in Phase 12
+- driver.js SSR integration with Next.js App Router -- client-only dynamic import needed (Phase 16)
+
+## Session Continuity
+
+Last session: 2026-03-28
+Stopped at: Roadmap created for v2.0 milestone (7 phases, 38 requirements)
+Resume file: None
 
 ---
 

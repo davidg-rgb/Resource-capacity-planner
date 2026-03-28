@@ -1,7 +1,7 @@
 # Requirements: Nordic Capacity v2.0
 
 **Defined:** 2026-03-28
-**Core Value:** Real-time visibility into team capacity, project staffing, and resource utilization — transforming the product from a data-entry tool into a capacity planning tool.
+**Core Value:** Real-time visibility into team capacity, project staffing, and resource utilization -- transforming the product from a data-entry tool into a capacity planning tool.
 
 ## v2.0 Requirements
 
@@ -100,50 +100,50 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | — | Pending |
-| INFRA-02 | — | Pending |
-| INFRA-03 | — | Pending |
-| INFRA-04 | — | Pending |
-| TEAM-01 | — | Pending |
-| TEAM-02 | — | Pending |
-| TEAM-03 | — | Pending |
-| TEAM-04 | — | Pending |
-| TEAM-05 | — | Pending |
-| PROJ-01 | — | Pending |
-| PROJ-02 | — | Pending |
-| PROJ-03 | — | Pending |
-| PROJ-04 | — | Pending |
-| DASH-01 | — | Pending |
-| DASH-02 | — | Pending |
-| DASH-03 | — | Pending |
-| DASH-04 | — | Pending |
-| ALRT-01 | — | Pending |
-| ALRT-02 | — | Pending |
-| ALRT-03 | — | Pending |
-| ALRT-04 | — | Pending |
-| CHRT-01 | — | Pending |
-| CHRT-02 | — | Pending |
-| CHRT-03 | — | Pending |
-| PDF-01 | — | Pending |
-| PDF-02 | — | Pending |
-| PDF-03 | — | Pending |
-| ONBR-01 | — | Pending |
-| ONBR-02 | — | Pending |
-| ONBR-03 | — | Pending |
-| ONBR-04 | — | Pending |
-| ONBR-05 | — | Pending |
-| PLOP-01 | — | Pending |
-| PLOP-02 | — | Pending |
-| PLOP-03 | — | Pending |
-| PLOP-04 | — | Pending |
-| PLOP-05 | — | Pending |
-| PLOP-06 | — | Pending |
+| INFRA-01 | Phase 11 | Pending |
+| INFRA-02 | Phase 11 | Pending |
+| INFRA-03 | Phase 11 | Pending |
+| INFRA-04 | Phase 11 | Pending |
+| TEAM-01 | Phase 12 | Pending |
+| TEAM-02 | Phase 12 | Pending |
+| TEAM-03 | Phase 12 | Pending |
+| TEAM-04 | Phase 12 | Pending |
+| TEAM-05 | Phase 12 | Pending |
+| PROJ-01 | Phase 14 | Pending |
+| PROJ-02 | Phase 14 | Pending |
+| PROJ-03 | Phase 14 | Pending |
+| PROJ-04 | Phase 14 | Pending |
+| DASH-01 | Phase 13 | Pending |
+| DASH-02 | Phase 13 | Pending |
+| DASH-03 | Phase 13 | Pending |
+| DASH-04 | Phase 13 | Pending |
+| ALRT-01 | Phase 14 | Pending |
+| ALRT-02 | Phase 14 | Pending |
+| ALRT-03 | Phase 14 | Pending |
+| ALRT-04 | Phase 14 | Pending |
+| CHRT-01 | Phase 13 | Pending |
+| CHRT-02 | Phase 13 | Pending |
+| CHRT-03 | Phase 13 | Pending |
+| PDF-01 | Phase 15 | Pending |
+| PDF-02 | Phase 15 | Pending |
+| PDF-03 | Phase 15 | Pending |
+| ONBR-01 | Phase 16 | Pending |
+| ONBR-02 | Phase 16 | Pending |
+| ONBR-03 | Phase 16 | Pending |
+| ONBR-04 | Phase 16 | Pending |
+| ONBR-05 | Phase 16 | Pending |
+| PLOP-01 | Phase 17 | Pending |
+| PLOP-02 | Phase 16 | Pending |
+| PLOP-03 | Phase 16 | Pending |
+| PLOP-04 | Phase 16 | Pending |
+| PLOP-05 | Phase 17 | Pending |
+| PLOP-06 | Phase 17 | Pending |
 
 **Coverage:**
 - v2.0 requirements: 38 total
-- Mapped to phases: 0
-- Unmapped: 38 (pending roadmap creation)
+- Mapped to phases: 38
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-28*
-*Last updated: 2026-03-28 after initial definition*
+*Last updated: 2026-03-28 after roadmap creation*
