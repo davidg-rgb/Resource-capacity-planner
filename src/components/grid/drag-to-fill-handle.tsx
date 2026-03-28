@@ -33,7 +33,7 @@ export function DragToFillHandle({
   gridContainerRef,
   months,
   currentMonth,
-  localRowData,
+  localRowData: _localRowData,
   onFill,
 }: DragToFillHandleProps) {
   const [handlePos, setHandlePos] = useState<{ top: number; left: number } | null>(null);
@@ -99,7 +99,10 @@ export function DragToFillHandle({
   useEffect(() => {
     if (!gridApi) return;
 
-    const onCellFocused = (event: { column: { getColId: () => string } | null; rowIndex: number | null }) => {
+    const onCellFocused = (event: {
+      column: { getColId: () => string } | null;
+      rowIndex: number | null;
+    }) => {
       if (isDraggingRef.current) return; // Don't reposition during drag
 
       const col = event.column;
@@ -322,7 +325,7 @@ export function DragToFillHandle({
       {/* Fill handle: 10x10px blue square at bottom-right of focused cell */}
       <div
         onMouseDown={handleMouseDown}
-        className="absolute z-10 h-2.5 w-2.5 cursor-crosshair bg-primary"
+        className="bg-primary absolute z-10 h-2.5 w-2.5 cursor-crosshair"
         style={{
           top: handlePos.top,
           left: handlePos.left,
@@ -333,7 +336,7 @@ export function DragToFillHandle({
       {/* Highlight overlay during drag */}
       {highlightRect && (
         <div
-          className="pointer-events-none absolute z-10 bg-primary/20"
+          className="bg-primary/20 pointer-events-none absolute z-10"
           style={{
             top: highlightRect.top,
             left: highlightRect.left,

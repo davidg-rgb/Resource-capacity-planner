@@ -49,56 +49,6 @@ export function useGridAutosave(personId: string) {
     }
   }, []);
 
-  const flush = useCallback(async () => {
-    const batch = Array.from(pendingRef.current.values());
-    pendingRef.current.clear();
-    if (batch.length === 0) return;
-
-    // Attach expectedUpdatedAt from our tracking map for conflict detection
-    const batchWithTimestamps: AllocationUpsert[] = batch.map((alloc) => {
-      const key = `${alloc.projectId}:${alloc.month}`;
-      const expectedUpdatedAt = updatedAtMapRef.current.get(key);
-      return expectedUpdatedAt ? { ...alloc, expectedUpdatedAt } : alloc;
-    });
-
-    try {
-      const res = await fetch('/api/allocations/batch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ allocations: batchWithTimestamps }),
-      });
-      if (!res.ok) throw new Error('Save failed');
-
-      const result: BatchUpsertResult = await res.json();
-
-      // Update our updatedAt map with fresh timestamps from successful saves
-      // (Pitfall 4 prevention: update map after OWN saves to avoid false positives)
-      for (const [key, timestamp] of Object.entries(result.updatedTimestamps)) {
-        updatedAtMapRef.current.set(key, timestamp);
-      }
-
-      // Handle conflicts if any
-      if (result.conflicts.length > 0) {
-        handleConflicts(result.conflicts, batchWithTimestamps);
-      } else {
-        // Only invalidate on clean save to avoid unnecessary refetches
-        queryClient.invalidateQueries({ queryKey: ['allocations', personId] });
-        queryClient.invalidateQueries({ queryKey: ['alerts'] });
-        queryClient.invalidateQueries({ queryKey: ['alert-count'] });
-        queryClient.invalidateQueries({ queryKey: ['dashboard-kpis'] });
-        queryClient.invalidateQueries({ queryKey: ['department-utilization'] });
-        queryClient.invalidateQueries({ queryKey: ['discipline-breakdown'] });
-        queryClient.invalidateQueries({ queryKey: ['team-heatmap'] });
-        queryClient.invalidateQueries({ queryKey: ['project-staffing'] });
-      }
-    } catch {
-      // On error, invalidate to rollback optimistic updates
-      queryClient.invalidateQueries({ queryKey: ['allocations', personId] });
-      queryClient.invalidateQueries({ queryKey: ['alerts'] });
-      queryClient.invalidateQueries({ queryKey: ['alert-count'] });
-    }
-  }, [personId, queryClient]);
-
   /**
    * Handle detected conflicts by prompting user to overwrite or refresh.
    */
@@ -148,6 +98,56 @@ export function useGridAutosave(personId: string) {
     },
     [personId, queryClient],
   );
+
+  const flush = useCallback(async () => {
+    const batch = Array.from(pendingRef.current.values());
+    pendingRef.current.clear();
+    if (batch.length === 0) return;
+
+    // Attach expectedUpdatedAt from our tracking map for conflict detection
+    const batchWithTimestamps: AllocationUpsert[] = batch.map((alloc) => {
+      const key = `${alloc.projectId}:${alloc.month}`;
+      const expectedUpdatedAt = updatedAtMapRef.current.get(key);
+      return expectedUpdatedAt ? { ...alloc, expectedUpdatedAt } : alloc;
+    });
+
+    try {
+      const res = await fetch('/api/allocations/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ allocations: batchWithTimestamps }),
+      });
+      if (!res.ok) throw new Error('Save failed');
+
+      const result: BatchUpsertResult = await res.json();
+
+      // Update our updatedAt map with fresh timestamps from successful saves
+      // (Pitfall 4 prevention: update map after OWN saves to avoid false positives)
+      for (const [key, timestamp] of Object.entries(result.updatedTimestamps)) {
+        updatedAtMapRef.current.set(key, timestamp);
+      }
+
+      // Handle conflicts if any
+      if (result.conflicts.length > 0) {
+        handleConflicts(result.conflicts, batchWithTimestamps);
+      } else {
+        // Only invalidate on clean save to avoid unnecessary refetches
+        queryClient.invalidateQueries({ queryKey: ['allocations', personId] });
+        queryClient.invalidateQueries({ queryKey: ['alerts'] });
+        queryClient.invalidateQueries({ queryKey: ['alert-count'] });
+        queryClient.invalidateQueries({ queryKey: ['dashboard-kpis'] });
+        queryClient.invalidateQueries({ queryKey: ['department-utilization'] });
+        queryClient.invalidateQueries({ queryKey: ['discipline-breakdown'] });
+        queryClient.invalidateQueries({ queryKey: ['team-heatmap'] });
+        queryClient.invalidateQueries({ queryKey: ['project-staffing'] });
+      }
+    } catch {
+      // On error, invalidate to rollback optimistic updates
+      queryClient.invalidateQueries({ queryKey: ['allocations', personId] });
+      queryClient.invalidateQueries({ queryKey: ['alerts'] });
+      queryClient.invalidateQueries({ queryKey: ['alert-count'] });
+    }
+  }, [personId, queryClient, handleConflicts]);
 
   const handleCellChange = useCallback(
     (change: { projectId: string; month: string; hours: number }) => {

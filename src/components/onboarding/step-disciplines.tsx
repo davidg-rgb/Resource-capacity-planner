@@ -76,7 +76,7 @@ export function StepDisciplines({
       <div>
         <h2 className="text-on-surface mb-1 text-lg font-medium">Add disciplines</h2>
         <p className="text-on-surface-variant text-sm">
-          Disciplines categorize your team members' specializations.
+          Disciplines categorize your team members&apos; specializations.
         </p>
       </div>
 
@@ -111,8 +111,7 @@ export function StepDisciplines({
       {/* Already-added count */}
       {existingDisciplines.length > 0 && (
         <p className="text-on-surface-variant text-sm">
-          {existingDisciplines.length} discipline{existingDisciplines.length !== 1 ? 's' : ''}{' '}
-          added
+          {existingDisciplines.length} discipline{existingDisciplines.length !== 1 ? 's' : ''} added
         </p>
       )}
 

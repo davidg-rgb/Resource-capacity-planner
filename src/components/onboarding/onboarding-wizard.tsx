@@ -49,7 +49,7 @@ export function OnboardingWizard() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [disciplines, setDisciplines] = useState<Discipline[]>([]);
   const [people, setPeople] = useState<Person[]>([]);
-  const [status, setStatus] = useState<OnboardingStatus | null>(null);
+  const [, setStatus] = useState<OnboardingStatus | null>(null);
 
   // Fetch existing data on mount for idempotency
   useEffect(() => {
