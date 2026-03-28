@@ -44,7 +44,10 @@
   2. Platform admin can toggle feature flags for any tenant from the tenant detail page
   3. Toast notifications appear app-wide for user feedback (success, error, info)
   4. A new tenant with all flags disabled sees no v2 nav items or routes
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 11-01-PLAN.md — Feature flag service layer (types, service, context, Flags SDK) + Sonner toast system
+- [ ] 11-02-PLAN.md — Platform admin flag toggle API/UI + flag-aware nav filtering + route guards
 
 ### Phase 12: Team Overview Heat Map
 **Goal**: Managers can see at a glance who is overloaded, underutilized, or healthy across the entire team and planning horizon
@@ -136,7 +139,7 @@ Phases execute in numeric order: 11 -> 11.x -> 12 -> 12.x -> ... -> 17
 | 8. Import Wizard | v1.0 | 4/4 | Complete | 2026-03-27 |
 | 9. Flat Table & Export | v1.0 | 2/2 | Complete | 2026-03-27 |
 | 10. Platform Admin | v1.0 | 4/4 | Complete | 2026-03-27 |
-| 11. Infrastructure & Feature Flags | v2.0 | 0/? | Not started | - |
+| 11. Infrastructure & Feature Flags | v2.0 | 0/2 | Not started | - |
 | 12. Team Overview Heat Map | v2.0 | 0/? | Not started | - |
 | 13. Dashboard & Charts | v2.0 | 0/? | Not started | - |
 | 14. Alerts & Project View | v2.0 | 0/? | Not started | - |
