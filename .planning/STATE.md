@@ -2,15 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Visibility & Insights
-current_plan: Not started
-status: Ready to plan
-stopped_at: Roadmap created for v2.0
-last_updated: "2026-03-28T00:00:00.000Z"
+status: executing
+stopped_at: Completed 11-01-PLAN.md
+last_updated: "2026-03-28T11:56:14.583Z"
+last_activity: 2026-03-28
 progress:
   total_phases: 7
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 2
+  completed_plans: 1
+  percent: 0
 ---
 
 # Nordic Capacity -- Project State
@@ -20,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Real-time visibility into team capacity, project staffing, and resource utilization
-**Current focus:** Phase 11 - Infrastructure & Feature Flags
+**Current focus:** Phase 11 — Infrastructure & Feature Flags
 
 ## Current Position
 
-Phase: 11 (first of 7 in v2.0) -- Infrastructure & Feature Flags
-Plan: 0 of ? in current phase (not yet planned)
-Status: Ready to plan
-Last activity: 2026-03-28 -- Roadmap created for v2.0 milestone
+Phase: 11 (Infrastructure & Feature Flags) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
+Last activity: 2026-03-28
 
 Progress: [░░░░░░░░░░] 0% (v2.0)
 
@@ -46,6 +47,7 @@ Progress: [░░░░░░░░░░] 0% (v2.0)
 ## Performance Metrics
 
 **Velocity (v1.0 baseline):**
+
 - v1.0: 26 plans across 10 phases (shipped 2026-03-27)
 
 **By Phase:** Updated after plan completion.
@@ -57,6 +59,7 @@ Progress: [░░░░░░░░░░] 0% (v2.0)
 Decisions logged in PROJECT.md Key Decisions table.
 
 Key architectural notes for v2.0:
+
 - Analytics service (aggregation SQL) is critical path -- built in Phase 12, reused by 13-15
 - Heat map: pure HTML/CSS table with Tailwind, NOT AG Grid
 - Charts: Recharts 3.x; heat map: custom CSS grid or @nivo/heatmap
@@ -64,6 +67,8 @@ Key architectural notes for v2.0:
 - Feature flags at route level, not component level, max 3-4 flags
 - Alerts computed on demand (no background jobs)
 - All v2.0 features are read-only computed views over existing allocations table
+- [Phase 11]: Used React cache() for getOrgFlags deduplication and dedupe'd Clerk-to-UUID resolver in flag definitions
+- [Phase 11]: Sonner Toaster added to both (app) and (platform) layouts; all hand-rolled toast patterns replaced
 
 ### Pending Todos
 
@@ -77,8 +82,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-28
-Stopped at: Roadmap created for v2.0 milestone (7 phases, 38 requirements)
+Last session: 2026-03-28T11:56:14.579Z
+Stopped at: Completed 11-01-PLAN.md
 Resume file: None
 
 ---

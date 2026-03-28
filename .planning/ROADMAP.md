@@ -46,7 +46,7 @@
   4. A new tenant with all flags disabled sees no v2 nav items or routes
 **Plans**: 2 plans
 Plans:
-- [ ] 11-01-PLAN.md — Feature flag service layer (types, service, context, Flags SDK) + Sonner toast system
+- [x] 11-01-PLAN.md — Feature flag service layer (types, service, context, Flags SDK) + Sonner toast system
 - [ ] 11-02-PLAN.md — Platform admin flag toggle API/UI + flag-aware nav filtering + route guards
 
 ### Phase 12: Team Overview Heat Map
@@ -139,7 +139,7 @@ Phases execute in numeric order: 11 -> 11.x -> 12 -> 12.x -> ... -> 17
 | 8. Import Wizard | v1.0 | 4/4 | Complete | 2026-03-27 |
 | 9. Flat Table & Export | v1.0 | 2/2 | Complete | 2026-03-27 |
 | 10. Platform Admin | v1.0 | 4/4 | Complete | 2026-03-27 |
-| 11. Infrastructure & Feature Flags | v2.0 | 0/2 | Not started | - |
+| 11. Infrastructure & Feature Flags | v2.0 | 1/2 | In Progress|  |
 | 12. Team Overview Heat Map | v2.0 | 0/? | Not started | - |
 | 13. Dashboard & Charts | v2.0 | 0/? | Not started | - |
 | 14. Alerts & Project View | v2.0 | 0/? | Not started | - |
