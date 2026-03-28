@@ -35,3 +35,24 @@ export interface HeatMapFilters {
   monthFrom: string;    // YYYY-MM
   monthTo: string;      // YYYY-MM
 }
+
+// --- Dashboard types (Phase 13) ---
+
+export interface DashboardKPIs {
+  totalPeople: number;
+  utilizationPercent: number;   // 0-100+ (can exceed 100 if overloaded)
+  overloadedCount: number;      // >100% utilization
+  underutilizedCount: number;   // <50% utilization
+}
+
+export interface DepartmentUtilization {
+  departmentId: string;
+  departmentName: string;
+  utilizationPercent: number;
+}
+
+export interface DisciplineBreakdown {
+  disciplineId: string;
+  disciplineName: string;
+  totalHours: number;
+}

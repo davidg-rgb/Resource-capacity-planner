@@ -3,7 +3,14 @@ import { sql } from 'drizzle-orm';
 import { db } from '@/db';
 import { generateMonthRange } from '@/lib/date-utils';
 
-import type { DepartmentGroup, HeatMapPerson, HeatMapResponse } from './analytics.types';
+import type {
+  DashboardKPIs,
+  DepartmentGroup,
+  DepartmentUtilization,
+  DisciplineBreakdown,
+  HeatMapPerson,
+  HeatMapResponse,
+} from './analytics.types';
 
 /**
  * Compute the number of months between two YYYY-MM strings (inclusive).
@@ -147,4 +154,208 @@ export async function getTeamHeatMap(
     months,
     generatedAt: new Date().toISOString(),
   };
+}
+
+/**
+ * Compute dashboard KPIs: headcount, overall utilization %, overloaded and underutilized counts.
+ *
+ * Uses a CTE to calculate per-person utilization across the given month range,
+ * then aggregates into a single summary row.
+ */
+export async function getDashboardKPIs(
+  orgId: string,
+  monthFrom: string,
+  monthTo: string,
+): Promise<DashboardKPIs> {
+  const fromDate = `${monthFrom}-01`;
+  const toDate = `${monthTo}-01`;
+  const months = monthCount(monthFrom, monthTo);
+
+  const result = await db.execute<{
+    total_people: number;
+    utilization_percent: number;
+    overloaded_count: number;
+    underutilized_count: number;
+  }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(
+        ${fromDate}::date,
+        ${toDate}::date,
+        '1 month'::interval
+      ) AS d
+    ),
+    active_people AS (
+      SELECT
+        p.id AS person_id,
+        p.target_hours_per_month AS target_hours
+      FROM people p
+      WHERE p.organization_id = ${orgId}::uuid
+        AND p.archived_at IS NULL
+    ),
+    person_utilization AS (
+      SELECT
+        ap.person_id,
+        ap.target_hours * ${months} AS total_target,
+        COALESCE(SUM(a.hours), 0) AS total_allocated
+      FROM active_people ap
+      CROSS JOIN month_series ms
+      LEFT JOIN allocations a
+        ON a.person_id = ap.person_id
+        AND to_char(a.month, 'YYYY-MM') = ms.month
+        AND a.organization_id = ${orgId}::uuid
+      GROUP BY ap.person_id, ap.target_hours
+    )
+    SELECT
+      COUNT(*)::int AS total_people,
+      CASE
+        WHEN SUM(total_target) = 0 THEN 0
+        ELSE ROUND(SUM(total_allocated)::numeric / SUM(total_target)::numeric * 100, 1)
+      END AS utilization_percent,
+      COUNT(*) FILTER (
+        WHERE total_target > 0 AND total_allocated::numeric / total_target::numeric > 1.0
+      )::int AS overloaded_count,
+      COUNT(*) FILTER (
+        WHERE total_target > 0 AND total_allocated::numeric / total_target::numeric < 0.5
+      )::int AS underutilized_count
+    FROM person_utilization
+  `);
+
+  const row = result.rows[0];
+  return {
+    totalPeople: row?.total_people ?? 0,
+    utilizationPercent: Number(row?.utilization_percent ?? 0),
+    overloadedCount: row?.overloaded_count ?? 0,
+    underutilizedCount: row?.underutilized_count ?? 0,
+  };
+}
+
+/**
+ * Compute per-department utilization percentages for the given month range.
+ *
+ * Groups people by department, sums their allocated vs target hours,
+ * and returns utilization % per department ordered alphabetically.
+ */
+export async function getDepartmentUtilization(
+  orgId: string,
+  monthFrom: string,
+  monthTo: string,
+): Promise<DepartmentUtilization[]> {
+  const fromDate = `${monthFrom}-01`;
+  const toDate = `${monthTo}-01`;
+  const months = monthCount(monthFrom, monthTo);
+
+  const result = await db.execute<{
+    department_id: string;
+    department_name: string;
+    utilization_percent: number;
+  }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(
+        ${fromDate}::date,
+        ${toDate}::date,
+        '1 month'::interval
+      ) AS d
+    ),
+    active_people AS (
+      SELECT
+        p.id AS person_id,
+        p.target_hours_per_month AS target_hours,
+        p.department_id,
+        d.name AS department_name
+      FROM people p
+      INNER JOIN departments d ON d.id = p.department_id
+      WHERE p.organization_id = ${orgId}::uuid
+        AND p.archived_at IS NULL
+    ),
+    dept_utilization AS (
+      SELECT
+        ap.department_id,
+        ap.department_name,
+        SUM(ap.target_hours) * ${months} AS total_target,
+        COALESCE(SUM(a.hours), 0) AS total_allocated
+      FROM active_people ap
+      CROSS JOIN month_series ms
+      LEFT JOIN allocations a
+        ON a.person_id = ap.person_id
+        AND to_char(a.month, 'YYYY-MM') = ms.month
+        AND a.organization_id = ${orgId}::uuid
+      GROUP BY ap.department_id, ap.department_name
+    )
+    SELECT
+      department_id,
+      department_name,
+      CASE
+        WHEN total_target = 0 THEN 0
+        ELSE ROUND(total_allocated::numeric / total_target::numeric * 100, 1)
+      END AS utilization_percent
+    FROM dept_utilization
+    ORDER BY department_name ASC
+  `);
+
+  return result.rows.map((row) => ({
+    departmentId: row.department_id,
+    departmentName: row.department_name,
+    utilizationPercent: Number(row.utilization_percent),
+  }));
+}
+
+/**
+ * Compute hours breakdown by discipline for the given month range.
+ *
+ * Sums all allocation hours grouped by the person's discipline.
+ * People without a discipline are excluded (INNER JOIN).
+ * Results ordered by total hours descending (most-used discipline first).
+ */
+export async function getDisciplineBreakdown(
+  orgId: string,
+  monthFrom: string,
+  monthTo: string,
+): Promise<DisciplineBreakdown[]> {
+  const fromDate = `${monthFrom}-01`;
+  const toDate = `${monthTo}-01`;
+
+  const result = await db.execute<{
+    discipline_id: string;
+    discipline_name: string;
+    total_hours: number;
+  }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(
+        ${fromDate}::date,
+        ${toDate}::date,
+        '1 month'::interval
+      ) AS d
+    ),
+    active_people AS (
+      SELECT
+        p.id AS person_id,
+        p.discipline_id,
+        disc.name AS discipline_name
+      FROM people p
+      INNER JOIN disciplines disc ON disc.id = p.discipline_id
+      WHERE p.organization_id = ${orgId}::uuid
+        AND p.archived_at IS NULL
+    )
+    SELECT
+      ap.discipline_id,
+      ap.discipline_name,
+      COALESCE(SUM(a.hours), 0)::int AS total_hours
+    FROM active_people ap
+    CROSS JOIN month_series ms
+    LEFT JOIN allocations a
+      ON a.person_id = ap.person_id
+      AND to_char(a.month, 'YYYY-MM') = ms.month
+      AND a.organization_id = ${orgId}::uuid
+    GROUP BY ap.discipline_id, ap.discipline_name
+    ORDER BY total_hours DESC
+  `);
+
+  return result.rows.map((row) => ({
+    disciplineId: row.discipline_id,
+    disciplineName: row.discipline_name,
+    totalHours: row.total_hours,
+  }));
 }
