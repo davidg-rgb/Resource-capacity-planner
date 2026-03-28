@@ -119,7 +119,11 @@ Plans:
   3. Existing tenants are marked as onboarded and skip the wizard; users can also skip manually
   4. Platform admin can create announcements with title, body, severity, and date range
   5. Tenant users see active announcements as a dismissible banner; critical announcements persist until expiry
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 16-01-PLAN.md — Onboarding backend: DB migration, service, API routes, constants, layout redirect
+- [ ] 16-02-PLAN.md — Onboarding wizard UI: multi-step wizard with department/discipline/people steps
+- [ ] 16-03-PLAN.md — Announcement system: service, CRUD API, platform admin page, tenant banner
 **UI hint**: yes
 
 ### Phase 17: Platform Operations
@@ -155,7 +159,7 @@ Phases execute in numeric order: 11 -> 11.x -> 12 -> 12.x -> ... -> 17
 | 13. Dashboard & Charts | v2.0 | 2/2 | Complete    | 2026-03-28 |
 | 14. Alerts & Project View | v2.0 | 2/2 | Complete    | 2026-03-28 |
 | 15. PDF Export | v2.0 | 1/1 | Complete    | 2026-03-28 |
-| 16. Onboarding & Announcements | v2.0 | 0/? | Not started | - |
+| 16. Onboarding & Announcements | v2.0 | 0/3 | Not started | - |
 | 17. Platform Operations | v2.0 | 0/? | Not started | - |
 
 ---
