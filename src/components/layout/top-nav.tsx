@@ -14,11 +14,13 @@ import {
   Database,
   LayoutDashboard,
   ShieldCheck,
+  AlertTriangle,
   Menu,
   X,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
+import { AlertBadge } from '@/components/alerts/alert-badge';
 import { useFlags } from '@/features/flags/flag.context';
 import type { FlagName } from '@/features/flags/flag.types';
 
@@ -35,6 +37,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Projects', href: '/projects', icon: FolderKanban },
   { label: 'Data', href: '/data', icon: Database },
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, flag: 'dashboards' },
+  { label: 'Alerts', href: '/alerts', icon: AlertTriangle, flag: 'alerts' },
   { label: 'Admin', href: '/admin/disciplines', icon: ShieldCheck },
   { label: 'Members', href: '/admin/members', icon: Users },
 ];
@@ -96,14 +99,17 @@ export function TopNav() {
               className="bg-surface-container-low text-on-surface placeholder:text-outline focus:ring-primary w-64 rounded-sm py-1.5 pr-4 pl-9 text-xs focus:ring-1 focus:outline-none"
             />
           </div>
-          <button
-            type="button"
-            aria-label="Notifications"
-            title="Notifications"
-            className="text-on-surface-variant hover:bg-surface-container-high rounded-sm p-1.5"
-          >
-            <Bell size={18} />
-          </button>
+          {flags.alerts && (
+            <Link
+              href="/alerts"
+              aria-label="Capacity alerts"
+              title="Capacity alerts"
+              className="text-on-surface-variant hover:bg-surface-container-high relative rounded-sm p-1.5"
+            >
+              <Bell size={18} />
+              <AlertBadge />
+            </Link>
+          )}
           <button
             type="button"
             aria-label="Settings"
