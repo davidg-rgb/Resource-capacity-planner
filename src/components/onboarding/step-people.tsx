@@ -67,7 +67,7 @@ export function StepPeople({
   async function handleImportRedirect() {
     try {
       await fetch('/api/onboarding/complete', { method: 'POST' });
-      window.location.href = '/import';
+      window.location.href = '/data/import';
     } catch {
       toast.error('Failed to complete onboarding');
     }

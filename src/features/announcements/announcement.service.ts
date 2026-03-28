@@ -2,6 +2,7 @@ import { and, arrayContains, desc, eq, isNull, lte, or, sql } from 'drizzle-orm'
 
 import { db } from '@/db';
 import { systemAnnouncements } from '@/db/schema';
+import { NotFoundError } from '@/lib/errors';
 
 import type { Announcement } from './announcement.types';
 
@@ -127,7 +128,7 @@ export async function updateAnnouncement(
     .where(eq(systemAnnouncements.id, id))
     .returning();
 
-  if (!row) throw new Error('Announcement not found');
+  if (!row) throw new NotFoundError('Announcement', id);
   return toAnnouncement(row);
 }
 
@@ -140,5 +141,5 @@ export async function deleteAnnouncement(id: string): Promise<void> {
     .where(eq(systemAnnouncements.id, id))
     .returning({ id: systemAnnouncements.id });
 
-  if (result.length === 0) throw new Error('Announcement not found');
+  if (result.length === 0) throw new NotFoundError('Announcement', id);
 }

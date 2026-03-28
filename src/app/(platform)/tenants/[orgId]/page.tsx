@@ -167,6 +167,8 @@ export default function TenantDetailPage() {
     try {
       const res = await fetch(`/api/platform/tenants/${orgId}`, {
         method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirmation: deleteConfirm }),
       });
       if (!res.ok) throw new Error('Delete failed');
       router.push('/platform/tenants');

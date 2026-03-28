@@ -1,4 +1,4 @@
-import { count, eq, isNull } from 'drizzle-orm';
+import { and, count, eq, isNull } from 'drizzle-orm';
 
 import { db } from '@/db';
 import * as schema from '@/db/schema';
@@ -27,7 +27,12 @@ export async function markOnboarded(orgId: string): Promise<void> {
   await db
     .update(schema.organizations)
     .set({ onboardingCompletedAt: new Date() })
-    .where(eq(schema.organizations.id, orgId));
+    .where(
+      and(
+        eq(schema.organizations.id, orgId),
+        isNull(schema.organizations.onboardingCompletedAt),
+      ),
+    );
 }
 
 /**

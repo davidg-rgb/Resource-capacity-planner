@@ -3,6 +3,25 @@ import { sql } from 'drizzle-orm';
 import { db } from '@/db';
 import { generateMonthRange } from '@/lib/date-utils';
 
+import { ValidationError } from '@/lib/errors';
+
+const MAX_MONTH_RANGE = 36;
+const MONTH_RE = /^\d{4}-\d{2}$/;
+
+/** Validate and constrain month range params. Throws ValidationError if invalid or too wide. */
+export function validateMonthRange(from: string | null, to: string | null): { from: string; to: string } {
+  if (!from || !to || !MONTH_RE.test(from) || !MONTH_RE.test(to)) {
+    throw new ValidationError('Invalid parameters. Required: from (YYYY-MM), to (YYYY-MM)');
+  }
+  const [y1, m1] = from.split('-').map(Number);
+  const [y2, m2] = to.split('-').map(Number);
+  const range = (y2 - y1) * 12 + (m2 - m1) + 1;
+  if (range < 1 || range > MAX_MONTH_RANGE) {
+    throw new ValidationError(`Month range must be 1-${MAX_MONTH_RANGE} months (got ${range})`);
+  }
+  return { from, to };
+}
+
 import type {
   CapacityAlert,
   DashboardKPIs,
@@ -172,7 +191,6 @@ export async function getDashboardKPIs(
 ): Promise<DashboardKPIs> {
   const fromDate = `${monthFrom}-01`;
   const toDate = `${monthTo}-01`;
-  const months = monthCount(monthFrom, monthTo);
 
   const result = await db.execute<{
     total_people: number;
@@ -199,7 +217,7 @@ export async function getDashboardKPIs(
     person_utilization AS (
       SELECT
         ap.person_id,
-        ap.target_hours * ${months} AS total_target,
+        SUM(ap.target_hours)::numeric AS total_target,
         COALESCE(SUM(a.hours), 0) AS total_allocated
       FROM active_people ap
       CROSS JOIN month_series ms
@@ -207,7 +225,7 @@ export async function getDashboardKPIs(
         ON a.person_id = ap.person_id
         AND to_char(a.month, 'YYYY-MM') = ms.month
         AND a.organization_id = ${orgId}::uuid
-      GROUP BY ap.person_id, ap.target_hours
+      GROUP BY ap.person_id
     )
     SELECT
       COUNT(*)::int AS total_people,
@@ -246,7 +264,6 @@ export async function getDepartmentUtilization(
 ): Promise<DepartmentUtilization[]> {
   const fromDate = `${monthFrom}-01`;
   const toDate = `${monthTo}-01`;
-  const months = monthCount(monthFrom, monthTo);
 
   const result = await db.execute<{
     department_id: string;
@@ -276,7 +293,7 @@ export async function getDepartmentUtilization(
       SELECT
         ap.department_id,
         ap.department_name,
-        SUM(ap.target_hours) * ${months} AS total_target,
+        SUM(ap.target_hours)::numeric AS total_target,
         COALESCE(SUM(a.hours), 0) AS total_allocated
       FROM active_people ap
       CROSS JOIN month_series ms
@@ -376,7 +393,6 @@ export async function getCapacityAlerts(
 ): Promise<CapacityAlert[]> {
   const fromDate = `${monthFrom}-01`;
   const toDate = `${monthTo}-01`;
-  const months = monthCount(monthFrom, monthTo);
 
   const result = await db.execute<{
     person_id: string;
@@ -413,11 +429,11 @@ export async function getCapacityAlerts(
         ap.first_name,
         ap.last_name,
         ap.department_name,
-        ap.target_hours * ${months} AS total_target,
+        SUM(ap.target_hours)::numeric AS total_target,
         COALESCE(SUM(a.hours), 0) AS total_allocated,
         CASE
-          WHEN ap.target_hours * ${months} > 0
-          THEN ROUND(COALESCE(SUM(a.hours), 0)::numeric / (ap.target_hours * ${months})::numeric, 4)
+          WHEN SUM(ap.target_hours) > 0
+          THEN ROUND(COALESCE(SUM(a.hours), 0)::numeric / SUM(ap.target_hours)::numeric, 4)
           ELSE 0
         END AS utilization_ratio
       FROM active_people ap
@@ -426,7 +442,7 @@ export async function getCapacityAlerts(
         ON a.person_id = ap.person_id
         AND to_char(a.month, 'YYYY-MM') = ms.month
         AND a.organization_id = ${orgId}::uuid
-      GROUP BY ap.person_id, ap.first_name, ap.last_name, ap.department_name, ap.target_hours
+      GROUP BY ap.person_id, ap.first_name, ap.last_name, ap.department_name
     )
     SELECT
       person_id,
@@ -464,7 +480,6 @@ export async function getAlertCount(
 ): Promise<number> {
   const fromDate = `${monthFrom}-01`;
   const toDate = `${monthTo}-01`;
-  const months = monthCount(monthFrom, monthTo);
 
   const result = await db.execute<{ count: number }>(sql`
     WITH month_series AS (
@@ -487,8 +502,8 @@ export async function getAlertCount(
       SELECT
         ap.person_id,
         CASE
-          WHEN ap.target_hours * ${months} > 0
-          THEN COALESCE(SUM(a.hours), 0)::numeric / (ap.target_hours * ${months})::numeric
+          WHEN SUM(ap.target_hours) > 0
+          THEN COALESCE(SUM(a.hours), 0)::numeric / SUM(ap.target_hours)::numeric
           ELSE 0
         END AS utilization_ratio
       FROM active_people ap
@@ -497,7 +512,7 @@ export async function getAlertCount(
         ON a.person_id = ap.person_id
         AND to_char(a.month, 'YYYY-MM') = ms.month
         AND a.organization_id = ${orgId}::uuid
-      GROUP BY ap.person_id, ap.target_hours
+      GROUP BY ap.person_id
     )
     SELECT COUNT(*)::int AS count
     FROM person_utilization

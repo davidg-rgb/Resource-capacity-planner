@@ -196,57 +196,59 @@ export async function purgeTenantData(
 
   if (!org) throw new NotFoundError('Organization', orgId);
 
-  // Delete in FK-safe order (child-to-parent)
-  const allocResult = await db
-    .delete(allocations)
-    .where(eq(allocations.organizationId, orgId))
-    .returning({ id: allocations.id });
+  // Delete in FK-safe order (child-to-parent) within a single transaction
+  return await db.transaction(async (tx) => {
+    const allocResult = await tx
+      .delete(allocations)
+      .where(eq(allocations.organizationId, orgId))
+      .returning({ id: allocations.id });
 
-  const importResult = await db
-    .delete(importSessions)
-    .where(eq(importSessions.organizationId, orgId))
-    .returning({ id: importSessions.id });
+    const importResult = await tx
+      .delete(importSessions)
+      .where(eq(importSessions.organizationId, orgId))
+      .returning({ id: importSessions.id });
 
-  const flagResult = await db
-    .delete(featureFlags)
-    .where(eq(featureFlags.organizationId, orgId))
-    .returning({ id: featureFlags.id });
+    const flagResult = await tx
+      .delete(featureFlags)
+      .where(eq(featureFlags.organizationId, orgId))
+      .returning({ id: featureFlags.id });
 
-  const peopleResult = await db
-    .delete(people)
-    .where(eq(people.organizationId, orgId))
-    .returning({ id: people.id });
+    const peopleResult = await tx
+      .delete(people)
+      .where(eq(people.organizationId, orgId))
+      .returning({ id: people.id });
 
-  const projectResult = await db
-    .delete(projects)
-    .where(eq(projects.organizationId, orgId))
-    .returning({ id: projects.id });
+    const projectResult = await tx
+      .delete(projects)
+      .where(eq(projects.organizationId, orgId))
+      .returning({ id: projects.id });
 
-  const programResult = await db
-    .delete(programs)
-    .where(eq(programs.organizationId, orgId))
-    .returning({ id: programs.id });
+    const programResult = await tx
+      .delete(programs)
+      .where(eq(programs.organizationId, orgId))
+      .returning({ id: programs.id });
 
-  const discResult = await db
-    .delete(disciplines)
-    .where(eq(disciplines.organizationId, orgId))
-    .returning({ id: disciplines.id });
+    const discResult = await tx
+      .delete(disciplines)
+      .where(eq(disciplines.organizationId, orgId))
+      .returning({ id: disciplines.id });
 
-  const deptResult = await db
-    .delete(departments)
-    .where(eq(departments.organizationId, orgId))
-    .returning({ id: departments.id });
+    const deptResult = await tx
+      .delete(departments)
+      .where(eq(departments.organizationId, orgId))
+      .returning({ id: departments.id });
 
-  return {
-    deletedCounts: {
-      allocations: allocResult.length,
-      importSessions: importResult.length,
-      featureFlags: flagResult.length,
-      people: peopleResult.length,
-      projects: projectResult.length,
-      programs: programResult.length,
-      disciplines: discResult.length,
-      departments: deptResult.length,
-    },
-  };
+    return {
+      deletedCounts: {
+        allocations: allocResult.length,
+        importSessions: importResult.length,
+        featureFlags: flagResult.length,
+        people: peopleResult.length,
+        projects: projectResult.length,
+        programs: programResult.length,
+        disciplines: discResult.length,
+        departments: deptResult.length,
+      },
+    };
+  });
 }

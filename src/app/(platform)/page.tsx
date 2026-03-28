@@ -17,16 +17,8 @@ interface DashboardMetrics {
   }>;
 }
 
-interface SystemHealthMetrics {
-  dbLatencyMs: number;
-  dbConnected: boolean;
-  activeConnections: number;
-  recentErrors: number;
-  memoryUsageMb: { rss: number; heapUsed: number; heapTotal: number };
-  version: string;
-  uptime: number;
-  timestamp: string;
-}
+// SystemHealthMetrics type imported from service to avoid duplication
+type SystemHealthMetrics = import('@/features/platform/platform-health.service').SystemHealthMetrics;
 
 function formatUptime(seconds: number): string {
   const hours = Math.floor(seconds / 3600);

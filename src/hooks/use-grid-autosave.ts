@@ -85,6 +85,9 @@ export function useGridAutosave(personId: string) {
         queryClient.invalidateQueries({ queryKey: ['allocations', personId] });
         queryClient.invalidateQueries({ queryKey: ['alerts'] });
         queryClient.invalidateQueries({ queryKey: ['alert-count'] });
+        queryClient.invalidateQueries({ queryKey: ['dashboard-kpis'] });
+        queryClient.invalidateQueries({ queryKey: ['team-heatmap'] });
+        queryClient.invalidateQueries({ queryKey: ['project-staffing'] });
       }
     } catch {
       // On error, invalidate to rollback optimistic updates

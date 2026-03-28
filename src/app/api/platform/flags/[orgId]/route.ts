@@ -6,6 +6,7 @@ import { db } from '@/db';
 import { featureFlags } from '@/db/schema';
 import { requirePlatformAdmin } from '@/lib/platform-auth';
 import { handleApiError } from '@/lib/api-utils';
+import { logPlatformAction } from '@/lib/platform-audit';
 import { FLAG_NAMES } from '@/features/flags/flag.types';
 
 export async function GET(
@@ -55,6 +56,13 @@ export async function PATCH(
           updatedAt: new Date(),
         },
       });
+
+    await logPlatformAction({
+      adminId: admin.adminId,
+      action: 'feature_flags_updated',
+      targetOrgId: orgId,
+      details: { flagName: body.flagName, enabled: body.enabled },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {
