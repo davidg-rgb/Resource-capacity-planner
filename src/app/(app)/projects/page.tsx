@@ -1,7 +1,8 @@
 'use client';
 
 import { useAuth } from '@clerk/nextjs';
-import { Archive, Pencil, Plus, X } from 'lucide-react';
+import { Archive, Eye, Pencil, Plus, X } from 'lucide-react';
+import Link from 'next/link';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -278,6 +279,7 @@ export default function ProjectsPage() {
                   <th className="py-2 pr-4 font-medium">Name</th>
                   <th className="py-2 pr-4 font-medium">Program</th>
                   <th className="py-2 pr-4 font-medium">Status</th>
+                  <th className="py-2 pr-4 font-medium">View</th>
                   {canEdit && <th className="py-2 font-medium">Actions</th>}
                 </tr>
               </thead>
@@ -288,6 +290,16 @@ export default function ProjectsPage() {
                     <td className="py-2.5 pr-4">{programName(project.programId)}</td>
                     <td className="py-2.5 pr-4">
                       <StatusBadge status={project.status} />
+                    </td>
+                    <td className="py-2.5 pr-4">
+                      {project.status !== 'archived' && (
+                        <Link
+                          href={`/projects/${project.id}`}
+                          className="text-primary hover:underline inline-flex items-center gap-1 text-sm"
+                        >
+                          <Eye size={14} /> View
+                        </Link>
+                      )}
                     </td>
                     {canEdit && (
                       <td className="py-2.5">
