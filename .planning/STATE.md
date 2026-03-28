@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Visibility & Insights
-status: executing
-stopped_at: Completed 16-03-PLAN.md
-last_updated: "2026-03-28T13:50:22.657Z"
+status: verifying
+stopped_at: Completed 16-02-PLAN.md
+last_updated: "2026-03-28T13:55:00.887Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 7
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 12
-  completed_plans: 11
+  completed_plans: 12
   percent: 0
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 
 Phase: 16 (Onboarding & Announcements) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-03-28
 
 Progress: [░░░░░░░░░░] 0% (v2.0)
@@ -81,6 +81,7 @@ Key architectural notes for v2.0:
 - [Phase 15]: API route uses .tsx for JSX in renderToStream; button always visible when data loaded, API enforces flag gate
 - [Phase 16]: Nullable timestamp pattern for onboarding: NULL = not onboarded, non-null = onboarded; backfilled all existing orgs
 - [Phase 16]: Announcement banner in document flow (not fixed) to avoid z-index conflicts with impersonation banner
+- [Phase 16]: Person step requires firstName+lastName+departmentId+disciplineId per existing schema
 
 ### Pending Todos
 
@@ -94,8 +95,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-28T13:50:22.653Z
-Stopped at: Completed 16-03-PLAN.md
+Last session: 2026-03-28T13:55:00.883Z
+Stopped at: Completed 16-02-PLAN.md
 Resume file: None
 
 ---
