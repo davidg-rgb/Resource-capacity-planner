@@ -8,8 +8,8 @@
 ### Infrastructure
 
 - [x] **INFRA-01**: Feature flag service loads all org flags once per request and exposes typed `FeatureFlags` interface
-- [ ] **INFRA-02**: Platform admin can toggle feature flags per tenant from tenant detail page
-- [ ] **INFRA-03**: Feature-flagged routes/nav items are hidden when flag is disabled for the org
+- [x] **INFRA-02**: Platform admin can toggle feature flags per tenant from tenant detail page
+- [x] **INFRA-03**: Feature-flagged routes/nav items are hidden when flag is disabled for the org
 - [x] **INFRA-04**: Toast notification system (Sonner) available app-wide for alerts and feedback
 
 ### Team Overview
@@ -101,8 +101,8 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | INFRA-01 | Phase 11 | Complete |
-| INFRA-02 | Phase 11 | Pending |
-| INFRA-03 | Phase 11 | Pending |
+| INFRA-02 | Phase 11 | Complete |
+| INFRA-03 | Phase 11 | Complete |
 | INFRA-04 | Phase 11 | Complete |
 | TEAM-01 | Phase 12 | Pending |
 | TEAM-02 | Phase 12 | Pending |
