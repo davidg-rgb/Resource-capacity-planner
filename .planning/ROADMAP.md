@@ -31,7 +31,7 @@
 - [x] **Phase 14: Alerts & Project View** - Capacity alert system and project-centric staffing view (completed 2026-03-28)
 - [x] **Phase 15: PDF Export** - Exportable Team Overview heat map as landscape PDF document (completed 2026-03-28)
 - [x] **Phase 16: Onboarding & Announcements** - New-tenant onboarding wizard and platform-wide announcement system (completed 2026-03-28)
-- [ ] **Phase 17: Platform Operations** - System health monitoring and tenant data operations (export/purge)
+- [x] **Phase 17: Platform Operations** - System health monitoring and tenant data operations (export/purge) (completed 2026-03-28)
 
 ## Phase Details
 
@@ -137,7 +137,7 @@ Plans:
 **Plans**: 2 plans
 Plans:
 - [x] 17-01-PLAN.md — System health service, platform health API route, dashboard health section
-- [ ] 17-02-PLAN.md — Tenant data export/purge service, API routes, tenant detail page buttons
+- [x] 17-02-PLAN.md — Tenant data export/purge service, API routes, tenant detail page buttons
 **UI hint**: yes
 
 ## Progress
@@ -163,7 +163,7 @@ Phases execute in numeric order: 11 -> 11.x -> 12 -> 12.x -> ... -> 17
 | 14. Alerts & Project View | v2.0 | 2/2 | Complete    | 2026-03-28 |
 | 15. PDF Export | v2.0 | 1/1 | Complete    | 2026-03-28 |
 | 16. Onboarding & Announcements | v2.0 | 3/3 | Complete    | 2026-03-28 |
-| 17. Platform Operations | v2.0 | 1/2 | In Progress|  |
+| 17. Platform Operations | v2.0 | 2/2 | Complete   | 2026-03-28 |
 
 ---
 
