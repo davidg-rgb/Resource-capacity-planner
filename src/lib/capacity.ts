@@ -34,3 +34,30 @@ export function getStatusColor(status: CapacityStatus): string {
   };
   return colors[status];
 }
+
+// ---------------------------------------------------------------------------
+// Heat map status (TEAM-01 thresholds — different from input form above)
+// ---------------------------------------------------------------------------
+
+export type HeatMapStatus = 'over' | 'healthy' | 'under' | 'idle';
+
+/**
+ * Heat map status per TEAM-01 specification.
+ * Different thresholds from the input form's calculateStatus():
+ *   over: >100% (red), healthy: 80-100% (green), under: 50-79% (yellow), idle: <50% (grey)
+ */
+export function calculateHeatMapStatus(hours: number, targetHours: number): HeatMapStatus {
+  if (targetHours === 0) return 'idle';
+  const ratio = hours / targetHours;
+  if (ratio > 1.0) return 'over';
+  if (ratio >= 0.8) return 'healthy';
+  if (ratio >= 0.5) return 'under';
+  return 'idle';
+}
+
+export const HEAT_MAP_COLORS: Record<HeatMapStatus, string> = {
+  over:    'bg-red-500/80 text-white',
+  healthy: 'bg-green-500/60 text-green-950',
+  under:   'bg-amber-400/60 text-amber-950',
+  idle:    'bg-gray-200 text-gray-500',
+};
