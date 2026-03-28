@@ -14,11 +14,11 @@
 
 ### Team Overview
 
-- [ ] **TEAM-01**: User can view a heat map of all people x months with cells color-coded by utilization (green 80-100%, yellow 50-79%, red >100%, grey <50%)
+- [x] **TEAM-01**: User can view a heat map of all people x months with cells color-coded by utilization (green 80-100%, yellow 50-79%, red >100%, grey <50%)
 - [ ] **TEAM-02**: Heat map rows are grouped by department with collapsible sections
-- [ ] **TEAM-03**: User can filter the heat map by department, discipline, or date range
+- [x] **TEAM-03**: User can filter the heat map by department, discipline, or date range
 - [ ] **TEAM-04**: User can click a person name in the heat map to navigate to their Person Input Form
-- [ ] **TEAM-05**: Heat map scrolls horizontally across the 12-18 month planning horizon
+- [x] **TEAM-05**: Heat map scrolls horizontally across the 12-18 month planning horizon
 
 ### Project View
 
@@ -104,11 +104,11 @@
 | INFRA-02 | Phase 11 | Complete |
 | INFRA-03 | Phase 11 | Complete |
 | INFRA-04 | Phase 11 | Complete |
-| TEAM-01 | Phase 12 | Pending |
+| TEAM-01 | Phase 12 | Complete |
 | TEAM-02 | Phase 12 | Pending |
-| TEAM-03 | Phase 12 | Pending |
+| TEAM-03 | Phase 12 | Complete |
 | TEAM-04 | Phase 12 | Pending |
-| TEAM-05 | Phase 12 | Pending |
+| TEAM-05 | Phase 12 | Complete |
 | PROJ-01 | Phase 14 | Pending |
 | PROJ-02 | Phase 14 | Pending |
 | PROJ-03 | Phase 14 | Pending |
