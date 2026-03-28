@@ -105,7 +105,9 @@ Plans:
   1. User can click an export button on the Team Overview page and receive a PDF download
   2. PDF renders in landscape orientation with department grouping and a color legend
   3. PDF header/footer includes org name, date range, and generation timestamp
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 15-01-PLAN.md — react-pdf template components, API route for PDF generation, export button on Team Overview
 
 ### Phase 16: Onboarding & Announcements
 **Goal**: New tenants get guided setup, and platform admins can communicate with all tenants through announcements
@@ -152,7 +154,7 @@ Phases execute in numeric order: 11 -> 11.x -> 12 -> 12.x -> ... -> 17
 | 12. Team Overview Heat Map | v2.0 | 2/2 | Complete    | 2026-03-28 |
 | 13. Dashboard & Charts | v2.0 | 2/2 | Complete    | 2026-03-28 |
 | 14. Alerts & Project View | v2.0 | 2/2 | Complete    | 2026-03-28 |
-| 15. PDF Export | v2.0 | 0/? | Not started | - |
+| 15. PDF Export | v2.0 | 0/1 | Not started | - |
 | 16. Onboarding & Announcements | v2.0 | 0/? | Not started | - |
 | 17. Platform Operations | v2.0 | 0/? | Not started | - |
 
