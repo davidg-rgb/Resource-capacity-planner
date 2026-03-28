@@ -136,7 +136,7 @@ Plans:
   3. Platform admin can purge all data for a tenant (GDPR deletion) with confirmation safeguard
 **Plans**: 2 plans
 Plans:
-- [ ] 17-01-PLAN.md — System health service, platform health API route, dashboard health section
+- [x] 17-01-PLAN.md — System health service, platform health API route, dashboard health section
 - [ ] 17-02-PLAN.md — Tenant data export/purge service, API routes, tenant detail page buttons
 **UI hint**: yes
 
@@ -163,7 +163,7 @@ Phases execute in numeric order: 11 -> 11.x -> 12 -> 12.x -> ... -> 17
 | 14. Alerts & Project View | v2.0 | 2/2 | Complete    | 2026-03-28 |
 | 15. PDF Export | v2.0 | 1/1 | Complete    | 2026-03-28 |
 | 16. Onboarding & Announcements | v2.0 | 3/3 | Complete    | 2026-03-28 |
-| 17. Platform Operations | v2.0 | 0/2 | Not started | - |
+| 17. Platform Operations | v2.0 | 1/2 | In Progress|  |
 
 ---
 
