@@ -61,6 +61,7 @@ export const organizations = pgTable('organizations', {
   trialEndsAt: timestamp('trial_ends_at', { withTimezone: true }),
   creditBalanceCents: integer('credit_balance_cents').default(0).notNull(),
   platformNotes: varchar('platform_notes', { length: 2000 }),
+  onboardingCompletedAt: timestamp('onboarding_completed_at', { withTimezone: true }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true })
     .defaultNow()
