@@ -59,7 +59,10 @@ Plans:
   3. User can filter the heat map by department, discipline, or date range
   4. Clicking a person name navigates to their Person Input Form
   5. Heat map scrolls horizontally across the full 12-18 month planning horizon
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 12-01-PLAN.md — Analytics types, CTE-based service, heat map status function, API route, and TanStack Query hook
+- [ ] 12-02-PLAN.md — Heat map UI components (cell, filters, table), Team Overview page, and dashboard landing update
 **UI hint**: yes
 
 ### Phase 13: Dashboard & Charts
@@ -140,7 +143,7 @@ Phases execute in numeric order: 11 -> 11.x -> 12 -> 12.x -> ... -> 17
 | 9. Flat Table & Export | v1.0 | 2/2 | Complete | 2026-03-27 |
 | 10. Platform Admin | v1.0 | 4/4 | Complete | 2026-03-27 |
 | 11. Infrastructure & Feature Flags | v2.0 | 2/2 | Complete    | 2026-03-28 |
-| 12. Team Overview Heat Map | v2.0 | 0/? | Not started | - |
+| 12. Team Overview Heat Map | v2.0 | 0/2 | Not started | - |
 | 13. Dashboard & Charts | v2.0 | 0/? | Not started | - |
 | 14. Alerts & Project View | v2.0 | 0/? | Not started | - |
 | 15. PDF Export | v2.0 | 0/? | Not started | - |
