@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Visibility & Insights
 status: executing
-stopped_at: Completed 16-01-PLAN.md
-last_updated: "2026-03-28T13:48:33.377Z"
+stopped_at: Completed 16-03-PLAN.md
+last_updated: "2026-03-28T13:50:22.657Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 7
   completed_phases: 5
   total_plans: 12
-  completed_plans: 10
+  completed_plans: 11
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 ## Current Position
 
 Phase: 16 (Onboarding & Announcements) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-03-28
 
@@ -80,6 +80,7 @@ Key architectural notes for v2.0:
 - [Phase 14-02]: Used plain HTML table (not AG Grid) for read-only project staffing view
 - [Phase 15]: API route uses .tsx for JSX in renderToStream; button always visible when data loaded, API enforces flag gate
 - [Phase 16]: Nullable timestamp pattern for onboarding: NULL = not onboarded, non-null = onboarded; backfilled all existing orgs
+- [Phase 16]: Announcement banner in document flow (not fixed) to avoid z-index conflicts with impersonation banner
 
 ### Pending Todos
 
@@ -93,8 +94,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-28T13:48:33.372Z
-Stopped at: Completed 16-01-PLAN.md
+Last session: 2026-03-28T13:50:22.653Z
+Stopped at: Completed 16-03-PLAN.md
 Resume file: None
 
 ---

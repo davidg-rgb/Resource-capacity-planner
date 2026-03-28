@@ -64,9 +64,9 @@
 ### Platform Operations
 
 - [ ] **PLOP-01**: Platform admin can view system health metrics (DB latency, error rates, active connections)
-- [ ] **PLOP-02**: Platform admin can create announcements with title, body, severity, and date range
-- [ ] **PLOP-03**: Tenant users see active announcements as a dismissible banner in the app
-- [ ] **PLOP-04**: Critical announcements persist until expiry; info-level can be dismissed
+- [x] **PLOP-02**: Platform admin can create announcements with title, body, severity, and date range
+- [x] **PLOP-03**: Tenant users see active announcements as a dismissible banner in the app
+- [x] **PLOP-04**: Critical announcements persist until expiry; info-level can be dismissed
 - [ ] **PLOP-05**: Platform admin can bulk export all data for a tenant as JSON
 - [ ] **PLOP-06**: Platform admin can purge all data for a tenant (GDPR deletion)
 
@@ -133,9 +133,9 @@
 | ONBR-04 | Phase 16 | Complete |
 | ONBR-05 | Phase 16 | Complete |
 | PLOP-01 | Phase 17 | Pending |
-| PLOP-02 | Phase 16 | Pending |
-| PLOP-03 | Phase 16 | Pending |
-| PLOP-04 | Phase 16 | Pending |
+| PLOP-02 | Phase 16 | Complete |
+| PLOP-03 | Phase 16 | Complete |
+| PLOP-04 | Phase 16 | Complete |
 | PLOP-05 | Phase 17 | Pending |
 | PLOP-06 | Phase 17 | Pending |
 
