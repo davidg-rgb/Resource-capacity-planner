@@ -126,8 +126,11 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [x] Platform audit log (F-036 / PLAT-08) — Phase 10
 - [x] Cross-tenant user management via Clerk SDK (F-037 / PLAT-09) — Phase 10
 
-### Active — v2.0 (Milestone 2)
+## Current Milestone: v2.0 Visibility & Insights
 
+**Goal:** Give managers and planners real-time visibility into team capacity, project staffing, and resource utilization through dashboards, heat maps, and alerts.
+
+**Target features:**
 - [ ] Team Overview heat map (F-013)
 - [ ] Project View staffing grid (F-014)
 - [ ] Management Dashboard with KPIs (F-015)
@@ -169,6 +172,23 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - **Branch strategy:** main (production), feature branches per phase
 - **Deployment:** Vercel (auto-deploy on merge to main)
 
+## Evolution
+
+This document evolves at phase transitions and milestone boundaries.
+
+**After each phase transition** (via `/gsd:transition`):
+1. Requirements invalidated? → Move to Out of Scope with reason
+2. Requirements validated? → Move to Validated with phase reference
+3. New requirements emerged? → Add to Active
+4. Decisions to log? → Add to Key Decisions
+5. "What This Is" still accurate? → Update if drifted
+
+**After each milestone** (via `/gsd:complete-milestone`):
+1. Full review of all sections
+2. Core Value check — still the right priority?
+3. Audit Out of Scope — reasons still valid?
+4. Update Context with current state
+
 ---
 
-_Last updated: 2026-03-27 — Phase 7 complete (Grid polish — keyboard nav, clipboard paste, drag-to-fill, conflict detection, person sidebar)_
+_Last updated: 2026-03-28 — Milestone v2.0 started_

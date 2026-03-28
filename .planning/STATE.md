@@ -1,51 +1,34 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
+milestone: v2.0
+milestone_name: Visibility & Insights
 current_plan: Not started
-status: v1.0 milestone complete
-stopped_at: Completed 10-04-PLAN.md
-last_updated: "2026-03-27T13:17:13.872Z"
+status: Defining requirements
+stopped_at: Milestone v2.0 started
+last_updated: "2026-03-28T00:00:00.000Z"
 progress:
-  total_phases: 10
-  completed_phases: 10
-  total_plans: 26
-  completed_plans: 26
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # Nordic Capacity -- Project State
 
 ## Current Phase
 
-Phase 3 -- Authentication & App Shell (in progress)
+Not started (defining requirements)
 
-Current Plan: Not started
+Current Plan: —
 
 ## Phase Status
 
-| Phase | Name                                  | Status      | Started    | Completed |
-| ----- | ------------------------------------- | ----------- | ---------- | --------- |
-| 1     | Project Scaffolding & Dev Environment | complete    | 2026-03-26 | 2026-03-26 |
-| 2     | Database Schema & Tenant Isolation    | complete    | 2026-03-26 | 2026-03-26 |
-| 3     | Authentication & App Shell            | in progress | 2026-03-26 | --        |
-| 4     | Person & Project CRUD                 | not started | --         | --        |
-| 5     | Reference Data Admin                  | not started | --         | --        |
-| 6     | AG Grid Spike & Core Grid             | not started | --         | --        |
-| 7     | Grid Polish & Navigation              | not started | --         | --        |
-| 8     | Import Wizard                         | not started | --         | --        |
-| 9     | Flat Table View & Export              | not started | --         | --        |
-| 10    | Platform Admin                        | complete    | 2026-03-27 | 2026-03-27 |
+| Phase | Name | Status | Started | Completed |
+| ----- | ---- | ------ | ------- | --------- |
 
 ## Completed Requirements
 
-- FOUND-03: Next.js 16 project setup with App Router, TypeScript, Tailwind CSS 4
-- FOUND-09: Environment configuration -- all env vars documented and validated at startup
-- FOUND-02: withTenant() ORM query wrapper enforcing tenant isolation on every database query
-- FOUND-05: Database migrations and development seed data on Neon PostgreSQL
-- FOUND-07: Health check endpoint returning 200 with DB connection status
-- FOUND-06: Error taxonomy with typed subclasses matching ARCHITECTURE.md
-- AUTH-06: getTenantId() and requireRole() Clerk auth helpers
-- AUTH-08: Clerk env vars promoted to required validation
+(Carried from v1.0 — see MILESTONES.md for full list)
 
 ## Decisions
 
@@ -66,30 +49,16 @@ Current Plan: Not started
 - [Phase 10]: Impersonation on tenant detail uses user search + pick pattern (not raw user ID input)
 - [Phase 10]: Auth separation is architectural (Clerk + platform middleware) — no additional code needed
 
-## Performance Metrics
-
-| Phase | Plan | Duration | Tasks | Files |
-| ----- | ---- | -------- | ----- | ----- |
-| 01    | 01   | 11min    | 2     | 21    |
-| 02    | 01   | 4min     | 2     | 6     |
-| 02    | 02   | 2min     | 2     | 4     |
-| 03    | 01   | 2min     | 2     | 5     |
-| Phase 10 P02 | 5min | 2 tasks | 21 files |
-| 10    | 04   | 4min     | 2     | 5     |
-
 ## Active Context
 
-- Milestone: MVP (v1)
-- Total requirements: 60
-- Total phases: 10
-- Critical path: Phase 1 -> 2 -> 3 -> 4 -> 6 -> 7
-- Parallelizable: Phase 4 || 5, Phase 7 || 8 || 9, Phase 10 || 4-9
+- Milestone: v2.0 Visibility & Insights
+- Previous milestone: v1.0 MVP (shipped 2026-03-27, 60 requirements, 10 phases, 26 plans)
 
 ## Last Session
 
-- **Stopped at:** Completed 10-04-PLAN.md
-- **Timestamp:** 2026-03-27T12:52:24Z
+- **Stopped at:** Milestone v2.0 started
+- **Timestamp:** 2026-03-28
 
 ---
 
-_Last updated: 2026-03-26_
+_Last updated: 2026-03-28_
