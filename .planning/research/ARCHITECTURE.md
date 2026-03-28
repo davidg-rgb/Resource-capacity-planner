@@ -1,484 +1,576 @@
-# Architecture Research
+# Architecture Patterns: v2.0 Visibility & Insights
 
-Research into patterns for multi-tenant SaaS systems with spreadsheet-grade editing, applied to the Nordic Capacity resource planner.
+**Domain:** Resource capacity planner — dashboards, visualizations, alerts, PDF export, operational tooling
+**Researched:** 2026-03-28
 
----
+## Recommended Architecture
 
-## Component Architecture
+v2.0 adds **read-heavy visualization layers** on top of the existing allocation data model. The core principle: the allocation table remains the single source of truth. All new features are computed views over existing data — no new canonical data tables for dashboard content. New schema tables are only needed for operational concerns (alerts config, onboarding state, announcements display state).
 
-### Typical Boundaries for Modular Monoliths
-
-Production multi-tenant SaaS systems with interactive grids consistently land on three architectural tiers, even within a monolith:
-
-**1. Tenant Shell (cross-cutting)**
-
-- Auth middleware (tenant resolution, role checks)
-- Tenant context propagation (every request carries `organizationId`)
-- Subscription/entitlement gating
-- Error handling and observability
-
-**2. Domain Modules (business logic)**
-
-- Each module owns its data, queries, validation schemas, and service layer
-- Modules communicate through well-defined service interfaces, never through direct DB queries across module boundaries
-- In Next.js App Router, this maps to `src/features/*` folders with co-located service/query/schema/type files
-
-**3. Presentation Layer (pages + components)**
-
-- Server Components for data fetching and initial render
-- Client Components for interactive elements (grids, forms, wizards)
-- Shared UI primitives in `src/components/ui/`
-
-### Recommended Module Boundaries for Nordic Capacity
-
-The architecture document already identifies the right modules. Key boundary rules to enforce:
-
-| Module           | Owns                                                    | May depend on                                                 |
-| ---------------- | ------------------------------------------------------- | ------------------------------------------------------------- |
-| `allocations`    | allocation table CRUD, batch upsert, grid data queries  | `people`, `projects` (read-only lookups)                      |
-| `people`         | person CRUD, person list queries                        | `organizations` (tenant scoping)                              |
-| `projects`       | project CRUD, program association                       | `programs`                                                    |
-| `programs`       | program CRUD                                            | none                                                          |
-| `import`         | file parsing, column mapping, validation, execution     | `allocations`, `people`, `projects` (write via service calls) |
-| `export`         | Excel/CSV generation                                    | `allocations` (read via service calls)                        |
-| `billing`        | Stripe integration, subscription lifecycle              | `organizations`                                               |
-| `platform-admin` | cross-tenant operations, impersonation                  | all modules (privileged access)                               |
-| `organizations`  | org settings, reference data (departments, disciplines) | none                                                          |
-
-**Key principle:** The `import` module should call `allocationService.batchUpsert()` rather than writing to the allocation table directly. This ensures validation rules and tenant scoping are always applied.
-
----
-
-## Data Flow
-
-### Primary Read Flow (Person Input Form)
+### Architecture Diagram
 
 ```
-Browser Request
-  -> Next.js Middleware (Clerk auth + tenant resolution)
-  -> Server Component (src/app/(app)/input/[personId]/page.tsx)
-    -> allocationService.getByPerson(personId, orgId, monthRange)
-    -> Returns: allocations + person metadata + project list
-  -> Client Component (AllocationGrid)
-    -> AG Grid renders with data
-    -> TanStack Query caches for client-side navigation
+                            +------------------+
+                            |    App Shell     |
+                            |  (top-nav +      |
+                            |   side-nav)      |
+                            +--------+---------+
+                                     |
+              +----------------------+----------------------+
+              |                      |                      |
+    +---------v---------+  +---------v---------+  +---------v---------+
+    |  Dashboard Page   |  |  Team Overview    |  |  Project View     |
+    |  (KPI cards +     |  |  (heat map grid)  |  |  (staffing grid)  |
+    |   charts)         |  |                   |  |                   |
+    +---------+---------+  +---------+---------+  +---------+---------+
+              |                      |                      |
+              +----------+-----------+----------+-----------+
+                         |                      |
+              +----------v----------+  +--------v---------+
+              | analytics.service   |  | alerts.service   |
+              | (aggregation SQL)   |  | (threshold eval) |
+              +----------+----------+  +--------+---------+
+                         |                      |
+              +----------v----------------------v----------+
+              |           Existing Data Layer               |
+              |  allocations + people + projects +          |
+              |  departments + disciplines + programs       |
+              |  (all via withTenant())                     |
+              +--------------------------------------------+
+
+    Separate Concerns:
+    +-----------------+  +------------------+  +-----------------+
+    | PDF Export      |  | Feature Flags    |  | Announcements   |
+    | (API route,     |  | (existing table, |  | (existing table,|
+    |  @react-pdf)    |  |  new service)    |  |  new service)   |
+    +-----------------+  +------------------+  +-----------------+
 ```
 
-### Primary Write Flow (Cell Edit -> Auto-save)
+### Component Boundaries
 
+| Component | Responsibility | Communicates With |
+|-----------|---------------|-------------------|
+| `src/features/analytics/` (NEW) | Aggregation queries for dashboards, heat maps, charts | allocations, people, projects, departments, disciplines |
+| `src/features/alerts/` (NEW) | Alert rule evaluation, threshold config, notification state | analytics service, people, allocations |
+| `src/features/onboarding/` (NEW) | Multi-step wizard state, completion tracking per user | organizations, people, projects, allocations (count checks) |
+| `src/features/feature-flags/` (NEW) | CRUD for per-tenant flags, flag check utility | featureFlags table (already in schema) |
+| `src/features/announcements/` (NEW) | CRUD + display logic for system announcements | systemAnnouncements table (already in schema), dismissal state |
+| `src/features/health/` (NEW) | Extended health metrics beyond basic DB ping | db, Neon pool stats, Clerk API status |
+| `src/components/charts/` (NEW) | Reusable Recharts wrappers (bar, line, pie, area) | analytics service data via TanStack Query |
+| `src/components/heat-map/` (NEW) | Person x Month capacity heat map grid | analytics service data via TanStack Query |
+| `src/components/dashboard/` (NEW) | KPI cards, stat tiles, dashboard layout | charts, analytics hooks |
+| `src/components/pdf/` (NEW) | @react-pdf/renderer document templates | analytics data passed as props |
+| `src/components/alerts/` (NEW) | Alert badge in TopNav, alert list, alert config UI | alerts service via TanStack Query |
+| `src/components/onboarding/` (NEW) | Wizard steps, progress indicator, empty states | onboarding service |
+
+### Data Flow
+
+**Dashboard / Chart Data Flow:**
 ```
-User edits cell in AG Grid
-  -> onCellValueChanged fires
-  -> Debounced auto-save (use-grid-autosave.ts)
-  -> TanStack Query mutation (optimistic update)
-    -> Immediate UI update (new value shown)
-    -> POST /api/allocations/batch (sends changed cells)
-      -> Middleware: auth + tenant resolution
-      -> allocationService.batchUpsert(orgId, changes)
-        -> Drizzle: INSERT ... ON CONFLICT UPDATE
-      -> Returns: { success: true, updatedRows }
-    -> On success: invalidate dependent queries (SUMMA row, status)
-    -> On error: rollback optimistic update, show toast
-```
-
-### Import Flow (Multi-step)
-
-```
-Step 1: Upload
-  -> POST /api/import/upload (multipart file)
-  -> Server: SheetJS parses headers + sample rows
-  -> Returns: { headers, sampleData, suggestedMapping }
-
-Step 2: Map
-  -> Client displays mapping UI
-  -> User confirms/adjusts column mappings
-
-Step 3: Validate
-  -> POST /api/import/validate (file reference + mapping)
-  -> Server: parse all rows, validate against DB
-  -> Returns: { valid[], warnings[], errors[], suggestions[] }
-
-Step 4: Execute
-  -> POST /api/import/execute (validated data + user choices)
-  -> Server: allocationService.batchUpsert() in transaction
-  -> Returns: { imported: 820, skipped: 5, errors: 0 }
+1. Page component mounts (Server Component renders shell)
+2. Client component calls useAnalytics() hook (TanStack Query)
+3. Hook fetches GET /api/analytics/dashboard?timeRange=...
+4. API route calls getTenantId() -> analytics.service aggregation queries
+5. Service runs SQL aggregations with withTenant() scoping
+6. Response flows back through TanStack Query cache -> Recharts components
 ```
 
-### Data Derivation Principle
+**Heat Map Data Flow:**
+```
+1. Team Overview page loads
+2. useTeamHeatMap(monthRange) fetches /api/analytics/team-heatmap
+3. Service query: SELECT person, month, SUM(hours), target
+   FROM allocations JOIN people ... GROUP BY person, month
+4. Returns matrix: [{personId, personName, dept, months: {YYYY-MM: {hours, target, status}}}]
+5. Rendered as CSS grid with color-coded cells (reusing CapacityStatus logic)
+```
 
-All views derive from the flat allocation table:
+**PDF Export Data Flow:**
+```
+1. User clicks "Export PDF" on Team Overview
+2. Client POSTs to /api/analytics/team-heatmap/pdf with current filters
+3. API route fetches same data as heat map display
+4. Passes data to @react-pdf/renderer Document component
+5. renderToStream() generates PDF buffer
+6. Returns as application/pdf with Content-Disposition header
+```
 
-| View              | Derivation                                                                                                    |
-| ----------------- | ------------------------------------------------------------------------------------------------------------- |
-| Person Input Form | `SELECT * FROM allocations WHERE person_id = ? AND org_id = ? AND month BETWEEN ? AND ?` pivoted into grid    |
-| Team Overview     | `SELECT person_id, month, SUM(hours) FROM allocations WHERE org_id = ? GROUP BY person_id, month` -> heat map |
-| Project View      | `SELECT person_id, month, hours FROM allocations WHERE project_id = ? AND org_id = ?` -> staffing grid        |
-| Flat Table        | `SELECT * FROM allocations WHERE org_id = ?` with filters -> tabular display                                  |
-| Dashboard KPIs    | Aggregation queries over allocations joined with people/projects                                              |
+**Alert Evaluation Flow:**
+```
+1. Dashboard page load triggers /api/alerts/active
+2. Also: TopNav Bell icon polls /api/alerts/count (lightweight)
+3. Alert evaluation: ON DEMAND, not background job
+   - When dashboard loads, service checks: for each person/month in range,
+     does SUM(hours)/target exceed threshold?
+   - Returns alert objects with person, month, severity, hours, target
+4. Alert config (optional): stored in alerts_config table per tenant
+   - Default thresholds: amber >= 90%, red > 100%, overload > 120%
+```
 
-This "flat table is truth" pattern is well-established in planning tools. It avoids dual-write consistency problems and makes the system easy to reason about.
+## New Modules Breakdown
 
----
+### 1. `src/features/analytics/` (NEW - Core)
 
-## Tenant Isolation Patterns
+The heaviest new module. All dashboard/chart/heat-map data comes from here.
 
-### Industry Approaches
+**Files:**
+```
+analytics/
+  analytics.service.ts    -- Aggregation query functions
+  analytics.types.ts      -- Response types for all analytics endpoints
+```
 
-There are three common patterns for multi-tenant data isolation:
+**Key service functions:**
 
-**1. Separate databases per tenant**
+| Function | Purpose | SQL Pattern |
+|----------|---------|-------------|
+| `getDashboardKPIs(orgId, monthRange)` | Total people, total hours, avg utilization, over-allocated count | COUNT + SUM + AVG over allocations+people |
+| `getUtilizationByMonth(orgId, monthRange)` | Monthly utilization trend for line chart | SUM(hours) / SUM(target) GROUP BY month |
+| `getTeamHeatMap(orgId, monthRange, filters?)` | Person x month matrix with status colors | allocations JOIN people GROUP BY person, month |
+| `getProjectStaffing(orgId, projectId, monthRange)` | Person x month hours for one project | allocations WHERE projectId GROUP BY person, month |
+| `getDisciplineBreakdown(orgId, month)` | Hours by discipline for pie/bar chart | allocations JOIN people JOIN disciplines GROUP BY discipline |
+| `getDepartmentSummary(orgId, monthRange)` | Department-level aggregates | allocations JOIN people JOIN departments GROUP BY department, month |
 
-- Strongest isolation. Each tenant has their own PostgreSQL database.
-- Operationally expensive: migrations run N times, connection pooling per tenant, backup complexity.
-- Used by: enterprise SaaS where contractual isolation is required (healthcare, finance).
-- Not appropriate here: operational overhead is disproportionate for 1-3 person team.
+**Critical:** All queries MUST include `WHERE organization_id = $orgId` (tenant isolation). Use the existing `buildFlatConditions` pattern from `allocation.service.ts` as reference.
 
-**2. Shared database, separate schemas**
+**Performance note:** These aggregation queries hit the allocations table which already has indexes on `(org_id, person_id, month)`, `(org_id, project_id, month)`, and `(org_id, month)`. For orgs with 500 people x 18 months x 5 projects = 45,000 allocation rows, these GROUP BY queries are fast without materialized views. Revisit if orgs exceed 100K allocation rows.
 
-- Each tenant gets a PostgreSQL schema. Queries use `SET search_path`.
-- Moderate isolation. Migrations still run N times but within one database.
-- Used by: mid-market SaaS with moderate tenant counts (100s, not 10,000s).
-- Possible but unnecessarily complex for this scale.
+### 2. `src/features/alerts/` (NEW)
 
-**3. Shared database, shared schema, row-level filtering**
+**Files:**
+```
+alerts/
+  alerts.service.ts      -- Alert evaluation logic
+  alerts.types.ts        -- Alert types and severity levels
+  alerts.schema.ts       -- Zod schemas for API validation
+```
 
-- All tenants share tables. Every table has `organization_id`. Queries filter by it.
-- Two sub-patterns:
-  - **Postgres RLS (Row-Level Security):** Policies enforce filtering at the database level. `SET app.current_org = ?` per connection.
-  - **ORM middleware/application-level:** Every query gets `WHERE organization_id = ?` injected by the ORM layer.
-- Used by: most SaaS at scale (Slack, Notion, Linear, etc. all use shared-schema approaches).
+**Approach:** Alerts are computed on demand, not stored. No background jobs, no cron. When the dashboard loads, the analytics service evaluates thresholds and returns alert objects. This keeps the architecture simple (no job scheduler needed on Vercel serverless).
 
-### Validation of the ORM Middleware Approach
+**Optional enhancement:** Store an `alert_configs` table for customizable thresholds per tenant. Default thresholds are hardcoded (reuse existing `calculateStatus` from `src/lib/capacity.ts` which already defines green/amber/red).
 
-The project has chosen option 3 with ORM middleware (not Postgres RLS). This is a sound decision for the following reasons:
+### 3. `src/features/onboarding/` (NEW)
 
-**Advantages over Postgres RLS:**
+**Files:**
+```
+onboarding/
+  onboarding.service.ts   -- Completion check logic
+  onboarding.types.ts     -- Step definitions
+```
 
-- **Testability:** Middleware can be unit-tested. RLS policies are tested by running queries against a real database.
-- **Debuggability:** When a tenant isolation bug occurs, application-level filtering surfaces in logs and stack traces. RLS failures are silent (rows simply don't appear).
-- **Portability:** Not coupled to PostgreSQL. If the database changes, the isolation logic moves with the application.
-- **Drizzle compatibility:** Drizzle does not have first-class RLS support. Applying RLS requires raw SQL policy definitions outside the ORM's migration system.
-- **Performance transparency:** Application-level WHERE clauses are visible in query plans. RLS can introduce unexpected performance characteristics, especially with complex policies.
+**Approach:** Stateless computation. Check existing data to determine onboarding progress:
+- Step 1: Organization exists (always true if they're logged in)
+- Step 2: At least 1 department + 1 discipline created
+- Step 3: At least 1 person created
+- Step 4: At least 1 project created
+- Step 5: At least 1 allocation exists
 
-**Risks to mitigate:**
+No new DB table needed. Query counts from existing tables. Store "dismissed" state in `localStorage` on client side to avoid showing the wizard to users who have already completed or skipped it.
 
-- **Missed filter:** The primary risk is a code path that forgets to apply `organization_id` filtering. Mitigations:
-  1. All Drizzle queries should go through a `withTenant(orgId)` wrapper or base query builder that automatically injects the filter.
-  2. Integration tests should verify that queries for tenant A never return tenant B data.
-  3. A CI check or linting rule that flags raw Drizzle queries not using the tenant wrapper.
-- **Direct SQL/migration scripts:** Any raw SQL must include `organization_id` filtering. Document this as a team convention.
+### 4. `src/features/feature-flags/` (NEW)
 
-**Recommended implementation pattern (Drizzle):**
+**Files:**
+```
+feature-flags/
+  feature-flags.service.ts  -- CRUD + check functions
+  feature-flags.types.ts    -- Flag name constants
+```
 
+**Schema already exists:** `featureFlags` table in `schema.ts` with `organizationId`, `flagName`, `enabled`, `setByAdminId`. Just needs the service layer.
+
+**Key functions:**
+- `getFlags(orgId)` -- all flags for tenant
+- `isEnabled(orgId, flagName)` -- single flag check (used in API routes and pages)
+- `setFlag(orgId, flagName, enabled, adminId)` -- platform admin toggle
+
+**Client-side:** Fetch flags once on app load, cache in TanStack Query with long stale time. Provide `useFeatureFlag(name)` hook.
+
+### 5. `src/features/announcements/` (NEW)
+
+**Files:**
+```
+announcements/
+  announcements.service.ts  -- Query active announcements, CRUD for admins
+  announcements.types.ts    -- Announcement types
+```
+
+**Schema already exists:** `systemAnnouncements` table with `title`, `body`, `severity`, `targetOrgIds`, `startsAt`, `expiresAt`.
+
+**Query pattern:** `WHERE startsAt <= NOW() AND (expiresAt IS NULL OR expiresAt > NOW()) AND (targetOrgIds IS NULL OR orgId = ANY(targetOrgIds))`.
+
+**Dismissal:** Store dismissed announcement IDs in `localStorage` per user. No DB table for dismissals (keeps it simple; announcements are rare and temporary).
+
+### 6. `src/features/health/` (NEW)
+
+**Files:**
+```
+health/
+  health.service.ts  -- Extended health checks
+```
+
+**Extends existing** `/api/health` endpoint. Add:
+- DB connection pool stats (Neon provides these)
+- Response time measurement (wrap the SELECT 1 in timing)
+- Clerk API reachability (optional lightweight check)
+- Memory/runtime info from `process.memoryUsage()`
+- Version info from `package.json`
+
+**Platform admin only.** The existing `/api/health` stays public for uptime monitors. New `/api/platform/health` returns extended metrics behind platform auth.
+
+## Existing Code Extensions
+
+### Files to Modify
+
+| File | Change | Reason |
+|------|--------|--------|
+| `src/components/layout/top-nav.tsx` | Add alert badge to Bell icon, announcement banner below header | Alerts + Announcements integration |
+| `src/components/layout/side-nav.tsx` | Add sub-nav items under Dashboard (Overview, Disciplines, Departments) | Dashboard sub-pages |
+| `src/components/layout/app-shell.tsx` | Add announcement banner slot above main content | Announcements display |
+| `src/app/(app)/dashboard/page.tsx` | Replace placeholder with KPI cards + charts | Dashboard implementation |
+| `src/app/(app)/team/page.tsx` | Add heat map view toggle alongside people table | Team Overview heat map |
+| `src/app/(app)/projects/page.tsx` | Add staffing grid view per project | Project View staffing |
+| `src/lib/capacity.ts` | Export threshold constants, add `calculateUtilization()` helper | Shared by heat map + alerts |
+| `src/app/onboarding/page.tsx` | Replace Clerk-only form with multi-step wizard | Onboarding wizard |
+| `src/app/api/health/route.ts` | Keep simple, but add link to extended health | Health monitoring |
+| `src/proxy.ts` | No changes needed (routes already covered) | -- |
+
+### New API Routes
+
+```
+src/app/api/
+  analytics/
+    dashboard/route.ts           -- GET: KPI summary
+    utilization/route.ts         -- GET: Monthly utilization trend
+    team-heatmap/route.ts        -- GET: Person x month matrix
+    team-heatmap/pdf/route.ts    -- POST: PDF export of heat map
+    project-staffing/route.ts    -- GET: Project staffing grid
+    discipline-breakdown/route.ts -- GET: Discipline pie/bar data
+    department-summary/route.ts  -- GET: Department aggregates
+  alerts/
+    route.ts                     -- GET: Active alerts for tenant
+    count/route.ts               -- GET: Alert count (lightweight, for badge)
+    config/route.ts              -- GET/PUT: Alert threshold config (optional)
+  announcements/
+    active/route.ts              -- GET: Active announcements for current tenant
+  feature-flags/
+    route.ts                     -- GET: All flags for tenant
+    [flagName]/route.ts          -- GET/PUT: Single flag (platform admin)
+  onboarding/
+    status/route.ts              -- GET: Onboarding completion status
+  platform/
+    health/route.ts              -- GET: Extended health metrics
+    announcements/route.ts       -- GET/POST: CRUD announcements (admin)
+    announcements/[id]/route.ts  -- PUT/DELETE: Single announcement (admin)
+    feature-flags/
+      [orgId]/route.ts           -- GET/PUT: Flags for specific tenant (admin)
+```
+
+### New Client Hooks
+
+```
+src/hooks/
+  use-analytics.ts       -- useKPIs(), useUtilization(), useTeamHeatMap(), etc.
+  use-alerts.ts          -- useAlerts(), useAlertCount()
+  use-feature-flags.ts   -- useFeatureFlags(), useFeatureFlag(name)
+  use-announcements.ts   -- useActiveAnnouncements()
+  use-onboarding.ts      -- useOnboardingStatus()
+```
+
+### New Pages
+
+```
+src/app/(app)/
+  dashboard/
+    page.tsx              -- Management dashboard (rewrite from placeholder)
+    disciplines/page.tsx  -- Discipline breakdown charts
+    departments/page.tsx  -- Department summary view
+  team/
+    page.tsx              -- Extend with heat map toggle
+    overview/page.tsx     -- Dedicated heat map page (if separate from team list)
+```
+
+## Patterns to Follow
+
+### Pattern 1: Analytics Service as Pure SQL Aggregations
+
+**What:** Keep analytics service functions as thin wrappers around Drizzle SQL aggregation queries. No in-memory data transformation.
+
+**When:** All dashboard/chart data.
+
+**Example:**
 ```typescript
-// src/lib/tenant.ts
-export function withTenant<T extends PgTable>(table: T, orgId: string) {
-  return db.select().from(table).where(eq(table.organizationId, orgId));
+// analytics.service.ts
+export async function getUtilizationByMonth(
+  orgId: string,
+  monthFrom: string,
+  monthTo: string,
+): Promise<MonthlyUtilization[]> {
+  const rows = await db
+    .select({
+      month: allocations.month,
+      totalHours: sql<number>`sum(${allocations.hours})`,
+      totalTarget: sql<number>`sum(${people.targetHoursPerMonth})`,
+    })
+    .from(allocations)
+    .innerJoin(people, eq(allocations.personId, people.id))
+    .where(
+      and(
+        eq(allocations.organizationId, orgId),
+        gte(allocations.month, `${monthFrom}-01`),
+        lte(allocations.month, `${monthTo}-01`),
+      ),
+    )
+    .groupBy(allocations.month)
+    .orderBy(allocations.month);
+
+  return rows.map((r) => ({
+    month: normalizeMonth(r.month),
+    utilization: r.totalTarget > 0 ? r.totalHours / r.totalTarget : 0,
+    totalHours: r.totalHours,
+    totalTarget: r.totalTarget,
+  }));
+}
+```
+
+**Rationale:** Pushes computation to PostgreSQL where indexes exist. Keeps the JS layer thin. Matches the existing pattern in `allocation.service.ts`.
+
+### Pattern 2: Recharts with Wrapper Components
+
+**What:** Create thin wrapper components around Recharts that enforce the Nordic Precision design system.
+
+**When:** Every chart in the app.
+
+**Example:**
+```typescript
+// components/charts/capacity-line-chart.tsx
+'use client';
+
+import {
+  LineChart, Line, XAxis, YAxis, CartesianGrid,
+  Tooltip, ResponsiveContainer,
+} from 'recharts';
+
+const CHART_COLORS = {
+  primary: '#496173',
+  amber: '#F59E0B',
+  red: '#EF4444',
+  grid: '#E5E7EB',
+};
+
+interface Props {
+  data: { month: string; utilization: number }[];
 }
 
-// Or as a query builder extension:
-export function tenantScope(orgId: string) {
-  return {
-    allocations: db.select().from(allocations).where(eq(allocations.organizationId, orgId)),
-    people: db.select().from(people).where(eq(people.organizationId, orgId)),
-    // ... other tables
-  };
+export function CapacityLineChart({ data }: Props) {
+  return (
+    <ResponsiveContainer width="100%" height={300}>
+      <LineChart data={data}>
+        <CartesianGrid strokeDasharray="3 3" stroke={CHART_COLORS.grid} />
+        <XAxis dataKey="month" tick={{ fontSize: 12, fontFamily: 'Inter' }} />
+        <YAxis tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} />
+        <Tooltip />
+        <Line
+          type="monotone"
+          dataKey="utilization"
+          stroke={CHART_COLORS.primary}
+          strokeWidth={2}
+        />
+      </LineChart>
+    </ResponsiveContainer>
+  );
 }
 ```
 
-This is superior to Postgres RLS for this project's constraints (small team, Drizzle ORM, Neon serverless where connection-level SET commands add complexity with connection pooling).
+**Rationale:** Recharts is lightweight (~200KB gzipped), composable, SVG-based, Tailwind-compatible, well-maintained. Tremor would add another abstraction layer unnecessary given the custom Nordic Precision design system. Nivo has SSR issues with App Router.
 
----
+### Pattern 3: Heat Map as CSS Grid, Not AG Grid
 
-## Grid State Management
+**What:** Build the team heat map as a custom CSS Grid component, not reusing AG Grid.
 
-### The Core Challenge
+**When:** Team Overview and PDF export.
 
-Spreadsheet editing in a web app requires reconciling two realities:
+**Rationale:** AG Grid is overkill for a read-only colored matrix. The heat map is display-only (no editing). A CSS grid with `grid-template-columns: repeat(N, 1fr)` plus color-coded cells is simpler, more performant, and easier to render in @react-pdf/renderer for PDF export. AG Grid Community does not support custom cell renderers with color fills well for this use case.
 
-1. The user expects instant feedback (type a number, see it immediately)
-2. The server is the source of truth (persisted data, derived calculations)
+### Pattern 4: PDF via @react-pdf/renderer (Not Puppeteer)
 
-### Pattern 1: Optimistic Updates with Rollback (Recommended)
+**What:** Use `@react-pdf/renderer` for server-side PDF generation in API routes.
 
-This is the standard pattern used by Google Sheets, Notion tables, Linear, and most modern collaborative editors:
+**When:** Team Overview PDF export.
 
-```
-User types "120" in cell (person=Alice, project=Alpha, month=2026-04)
-  1. AG Grid updates the cell value immediately (local state)
-  2. SUMMA row recalculates client-side (sum of column values)
-  3. Status row updates client-side (compare SUMMA vs target)
-  4. Mutation fires: PATCH /api/allocations/batch
-  5. On success: TanStack Query cache updated, no visible change to user
-  6. On failure: cell reverts to previous value, toast shows error
-```
-
-**Key implementation details:**
-
-- **Debounce strategy:** Do not send a request per keystroke. Use cell-blur or a 500ms debounce after last edit. AG Grid's `onCellEditingStopped` is the right hook.
-- **Batch mutations:** Collect all changes since last save into a single batch request. The user may edit 5 cells before any save fires.
-- **Client-side derived values:** SUMMA (column total) and Status (over/under/ok) should be computed client-side for instant feedback, then validated against server response.
-
-### Pattern 2: Conflict Detection
-
-For a single-person-at-a-time editing model (which this system uses), conflicts are rare but possible:
-
-- **Same person, two browser tabs:** User A and User B both editing Alice's allocations.
-- **Import overwrites grid data:** Bulk import runs while someone is editing.
-
-**Last-write-wins with notification** is the appropriate strategy at this scale:
+**Rationale:** Puppeteer requires a headless Chrome binary which does not work on Vercel serverless. `@react-pdf/renderer` generates PDF from React component trees purely in Node.js with no browser dependency. It supports tables, text styling, and color fills which covers the heat map layout. Trade-off: you must reimplement the layout in @react-pdf primitives (View, Text, etc.) rather than reusing web components directly. But for a structured table/grid, this is straightforward.
 
 ```typescript
-// Each allocation row has an `updatedAt` timestamp
-// On batch save, include the `updatedAt` of each changed row
-// Server checks: if server.updatedAt > client.updatedAt, conflict detected
-// Response: { conflicts: [{ cellId, yourValue, serverValue, serverUpdatedAt }] }
-// Client shows: "This cell was modified by another user. Keep yours or use theirs?"
+// api/analytics/team-heatmap/pdf/route.ts
+import { renderToBuffer } from '@react-pdf/renderer';
+import { TeamHeatMapDocument } from '@/components/pdf/team-heatmap-document';
+
+export async function POST(request: Request) {
+  const orgId = await getTenantId();
+  const { monthFrom, monthTo } = await request.json();
+  const data = await getTeamHeatMap(orgId, monthFrom, monthTo);
+
+  const buffer = await renderToBuffer(
+    <TeamHeatMapDocument data={data} monthFrom={monthFrom} monthTo={monthTo} />
+  );
+
+  return new Response(buffer, {
+    headers: {
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename="team-overview.pdf"',
+    },
+  });
+}
 ```
 
-Full operational transform (Google Docs style) is overkill for monthly allocation grids. The data is naturally low-contention: each person's allocation is typically edited by one line manager.
+### Pattern 5: Feature Flags as Middleware + Hook
 
-### Pattern 3: TanStack Query Cache as Client State
+**What:** Check feature flags in both API routes (server) and components (client).
 
-TanStack Query is the right tool for this because it handles:
+**When:** Gating new features per tenant.
 
-- **Cache invalidation:** After a save, invalidate queries that depend on the changed data (SUMMA calculations, team overview aggregates).
-- **Optimistic updates:** `useMutation` with `onMutate` for immediate UI update and `onError` for rollback.
-- **Stale-while-revalidate:** When navigating between people, cached data shows instantly while a background refetch runs.
-- **Window focus refetch:** When the user returns to the tab, data is silently refreshed.
-
-**Recommended cache key structure:**
-
+**Server-side check:**
 ```typescript
-// Per-person allocation data (the grid)
-['allocations', orgId, personId, { from: '2026-01', to: '2027-06' }][
-  // Person list (sidebar)
-  ('people', orgId, { filters })
-][
-  // Project list (for dropdowns)
-  ('projects', orgId)
-][
-  // Team overview aggregates
-  ('team-overview', orgId, { from, to })
-];
+// In API route
+const enabled = await isEnabled(orgId, 'dashboards');
+if (!enabled) {
+  return NextResponse.json({ error: 'Feature not available' }, { status: 403 });
+}
 ```
 
-### AG Grid Integration Specifics
-
-- AG Grid manages its own internal state. The pattern is: load data into AG Grid via `rowData` prop, let AG Grid handle editing, capture changes via `onCellValueChanged`, sync back to server.
-- Do not try to make AG Grid a controlled component (re-rendering on every state change). It is designed as an uncontrolled component with imperative API access.
-- For SUMMA/Status rows: use AG Grid's `pinnedBottomRowData` for summary rows that update when cell values change.
-
----
-
-## Platform Admin Patterns
-
-### How SaaS Platforms Typically Separate Admin
-
-There are three common approaches:
-
-**1. Same app, different role (Not recommended)**
-
-- Platform admins are just users with a "super-admin" role in the same auth system.
-- Risk: privilege escalation bugs expose platform-level operations to tenant users.
-- Risk: Clerk organization model doesn't naturally support a "god mode" user.
-
-**2. Same app, separate auth system (Chosen approach)**
-
-- Platform admin routes (`/platform/*`) use their own JWT/session mechanism.
-- Tenant routes use Clerk. Platform routes use a `platform_admins` table with bcrypt passwords and custom JWT.
-- Middleware checks: if route starts with `/platform`, validate platform JWT. Otherwise, validate Clerk session.
-- This is how Vercel, Railway, and many infrastructure SaaS handle it.
-
-**3. Completely separate application**
-
-- Platform admin is a different deployed app (e.g., `admin.example.com`).
-- Maximum isolation but doubles deployment and maintenance effort.
-- Appropriate for large teams. Overkill for 1-3 developers.
-
-### Validation of the Chosen Approach (Option 2)
-
-The decision to use a separate auth system for platform admin is well-aligned with the constraints:
-
-**Why this works:**
-
-- **No Clerk dependency for platform operations:** If Clerk has an outage, platform admin still works. Critical for incident response.
-- **Clear security boundary:** Platform admin routes are a separate middleware branch. No risk of tenant middleware accidentally granting platform access.
-- **Simple implementation:** A `platform_admins` table with email/password_hash/role/created_at. JWT with short expiry (1 hour). No OAuth, no social login, no invitation flow needed.
-- **Impersonation is clean:** Platform admin authenticates with their own JWT, then "enters" a tenant context. Audit log records both identities.
-
-**Implementation recommendations:**
-
-```
-Platform Admin Auth Flow:
-1. POST /api/platform/auth { email, password }
-2. Server: verify against platform_admins table (bcrypt)
-3. Server: issue JWT { sub: platformAdminId, role: 'platform_admin', exp: 1h }
-4. Client: store in httpOnly cookie (not localStorage)
-5. All /platform/* routes: middleware verifies this JWT
-
-Impersonation Flow:
-1. POST /api/platform/organizations/:orgId/impersonate
-2. Server: creates impersonation session { platformAdminId, targetOrgId, targetUserId, startedAt }
-3. Server: issues a secondary token/cookie for the impersonated context
-4. Client: navigates to /(app)/* routes with impersonation banner visible
-5. Every action during impersonation: audit log includes platformAdminId
-6. POST /api/platform/impersonation/end -> clears impersonation session
+**Client-side hook:**
+```typescript
+// In component
+const dashboardEnabled = useFeatureFlag('dashboards');
+if (!dashboardEnabled) return <UpgradeBanner />;
 ```
 
-**Security considerations:**
+## Anti-Patterns to Avoid
 
-- Rate-limit `/api/platform/auth` aggressively (5 attempts per 15 minutes).
-- Require strong passwords (16+ chars) for platform admins — there will be very few of them.
-- Consider TOTP 2FA for platform admin login in Phase 2.
-- All platform admin actions should write to `platform_audit_log` table.
-- The `PLATFORM_ADMIN_SECRET` used for initial admin seeding should be rotated after first use.
+### Anti-Pattern 1: Background Job for Alerts
+**What:** Running a cron job or scheduled function to pre-compute alerts.
+**Why bad:** Adds infrastructure complexity (Vercel Cron, queue, state management) for a feature that only needs data when someone views the dashboard. Over-engineering.
+**Instead:** Compute alerts on demand when dashboard loads. Cache in TanStack Query for 60s.
 
----
+### Anti-Pattern 2: Separate Analytics Database / Materialized Views
+**What:** Creating materialized views or a separate analytics DB for dashboard queries.
+**Why bad:** Premature optimization. Target audience is 20-500 managed resources. Even at 500 people x 18 months x 10 projects = 90K rows, PostgreSQL handles GROUP BY in milliseconds.
+**Instead:** Direct queries with existing indexes. Add materialized views only if query times exceed 500ms.
 
-## Build Order Implications
+### Anti-Pattern 3: Real-Time WebSocket Updates for Dashboards
+**What:** Pushing dashboard updates via WebSocket when allocations change.
+**Why bad:** Massive complexity. Resource planning is not a real-time domain (changes happen infrequently).
+**Instead:** TanStack Query with `refetchOnWindowFocus: true` and a 30-60s stale time. Users get fresh data when switching tabs.
 
-### Dependency Graph
+### Anti-Pattern 4: Storing Rendered Charts as Images
+**What:** Pre-rendering chart images on the server and caching them.
+**Why bad:** Stale data, cache invalidation complexity, loses interactivity.
+**Instead:** Recharts renders client-side from fresh data. Fast enough for the data volumes involved.
 
-The system has clear dependency chains that dictate build order:
+### Anti-Pattern 5: Reusing AG Grid for Heat Maps
+**What:** Using AG Grid with custom cell renderers for the team heat map.
+**Why bad:** AG Grid is designed for editable spreadsheets. Adding it to a read-only color matrix adds 200KB+ of unnecessary JS, complex configuration for a simple display need, and makes PDF export harder.
+**Instead:** CSS Grid with colored div cells. Lightweight, accessible, easy to port to @react-pdf.
+
+## Scalability Considerations
+
+| Concern | At 50 people (small) | At 500 people (target) | At 5000 people (future) |
+|---------|---------------------|----------------------|------------------------|
+| Dashboard query time | <50ms | <200ms | May need materialized views |
+| Heat map rendering | Trivial | 500x18 = 9000 cells, fine | Need virtualization or pagination |
+| PDF generation | <1s | 2-5s (500 rows, 18 cols) | Need chunking or background job |
+| Alert evaluation | <50ms | <200ms (one aggregation query) | Need pre-computation |
+| Feature flag checks | Negligible | Negligible | Negligible |
+| TanStack Query cache | Standard | Standard | May need query splitting by date range |
+
+## Technology Choices for v2.0
+
+| Need | Technology | Version | Why |
+|------|-----------|---------|-----|
+| Charts | Recharts | 2.x | Lightweight, composable, SVG-based, Tailwind-compatible, active maintenance |
+| PDF | @react-pdf/renderer | 4.x | Pure Node.js PDF gen, no browser binary, works on Vercel serverless |
+| Heat map | Custom CSS Grid | -- | Simpler than AG Grid for read-only colored matrix, easy PDF port |
+| Feature flags | Custom (DB-backed) | -- | Schema already exists, no external service needed |
+| Announcements | Custom (DB-backed) | -- | Schema already exists, simple display logic |
+| Health monitoring | Custom + Sentry | -- | Extend existing /api/health, Sentry already in stack |
+| Alert notifications | TanStack Query polling | -- | No WebSocket needed, 60s refresh cycle |
+
+## Suggested Build Order
+
+Based on dependency analysis between new features:
 
 ```
-Level 0 (Foundation - no dependencies):
-  Database schema + Drizzle setup
-  Clerk auth integration
-  Tailwind + design tokens
-  Project scaffolding (Next.js, tsconfig, linting)
+Phase 1: Analytics Foundation
+  - analytics.service.ts (all aggregation queries)
+  - analytics.types.ts
+  - API routes for dashboard/heatmap/staffing/discipline
+  - useAnalytics hooks
+  Depends on: nothing new (reads existing data)
+  Unlocks: everything else
 
-Level 1 (Core domain - depends on Level 0):
-  Tenant middleware (organization_id extraction from Clerk)
-  Reference data CRUD (departments, disciplines, programs)
-  Person CRUD
-  Project CRUD
+Phase 2: Dashboard + Charts
+  - Recharts wrapper components
+  - Dashboard page with KPI cards
+  - Utilization line chart
+  - Discipline breakdown chart
+  Depends on: Phase 1 (analytics service)
 
-Level 2 (Primary feature - depends on Level 1):
-  Allocation table CRUD + batch upsert
-  Person Input Form (AG Grid integration)
-  Auto-save + optimistic updates
+Phase 3: Team Heat Map + Project Staffing
+  - Heat map component (CSS Grid)
+  - Team Overview page integration
+  - Project staffing grid
+  Depends on: Phase 1 (analytics service)
 
-Level 3 (Data operations - depends on Level 1 + 2):
-  Flat Table View (read from allocations, filter, sort)
-  Excel import wizard (depends on people, projects, allocations services)
-  Excel/CSV export
+Phase 4: Alerts
+  - alerts.service.ts
+  - Alert badge in TopNav
+  - Alert list on dashboard
+  Depends on: Phase 1 (analytics service), Phase 2 (dashboard page exists)
 
-Level 4 (Secondary views - depends on Level 2):
-  Team Overview heat map
-  Project View
-  Management Dashboard
+Phase 5: PDF Export
+  - @react-pdf/renderer setup
+  - TeamHeatMapDocument component
+  - PDF API route
+  Depends on: Phase 3 (heat map data/layout defined)
 
-Level 5 (Platform - can be built in parallel from Level 0):
-  Platform admin auth
-  Platform admin dashboard
-  Tenant management
-  Impersonation
+Phase 6: Operational Features (parallelizable)
+  6a: Feature Flags
+    - feature-flags.service.ts
+    - Platform admin UI for flag management
+    - useFeatureFlag hook
+    Depends on: nothing (schema exists)
 
-Level 6 (Monetization - depends on Level 0 + 1):
-  Stripe billing integration
-  Subscription gating middleware
+  6b: Announcements
+    - announcements.service.ts
+    - Banner component in AppShell
+    - Platform admin CRUD
+    Depends on: nothing (schema exists)
+
+  6c: Onboarding Wizard
+    - onboarding.service.ts (completion checks)
+    - Multi-step wizard UI
+    - Replace current Clerk-only onboarding page
+    Depends on: nothing
+
+  6d: System Health
+    - health.service.ts (extended)
+    - Platform admin health dashboard
+    Depends on: nothing
 ```
 
-### Recommended Build Sequence
+**Ordering rationale:**
+1. Analytics service first because dashboards, heat maps, alerts, and PDF all depend on aggregation queries
+2. Dashboard and heat map next because they are the highest-value user-facing features
+3. Alerts after dashboard because they display within the dashboard context
+4. PDF after heat map because PDF exports the heat map layout
+5. Operational features (flags, announcements, onboarding, health) are independent and can be built in any order or in parallel
 
-**Sprint 1: Foundation (1-2 weeks)**
+## Sources
 
-1. Next.js project scaffolding with App Router
-2. Tailwind config with design tokens from prototypes
-3. Drizzle schema definition (all tables, indexes, relations)
-4. Database migration pipeline (Neon)
-5. Clerk integration (sign-up, sign-in, organization creation)
-6. Tenant middleware (`organizationId` on every request)
-7. App shell layout (top nav + side nav, no functionality)
-
-**Sprint 2: Core Domain (1-2 weeks)**
-
-1. Person CRUD (service + API routes + basic UI)
-2. Project CRUD (service + API routes + basic UI)
-3. Reference data CRUD (departments, disciplines, programs)
-4. Person sidebar navigation (list with search)
-
-**Sprint 3: The Grid (2-3 weeks) -- This is the critical path**
-
-1. AG Grid integration (allocation-grid component)
-2. Allocation service (CRUD + batch upsert)
-3. Grid data loading (server component -> client grid)
-4. Cell editing + auto-save (use-grid-autosave hook)
-5. SUMMA row + Status row (client-side calculations)
-6. Keyboard navigation (Tab, Enter, arrows)
-7. Drag-to-fill (custom implementation)
-8. Person prev/next navigation with grid data caching
-
-**Sprint 4: Data Operations (1-2 weeks)**
-
-1. Flat Table View (TanStack Table, not AG Grid — different interaction model)
-2. Excel/CSV export
-3. Import wizard (upload -> map -> validate -> execute)
-4. Swedish header auto-detection
-
-**Sprint 5: Polish + Billing (1-2 weeks)**
-
-1. Stripe integration (subscription creation, webhook handling)
-2. Subscription gating (trial -> paid -> expired states)
-3. Error handling polish (Sentry integration, error boundaries)
-4. Onboarding flow refinement
-
-**Platform Admin (can run in parallel with Sprints 3-5):**
-
-1. Platform admin auth (separate JWT system)
-2. Organization list + detail views
-3. Tenant management actions (suspend, reactivate)
-4. Impersonation flow
-5. Platform audit log
-
-### What Can Be Parallelized
-
-If two developers are available:
-
-| Developer A               | Developer B                                  |
-| ------------------------- | -------------------------------------------- |
-| Sprint 1: Foundation      | Sprint 1: Foundation (collaborate)           |
-| Sprint 2: Core Domain     | Sprint 2: Core Domain (split person/project) |
-| Sprint 3: The Grid        | Platform Admin (auth + dashboard)            |
-| Sprint 4: Data Operations | Platform Admin (impersonation + audit)       |
-| Sprint 5: Billing         | Sprint 5: Polish + testing                   |
-
-### Critical Path Items
-
-The **AG Grid integration** (Sprint 3) is the highest-risk, highest-effort item. It is the core product experience and has the most unknowns:
-
-- AG Grid Community Edition's limitations may surface during implementation (range selection, copy/paste edge cases)
-- Auto-save timing and debounce tuning requires real user testing
-- SUMMA/Status row reactivity needs careful state management
-- Performance with 100 projects x 36 months (3,600 cells) needs profiling
-
-**Recommendation:** Build a minimal grid prototype early (even before Sprint 3 formally starts) to validate AG Grid Community Edition's capabilities against the requirements. A half-day spike can prevent weeks of rework.
-
-### What to Defer
-
-Items that should explicitly NOT be built in Phase 1:
-
-- Department-level scoping (Phase 3 — requires rethinking every query)
-- Real-time collaboration / WebSocket sync (not needed — low-contention data)
-- Weekly granularity (monthly is the canonical unit)
-- Notification system (placeholder icon only)
-- Dark mode (CSS variable toggle, add later)
-- Public API (Phase 3)
-
----
-
-## Summary of Key Recommendations
-
-1. **Tenant isolation via ORM middleware is the right call.** Implement a `withTenant()` query wrapper and enforce its use through code review and integration tests.
-
-2. **Optimistic updates with last-write-wins conflict detection** is the right pattern for grid editing at this contention level.
-
-3. **AG Grid should be treated as an uncontrolled component.** Load data in, capture changes out, sync to server. Do not try to make React own the grid state.
-
-4. **Platform admin as a separate auth system within the same app** is the right balance of isolation and development efficiency.
-
-5. **The grid (Sprint 3) is the critical path.** Spike it early, budget extra time, and do not let import/export or billing block it.
-
-6. **TanStack Query is the state management layer.** No Redux, no Zustand, no separate client store. Server state belongs in TanStack Query; grid state belongs in AG Grid. They meet at the mutation boundary.
+- Existing codebase analysis: `src/features/allocations/allocation.service.ts`, `src/db/schema.ts`, `src/lib/capacity.ts`
+- [Recharts vs Nivo comparison](https://www.speakeasy.com/blog/nivo-vs-recharts) - MEDIUM confidence
+- [Best React chart libraries 2025](https://blog.logrocket.com/best-react-chart-libraries-2025/) - MEDIUM confidence
+- [Tremor](https://www.tremor.so/) - MEDIUM confidence
+- [@react-pdf/renderer on npm](https://www.npmjs.com/package/@react-pdf/renderer) - HIGH confidence (860K weekly downloads, React 19 compatible)
+- [PDF generation in Next.js serverless](https://techresolve.blog/2025/12/25/anyone-generating-pdfs-server-side-in-next-js/) - MEDIUM confidence
+- [Vercel Flags SDK](https://flags-sdk.dev/) - HIGH confidence (official Vercel docs)
+- [Feature flags in Next.js](https://spin.atomicobject.com/feature-flags-in-nextjs/) - MEDIUM confidence

@@ -1,289 +1,215 @@
-# Stack Research
+# Technology Stack
 
-> Researched: 2026-03-25
-> Context: Multi-tenant SaaS resource capacity planner for engineering teams (Nordic Capacity)
+**Project:** Nordic Capacity v2.0 -- Visibility & Insights
+**Researched:** 2026-03-28
 
-## Recommended Stack
+## Existing Stack (validated, DO NOT change)
 
-| Layer      | ARCHITECTURE.md Choice | Recommended (March 2026)   | Version   | Confidence | Action                 |
-| ---------- | ---------------------- | -------------------------- | --------- | ---------- | ---------------------- |
-| Framework  | Next.js 15             | **Next.js 16.2**           | 16.2.x    | HIGH       | Upgrade                |
-| Language   | TypeScript 5.x         | TypeScript 5.x             | 5.7+      | HIGH       | Keep                   |
-| Database   | PostgreSQL 16 on Neon  | PostgreSQL 17 on Neon      | 17        | HIGH       | Upgrade                |
-| ORM        | Drizzle 0.35+          | Drizzle 0.45.x (stable)    | 0.45.1    | HIGH       | Upgrade, skip v1 beta  |
-| Auth       | Clerk                  | Clerk (@clerk/nextjs v6)   | 6.x       | HIGH       | Keep                   |
-| Grid       | AG Grid Community 32.x | **AG Grid Community 35.x** | 35.2.0    | HIGH       | Upgrade                |
-| Styling    | Tailwind CSS 4.x       | Tailwind CSS 4.x           | 4.1+      | HIGH       | Keep                   |
-| State      | TanStack Query 5.x     | TanStack Query 5.x         | 5.95.0    | HIGH       | Keep                   |
-| Validation | Zod 3.x                | **Zod 4.x**                | 4.3.6     | HIGH       | Upgrade                |
-| Excel      | SheetJS 0.20+          | SheetJS 0.20.3 (CDN)       | 0.20.3    | MEDIUM     | Keep, install from CDN |
-| Monitoring | Sentry                 | Sentry (@sentry/nextjs)    | latest    | HIGH       | Keep                   |
-| Hosting    | Vercel Pro             | Vercel Pro                 | -         | HIGH       | Keep                   |
-| CI/CD      | GitHub Actions         | GitHub Actions             | -         | HIGH       | Keep                   |
-| Linting    | (not specified)        | **Biome 2.x** or ESLint 9  | 2.3 / 9.x | MEDIUM     | Add                    |
-| Testing    | (not specified)        | **Vitest + Playwright**    | latest    | HIGH       | Add                    |
+| Layer      | Technology              | Version   |
+| ---------- | ----------------------- | --------- |
+| Framework  | Next.js 16 (App Router) | 16.2.1    |
+| Language   | TypeScript 5.x          | ^5        |
+| Database   | PostgreSQL 17 on Neon   | 17        |
+| ORM        | Drizzle 0.45.x          | 0.45.1    |
+| Auth       | Clerk (@clerk/nextjs)   | ^7.0.7    |
+| Grid       | AG Grid Community       | ^35.2.0   |
+| Styling    | Tailwind CSS 4.x        | ^4        |
+| State      | TanStack Query 5.x      | ^5.95.2   |
+| Validation | Zod 4.x                 | ^4.3.6    |
+| Excel      | SheetJS                 | 0.20.3    |
+| Monitoring | Sentry                  | latest    |
+| Hosting    | Vercel Pro              | --        |
+| Icons      | Lucide React            | ^1.7.0    |
 
-## Validation Notes
+## New Stack Additions for v2.0
 
-### Next.js: Upgrade to 16.2 (was 15)
+### Charts & Data Visualization
 
-Next.js 16.0 was released October 2025, with 16.2 following in March 2026. **Next.js 15 is now two major versions behind.**
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| Recharts | ^3.8.x | KPI dashboards, bar charts, line charts, discipline breakdowns | Most popular React charting library. v3 is actively maintained (3.8.1 released March 2026). TypeScript-first, SVG-based, simple declarative API. Excellent for standard chart types (bar, line, pie, area). Works with React 19. Lighter than Nivo for the chart types we actually need. |
+| @nivo/heatmap | ^0.99.x | Team Overview capacity heat map (person x month matrix) | Best-in-class heat map component for React. Built-in color scales, cell shapes (rect/circle), tooltips, theming. React 19 compatible since v0.98. Recharts has NO native heat map -- Nivo fills this gap precisely. Only install `@nivo/core` + `@nivo/heatmap`, not the full Nivo suite. |
 
-Key reasons to upgrade:
+**Why not just one library?**
+Recharts lacks a heat map component entirely (open issue #237 since 2017, never implemented). Nivo has excellent heat maps but is heavier for simple bar/line/pie charts. Using Recharts for dashboards + Nivo for the capacity heat map gives best-of-both: lightweight dashboards and a proper heat map. The two libraries coexist fine -- both use D3 under the hood.
 
-- **Turbopack stable** for both dev and production builds (now the default bundler). ~400% faster `next dev` startup in 16.2.
-- **PPR (Partial Pre-Rendering)** is production-ready with cache components.
-- **React 19.2** integration with View Transitions and Activity features.
-- **Security**: CVE-2025-29927 (critical) requires Next.js 15.2.3+ minimum. CVE-2025-66478 in December 2025. Staying on latest is safest.
+**Alternatives considered:**
 
-Breaking changes from 15 to 16:
+| Category | Recommended | Alternative | Why Not |
+|----------|-------------|-------------|---------|
+| Dashboards | Recharts 3.x | Tremor | Tremor is built ON Recharts -- adds a wrapper layer we don't need. We have our own design system (Nordic Precision), so Tremor's opinionated UI is counterproductive. |
+| Dashboards | Recharts 3.x | Chart.js / react-chartjs-2 | Canvas-based (not SVG), harder to style with Tailwind, less React-idiomatic. |
+| Heat map | @nivo/heatmap | Custom AG Grid cellStyle | AG Grid cellStyle can do color-coded cells but cannot render a standalone overview matrix (Team Overview shows ALL people x ALL months). The heat map is a read-only visualization, not an editable grid. Different component, different purpose. |
+| Heat map | @nivo/heatmap | MUI X Heatmap | Pulls in MUI as a dependency -- massive overhead for one component. |
 
-- All async request APIs (`cookies()`, `headers()`, `params`, `searchParams`) now **must** be awaited; synchronous access fully removed.
-- `middleware.ts` filename deprecated, renamed to `proxy.ts`.
-- Automated codemods available: `npx @next/codemod@latest upgrade`.
+### PDF Generation
 
-### TypeScript 5.x: Keep
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| @react-pdf/renderer | ^4.3.x | PDF export of Team Overview heat map and reports | React-component-based PDF creation -- write JSX, get PDF. Works server-side in Node.js (API routes). React 19 compatible since v4.1. No headless browser needed (unlike Puppeteer). Lightweight, fast, scales well. |
 
-TypeScript 5.7+ is current and stable. No version change needed. Ensure `strict: true` in tsconfig.
+**Alternatives considered:**
 
-### PostgreSQL on Neon: Upgrade to PG 17
+| Category | Recommended | Alternative | Why Not |
+|----------|-------------|-------------|---------|
+| PDF | @react-pdf/renderer | Puppeteer / Playwright | Requires headless Chrome in serverless -- huge cold start, memory-intensive, expensive on Vercel. Overkill for structured report PDFs. |
+| PDF | @react-pdf/renderer | jsPDF | Client-side only, imperative API (no JSX), poor layout control for complex reports. |
+| PDF | @react-pdf/renderer | html2canvas + jsPDF | Screenshot-based -- blurry, no text selection, poor quality. |
 
-Neon supports PostgreSQL 17 (and is adding 18 support). PG 17 offers better JSON handling and improved query planner. After the Databricks acquisition (May 2025), Neon dropped storage pricing from $1.75 to $0.35/GB-month and doubled free-tier compute. Very favorable economics.
+**Important limitation:** @react-pdf/renderer uses its own primitive components (View, Text, Image) -- you cannot render regular React/HTML components directly. The PDF templates must be built separately using react-pdf primitives. This is fine for structured reports but means chart images must be rendered as PNG/SVG first, then embedded.
 
-### Drizzle ORM: Use 0.45.x, Skip v1 Beta
+### Toast Notifications & Alerts
 
-Drizzle v1.0.0-beta.2 was released February 2025 but is **explicitly beta** with known breakage. The stable branch is at 0.45.1 (December 2025). Use this.
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| Sonner | ^2.0.x | Toast notifications for capacity alerts, system messages, announcements | 20M+ weekly downloads, the de facto React toast library in 2025-2026. 9KB gzipped. Beautiful defaults that align with Nordic Precision's clean aesthetic. Promise-based API for async operations. Works with React 19 and Next.js 16. Used by shadcn/ui ecosystem. |
 
-Key improvements since 0.35:
+**Alternatives considered:**
 
-- Schema introspection reduced from 10s to <1s.
-- Validator packages consolidated into drizzle-orm (no separate `drizzle-zod` peer dep needed).
-- Identity columns now preferred over serial (PostgreSQL best practice).
-- Migration folder structure changed in v1 beta -- avoid until stable.
+| Category | Recommended | Alternative | Why Not |
+|----------|-------------|-------------|---------|
+| Toasts | Sonner | react-hot-toast | Smaller (5KB) but less actively developed. Sonner has 7x the downloads and better defaults. |
+| Toasts | Sonner | react-toastify | Heavier, more opinionated styling that clashes with custom design systems. |
 
-**Action**: Pin to `drizzle-orm@^0.45.0` and `drizzle-kit@^0.30.0`. Monitor v1 stable release.
+### Feature Flags
 
-### Clerk: Keep, Use @clerk/nextjs v6
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| flags (Vercel Flags SDK) | ^4.0.x | Per-tenant feature flags (F-034) | Official Vercel package, first-class Next.js integration. Server-side only evaluation (no client bundle leak). Free and open-source. Supports custom flag providers via OpenFeature adapter -- store flags in your own DB (no external service needed). Works natively on Vercel Pro. v4.0.4 is current. |
 
-@clerk/nextjs v6 is mature and purpose-built for Next.js 15+. Key notes:
+**Architecture for per-tenant flags:**
+The Flags SDK evaluates flags server-side. We implement a custom provider that reads from a `feature_flags` table in our Neon DB (keyed by `organization_id`). No external flag service needed. Platform admins toggle flags per tenant via the admin UI.
 
-- Requires Next.js 15.2.8+ and Node.js 20.9.0+.
-- `auth()` is now async (aligns with Next.js async APIs).
-- `ClerkProvider` no longer forces dynamic rendering by default -- enables PPR.
-- Custom roles and permissions for organizations are **still in Beta**.
-- **Platform scenario** (multiple isolated apps per customer) is not yet supported -- not needed for this project.
-- The organization_id stored alongside every resource in the DB is the correct multi-tenant pattern.
+**Alternatives considered:**
 
-### AG Grid: Upgrade to 35.x (was 32.x)
+| Category | Recommended | Alternative | Why Not |
+|----------|-------------|-------------|---------|
+| Feature flags | flags (Vercel SDK) | LaunchDarkly / Unleash | External service dependency, cost, complexity. We need simple boolean flags per tenant, not A/B testing or percentage rollouts. |
+| Feature flags | flags (Vercel SDK) | Custom from scratch | The Flags SDK handles the hard parts (precomputation, server-side evaluation, caching) while letting us use our own DB as the flag store. No reason to reinvent. |
 
-AG Grid is now at 35.2.0. Version 32 is three major versions behind. Notable changes:
+### Onboarding / Guided Tours
 
-- v33 had **significant breaking changes** (modularization, reduced bundle size).
-- v35 adds filtering named date ranges, formula editor, BigInt support.
-- **Codemods available** from v31+ to automate migration.
-- Community edition includes: cell editing, clipboard, keyboard nav, sorting, filtering, pagination, custom cell renderers, theming -- sufficient for this project's needs.
+| Technology | Version | Purpose | Why |
+|------------|---------|---------|-----|
+| driver.js | ^1.3.x | Onboarding wizard product tour (F-028) | Lightweight (~5KB), zero dependencies, framework-agnostic (works with any React version including 19). DOM-based highlighting with smooth animations. Simple step-based API. No React peer dependency issues -- just works. |
 
-**Community vs Enterprise**: Enterprise adds Row Grouping, Pivoting, Master/Detail, Server-Side Row Model, Integrated Charts, AI Toolkit. For a capacity planning grid with ~500 rows and monthly columns, **Community is sufficient**. The main feature you might eventually want is Excel-style export (Enterprise), but SheetJS handles export separately.
+**Why not react-joyride?**
+React Joyride v2.x was broken on React 19 for 9+ months. v3.0.0 released only days ago (March 2026) -- too fresh to trust for production. Driver.js has been stable and framework-agnostic, avoiding the React version coupling problem entirely.
 
-### Tailwind CSS 4.x: Keep
+**Integration pattern:** Create a `useProductTour` hook that wraps driver.js, managing tour state in localStorage (which tours completed) and triggering from React components via `useEffect`. This gives React-idiomatic usage without framework coupling.
 
-Tailwind v4.0 released January 2025, v4.1 April 2025. Current and stable.
+**Alternatives considered:**
 
-- Ground-up rewrite: 5x faster full builds, 100x faster incremental.
-- Uses CSS cascade layers, `@property`, and `color-mix()`.
-- Simplified setup: single CSS import, zero config.
-- No `tailwind.config.js` needed (CSS-first configuration with `@theme`).
+| Category | Recommended | Alternative | Why Not |
+|----------|-------------|-------------|---------|
+| Onboarding | driver.js | react-joyride 3.0 | Just released after 9 months of React 19 incompatibility. Unproven in production. |
+| Onboarding | driver.js | Shepherd.js | React wrapper also had React 19 issues. Heavier (Svelte-based core). |
+| Onboarding | driver.js | Custom | Highlighting, scroll positioning, and overlay management are genuinely hard. driver.js solves this in 5KB. |
 
-### TanStack Query 5.x: Keep
+### System Health Monitoring
 
-At v5.95.0 and actively maintained. No v6 on the horizon. Features used in this project (optimistic updates, cache invalidation, server state) are all stable.
+**No new library needed.** Use existing stack:
 
-### Zod: Upgrade to 4.x (was 3.x)
+| Approach | Technology | Purpose |
+|----------|------------|---------|
+| Error tracking | Sentry (already installed) | Runtime errors, performance monitoring |
+| Uptime checks | Vercel Cron Jobs + DB health query | Periodic health check endpoint (`/api/health`) already exists from v1.0 |
+| Dashboard data | Drizzle + TanStack Query | Query system metrics (DB connection count, API response times, error rates) from application logs |
+| External uptime | Better Stack Free tier (optional) | Ping `/api/health` every 5 min, alert on downtime. No code dependency -- just a URL monitor. |
 
-Zod 4.0 released July 2025, currently at 4.3.6. The `zod` npm package from v3.25.0 includes both Zod 3 and 4 at their respective subpaths, enabling gradual migration.
+**Rationale:** System health monitoring (F-033) is about building a dashboard that surfaces existing metrics, not adding a new monitoring framework. Sentry already captures errors and performance. Vercel provides function execution metrics. We aggregate these into a platform admin dashboard page.
 
-Zod 4 improvements:
+### Announcements / Notifications
 
-- Significantly better performance and smaller bundle size.
-- Drizzle ORM integrates with Zod for schema validation (consolidated in recent Drizzle versions).
-- Ecosystem dominance vs alternatives (Valibot, ArkType) means best library support.
+**No new library needed beyond Sonner (above).** Architecture:
 
-### SheetJS: Keep, Install from CDN
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| Storage | `announcements` table in Neon (Drizzle schema) | Platform-wide and per-tenant announcements |
+| Display | Sonner toasts + dismissible banner component | Show announcements on login / page load |
+| Dismissal tracking | `announcement_reads` table | Track which users have dismissed which announcements |
+| API | Next.js API routes + TanStack Query | CRUD for platform admins, read/dismiss for users |
 
-SheetJS 0.20.3 is the latest. **Important**: The npm `xlsx` package is stale at 0.18.5 (4 years old). Modern versions are distributed via `https://cdn.sheetjs.com`.
+### Tenant Data Operations
 
-Install with:
+**No new library needed.** Uses existing stack:
+
+| Operation | Technology | Notes |
+|-----------|------------|-------|
+| Data export | Drizzle queries + SheetJS (already installed) | Export all tenant data as Excel/JSON |
+| Data deletion | Drizzle transactions | Cascade delete all tenant data with confirmation |
+| Data migration | Drizzle + custom scripts | Move data between tenants (platform admin only) |
+
+## Summary: What to Install
+
+### Production Dependencies
 
 ```bash
-npm install --save https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz
+pnpm add recharts@^3.8 @nivo/core@^0.99 @nivo/heatmap@^0.99 @react-pdf/renderer@^4.3 sonner@^2.0 flags@^4.0 driver.js@^1.3
 ```
 
-### Sentry: Keep
+### No Dev Dependencies Needed
 
-@sentry/nextjs has mature Next.js integration with a wizard setup (`npx @sentry/wizard@latest -i nextjs`). Supports:
+All new libraries are runtime dependencies. No new build tools or dev-only packages required.
 
-- Server Components error capture via `onRequestError` hook in `instrumentation.ts`.
-- Auto-instrumented routes and API calls.
-- Session replay and performance tracing.
+## What NOT to Add
 
-Minimum Next.js 13.2.0 required (well below our target).
+| Library | Why Not |
+|---------|---------|
+| Tremor | Wrapper on Recharts, own design system conflicts with Nordic Precision |
+| Chart.js | Canvas-based, less React-native, harder to theme |
+| Puppeteer / Playwright | Too heavy for serverless PDF generation |
+| LaunchDarkly / Unleash / Flagsmith | External services overkill for per-tenant boolean flags |
+| react-joyride | React 19 support just landed, unproven |
+| MUI / Chakra / any component library | Project has its own design system, adding a UI lib creates two competing systems |
+| Socket.io / Pusher | No real-time requirement in v2.0. "Near-real-time" alerts are polling-based (TanStack Query refetch intervals). |
+| Redis / queue system | No background job requirements. Vercel Cron handles scheduled tasks. |
 
-## Integration Considerations
+## Integration Points with Existing Stack
 
-### Next.js 16 + Clerk
+| New Library | Integrates With | How |
+|-------------|----------------|-----|
+| Recharts | TanStack Query | Charts consume data from query hooks. `useSuspenseQuery` for dashboard data, Recharts renders the result. |
+| Recharts | Tailwind CSS 4 | Recharts accepts CSS variables for theming. Map Nordic Precision design tokens to chart colors. |
+| @nivo/heatmap | TanStack Query | Heat map data fetched via query hook, transformed to Nivo's `{id, data: [{x, y}]}` format. |
+| @nivo/heatmap | AG Grid | Team Overview page has BOTH: heat map for visual overview, AG Grid for detailed editing. Same data source, different views. |
+| @react-pdf/renderer | Recharts / Nivo | Charts rendered to SVG/PNG first (via `recharts-to-png` or SVG serialization), then embedded in PDF as images. |
+| @react-pdf/renderer | Next.js API routes | PDF generated server-side in `/api/reports/[type]/route.ts`, returned as `application/pdf` stream. |
+| Sonner | Capacity alerts (F-016) | When TanStack Query fetches allocation data showing over-allocation, trigger `toast.warning()`. |
+| Sonner | Announcements (F-038) | On page load, check for unread announcements, show as dismissible toasts. |
+| flags (Vercel SDK) | Drizzle ORM | Custom flag provider reads from `feature_flags` table. Server Components call `flag()` to check. |
+| flags (Vercel SDK) | Clerk auth | Flag evaluation includes `organizationId` from Clerk session to scope flags per tenant. |
+| driver.js | React hooks | Custom `useProductTour` hook wraps driver.js. Tour completion stored in localStorage + user preferences table. |
 
-- Clerk v6 was built for Next.js 15+ async APIs. The `auth()` helper is async, matching Next.js 16's fully async request APIs.
-- `ClerkProvider` supports PPR mode.
-- Middleware file rename: If using Clerk's `clerkMiddleware()`, update the filename from `middleware.ts` to `proxy.ts` when on Next.js 16.
+## Confidence Assessment
 
-### Next.js 16 + Drizzle + Neon
+| Decision | Confidence | Rationale |
+|----------|------------|-----------|
+| Recharts for dashboards | HIGH | v3.8 actively maintained, 24M+ weekly downloads, React 19 compatible, TypeScript-first |
+| Nivo for heat maps | HIGH | Only mature React heat map component. React 19 compatible since v0.98. Well-documented API. |
+| @react-pdf/renderer | HIGH | v4.3 supports React 19, Node.js 18-21, proven server-side generation pattern |
+| Sonner for toasts | HIGH | 20M+ weekly downloads, React 19 + Next.js 16 compatible, clean API |
+| flags (Vercel SDK) | HIGH | Official Vercel package, v4.0 current, OpenFeature adapter for custom DB provider |
+| driver.js for tours | MEDIUM | Stable and lightweight but requires manual React integration (no hooks out of box). Manageable with a custom hook wrapper. |
+| No new lib for health | HIGH | Sentry + Vercel metrics + custom dashboard page covers the requirement |
+| No new lib for announcements | HIGH | DB table + Sonner + TanStack Query is the right pattern for this |
 
-- Use `@neondatabase/serverless` driver (HTTP for queries, WebSocket for transactions).
-- For Server Components/Actions, use HTTP driver (faster for single queries).
-- For interactive transactions (e.g., bulk import), use WebSocket driver.
-- Drizzle's `neon-http` adapter handles this: `import { drizzle } from 'drizzle-orm/neon-http'`.
-- Connection pooling: Neon handles this server-side. No pgBouncer needed.
+## Sources
 
-### AG Grid + TanStack Query
-
-- TanStack Query manages server state; AG Grid manages grid state.
-- Pattern: Fetch data with `useQuery`, pass to AG Grid's `rowData`. Use `useMutation` + `queryClient.invalidateQueries()` for writes.
-- AG Grid's `onCellValueChanged` callback triggers mutations.
-- For auto-save on cell blur: use AG Grid's `stopEditing()` callback to trigger a mutation.
-
-### Drizzle + Zod
-
-- Drizzle v0.45 consolidates validator generation. Use `createInsertSchema()` and `createSelectSchema()` from `drizzle-zod` to auto-generate Zod schemas from Drizzle table definitions.
-- When upgrading to Zod 4, verify `drizzle-zod` compatibility (should work from Drizzle 0.45+).
-
-### Tailwind CSS 4 + AG Grid
-
-- AG Grid 35 ships with a theming API. Use AG Grid's `--ag-*` CSS custom properties to align with Tailwind's design tokens.
-- Tailwind 4's `@theme` directive can define shared tokens consumed by both Tailwind utilities and AG Grid's theme variables.
-- AG Grid's default styles may conflict with Tailwind's reset. Use `@layer` to manage specificity.
-
-### SheetJS + Server Components
-
-- Excel parsing must happen server-side (Server Actions or API routes) for validation against the database.
-- SheetJS works in Node.js. Import in server-only code: `import * as XLSX from 'xlsx'`.
-- For large files, stream parsing is not supported by SheetJS Community. Files are loaded fully into memory. For the target scale (20-500 resources), this is fine.
-
-### Sentry + Next.js 16
-
-- Sentry wraps `next.config.js` via `withSentryConfig()`. Verify compatibility with Next.js 16's config format.
-- For Server Components: use `instrumentation.ts` with `onRequestError` hook.
-- Turbopack compatibility: Sentry added Turbopack support. Verify latest `@sentry/nextjs` version works with Turbopack production builds.
-
-## Dev Tooling Recommendations
-
-### Testing
-
-| Tool                      | Purpose                  | Install                                                                                    |
-| ------------------------- | ------------------------ | ------------------------------------------------------------------------------------------ |
-| **Vitest**                | Unit + component tests   | `pnpm add -D vitest @vitejs/plugin-react jsdom`                                            |
-| **React Testing Library** | Component test utilities | `pnpm add -D @testing-library/react @testing-library/jest-dom @testing-library/user-event` |
-| **Playwright**            | E2E tests                | `pnpm add -D @playwright/test`                                                             |
-| **MSW**                   | API mocking              | `pnpm add -D msw`                                                                          |
-
-Notes:
-
-- Vitest cannot test async Server Components directly. Use Playwright for those.
-- MSW 2.x for mocking API routes and external services in tests.
-
-### Linting & Formatting
-
-**Option A: Biome (recommended for new projects)**
-
-- 10-25x faster than ESLint + Prettier.
-- Single binary, single config file.
-- 97% Prettier-compatible formatting.
-- **Caveat**: Does not yet support `eslint-plugin-next` or `eslint-plugin-react-hooks` framework-specific rules.
-
-**Option B: ESLint 9 + Prettier (safer for Next.js)**
-
-- Full `eslint-plugin-next` support for Next.js-specific linting.
-- `eslint-plugin-react-hooks` catches hooks rule violations.
-- More configuration overhead but complete coverage.
-
-**Recommendation**: Use **ESLint 9 + Prettier** for this project. The Next.js-specific linting rules are valuable enough to justify the setup cost, especially for a solo developer where automated catches prevent bugs.
-
-### Other Dev Tools
-
-| Tool                    | Purpose                                                  |
-| ----------------------- | -------------------------------------------------------- |
-| **pnpm**                | Package manager (faster, stricter than npm)              |
-| **Husky + lint-staged** | Pre-commit hooks for linting/formatting                  |
-| **knip**                | Find unused dependencies, exports, and files             |
-| **tsx**                 | Run TypeScript scripts directly (for seed scripts, etc.) |
-| **dotenv-cli**          | Manage environment variables for local dev               |
-
-### Recommended package.json Scripts
-
-```json
-{
-  "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint && tsc --noEmit",
-    "format": "prettier --write .",
-    "test": "vitest",
-    "test:e2e": "playwright test",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
-  }
-}
-```
-
-## What NOT to Use
-
-| Technology                           | Reason                                                                                                                                                                                |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Prisma**                           | Heavier than Drizzle, generates client code, slower cold starts on serverless. Drizzle is the correct choice for Neon serverless.                                                     |
-| **NextAuth / Auth.js**               | More DIY than Clerk for multi-tenant org management. Clerk's organization primitives (invites, roles, org switching) would take weeks to replicate.                                   |
-| **Redux / Zustand for server state** | TanStack Query handles server state. Only add Zustand if you need complex client-only UI state (unlikely for this app).                                                               |
-| **Jest**                             | Vitest is faster, simpler config, native ESM support. Jest requires more setup for TypeScript + ESM.                                                                                  |
-| **Cypress**                          | Playwright is faster, lighter, better DX for E2E. Cypress has larger bundle and slower execution.                                                                                     |
-| **AG Grid Enterprise**               | $999/dev. Community edition covers all needed features (cell editing, clipboard, keyboard nav, filtering). Excel export handled by SheetJS.                                           |
-| **Drizzle v1 beta**                  | Explicitly unstable. Known breakage. Use 0.45.x stable until v1 GA.                                                                                                                   |
-| **npm `xlsx` package**               | Stale at 0.18.5. Install from SheetJS CDN instead (`cdn.sheetjs.com`).                                                                                                                |
-| **Supabase**                         | Tempting but adds unnecessary abstraction over Postgres. Neon is purpose-built for serverless Postgres with better Drizzle integration and lower pricing post-Databricks acquisition. |
-| **tRPC**                             | Adds complexity for a solo-dev project. Next.js Server Actions + API routes with Zod validation achieve the same type safety with less abstraction.                                   |
-| **Biome (for this project)**         | Missing eslint-plugin-next rules. Use ESLint 9 for full Next.js coverage. Revisit when Biome adds framework support.                                                                  |
-
-## Summary of Required Changes to ARCHITECTURE.md
-
-1. **Next.js**: 15 -> **16.2** (mandatory for security patches and Turbopack perf)
-2. **AG Grid**: 32.x -> **35.x** (3 major versions behind, codemods available)
-3. **Drizzle ORM**: 0.35+ -> **0.45.x** (significant improvements, stay on stable)
-4. **Zod**: 3.x -> **4.x** (released July 2025, better perf and bundle size)
-5. **PostgreSQL**: 16 -> **17** on Neon (better JSON, query planner improvements)
-6. **SheetJS**: Note CDN installation requirement
-7. **Add**: Vitest + Playwright for testing
-8. **Add**: ESLint 9 + Prettier for linting/formatting
-9. **Add**: pnpm as package manager
-
-Sources:
-
-- [Next.js 16 Blog Post](https://nextjs.org/blog/next-16)
-- [Next.js 16.2 Blog Post](https://nextjs.org/blog/next-16-2)
-- [Next.js 16 Upgrade Guide](https://nextjs.org/docs/app/guides/upgrading/version-16)
-- [Drizzle ORM Latest Releases](https://orm.drizzle.team/docs/latest-releases)
-- [Drizzle v1 Upgrade Guide](https://orm.drizzle.team/docs/upgrade-v1)
-- [Drizzle + Neon Setup](https://orm.drizzle.team/docs/connect-neon)
-- [AG Grid Changelog](https://www.ag-grid.com/changelog/)
-- [AG Grid Community vs Enterprise](https://www.ag-grid.com/react-data-grid/community-vs-enterprise/)
-- [AG Grid Migration Guide](https://www.ag-grid.com/javascript-data-grid/migration/)
-- [Tailwind CSS v4.0 Release](https://tailwindcss.com/blog/tailwindcss-v4)
-- [Clerk Next.js v6](https://clerk.com/changelog/2024-10-22-clerk-nextjs-v6)
-- [Clerk Multi-Tenant Architecture](https://clerk.com/docs/guides/how-clerk-works/multi-tenant-architecture)
-- [TanStack Query](https://tanstack.com/query/latest)
-- [Zod v4 Release Notes](https://zod.dev/v4)
-- [SheetJS CDN](https://cdn.sheetjs.com/xlsx/)
-- [Sentry Next.js Guide](https://docs.sentry.io/platforms/javascript/guides/nextjs/)
-- [Neon Serverless Postgres](https://neon.com/)
-- [Neon 2025 Updates](https://dev.to/dataformathub/neon-postgres-deep-dive-why-the-2025-updates-change-serverless-sql-5o0)
-- [Biome vs ESLint 2026](https://www.pkgpulse.com/blog/biome-vs-eslint-prettier-linting-2026)
-- [Vitest vs Jest 2026](https://dev.to/dataformathub/vitest-vs-jest-30-why-2026-is-the-year-of-browser-native-testing-2fgb)
+- [Recharts npm](https://www.npmjs.com/package/recharts) -- v3.8.1
+- [Recharts GitHub releases](https://github.com/recharts/recharts/releases)
+- [Nivo heatmap docs](https://nivo.rocks/heatmap/)
+- [@nivo/core npm](https://www.npmjs.com/package/@nivo/core) -- v0.99.0
+- [Nivo React 19 support issue](https://github.com/plouc/nivo/issues/2618)
+- [@react-pdf/renderer npm](https://www.npmjs.com/package/@react-pdf/renderer) -- v4.3.2
+- [react-pdf compatibility](https://react-pdf.org/compatibility) -- React 19 since v4.1
+- [Sonner npm](https://www.npmjs.com/package/sonner) -- v2.0.7
+- [Flags SDK docs](https://flags-sdk.dev/) -- v4.0.4
+- [Vercel Flags SDK reference](https://vercel.com/docs/flags/flags-sdk-reference)
+- [Flags SDK OpenFeature adapter](https://openfeature.dev/blog/vercel-flags-sdk-adapter/)
+- [driver.js](https://driverjs.com) -- v1.3.x
+- [react-joyride React 19 issue](https://github.com/gilbarbara/react-joyride/issues/1122)
+- [AG Grid cell styles docs](https://www.ag-grid.com/react-data-grid/cell-styles/)
+- [Best React chart libraries 2025 - LogRocket](https://blog.logrocket.com/best-react-chart-libraries-2025/)
+- [Top React toast libraries compared - LogRocket](https://blog.logrocket.com/react-toast-libraries-compared-2025/)
+- [Best React onboarding libraries 2026](https://onboardjs.com/blog/5-best-react-onboarding-libraries-in-2025-compared)
