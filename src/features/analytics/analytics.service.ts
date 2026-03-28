@@ -4,12 +4,15 @@ import { db } from '@/db';
 import { generateMonthRange } from '@/lib/date-utils';
 
 import type {
+  CapacityAlert,
   DashboardKPIs,
   DepartmentGroup,
   DepartmentUtilization,
   DisciplineBreakdown,
   HeatMapPerson,
   HeatMapResponse,
+  ProjectStaffingPerson,
+  ProjectStaffingResponse,
 } from './analytics.types';
 
 /**
@@ -358,4 +361,251 @@ export async function getDisciplineBreakdown(
     disciplineName: row.discipline_name,
     totalHours: row.total_hours,
   }));
+}
+
+/**
+ * Compute capacity alerts: people who are overloaded (>100%) or underutilized (<50%).
+ *
+ * Returns individual person rows with utilization ratio and severity classification.
+ * Uses the same CTE pattern as getDashboardKPIs but returns per-person detail.
+ */
+export async function getCapacityAlerts(
+  orgId: string,
+  monthFrom: string,
+  monthTo: string,
+): Promise<CapacityAlert[]> {
+  const fromDate = `${monthFrom}-01`;
+  const toDate = `${monthTo}-01`;
+  const months = monthCount(monthFrom, monthTo);
+
+  const result = await db.execute<{
+    person_id: string;
+    first_name: string;
+    last_name: string;
+    department_name: string;
+    total_target: number;
+    total_allocated: number;
+    utilization_ratio: number;
+  }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(
+        ${fromDate}::date,
+        ${toDate}::date,
+        '1 month'::interval
+      ) AS d
+    ),
+    active_people AS (
+      SELECT
+        p.id AS person_id,
+        p.first_name,
+        p.last_name,
+        p.target_hours_per_month AS target_hours,
+        d.name AS department_name
+      FROM people p
+      INNER JOIN departments d ON d.id = p.department_id
+      WHERE p.organization_id = ${orgId}::uuid
+        AND p.archived_at IS NULL
+    ),
+    person_utilization AS (
+      SELECT
+        ap.person_id,
+        ap.first_name,
+        ap.last_name,
+        ap.department_name,
+        ap.target_hours * ${months} AS total_target,
+        COALESCE(SUM(a.hours), 0) AS total_allocated,
+        CASE
+          WHEN ap.target_hours * ${months} > 0
+          THEN ROUND(COALESCE(SUM(a.hours), 0)::numeric / (ap.target_hours * ${months})::numeric, 4)
+          ELSE 0
+        END AS utilization_ratio
+      FROM active_people ap
+      CROSS JOIN month_series ms
+      LEFT JOIN allocations a
+        ON a.person_id = ap.person_id
+        AND to_char(a.month, 'YYYY-MM') = ms.month
+        AND a.organization_id = ${orgId}::uuid
+      GROUP BY ap.person_id, ap.first_name, ap.last_name, ap.department_name, ap.target_hours
+    )
+    SELECT
+      person_id,
+      first_name,
+      last_name,
+      department_name,
+      total_target::int,
+      total_allocated::int,
+      utilization_ratio::float
+    FROM person_utilization
+    WHERE utilization_ratio > 1.0 OR utilization_ratio < 0.5
+    ORDER BY utilization_ratio DESC
+  `);
+
+  return result.rows.map((row) => ({
+    personId: row.person_id,
+    firstName: row.first_name,
+    lastName: row.last_name,
+    departmentName: row.department_name,
+    totalTarget: row.total_target,
+    totalAllocated: row.total_allocated,
+    utilizationRatio: Number(row.utilization_ratio),
+    severity: Number(row.utilization_ratio) > 1.0 ? 'overloaded' : 'underutilized',
+  }));
+}
+
+/**
+ * Count the number of active capacity alerts (overloaded + underutilized people).
+ * Lightweight version of getCapacityAlerts that only returns the count.
+ */
+export async function getAlertCount(
+  orgId: string,
+  monthFrom: string,
+  monthTo: string,
+): Promise<number> {
+  const fromDate = `${monthFrom}-01`;
+  const toDate = `${monthTo}-01`;
+  const months = monthCount(monthFrom, monthTo);
+
+  const result = await db.execute<{ count: number }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(
+        ${fromDate}::date,
+        ${toDate}::date,
+        '1 month'::interval
+      ) AS d
+    ),
+    active_people AS (
+      SELECT
+        p.id AS person_id,
+        p.target_hours_per_month AS target_hours
+      FROM people p
+      WHERE p.organization_id = ${orgId}::uuid
+        AND p.archived_at IS NULL
+    ),
+    person_utilization AS (
+      SELECT
+        ap.person_id,
+        CASE
+          WHEN ap.target_hours * ${months} > 0
+          THEN COALESCE(SUM(a.hours), 0)::numeric / (ap.target_hours * ${months})::numeric
+          ELSE 0
+        END AS utilization_ratio
+      FROM active_people ap
+      CROSS JOIN month_series ms
+      LEFT JOIN allocations a
+        ON a.person_id = ap.person_id
+        AND to_char(a.month, 'YYYY-MM') = ms.month
+        AND a.organization_id = ${orgId}::uuid
+      GROUP BY ap.person_id, ap.target_hours
+    )
+    SELECT COUNT(*)::int AS count
+    FROM person_utilization
+    WHERE utilization_ratio > 1.0 OR utilization_ratio < 0.5
+  `);
+
+  return result.rows[0]?.count ?? 0;
+}
+
+/**
+ * Fetch project staffing data: per-person-per-month hours for a specific project.
+ *
+ * Uses generate_series for a gapless month grid. Returns all active people
+ * who have allocations to this project in the given period.
+ */
+export async function getProjectStaffing(
+  orgId: string,
+  projectId: string,
+  monthFrom: string,
+  monthTo: string,
+): Promise<ProjectStaffingResponse> {
+  const fromDate = `${monthFrom}-01`;
+  const toDate = `${monthTo}-01`;
+  const count = monthCount(monthFrom, monthTo);
+  const months = generateMonthRange(monthFrom, count);
+
+  // Get project name
+  const projectResult = await db.execute<{ name: string }>(sql`
+    SELECT name FROM projects
+    WHERE id = ${projectId}::uuid
+      AND organization_id = ${orgId}::uuid
+    LIMIT 1
+  `);
+
+  const projectName = projectResult.rows[0]?.name ?? 'Unknown Project';
+
+  // Get per-person-per-month allocations for this project
+  const result = await db.execute<{
+    person_id: string;
+    first_name: string;
+    last_name: string;
+    target_hours: number;
+    month: string;
+    hours: number;
+  }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(
+        ${fromDate}::date,
+        ${toDate}::date,
+        '1 month'::interval
+      ) AS d
+    ),
+    project_people AS (
+      SELECT DISTINCT
+        p.id AS person_id,
+        p.first_name,
+        p.last_name,
+        p.target_hours_per_month AS target_hours
+      FROM people p
+      INNER JOIN allocations a ON a.person_id = p.id
+      WHERE p.organization_id = ${orgId}::uuid
+        AND p.archived_at IS NULL
+        AND a.project_id = ${projectId}::uuid
+        AND a.organization_id = ${orgId}::uuid
+        AND to_char(a.month, 'YYYY-MM') >= ${monthFrom}
+        AND to_char(a.month, 'YYYY-MM') <= ${monthTo}
+    )
+    SELECT
+      pp.person_id,
+      pp.first_name,
+      pp.last_name,
+      pp.target_hours,
+      ms.month,
+      COALESCE(a.hours, 0)::int AS hours
+    FROM project_people pp
+    CROSS JOIN month_series ms
+    LEFT JOIN allocations a
+      ON a.person_id = pp.person_id
+      AND a.project_id = ${projectId}::uuid
+      AND to_char(a.month, 'YYYY-MM') = ms.month
+      AND a.organization_id = ${orgId}::uuid
+    ORDER BY pp.last_name, pp.first_name, ms.month
+  `);
+
+  // Group into per-person records
+  const personMap = new Map<string, ProjectStaffingPerson>();
+
+  for (const row of result.rows) {
+    let person = personMap.get(row.person_id);
+    if (!person) {
+      person = {
+        personId: row.person_id,
+        firstName: row.first_name,
+        lastName: row.last_name,
+        targetHoursPerMonth: row.target_hours,
+        months: {},
+      };
+      personMap.set(row.person_id, person);
+    }
+    person.months[row.month] = row.hours;
+  }
+
+  return {
+    projectId,
+    projectName,
+    people: Array.from(personMap.values()),
+    months,
+    generatedAt: new Date().toISOString(),
+  };
 }

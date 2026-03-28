@@ -56,3 +56,36 @@ export interface DisciplineBreakdown {
   disciplineName: string;
   totalHours: number;
 }
+
+// --- Alert types (Phase 14) ---
+
+export type AlertSeverity = 'overloaded' | 'underutilized';
+
+export interface CapacityAlert {
+  personId: string;
+  firstName: string;
+  lastName: string;
+  departmentName: string;
+  totalTarget: number;
+  totalAllocated: number;
+  utilizationRatio: number;   // e.g. 1.25 = 125%, 0.3 = 30%
+  severity: AlertSeverity;
+}
+
+// --- Project staffing types (Phase 14) ---
+
+export interface ProjectStaffingPerson {
+  personId: string;
+  firstName: string;
+  lastName: string;
+  targetHoursPerMonth: number;
+  months: Record<string, number>; // YYYY-MM -> hours allocated to this project
+}
+
+export interface ProjectStaffingResponse {
+  projectId: string;
+  projectName: string;
+  people: ProjectStaffingPerson[];
+  months: string[];       // ordered YYYY-MM array
+  generatedAt: string;
+}

@@ -83,10 +83,14 @@ export function useGridAutosave(personId: string) {
       } else {
         // Only invalidate on clean save to avoid unnecessary refetches
         queryClient.invalidateQueries({ queryKey: ['allocations', personId] });
+        queryClient.invalidateQueries({ queryKey: ['alerts'] });
+        queryClient.invalidateQueries({ queryKey: ['alert-count'] });
       }
     } catch {
       // On error, invalidate to rollback optimistic updates
       queryClient.invalidateQueries({ queryKey: ['allocations', personId] });
+      queryClient.invalidateQueries({ queryKey: ['alerts'] });
+      queryClient.invalidateQueries({ queryKey: ['alert-count'] });
     }
   }, [personId, queryClient]);
 
@@ -128,9 +132,13 @@ export function useGridAutosave(personId: string) {
           // Force overwrite failed — fall through to invalidate
         }
         queryClient.invalidateQueries({ queryKey: ['allocations', personId] });
+        queryClient.invalidateQueries({ queryKey: ['alerts'] });
+        queryClient.invalidateQueries({ queryKey: ['alert-count'] });
       } else {
         // User chose to refresh — invalidate to get server data
         queryClient.invalidateQueries({ queryKey: ['allocations', personId] });
+        queryClient.invalidateQueries({ queryKey: ['alerts'] });
+        queryClient.invalidateQueries({ queryKey: ['alert-count'] });
       }
     },
     [personId, queryClient],
