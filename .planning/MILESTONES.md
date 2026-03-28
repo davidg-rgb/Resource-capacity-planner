@@ -15,4 +15,22 @@
 - Clerk Actor Token impersonation with session tracking, cross-tenant user management (search/reset/logout), and filtered audit log query API
 - Cross-tenant user management page, audit log viewer with filters/pagination, working impersonation flow on tenant detail, and amber impersonation warning banner in tenant app via Clerk actor claim detection
 
+## v2.0 Visibility & Insights (Shipped: 2026-03-28)
+
+**Phases completed:** 7 phases (11-17), 14 plans, 38 requirements
+**Code review:** 2 rounds, 25 issues found and fixed, 0 remaining
+
+**Key accomplishments:**
+
+- Feature flag system with typed FeatureFlags interface, cached DB queries, FlagProvider context, admin toggle UI, nav filtering, and route-level guards
+- Team Overview heat map — person x month utilization grid with CTE-based analytics service, department grouping, filters, sticky column, color-coded cells
+- Management Dashboard with Recharts 3.x — KPI cards with drill-down, department utilization bar chart, discipline breakdown chart, time range selector
+- Capacity alerts — on-demand computation, overloaded/underutilized lists with TopNav badge, flag-gated
+- Project View — project-centric staffing grid with summary row and understaffed indicators
+- PDF export via @react-pdf/renderer — landscape A4, department grouping, color legend, header/footer
+- Onboarding wizard — 4-step guided setup for new tenants with engineering department/discipline suggestions
+- Announcement system — platform admin CRUD with severity-based dismissible banners, localStorage dismissal
+- System health monitoring — DB latency, active connections, error rate, memory on platform dashboard
+- Tenant data operations — JSON export and GDPR purge with transactional deletion and name confirmation
+
 ---

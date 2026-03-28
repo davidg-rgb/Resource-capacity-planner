@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Visibility & Insights
-status: verifying
-stopped_at: Completed 17-02-PLAN.md
-last_updated: "2026-03-28T14:12:24.968Z"
+status: v2.0 milestone complete
+stopped_at: v2.0 shipped
+last_updated: "2026-03-28T16:00:00.000Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 7
   completed_phases: 7
   total_plans: 14
   completed_plans: 14
-  percent: 0
+  percent: 100
 ---
 
 # Nordic Capacity -- Project State
