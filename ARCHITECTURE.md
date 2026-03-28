@@ -323,29 +323,29 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 
 ## 4. Tech Stack
 
-| Layer          | Technology        | Version    | Purpose                                       |
-| -------------- | ----------------- | ---------- | --------------------------------------------- |
-| **Framework**  | Next.js           | 15.x       | Full-stack React framework, App Router        |
-| **Language**   | TypeScript        | 5.x        | Type safety across client and server          |
-| **Database**   | PostgreSQL        | 16         | Primary data store                            |
-| **DB Hosting** | Neon              | Serverless | Managed Postgres with connection pooling      |
-| **ORM**        | Drizzle           | 0.35+      | SQL-first ORM, migrations, type-safe queries  |
-| **Auth**       | Clerk             | Latest     | Authentication, organizations, invites, roles |
-| **Grid**       | AG Grid Community | 32.x       | Spreadsheet-grade editing grid                |
-| **Styling**    | Tailwind CSS      | 4.x        | Utility-first CSS matching prototypes         |
-| **State**      | TanStack Query    | 5.x        | Server state management, caching, sync        |
-| **Validation** | Zod               | 3.x        | Schema validation (API, forms, imports)       |
-| **Excel**      | SheetJS (xlsx)    | 0.20+      | Excel import/export                           |
-| **Email**      | Resend            | Latest     | Transactional email                           |
-| **Billing**    | Stripe            | Latest SDK | Subscriptions, metering                       |
-| **Monitoring** | Sentry            | Latest     | Error tracking, performance                   |
-| **Hosting**    | Vercel            | Pro        | Frontend hosting, serverless functions        |
-| **CI/CD**      | GitHub Actions    | -          | Automated testing, deployment                 |
-| **Fonts**      | Manrope + Inter   | Variable   | Design system typography via Google Fonts     |
-| **Charts**     | Recharts          | 3.8.x      | Bar, line, pie charts for dashboard (v2.0)    |
-| **PDF**        | @react-pdf/renderer | 4.3.x    | Server-side PDF generation (v2.0)             |
-| **Toasts**     | Sonner            | 2.x        | Toast notifications (v2.0)                    |
-| **Icons**      | Lucide React      | 1.7+       | Icon set (replaced Material Symbols)          |
+| Layer          | Technology          | Version    | Purpose                                       |
+| -------------- | ------------------- | ---------- | --------------------------------------------- |
+| **Framework**  | Next.js             | 15.x       | Full-stack React framework, App Router        |
+| **Language**   | TypeScript          | 5.x        | Type safety across client and server          |
+| **Database**   | PostgreSQL          | 16         | Primary data store                            |
+| **DB Hosting** | Neon                | Serverless | Managed Postgres with connection pooling      |
+| **ORM**        | Drizzle             | 0.35+      | SQL-first ORM, migrations, type-safe queries  |
+| **Auth**       | Clerk               | Latest     | Authentication, organizations, invites, roles |
+| **Grid**       | AG Grid Community   | 32.x       | Spreadsheet-grade editing grid                |
+| **Styling**    | Tailwind CSS        | 4.x        | Utility-first CSS matching prototypes         |
+| **State**      | TanStack Query      | 5.x        | Server state management, caching, sync        |
+| **Validation** | Zod                 | 3.x        | Schema validation (API, forms, imports)       |
+| **Excel**      | SheetJS (xlsx)      | 0.20+      | Excel import/export                           |
+| **Email**      | Resend              | Latest     | Transactional email                           |
+| **Billing**    | Stripe              | Latest SDK | Subscriptions, metering                       |
+| **Monitoring** | Sentry              | Latest     | Error tracking, performance                   |
+| **Hosting**    | Vercel              | Pro        | Frontend hosting, serverless functions        |
+| **CI/CD**      | GitHub Actions      | -          | Automated testing, deployment                 |
+| **Fonts**      | Manrope + Inter     | Variable   | Design system typography via Google Fonts     |
+| **Charts**     | Recharts            | 3.8.x      | Bar, line, pie charts for dashboard (v2.0)    |
+| **PDF**        | @react-pdf/renderer | 4.3.x      | Server-side PDF generation (v2.0)             |
+| **Toasts**     | Sonner              | 2.x        | Toast notifications (v2.0)                    |
+| **Icons**      | Lucide React        | 1.7+       | Icon set (replaced Material Symbols)          |
 
 ---
 
@@ -1238,6 +1238,7 @@ generateImportTemplate(type: "people" | "projects" | "allocations"): Promise<Buf
 **Purpose:** CTE-based SQL aggregation queries for all v2.0 visualizations: team heat map, dashboard KPIs, department utilization, discipline breakdown, capacity alerts, alert counts, and project staffing. Uses raw SQL via Drizzle `sql` tagged templates for complex CTEs with `generate_series`. All queries scope by `organization_id` via parameterized orgId.
 
 **v2.0 Implementation Notes:**
+
 - Split from original single `/api/dashboard` endpoint into 7 focused endpoints under `/api/analytics/*`
 - Each endpoint validates month range (max 36 months) via shared `validateMonthRange()` helper
 - All routes use `handleApiError()` for proper HTTP status mapping (401/403/400/500)

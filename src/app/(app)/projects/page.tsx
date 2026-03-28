@@ -295,7 +295,7 @@ export default function ProjectsPage() {
                       {project.status !== 'archived' && (
                         <Link
                           href={`/projects/${project.id}`}
-                          className="text-primary hover:underline inline-flex items-center gap-1 text-sm"
+                          className="text-primary inline-flex items-center gap-1 text-sm hover:underline"
                         >
                           <Eye size={14} /> View
                         </Link>

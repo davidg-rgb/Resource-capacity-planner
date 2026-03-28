@@ -84,14 +84,18 @@ export function StepPeople({
 
       {existingPeople.length > 0 && (
         <p className="text-on-surface-variant text-sm">
-          You already have {existingPeople.length} {existingPeople.length === 1 ? 'person' : 'people'}
+          You already have {existingPeople.length}{' '}
+          {existingPeople.length === 1 ? 'person' : 'people'}
         </p>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="onb-first-name" className="text-on-surface mb-1 block text-xs font-medium">
+            <label
+              htmlFor="onb-first-name"
+              className="text-on-surface mb-1 block text-xs font-medium"
+            >
               First name
             </label>
             <input
@@ -105,7 +109,10 @@ export function StepPeople({
             />
           </div>
           <div>
-            <label htmlFor="onb-last-name" className="text-on-surface mb-1 block text-xs font-medium">
+            <label
+              htmlFor="onb-last-name"
+              className="text-on-surface mb-1 block text-xs font-medium"
+            >
               Last name
             </label>
             <input

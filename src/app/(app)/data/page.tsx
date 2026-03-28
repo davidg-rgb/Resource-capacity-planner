@@ -11,7 +11,7 @@ export default function DataPage() {
       <Breadcrumbs />
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-headline text-on-surface text-3xl font-semibold tracking-tight">
+          <h1 className="font-headline text-on-surface text-3xl font-bold tracking-tight">
             Data Management
           </h1>
           <p className="text-on-surface-variant mt-1 text-sm">

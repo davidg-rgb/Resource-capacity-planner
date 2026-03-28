@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { personUpdateSchema } from '@/features/people/person.schema';
-import {
-  deletePerson,
-  getPersonById,
-  updatePerson,
-} from '@/features/people/person.service';
+import { deletePerson, getPersonById, updatePerson } from '@/features/people/person.service';
 import { handleApiError } from '@/lib/api-utils';
 import { getTenantId, requireRole } from '@/lib/auth';
 

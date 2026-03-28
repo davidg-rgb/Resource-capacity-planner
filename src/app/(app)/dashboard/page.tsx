@@ -8,10 +8,10 @@ export default function DashboardPage() {
   return (
     <>
       <Breadcrumbs />
-      <h1 className="font-headline text-3xl font-semibold tracking-tight text-on-surface">
+      <h1 className="font-headline text-on-surface text-3xl font-semibold tracking-tight">
         Dashboard
       </h1>
-      <p className="mt-2 text-sm text-on-surface-variant">
+      <p className="text-on-surface-variant mt-2 text-sm">
         Key capacity metrics and departmental overview.
       </p>
 
@@ -23,7 +23,7 @@ export default function DashboardPage() {
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-28 animate-pulse rounded-lg border border-outline-variant/30 bg-surface-container-low"
+                  className="border-outline-variant/30 bg-surface-container-low h-28 animate-pulse rounded-lg border"
                 />
               ))}
             </div>
@@ -32,7 +32,7 @@ export default function DashboardPage() {
               {Array.from({ length: 2 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-[380px] animate-pulse rounded-lg border border-outline-variant/30 bg-surface-container-low"
+                  className="border-outline-variant/30 bg-surface-container-low h-[380px] animate-pulse rounded-lg border"
                 />
               ))}
             </div>
@@ -46,10 +46,10 @@ export default function DashboardPage() {
       <div className="mt-6">
         <Link
           href="/dashboard/team"
-          className="block rounded-lg border border-outline-variant/30 p-4 transition-colors hover:bg-surface-variant"
+          className="border-outline-variant/30 hover:bg-surface-variant block rounded-lg border p-4 transition-colors"
         >
-          <h2 className="font-semibold text-on-surface">Team Overview</h2>
-          <p className="mt-1 text-sm text-on-surface-variant">
+          <h2 className="text-on-surface font-semibold">Team Overview</h2>
+          <p className="text-on-surface-variant mt-1 text-sm">
             Capacity heat map across all team members
           </p>
         </Link>

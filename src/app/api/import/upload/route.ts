@@ -25,10 +25,7 @@ export async function POST(request: NextRequest) {
 
     // D-15: max 10MB file size
     if (file.size > 10 * 1024 * 1024) {
-      return NextResponse.json(
-        { error: 'File exceeds 10MB limit' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'File exceeds 10MB limit' }, { status: 400 });
     }
 
     // Validate file extension

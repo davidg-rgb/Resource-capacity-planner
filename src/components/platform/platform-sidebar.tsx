@@ -41,7 +41,7 @@ export function PlatformSidebar({ adminName, adminEmail }: PlatformSidebarProps)
   }
 
   return (
-    <aside className="fixed left-0 top-0 flex h-screen w-60 flex-col bg-slate-900 text-white">
+    <aside className="fixed top-0 left-0 flex h-screen w-60 flex-col bg-slate-900 text-white">
       <div className="border-b border-slate-700 px-4 py-5">
         <h1 className="font-headline text-lg font-semibold tracking-tight">Platform Admin</h1>
       </div>
@@ -67,9 +67,7 @@ export function PlatformSidebar({ adminName, adminEmail }: PlatformSidebarProps)
         {adminName && (
           <div className="mb-3">
             <p className="truncate text-sm font-medium text-white">{adminName}</p>
-            {adminEmail && (
-              <p className="truncate text-xs text-slate-400">{adminEmail}</p>
-            )}
+            {adminEmail && <p className="truncate text-xs text-slate-400">{adminEmail}</p>}
           </div>
         )}
         <button

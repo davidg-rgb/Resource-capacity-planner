@@ -15,14 +15,12 @@ export default function InputLayout({ children }: { children: React.ReactNode })
   const segments = pathname.split('/');
   const inputIndex = segments.indexOf('input');
   const activePersonId =
-    inputIndex !== -1 && segments.length > inputIndex + 1
-      ? segments[inputIndex + 1]
-      : undefined;
+    inputIndex !== -1 && segments.length > inputIndex + 1 ? segments[inputIndex + 1] : undefined;
 
   return (
     <div className="flex h-full">
       <PersonSidebar activePersonId={activePersonId} />
-      <div className="flex-1 overflow-auto p-6">{children}</div>
+      <div className="flex-1 space-y-6 overflow-auto p-8">{children}</div>
     </div>
   );
 }

@@ -18,7 +18,8 @@ export async function PATCH(
     // Fetch current values before update for audit trail
     const current = await getTenantDetail(orgId);
     const oldValues: Record<string, unknown> = {};
-    if (data.subscriptionStatus !== undefined) oldValues.subscriptionStatus = current.subscriptionStatus;
+    if (data.subscriptionStatus !== undefined)
+      oldValues.subscriptionStatus = current.subscriptionStatus;
     if (data.trialEndsAt !== undefined) oldValues.trialEndsAt = current.trialEndsAt;
     if (data.platformNotes !== undefined) oldValues.platformNotes = current.platformNotes;
 

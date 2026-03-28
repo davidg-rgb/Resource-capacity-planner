@@ -62,10 +62,7 @@ export function AllocationGrid({
     return generateMonthRange(startMonth, 24);
   }, [currentMonth]);
 
-  const columnDefs = useMemo(
-    () => buildColumnDefs(months, currentMonth),
-    [months, currentMonth],
-  );
+  const columnDefs = useMemo(() => buildColumnDefs(months, currentMonth), [months, currentMonth]);
 
   // BLOCKER 3 FIX: Local row data state for real-time SUMMA updates.
   // Server-derived rows (from allocations prop) seed localRowData.
@@ -104,9 +101,7 @@ export function AllocationGrid({
 
       // BLOCKER 3 FIX: Update local state synchronously so SUMMA recomputes immediately
       setLocalRowData((prev) =>
-        prev.map((row) =>
-          row.projectId === projectId ? { ...row, [month]: hours } : row,
-        ),
+        prev.map((row) => (row.projectId === projectId ? { ...row, [month]: hours } : row)),
       );
 
       // Trigger debounced auto-save to server
@@ -214,9 +209,7 @@ export function AllocationGrid({
   const components = useMemo(
     () => ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      projectCellRenderer: (params: any) => (
-        <ProjectCell {...params} onAddProject={onAddProject} />
-      ),
+      projectCellRenderer: (params: any) => <ProjectCell {...params} onAddProject={onAddProject} />,
       statusCellRenderer: StatusCell,
     }),
     [onAddProject],
@@ -224,30 +217,32 @@ export function AllocationGrid({
 
   return (
     <div ref={gridContainerRef} className="relative h-[600px] w-full outline-none" tabIndex={0}>
-      <AgGridReact
-        modules={modules}
-        rowData={localRowData}
-        columnDefs={columnDefs}
-        pinnedBottomRowData={pinnedBottomRowData}
-        onCellValueChanged={handleCellValueChanged}
-        components={components}
-        singleClickEdit={true}
-        stopEditingWhenCellsLoseFocus={true}
-        enterNavigatesVertically={true}
-        enterNavigatesVerticallyAfterEdit={true}
-        tabToNextCell={tabToNextCell}
-        navigateToNextCell={navigateToNextCell}
-        onGridReady={(params: GridReadyEvent) => {
-          setGridApi(params.api);
-        }}
-        getRowId={(params) => params.data.projectId}
-        defaultColDef={{
-          sortable: false,
-          filter: false,
-          resizable: true,
-        }}
-        domLayout="autoHeight"
-      />
+      <div className="bg-surface-container-lowest border-outline-variant/15 h-full overflow-hidden rounded-sm border shadow-sm">
+        <AgGridReact
+          modules={modules}
+          rowData={localRowData}
+          columnDefs={columnDefs}
+          pinnedBottomRowData={pinnedBottomRowData}
+          onCellValueChanged={handleCellValueChanged}
+          components={components}
+          singleClickEdit={true}
+          stopEditingWhenCellsLoseFocus={true}
+          enterNavigatesVertically={true}
+          enterNavigatesVerticallyAfterEdit={true}
+          tabToNextCell={tabToNextCell}
+          navigateToNextCell={navigateToNextCell}
+          onGridReady={(params: GridReadyEvent) => {
+            setGridApi(params.api);
+          }}
+          getRowId={(params) => params.data.projectId}
+          defaultColDef={{
+            sortable: false,
+            filter: false,
+            resizable: true,
+          }}
+          domLayout="autoHeight"
+        />
+      </div>
       <DragToFillHandle
         gridApi={gridApi}
         gridContainerRef={gridContainerRef}

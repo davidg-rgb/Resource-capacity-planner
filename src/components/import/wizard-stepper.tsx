@@ -41,7 +41,7 @@ export function WizardStepper({ currentStep, completedSteps }: WizardStepperProp
                   {isCompleted ? <Check className="h-4 w-4" /> : <span>{i + 1}</span>}
                 </div>
                 <span
-                  className={`mt-1.5 text-xs font-medium ${
+                  className={`mt-1.5 text-[10px] font-bold tracking-widest uppercase ${
                     isFuture ? 'text-on-surface-variant' : 'text-on-surface'
                   }`}
                 >

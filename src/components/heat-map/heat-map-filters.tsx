@@ -19,7 +19,7 @@ export function HeatMapFilters({ filters, onFilterChange }: HeatMapFiltersProps)
   const { data: disciplines } = useDisciplines();
 
   return (
-    <div className="flex items-center gap-3 mb-4 flex-wrap">
+    <div className="mb-4 flex flex-wrap items-center gap-3">
       {/* Department select */}
       <select
         value={filters.departmentId ?? ''}

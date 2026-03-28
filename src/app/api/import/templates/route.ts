@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import {
-  generateFlatTemplate,
-  generatePivotTemplate,
-} from '@/features/import/import.templates';
+import { generateFlatTemplate, generatePivotTemplate } from '@/features/import/import.templates';
 import { handleApiError } from '@/lib/api-utils';
 import { requireRole } from '@/lib/auth';
 
@@ -21,15 +18,12 @@ export async function GET(request: NextRequest) {
     await requireRole('planner');
 
     const format = request.nextUrl.searchParams.get('format');
-    const buffer =
-      format === 'pivot' ? generatePivotTemplate() : generateFlatTemplate();
-    const filename =
-      format === 'pivot' ? 'import-mall-pivot.xlsx' : 'import-mall.xlsx';
+    const buffer = format === 'pivot' ? generatePivotTemplate() : generateFlatTemplate();
+    const filename = format === 'pivot' ? 'import-mall-pivot.xlsx' : 'import-mall.xlsx';
 
     return new NextResponse(new Uint8Array(buffer), {
       headers: {
-        'Content-Type':
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'Content-Disposition': `attachment; filename="${filename}"`,
       },
     });

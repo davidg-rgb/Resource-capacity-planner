@@ -27,9 +27,7 @@ export async function listPeople(orgId: string, filters: PersonFilter = {}) {
   }
   if (filters.search) {
     const term = `%${filters.search}%`;
-    conditions.push(
-      or(ilike(schema.people.firstName, term), ilike(schema.people.lastName, term))!,
-    );
+    conditions.push(or(ilike(schema.people.firstName, term), ilike(schema.people.lastName, term))!);
   }
 
   return db
@@ -45,8 +43,24 @@ export async function listPeople(orgId: string, filters: PersonFilter = {}) {
  */
 export async function getPersonById(orgId: string, id: string) {
   const rows = await db
-    .select()
+    .select({
+      id: schema.people.id,
+      organizationId: schema.people.organizationId,
+      firstName: schema.people.firstName,
+      lastName: schema.people.lastName,
+      disciplineId: schema.people.disciplineId,
+      departmentId: schema.people.departmentId,
+      targetHoursPerMonth: schema.people.targetHoursPerMonth,
+      sortOrder: schema.people.sortOrder,
+      archivedAt: schema.people.archivedAt,
+      createdAt: schema.people.createdAt,
+      updatedAt: schema.people.updatedAt,
+      disciplineName: schema.disciplines.name,
+      departmentName: schema.departments.name,
+    })
     .from(schema.people)
+    .innerJoin(schema.disciplines, eq(schema.people.disciplineId, schema.disciplines.id))
+    .innerJoin(schema.departments, eq(schema.people.departmentId, schema.departments.id))
     .where(and(eq(schema.people.id, id), eq(schema.people.organizationId, orgId)));
 
   if (rows.length === 0) {
@@ -91,9 +105,7 @@ export async function updatePerson(orgId: string, id: string, data: PersonUpdate
  * Throws NotFoundError if person not found or not in org.
  */
 export async function deletePerson(orgId: string, id: string) {
-  const rows = await withTenant(orgId)
-    .updatePerson(id, { archivedAt: new Date() })
-    .returning();
+  const rows = await withTenant(orgId).updatePerson(id, { archivedAt: new Date() }).returning();
 
   if (rows.length === 0) {
     throw new NotFoundError('Person', id);
@@ -123,9 +135,7 @@ export async function listPeopleWithStatus(
   }
   if (filters.search) {
     const term = `%${filters.search}%`;
-    conditions.push(
-      or(ilike(schema.people.firstName, term), ilike(schema.people.lastName, term))!,
-    );
+    conditions.push(or(ilike(schema.people.firstName, term), ilike(schema.people.lastName, term))!);
   }
 
   const currentMonth = getCurrentMonth();

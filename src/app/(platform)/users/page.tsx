@@ -30,28 +30,25 @@ export default function UsersPage() {
   // Action feedback
   const [actionLoading, setActionLoading] = useState(false);
 
-  const searchUsers = useCallback(
-    async (searchQuery: string) => {
-      if (!searchQuery.trim()) {
-        setUsers([]);
-        setSearched(false);
-        return;
-      }
-      setLoading(true);
-      try {
-        const res = await fetch(`/api/platform/users?query=${encodeURIComponent(searchQuery)}`);
-        if (!res.ok) throw new Error('Search failed');
-        const data = await res.json();
-        setUsers(data);
-        setSearched(true);
-      } catch {
-        toast.error('Failed to search users');
-      } finally {
-        setLoading(false);
-      }
-    },
-    [],
-  );
+  const searchUsers = useCallback(async (searchQuery: string) => {
+    if (!searchQuery.trim()) {
+      setUsers([]);
+      setSearched(false);
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/platform/users?query=${encodeURIComponent(searchQuery)}`);
+      if (!res.ok) throw new Error('Search failed');
+      const data = await res.json();
+      setUsers(data);
+      setSearched(true);
+    } catch {
+      toast.error('Failed to search users');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -78,12 +75,12 @@ export default function UsersPage() {
       if (data.generatedPassword) {
         setGeneratedPassword(data.generatedPassword);
       } else {
-        toast.success( `Password reset for ${resetTarget.email ?? resetTarget.id}`);
+        toast.success(`Password reset for ${resetTarget.email ?? resetTarget.id}`);
         setResetTarget(null);
         setNewPassword('');
       }
     } catch {
-      toast.error( 'Failed to reset password');
+      toast.error('Failed to reset password');
     } finally {
       setActionLoading(false);
     }
@@ -103,7 +100,7 @@ export default function UsersPage() {
       );
       setLogoutTarget(null);
     } catch {
-      toast.error( 'Failed to force logout');
+      toast.error('Failed to force logout');
     } finally {
       setActionLoading(false);
     }

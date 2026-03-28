@@ -69,17 +69,11 @@ export function HeatMapPDF({ data, orgName, dateRange }: HeatMapPDFProps) {
                   </View>
                   {data.months.map((month) => {
                     const hours = person.months[month] ?? 0;
-                    const status = calculateHeatMapStatus(
-                      hours,
-                      person.targetHours,
-                    );
+                    const status = calculateHeatMapStatus(hours, person.targetHours);
                     return (
                       <View
                         key={month}
-                        style={[
-                          styles.dataCell,
-                          { backgroundColor: PDF_CELL_COLORS[status] },
-                        ]}
+                        style={[styles.dataCell, { backgroundColor: PDF_CELL_COLORS[status] }]}
                       >
                         <Text>{hours > 0 ? String(hours) : ''}</Text>
                       </View>
@@ -94,12 +88,7 @@ export function HeatMapPDF({ data, orgName, dateRange }: HeatMapPDFProps) {
           <View style={styles.legend}>
             {LEGEND_ITEMS.map((item) => (
               <View key={item.label} style={styles.legendItem}>
-                <View
-                  style={[
-                    styles.legendSwatch,
-                    { backgroundColor: item.color },
-                  ]}
-                />
+                <View style={[styles.legendSwatch, { backgroundColor: item.color }]} />
                 <Text>{item.label}</Text>
               </View>
             ))}

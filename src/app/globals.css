@@ -2,23 +2,25 @@
 
 @theme {
   --color-primary: #496173;
-  --color-primary-container: #cde5ff;
-  --color-on-primary: #ffffff;
-  --color-surface: #fafcff;
-  --color-surface-container: #eef1f6;
-  --color-surface-container-low: #f3f5fa;
-  --color-surface-container-high: #e8eaf0;
-  --color-on-surface: #1a1c1e;
-  --color-on-surface-variant: #43474e;
-  --color-error: #ba1a1a;
-  --color-outline: #73777f;
-  --color-outline-variant: #c3c7cf;
+  --color-primary-container: #cce6fb;
+  --color-on-primary: #f3f8ff;
+  --color-surface: #f8fafb;
+  --color-surface-container: #e8eff1;
+  --color-surface-container-low: #f0f4f6;
+  --color-surface-container-high: #e1eaec;
+  --color-on-surface: #2a3437;
+  --color-on-surface-variant: #566164;
+  --color-error: #9f403d;
+  --color-outline: #727d80;
+  --color-outline-variant: #a9b4b7;
 
   --font-headline: 'Manrope', sans-serif;
   --font-body: 'Inter', sans-serif;
 
   --radius-sm: 2px;
-  --radius-md: 6px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-full: 12px;
 
   /* Additional surface tones for shell chrome */
   --color-surface-container-lowest: #ffffff;
@@ -29,10 +31,49 @@
   --color-secondary: #586065;
   --color-secondary-container: #dce4e9;
   --color-on-secondary: #f3faff;
-  --color-on-secondary-fixed: #1a1c1e;
+  --color-on-secondary-fixed: #394045;
 
   /* Additional semantic colors */
   --color-on-primary-container: #3d5466;
   --color-on-error-container: #752121;
   --color-error-container: #fe8983;
+
+  /* Surface extensions */
+  --color-surface-variant: #d9e4e8;
+  --color-surface-tint: #496173;
+  --color-surface-bright: #f8fafb;
+  --color-inverse-surface: #0b0f10;
+  --color-inverse-on-surface: #9a9d9e;
+  --color-inverse-primary: #cce6fb;
+  --color-background: #f8fafb;
+  --color-on-background: #2a3437;
+
+  /* Primary extensions */
+  --color-primary-dim: #3d5567;
+  --color-primary-fixed: #cce6fb;
+  --color-primary-fixed-dim: #bed8ed;
+  --color-on-primary-fixed: #2a4253;
+  --color-on-primary-fixed-variant: #465e70;
+
+  /* Secondary extensions */
+  --color-secondary-dim: #4c5459;
+  --color-secondary-fixed: #dce4e9;
+  --color-secondary-fixed-dim: #ced5db;
+  --color-on-secondary-fixed-variant: #555d61;
+  --color-on-secondary-container: #4b5358;
+
+  /* Tertiary palette */
+  --color-tertiary: #5b6063;
+  --color-tertiary-dim: #4f5457;
+  --color-tertiary-container: #eaeef2;
+  --color-tertiary-fixed: #eaeef2;
+  --color-tertiary-fixed-dim: #dce0e3;
+  --color-on-tertiary: #f5f9fd;
+  --color-on-tertiary-fixed: #42474a;
+  --color-on-tertiary-fixed-variant: #5e6366;
+  --color-on-tertiary-container: #54595c;
+
+  /* Error extensions */
+  --color-error-dim: #4e0309;
+  --color-on-error: #fff7f6;
 }

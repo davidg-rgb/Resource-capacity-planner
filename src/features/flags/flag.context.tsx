@@ -13,13 +13,7 @@ const DEFAULT_FLAGS: FeatureFlags = {
 
 const FlagContext = createContext<FeatureFlags>(DEFAULT_FLAGS);
 
-export function FlagProvider({
-  flags,
-  children,
-}: {
-  flags: FeatureFlags;
-  children: ReactNode;
-}) {
+export function FlagProvider({ flags, children }: { flags: FeatureFlags; children: ReactNode }) {
   return <FlagContext.Provider value={flags}>{children}</FlagContext.Provider>;
 }
 

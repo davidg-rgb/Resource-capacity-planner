@@ -26,9 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${manrope.variable} font-body antialiased`}>
-        <ClerkProvider>
-          {children}
-        </ClerkProvider>
+        <ClerkProvider>{children}</ClerkProvider>
       </body>
     </html>
   );

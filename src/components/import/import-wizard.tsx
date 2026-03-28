@@ -30,10 +30,7 @@ function getCompletedSteps(currentStep: WizardStep): WizardStep[] {
 /**
  * Convert allRows to ImportRow[] using column mappings (flat format).
  */
-function mapRowsToImportRows(
-  allRows: unknown[][],
-  mappings: ColumnMapping[],
-): ImportRow[] {
+function mapRowsToImportRows(allRows: unknown[][], mappings: ColumnMapping[]): ImportRow[] {
   const personIdx = mappings.find((m) => m.targetField === 'personName')?.sourceIndex;
   const projectIdx = mappings.find((m) => m.targetField === 'projectName')?.sourceIndex;
   const monthIdx = mappings.find((m) => m.targetField === 'month')?.sourceIndex;
@@ -41,19 +38,28 @@ function mapRowsToImportRows(
   const deptIdx = mappings.find((m) => m.targetField === 'department')?.sourceIndex;
   const discIdx = mappings.find((m) => m.targetField === 'discipline')?.sourceIndex;
 
-  if (personIdx === undefined || projectIdx === undefined || monthIdx === undefined || hoursIdx === undefined) {
+  if (
+    personIdx === undefined ||
+    projectIdx === undefined ||
+    monthIdx === undefined ||
+    hoursIdx === undefined
+  ) {
     return [];
   }
 
-  return allRows.map((row, i): ImportRow => ({
-    rowIndex: i + 2, // +2: 1-indexed + header row
-    personName: String(row[personIdx] ?? '').trim(),
-    projectName: String(row[projectIdx] ?? '').trim(),
-    month: String(row[monthIdx] ?? '').trim(),
-    hours: Number(row[hoursIdx]) || 0,
-    department: deptIdx !== undefined ? String(row[deptIdx] ?? '').trim() || undefined : undefined,
-    discipline: discIdx !== undefined ? String(row[discIdx] ?? '').trim() || undefined : undefined,
-  }));
+  return allRows.map(
+    (row, i): ImportRow => ({
+      rowIndex: i + 2, // +2: 1-indexed + header row
+      personName: String(row[personIdx] ?? '').trim(),
+      projectName: String(row[projectIdx] ?? '').trim(),
+      month: String(row[monthIdx] ?? '').trim(),
+      hours: Number(row[hoursIdx]) || 0,
+      department:
+        deptIdx !== undefined ? String(row[deptIdx] ?? '').trim() || undefined : undefined,
+      discipline:
+        discIdx !== undefined ? String(row[discIdx] ?? '').trim() || undefined : undefined,
+    }),
+  );
 }
 
 const INITIAL_STATE: WizardState = {
@@ -192,11 +198,13 @@ export function ImportWizard() {
 
   // Count ready rows for import step
   const readyCount = state.validationResult
-    ? state.validationResult.rows.filter((r) => r.status === 'ready' || r.status === 'warning').length
+    ? state.validationResult.rows.filter((r) => r.status === 'ready' || r.status === 'warning')
+        .length
     : 0;
 
   // Back button should be hidden during importing
-  const showBack = currentStepIndex > 0 && state.importStatus !== 'importing' && state.importStatus !== 'success';
+  const showBack =
+    currentStepIndex > 0 && state.importStatus !== 'importing' && state.importStatus !== 'success';
 
   return (
     <div className="mx-auto max-w-5xl">

@@ -43,6 +43,6 @@ export const flatTableColumnDefs: ColDef<FlatTableRow>[] = [
     headerName: 'Hours',
     sortable: true,
     width: 90,
-    cellClass: 'tabular-nums text-right',
+    cellClass: 'tabular-nums text-right font-bold',
   },
 ];

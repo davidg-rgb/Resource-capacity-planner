@@ -52,7 +52,7 @@ export function DashboardContent() {
     <div className="mt-6 space-y-6">
       {/* Time Range Selector */}
       <div className="flex items-center justify-between">
-        <div className="flex gap-1 rounded-md border border-outline-variant/30 p-1">
+        <div className="border-outline-variant/30 flex gap-1 rounded-md border p-1">
           {TIME_RANGES.map(({ label, value }) => (
             <button
               key={value}
@@ -77,12 +77,12 @@ export function DashboardContent() {
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="h-28 animate-pulse rounded-lg border border-outline-variant/30 bg-surface-container-low"
+              className="border-outline-variant/30 bg-surface-container-low h-28 animate-pulse rounded-lg border"
             />
           ))}
         </div>
       ) : kpis.totalPeople === 0 ? (
-        <div className="rounded-lg border border-outline-variant/30 bg-surface-container-low p-6 text-sm text-on-surface-variant">
+        <div className="border-outline-variant/30 bg-surface-container-low text-on-surface-variant rounded-lg border p-6 text-sm">
           No team members found. Add people to see capacity metrics.
         </div>
       ) : (
@@ -92,11 +92,7 @@ export function DashboardContent() {
             value={`${kpis.utilizationPercent}%`}
             href="/dashboard/team"
           />
-          <KPICard
-            title="Headcount"
-            value={kpis.totalPeople}
-            href="/dashboard/team"
-          />
+          <KPICard title="Headcount" value={kpis.totalPeople} href="/dashboard/team" />
           <KPICard
             title="Overloaded"
             value={kpis.overloadedCount}
@@ -115,18 +111,16 @@ export function DashboardContent() {
       {/* Charts */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Department Utilization */}
-        <div className="rounded-lg border border-outline-variant/30 bg-surface-container-low p-6">
-          <h2 className="mb-4 font-headline text-sm font-semibold uppercase tracking-widest text-outline">
+        <div className="border-outline-variant/30 bg-surface-container-low rounded-lg border p-6">
+          <h2 className="font-headline text-outline mb-4 text-sm font-semibold tracking-widest uppercase">
             Department Utilization
           </h2>
           {deptsError ? (
-            <div className="text-sm text-red-600">
-              Failed to load department data
-            </div>
+            <div className="text-sm text-red-600">Failed to load department data</div>
           ) : deptsLoading || !departments ? (
-            <div className="h-[300px] animate-pulse rounded bg-surface-container" />
+            <div className="bg-surface-container h-[300px] animate-pulse rounded" />
           ) : departments.length === 0 ? (
-            <div className="flex h-[300px] items-center justify-center text-sm text-on-surface-variant">
+            <div className="text-on-surface-variant flex h-[300px] items-center justify-center text-sm">
               No department data available
             </div>
           ) : (
@@ -137,18 +131,16 @@ export function DashboardContent() {
         </div>
 
         {/* Discipline Breakdown */}
-        <div className="rounded-lg border border-outline-variant/30 bg-surface-container-low p-6">
-          <h2 className="mb-4 font-headline text-sm font-semibold uppercase tracking-widest text-outline">
+        <div className="border-outline-variant/30 bg-surface-container-low rounded-lg border p-6">
+          <h2 className="font-headline text-outline mb-4 text-sm font-semibold tracking-widest uppercase">
             Discipline Breakdown
           </h2>
           {discError ? (
-            <div className="text-sm text-red-600">
-              Failed to load discipline data
-            </div>
+            <div className="text-sm text-red-600">Failed to load discipline data</div>
           ) : discLoading || !disciplines ? (
-            <div className="h-[300px] animate-pulse rounded bg-surface-container" />
+            <div className="bg-surface-container h-[300px] animate-pulse rounded" />
           ) : disciplines.length === 0 ? (
-            <div className="flex h-[300px] items-center justify-center text-sm text-on-surface-variant">
+            <div className="text-on-surface-variant flex h-[300px] items-center justify-center text-sm">
               No discipline data available
             </div>
           ) : (

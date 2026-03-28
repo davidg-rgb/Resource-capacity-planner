@@ -107,7 +107,9 @@ export default function TenantsPage() {
           <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
             <h3 className="mb-4 text-lg font-semibold text-slate-900">Create Organization</h3>
             {createError && (
-              <div className="mb-4 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">{createError}</div>
+              <div className="mb-4 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                {createError}
+              </div>
             )}
             <form onSubmit={handleCreateTenant}>
               <div className="mb-4">
@@ -126,16 +128,21 @@ export default function TenantsPage() {
                 <input
                   type="text"
                   value={createSlug}
-                  onChange={(e) => setCreateSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                  onChange={(e) =>
+                    setCreateSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))
+                  }
                   placeholder="acme-corp"
                   required
-                  className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm font-mono focus:border-slate-500 focus:outline-none"
+                  className="w-full rounded-md border border-slate-300 px-3 py-2 font-mono text-sm focus:border-slate-500 focus:outline-none"
                 />
               </div>
               <div className="flex justify-end gap-2">
                 <button
                   type="button"
-                  onClick={() => { setShowCreate(false); setCreateError(''); }}
+                  onClick={() => {
+                    setShowCreate(false);
+                    setCreateError('');
+                  }}
                   className="rounded-md bg-slate-100 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-200"
                 >
                   Cancel
@@ -166,23 +173,39 @@ export default function TenantsPage() {
           <table className="min-w-full divide-y divide-slate-200">
             <thead className="bg-slate-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Users</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Created</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase">
+                  Users
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase">
+                  Created
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
               {tenants.map((tenant) => (
                 <tr key={tenant.id}>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900">{tenant.name}</td>
-                  <td className="whitespace-nowrap px-6 py-4"><StatusBadge status={tenant.subscriptionStatus} /></td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm tabular-nums text-slate-500">{tenant.userCount}</td>
-                  <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500">
+                  <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-slate-900">
+                    {tenant.name}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <StatusBadge status={tenant.subscriptionStatus} />
+                  </td>
+                  <td className="px-6 py-4 text-sm whitespace-nowrap text-slate-500 tabular-nums">
+                    {tenant.userCount}
+                  </td>
+                  <td className="px-6 py-4 text-sm whitespace-nowrap text-slate-500">
                     {new Date(tenant.createdAt).toLocaleDateString()}
                   </td>
-                  <td className="whitespace-nowrap px-6 py-4">
+                  <td className="px-6 py-4 whitespace-nowrap">
                     <Link
                       href={`/platform/tenants/${tenant.id}`}
                       className="text-sm font-medium text-blue-600 hover:text-blue-800"

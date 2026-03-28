@@ -2,11 +2,7 @@ import { Toaster } from 'sonner';
 
 import { PlatformShell } from '@/components/platform/platform-shell';
 
-export default function PlatformLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function PlatformLayout({ children }: { children: React.ReactNode }) {
   return (
     <PlatformShell>
       {children}

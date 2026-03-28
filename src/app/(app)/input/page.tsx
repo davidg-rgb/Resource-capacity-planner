@@ -8,15 +8,15 @@ export default function InputPage() {
   const { data: people, isLoading } = usePeople();
 
   if (isLoading) {
-    return <div className="p-6 text-on-surface-variant">Loading...</div>;
+    return <div className="text-on-surface-variant p-6">Loading...</div>;
   }
 
   return (
     <div className="space-y-4">
-      <h1 className="font-headline text-2xl font-semibold tracking-tight text-on-surface">
+      <h1 className="font-headline text-on-surface text-2xl font-semibold tracking-tight">
         Person Input
       </h1>
-      <p className="text-sm text-on-surface-variant">
+      <p className="text-on-surface-variant text-sm">
         Select a person to view and edit their allocation grid.
       </p>
       <ul className="space-y-1">
@@ -24,7 +24,7 @@ export default function InputPage() {
           <li key={p.id}>
             <Link
               href={`/input/${p.id}`}
-              className="block rounded-md px-3 py-2 text-sm text-on-surface hover:bg-surface-container"
+              className="text-on-surface hover:bg-surface-container block rounded-md px-3 py-2 text-sm"
             >
               {p.firstName} {p.lastName}
             </Link>

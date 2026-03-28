@@ -62,9 +62,7 @@ export function transformToGridRows(
   }
 
   // Sort by project name
-  return Array.from(map.values()).sort((a, b) =>
-    a.projectName.localeCompare(b.projectName),
-  );
+  return Array.from(map.values()).sort((a, b) => a.projectName.localeCompare(b.projectName));
 }
 
 // ---------------------------------------------------------------------------
@@ -81,7 +79,7 @@ export function buildColumnDefs(months: string[], currentMonth: string): ColDef[
     field: 'projectName',
     headerName: 'Project',
     pinned: 'left' as const,
-    width: 200,
+    width: 256,
     editable: false,
     cellRenderer: 'projectCellRenderer',
   };
@@ -89,7 +87,7 @@ export function buildColumnDefs(months: string[], currentMonth: string): ColDef[
   const monthCols: ColDef[] = months.map((month) => ({
     field: month,
     headerName: formatMonthHeader(month),
-    width: 90,
+    width: 100,
     editable: (params: EditableCallbackParams) =>
       !params.node?.isRowPinned() && month >= currentMonth,
     cellClass: (params: CellClassParams) => {
@@ -101,7 +99,7 @@ export function buildColumnDefs(months: string[], currentMonth: string): ColDef[
         classes.push('bg-surface-container-low', 'text-outline', 'opacity-60');
       }
       if (month === currentMonth) {
-        classes.push('ring-1', 'ring-inset', 'ring-primary/20');
+        classes.push('bg-primary-container/5');
       }
       return classes;
     },
@@ -114,7 +112,10 @@ export function buildColumnDefs(months: string[], currentMonth: string): ColDef[
       if (params.value == null || params.value === '' || params.value === 0) return '';
       return String(params.value);
     },
-    cellRendererSelector: (params: { node?: { isRowPinned: () => boolean } | null; data?: GridRow }): CellRendererSelectorResult | undefined => {
+    cellRendererSelector: (params: {
+      node?: { isRowPinned: () => boolean } | null;
+      data?: GridRow;
+    }): CellRendererSelectorResult | undefined => {
       if (params.node?.isRowPinned() && params.data?.projectId === '__status__') {
         return { component: 'statusCellRenderer' };
       }
@@ -143,10 +144,7 @@ export function computePinnedRows(
   const statusRow: GridRow = { projectId: '__status__', projectName: 'Status' };
 
   for (const month of months) {
-    const sum = rowData.reduce(
-      (acc, row) => acc + (Number(row[month]) || 0),
-      0,
-    );
+    const sum = rowData.reduce((acc, row) => acc + (Number(row[month]) || 0), 0);
     summaRow[month] = sum;
     targetRow[month] = targetHours;
     statusRow[month] = calculateStatus(sum, targetHours);

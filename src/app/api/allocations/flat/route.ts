@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { countAllocationsFlat, listAllocationsFlat } from '@/features/allocations/allocation.service';
+import {
+  countAllocationsFlat,
+  listAllocationsFlat,
+} from '@/features/allocations/allocation.service';
 import { handleApiError } from '@/lib/api-utils';
 import { getTenantId } from '@/lib/auth';
 

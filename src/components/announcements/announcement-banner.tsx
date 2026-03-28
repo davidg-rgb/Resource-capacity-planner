@@ -4,7 +4,10 @@ import { useCallback, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { X } from 'lucide-react';
 
-import type { Announcement, AnnouncementSeverity } from '@/features/announcements/announcement.types';
+import type {
+  Announcement,
+  AnnouncementSeverity,
+} from '@/features/announcements/announcement.types';
 
 import { dismissAnnouncement, getDismissedIds } from './use-dismissed-announcements';
 
@@ -46,10 +49,7 @@ export function AnnouncementBanner() {
   const canDismiss = announcement.severity !== 'critical';
 
   return (
-    <div
-      className={`border-l-4 px-4 py-3 ${SEVERITY_STYLES[announcement.severity]}`}
-      role="alert"
-    >
+    <div className={`border-l-4 px-4 py-3 ${SEVERITY_STYLES[announcement.severity]}`} role="alert">
       <div className="flex items-center justify-between">
         <div className="min-w-0">
           <span className="font-semibold">{announcement.title}</span>

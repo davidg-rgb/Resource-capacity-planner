@@ -14,9 +14,7 @@ export const suspendSchema = z.object({
 });
 
 export const subscriptionUpdateSchema = z.object({
-  subscriptionStatus: z
-    .enum(['trial', 'active', 'past_due', 'cancelled', 'suspended'])
-    .optional(),
+  subscriptionStatus: z.enum(['trial', 'active', 'past_due', 'cancelled', 'suspended']).optional(),
   trialEndsAt: z.string().datetime().optional(),
   platformNotes: z.string().max(2000).optional(),
 });

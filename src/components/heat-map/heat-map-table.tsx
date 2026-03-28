@@ -28,17 +28,17 @@ export function HeatMapTable({ data }: HeatMapTableProps) {
   }, []);
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-outline">
+    <div className="border-outline overflow-x-auto rounded-lg border">
       <table className="w-full border-collapse text-sm">
         <thead>
           <tr className="bg-surface-variant">
-            <th className="sticky left-0 z-20 bg-surface-variant px-3 py-2 text-left font-medium text-on-surface min-w-[200px]">
+            <th className="bg-surface-variant text-on-surface sticky left-0 z-20 min-w-[200px] px-3 py-2 text-left font-medium">
               Name
             </th>
             {data.months.map((m) => (
               <th
                 key={m}
-                className="px-2 py-2 text-center font-medium text-on-surface-variant whitespace-nowrap min-w-[60px]"
+                className="text-on-surface-variant min-w-[60px] px-2 py-2 text-center font-medium whitespace-nowrap"
               >
                 {formatMonthHeader(m)}
               </th>
@@ -51,17 +51,17 @@ export function HeatMapTable({ data }: HeatMapTableProps) {
             <tbody key={dept.departmentId}>
               {/* Department header row */}
               <tr
-                className="cursor-pointer bg-surface-dim hover:bg-surface-variant"
+                className="bg-surface-dim hover:bg-surface-variant cursor-pointer"
                 onClick={() => toggleDept(dept.departmentId)}
               >
                 <td
                   colSpan={data.months.length + 1}
-                  className="sticky left-0 z-10 bg-surface-dim px-3 py-1.5 font-semibold text-on-surface"
+                  className="bg-surface-dim text-on-surface sticky left-0 z-10 px-3 py-1.5 font-semibold"
                 >
                   {isCollapsed ? (
-                    <ChevronRight size={16} className="inline mr-1" />
+                    <ChevronRight size={16} className="mr-1 inline" />
                   ) : (
-                    <ChevronDown size={16} className="inline mr-1" />
+                    <ChevronDown size={16} className="mr-1 inline" />
                   )}
                   {dept.departmentName} ({dept.people.length})
                 </td>
@@ -71,9 +71,9 @@ export function HeatMapTable({ data }: HeatMapTableProps) {
                 dept.people.map((person) => (
                   <tr
                     key={person.personId}
-                    className="border-t border-outline/30 hover:bg-surface-variant/30"
+                    className="border-outline/30 hover:bg-surface-variant/30 border-t"
                   >
-                    <td className="sticky left-0 z-10 bg-surface px-3 py-1 whitespace-nowrap">
+                    <td className="bg-surface sticky left-0 z-10 px-3 py-1 whitespace-nowrap">
                       <Link
                         href={`/input/${person.personId}`}
                         className="text-primary hover:underline"

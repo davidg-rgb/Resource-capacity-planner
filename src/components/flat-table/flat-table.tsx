@@ -84,14 +84,14 @@ export function FlatTable() {
                 setExportOpen(false);
               }
             }}
-            className="border-outline-variant text-on-surface hover:bg-surface-container inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors"
+            className="bg-primary text-on-primary inline-flex items-center gap-1.5 rounded-sm px-5 py-2.5 text-xs font-semibold shadow-md transition-colors"
           >
             <Download className="h-4 w-4" />
             Export
             <ChevronDown className="h-3.5 w-3.5" />
           </button>
           {exportOpen && (
-            <div className="bg-surface border-outline-variant absolute top-full right-0 z-10 mt-1 flex flex-col overflow-hidden rounded-md border shadow-md">
+            <div className="bg-surface border-outline-variant absolute top-full right-0 z-10 mt-1 flex flex-col overflow-hidden rounded-sm border shadow-md">
               <a
                 href={buildExportUrl('xlsx')}
                 download
@@ -114,7 +114,10 @@ export function FlatTable() {
       </div>
 
       {/* AG Grid */}
-      <div style={{ height: '600px' }} className="w-full">
+      <div
+        style={{ height: '600px' }}
+        className="bg-surface-container-lowest border-outline-variant/10 w-full overflow-hidden rounded-sm border shadow-sm"
+      >
         <AgGridReact
           modules={modules}
           rowData={data?.rows ?? []}

@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getDepartmentUtilization, validateMonthRange } from '@/features/analytics/analytics.service';
+import {
+  getDepartmentUtilization,
+  validateMonthRange,
+} from '@/features/analytics/analytics.service';
 import { getTenantId } from '@/lib/auth';
 import { handleApiError } from '@/lib/api-utils';
 

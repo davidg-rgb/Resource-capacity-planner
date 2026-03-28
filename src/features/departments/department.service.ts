@@ -51,9 +51,7 @@ export async function createDepartment(orgId: string, data: DepartmentCreate) {
  * Throws NotFoundError if department not found or not in org.
  */
 export async function updateDepartment(orgId: string, id: string, data: DepartmentUpdate) {
-  const rows = await withTenant(orgId)
-    .updateDepartment(id, data)
-    .returning();
+  const rows = await withTenant(orgId).updateDepartment(id, data).returning();
 
   if (rows.length === 0) {
     throw new NotFoundError('Department', id);

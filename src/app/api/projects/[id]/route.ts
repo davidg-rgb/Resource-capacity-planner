@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { projectUpdateSchema } from '@/features/projects/project.schema';
-import {
-  archiveProject,
-  getProjectById,
-  updateProject,
-} from '@/features/projects/project.service';
+import { archiveProject, getProjectById, updateProject } from '@/features/projects/project.service';
 import { handleApiError } from '@/lib/api-utils';
 import { getTenantId, requireRole } from '@/lib/auth';
 

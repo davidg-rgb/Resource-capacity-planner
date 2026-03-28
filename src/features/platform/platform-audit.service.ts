@@ -51,10 +51,7 @@ export async function queryAuditLog(params: AuditQueryParams) {
       .orderBy(desc(platformAuditLog.createdAt))
       .offset((page - 1) * pageSize)
       .limit(pageSize),
-    db
-      .select({ total: count() })
-      .from(platformAuditLog)
-      .where(whereClause),
+    db.select({ total: count() }).from(platformAuditLog).where(whereClause),
   ]);
 
   return {

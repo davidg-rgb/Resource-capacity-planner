@@ -202,7 +202,9 @@ export default function PlatformDashboardPage() {
             {healthLoading ? (
               <div className="mt-2 h-8 w-20 animate-pulse rounded bg-slate-200" />
             ) : (
-              <p className={`mt-2 text-3xl font-semibold tabular-nums ${health ? latencyColorClass(health.dbLatencyMs) : 'text-slate-400'}`}>
+              <p
+                className={`mt-2 text-3xl font-semibold tabular-nums ${health ? latencyColorClass(health.dbLatencyMs) : 'text-slate-400'}`}
+              >
                 {health && health.dbLatencyMs >= 0 ? `${health.dbLatencyMs}ms` : 'N/A'}
               </p>
             )}
@@ -212,7 +214,9 @@ export default function PlatformDashboardPage() {
             {healthLoading ? (
               <div className="mt-2 h-8 w-20 animate-pulse rounded bg-slate-200" />
             ) : (
-              <p className={`mt-2 text-3xl font-semibold ${health?.dbConnected ? 'text-green-600' : 'text-red-600'}`}>
+              <p
+                className={`mt-2 text-3xl font-semibold ${health?.dbConnected ? 'text-green-600' : 'text-red-600'}`}
+              >
                 {health?.dbConnected ? 'Connected' : 'Disconnected'}
               </p>
             )}
@@ -227,8 +231,14 @@ export default function PlatformDashboardPage() {
             {healthLoading ? (
               <div className="mt-2 h-8 w-20 animate-pulse rounded bg-slate-200" />
             ) : (
-              <p className={`mt-2 text-3xl font-semibold tabular-nums ${health && health.recentErrors > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                {health ? (health.recentErrors === 0 ? 'None' : `${health.recentErrors} err`) : 'N/A'}
+              <p
+                className={`mt-2 text-3xl font-semibold tabular-nums ${health && health.recentErrors > 0 ? 'text-red-600' : 'text-green-600'}`}
+              >
+                {health
+                  ? health.recentErrors === 0
+                    ? 'None'
+                    : `${health.recentErrors} err`
+                  : 'N/A'}
               </p>
             )}
           </div>

@@ -82,7 +82,9 @@ export function PersonSidebar({ activePersonId }: PersonSidebarProps) {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`h-2 w-2 rounded-full ${getStatusColor(person.status).dot}`} />
+                      <div
+                        className={`h-2 w-2 rounded-full ${getStatusColor(person.status).dot}`}
+                      />
                       <span className="font-body text-on-surface text-xs">
                         {person.firstName} {person.lastName}
                       </span>

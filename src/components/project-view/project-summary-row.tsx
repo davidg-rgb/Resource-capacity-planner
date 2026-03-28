@@ -16,7 +16,7 @@ export function ProjectSummaryRow({ people, months }: ProjectSummaryRowProps) {
 
   return (
     <tr className="bg-surface-container-low">
-      <td className="px-3 py-2 font-bold text-on-surface">Total</td>
+      <td className="text-on-surface px-3 py-2 font-bold">Total</td>
       {months.map((month, i) => {
         const total = totals[i];
         const isUnderstaffed = total === 0 && hasPeople;
@@ -25,7 +25,7 @@ export function ProjectSummaryRow({ people, months }: ProjectSummaryRowProps) {
           return (
             <td
               key={month}
-              className="px-2 py-2 text-center tabular-nums bg-amber-100 border-dashed border-amber-300 border"
+              className="border border-dashed border-amber-300 bg-amber-100 px-2 py-2 text-center tabular-nums"
               title="No allocations this month"
             >
               --
@@ -37,9 +37,7 @@ export function ProjectSummaryRow({ people, months }: ProjectSummaryRowProps) {
           <td
             key={month}
             className={`px-2 py-2 text-center tabular-nums ${
-              total > 0
-                ? 'font-semibold text-on-surface'
-                : 'text-on-surface-variant/50'
+              total > 0 ? 'text-on-surface font-semibold' : 'text-on-surface-variant/50'
             }`}
           >
             {total}

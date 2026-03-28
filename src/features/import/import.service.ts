@@ -56,9 +56,7 @@ function matchName(importedName: string, existing: NameEntry[]): MatchResult {
   }
 
   // Try exact match first (case-insensitive)
-  const exactMatch = existing.find(
-    (e) => e.name.toLowerCase() === trimmed.toLowerCase(),
-  );
+  const exactMatch = existing.find((e) => e.name.toLowerCase() === trimmed.toLowerCase());
   if (exactMatch) {
     return {
       status: 'exact',
@@ -162,11 +160,7 @@ export async function validateImportRows(
     const projectMatch = matchName(row.projectName, projectList);
 
     // Hours validation
-    if (
-      !Number.isInteger(row.hours) ||
-      row.hours < 1 ||
-      row.hours > 999
-    ) {
+    if (!Number.isInteger(row.hours) || row.hours < 1 || row.hours > 999) {
       errors.push(`Invalid hours: ${row.hours}`);
     }
 
@@ -179,27 +173,20 @@ export async function validateImportRows(
     if (personMatch.status === 'unknown') {
       errors.push(`Person not found: ${row.personName}`);
     } else if (personMatch.status === 'fuzzy') {
-      warnings.push(
-        `Fuzzy match for person "${row.personName}" — review suggestions`,
-      );
+      warnings.push(`Fuzzy match for person "${row.personName}" — review suggestions`);
     }
 
     if (projectMatch.status === 'unknown') {
       errors.push(`Project not found: ${row.projectName}`);
     } else if (projectMatch.status === 'fuzzy') {
-      warnings.push(
-        `Fuzzy match for project "${row.projectName}" — review suggestions`,
-      );
+      warnings.push(`Fuzzy match for project "${row.projectName}" — review suggestions`);
     }
 
     // Determine overall row status
     let status: RowStatus;
     if (errors.length > 0) {
       status = 'error';
-    } else if (
-      personMatch.status === 'fuzzy' ||
-      projectMatch.status === 'fuzzy'
-    ) {
+    } else if (personMatch.status === 'fuzzy' || projectMatch.status === 'fuzzy') {
       status = 'warning';
     } else {
       status = 'ready';

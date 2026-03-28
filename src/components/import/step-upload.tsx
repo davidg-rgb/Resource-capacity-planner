@@ -125,7 +125,7 @@ export function StepUpload({ onFileUploaded }: StepUploadProps) {
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-10 transition-colors ${
+        className={`flex cursor-pointer flex-col items-center justify-center rounded-sm border-2 border-dashed p-10 transition-colors ${
           isDragOver
             ? 'border-primary bg-primary/5'
             : 'border-outline-variant hover:border-primary/50 hover:bg-surface-container'
@@ -149,7 +149,7 @@ export function StepUpload({ onFileUploaded }: StepUploadProps) {
 
       {/* Size error */}
       {sizeError && (
-        <div className="bg-error-container text-on-error-container flex items-center gap-2 rounded-md px-4 py-3 text-sm">
+        <div className="bg-error-container text-on-error-container flex items-center gap-2 rounded-sm px-4 py-3 text-sm">
           <AlertTriangle className="h-4 w-4 shrink-0" />
           {sizeError}
         </div>
@@ -157,7 +157,7 @@ export function StepUpload({ onFileUploaded }: StepUploadProps) {
 
       {/* Upload error */}
       {upload.isError && (
-        <div className="bg-error-container text-on-error-container flex items-center gap-2 rounded-md px-4 py-3 text-sm">
+        <div className="bg-error-container text-on-error-container flex items-center gap-2 rounded-sm px-4 py-3 text-sm">
           <AlertTriangle className="h-4 w-4 shrink-0" />
           {upload.error.message}
         </div>
@@ -165,7 +165,7 @@ export function StepUpload({ onFileUploaded }: StepUploadProps) {
 
       {/* Loading state */}
       {upload.isPending && selectedFile && (
-        <div className="bg-surface-container flex items-center gap-3 rounded-md px-4 py-3">
+        <div className="bg-surface-container flex items-center gap-3 rounded-sm px-4 py-3">
           <Loader2 className="text-primary h-4 w-4 animate-spin" />
           <div>
             <p className="text-on-surface text-sm font-medium">{selectedFile.name}</p>
@@ -178,7 +178,7 @@ export function StepUpload({ onFileUploaded }: StepUploadProps) {
 
       {/* File info after upload */}
       {parsedFile && !upload.isPending && (
-        <div className="bg-surface-container flex items-center gap-3 rounded-md px-4 py-3">
+        <div className="bg-surface-container flex items-center gap-3 rounded-sm px-4 py-3">
           <FileText className="text-primary h-4 w-4" />
           <div>
             <p className="text-on-surface text-sm font-medium">
@@ -191,11 +191,12 @@ export function StepUpload({ onFileUploaded }: StepUploadProps) {
 
       {/* Hidden rows warning */}
       {parsedFile?.hiddenRowsSkipped != null && parsedFile.hiddenRowsSkipped > 0 && (
-        <div className="border-warning bg-warning-container rounded-md border px-4 py-3">
+        <div className="border-warning bg-warning-container rounded-sm border px-4 py-3">
           <div className="flex items-center gap-2">
             <AlertTriangle className="text-on-warning-container h-4 w-4 shrink-0" />
             <p className="text-on-warning-container text-sm">
-              {parsedFile.hiddenRowsSkipped} hidden row{parsedFile.hiddenRowsSkipped === 1 ? ' was' : 's were'} skipped during import.
+              {parsedFile.hiddenRowsSkipped} hidden row
+              {parsedFile.hiddenRowsSkipped === 1 ? ' was' : 's were'} skipped during import.
             </p>
           </div>
         </div>
@@ -203,7 +204,7 @@ export function StepUpload({ onFileUploaded }: StepUploadProps) {
 
       {/* Encoding warning */}
       {parsedFile?.encodingWarning && (
-        <div className="border-warning bg-warning-container rounded-md border px-4 py-3">
+        <div className="border-warning bg-warning-container rounded-sm border px-4 py-3">
           <div className="flex items-center gap-2">
             <AlertTriangle className="text-on-warning-container h-4 w-4 shrink-0" />
             <p className="text-on-warning-container text-sm">
@@ -214,7 +215,7 @@ export function StepUpload({ onFileUploaded }: StepUploadProps) {
             <select
               value={selectedCodepage ?? ''}
               onChange={(e) => setSelectedCodepage(Number(e.target.value) || undefined)}
-              className="border-outline-variant bg-surface text-on-surface rounded-md border px-2 py-1 text-xs"
+              className="border-outline-variant bg-surface text-on-surface rounded-sm border px-2 py-1 text-xs"
             >
               <option value="">Select encoding</option>
               {CODEPAGE_OPTIONS.map((opt) => (
@@ -227,7 +228,7 @@ export function StepUpload({ onFileUploaded }: StepUploadProps) {
               type="button"
               onClick={handleReuploadWithCodepage}
               disabled={!selectedCodepage}
-              className="bg-primary text-on-primary hover:bg-primary/90 rounded-md px-3 py-1 text-xs font-medium transition-colors disabled:opacity-50"
+              className="bg-primary text-on-primary hover:bg-primary/90 rounded-sm px-3 py-1 text-xs font-medium transition-colors disabled:opacity-50"
             >
               Re-upload
             </button>
@@ -237,7 +238,7 @@ export function StepUpload({ onFileUploaded }: StepUploadProps) {
 
       {/* Pivot format confirmation */}
       {showPivotConfirm && pendingResult && (
-        <div className="border-outline-variant bg-surface-container rounded-md border px-4 py-4">
+        <div className="border-outline-variant bg-surface-container rounded-sm border px-4 py-4">
           <p className="text-on-surface text-sm font-medium">
             We detected a grid format (months as columns). We&apos;ll unpivot to flat rows.
           </p>
@@ -339,7 +340,7 @@ export function StepUpload({ onFileUploaded }: StepUploadProps) {
           <button
             type="button"
             onClick={handlePivotConfirm}
-            className="bg-primary text-on-primary hover:bg-primary/90 mt-3 rounded-md px-4 py-2 text-sm font-medium transition-colors"
+            className="bg-primary text-on-primary hover:bg-primary/90 mt-3 rounded-sm px-4 py-2 text-sm font-medium transition-colors"
           >
             Confirm
           </button>

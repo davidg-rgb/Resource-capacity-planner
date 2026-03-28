@@ -65,6 +65,8 @@ export default function PersonInputPage({ params }: { params: Promise<{ personId
         firstName={person.firstName}
         lastName={person.lastName}
         targetHours={person.targetHoursPerMonth}
+        discipline={person.disciplineName}
+        department={person.departmentName}
       />
 
       <AllocationGrid

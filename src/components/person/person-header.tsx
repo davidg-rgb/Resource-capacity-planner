@@ -8,6 +8,8 @@ interface PersonHeaderProps {
   firstName: string;
   lastName: string;
   targetHours: number;
+  discipline?: string;
+  department?: string;
 }
 
 /**
@@ -19,6 +21,8 @@ export function PersonHeader({
   firstName,
   lastName,
   targetHours,
+  discipline,
+  department,
 }: PersonHeaderProps) {
   const router = useRouter();
   const [hasPrev, setHasPrev] = useState(false);
@@ -58,9 +62,7 @@ export function PersonHeader({
     async (direction: 'prev' | 'next') => {
       setNavigating(true);
       try {
-        const res = await fetch(
-          `/api/people/${personId}/adjacent?direction=${direction}`,
-        );
+        const res = await fetch(`/api/people/${personId}/adjacent?direction=${direction}`);
         const data = await res.json();
         if (data.person?.id) {
           router.push(`/input/${data.person.id}`);
@@ -80,7 +82,7 @@ export function PersonHeader({
         type="button"
         disabled={!hasPrev || navigating}
         onClick={() => navigate('prev')}
-        className="flex h-8 w-8 items-center justify-center rounded-sm border border-outline-variant text-on-surface transition-colors hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-30"
+        className="hover:bg-surface-container-low text-outline flex h-8 w-8 items-center justify-center rounded-sm p-1 transition-colors disabled:cursor-not-allowed disabled:opacity-30"
         aria-label="Previous person"
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,20 +90,39 @@ export function PersonHeader({
         </svg>
       </button>
 
-      <div className="min-w-0 flex-1">
-        <h1 className="font-headline text-2xl font-semibold tracking-tight text-on-surface">
-          {firstName} {lastName}
-        </h1>
-        <p className="text-sm text-on-surface-variant">
-          Target: {targetHours}h/month
-        </p>
+      <div className="flex min-w-0 flex-1 items-center justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <h1 className="font-headline text-on-surface text-2xl font-semibold tracking-tight">
+              {firstName} {lastName}
+            </h1>
+            {discipline && (
+              <span className="bg-secondary-container text-on-secondary-fixed rounded-full px-2.5 py-0.5 text-xs font-semibold">
+                {discipline}
+              </span>
+            )}
+            {department && (
+              <span className="bg-secondary-container text-on-secondary-fixed rounded-full px-2.5 py-0.5 text-xs font-semibold">
+                {department}
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="text-right">
+          <span className="text-outline block text-[10px] font-semibold tracking-widest uppercase">
+            Monthly Target
+          </span>
+          <span className="font-headline text-primary text-xl font-bold">
+            {targetHours} h/month
+          </span>
+        </div>
       </div>
 
       <button
         type="button"
         disabled={!hasNext || navigating}
         onClick={() => navigate('next')}
-        className="flex h-8 w-8 items-center justify-center rounded-sm border border-outline-variant text-on-surface transition-colors hover:bg-surface-container disabled:cursor-not-allowed disabled:opacity-30"
+        className="hover:bg-surface-container-low text-outline flex h-8 w-8 items-center justify-center rounded-sm p-1 transition-colors disabled:cursor-not-allowed disabled:opacity-30"
         aria-label="Next person"
       >
         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

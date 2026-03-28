@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 import { CHART_COLORS, CHART_FONT } from './chart-colors';
 import type { DisciplineBreakdown } from '@/features/analytics/analytics.types';
@@ -52,11 +44,7 @@ export function DisciplineChart({ data }: DisciplineChartProps) {
             fontSize: CHART_FONT.size,
           }}
         />
-        <Bar
-          dataKey="totalHours"
-          fill={CHART_COLORS.secondary}
-          radius={[0, 4, 4, 0]}
-        />
+        <Bar dataKey="totalHours" fill={CHART_COLORS.secondary} radius={[0, 4, 4, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

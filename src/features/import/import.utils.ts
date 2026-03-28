@@ -7,13 +7,7 @@
 import { findBestMatch } from 'string-similarity';
 import * as XLSX from 'xlsx';
 
-import type {
-  ColumnMapping,
-  FormatInfo,
-  ImportRow,
-  ParsedFile,
-  TargetField,
-} from './import.types';
+import type { ColumnMapping, FormatInfo, ImportRow, ParsedFile, TargetField } from './import.types';
 
 // ---------------------------------------------------------------------------
 // Header dictionaries
@@ -125,11 +119,7 @@ const ENGLISH_MONTHS: Record<string, number> = {
  * Strips whitespace, lowercases, and replaces Swedish chars.
  */
 function normalizeHeader(header: string): string {
-  return header
-    .toLowerCase()
-    .trim()
-    .replace(/[åä]/g, 'a')
-    .replace(/ö/g, 'o');
+  return header.toLowerCase().trim().replace(/[åä]/g, 'a').replace(/ö/g, 'o');
 }
 
 /**
@@ -171,16 +161,12 @@ export function autoDetectMappings(headers: string[]): ColumnMapping[] {
     }
 
     // Fuzzy fallback: compare header against all dictionary keys
-    const allKeys = [
-      ...Object.keys(SWEDISH_HEADER_MAP),
-      ...Object.keys(ENGLISH_HEADER_MAP),
-    ];
+    const allKeys = [...Object.keys(SWEDISH_HEADER_MAP), ...Object.keys(ENGLISH_HEADER_MAP)];
     if (allKeys.length > 0) {
       const { bestMatch, bestMatchIndex } = findBestMatch(normalized, allKeys);
       if (bestMatch.rating >= 0.6) {
         const matchedKey = allKeys[bestMatchIndex];
-        const entry =
-          SWEDISH_HEADER_MAP[matchedKey] ?? ENGLISH_HEADER_MAP[matchedKey];
+        const entry = SWEDISH_HEADER_MAP[matchedKey] ?? ENGLISH_HEADER_MAP[matchedKey];
         if (entry && !assignedTargets.has(entry.target)) {
           assignedTargets.add(entry.target);
           return {
@@ -302,8 +288,10 @@ export function unpivotData(
 
     if (!personName || !projectName) continue;
 
-    const department = deptColIdx !== undefined ? String(row[deptColIdx] ?? '').trim() || undefined : undefined;
-    const discipline = discColIdx !== undefined ? String(row[discColIdx] ?? '').trim() || undefined : undefined;
+    const department =
+      deptColIdx !== undefined ? String(row[deptColIdx] ?? '').trim() || undefined : undefined;
+    const discipline =
+      discColIdx !== undefined ? String(row[discColIdx] ?? '').trim() || undefined : undefined;
 
     for (const mc of formatInfo.monthColumns) {
       const rawValue = row[mc];
@@ -507,7 +495,9 @@ export function parseExcelBuffer(buffer: Buffer, codepage?: number): ParsedFile 
 
   // Enforce row limit
   if (totalRows > MAX_ROWS) {
-    throw new Error(`File exceeds ${MAX_ROWS.toLocaleString()} row limit. Found ${totalRows.toLocaleString()} data rows.`);
+    throw new Error(
+      `File exceeds ${MAX_ROWS.toLocaleString()} row limit. Found ${totalRows.toLocaleString()} data rows.`,
+    );
   }
 
   const sampleRows = allRows.slice(0, 5);

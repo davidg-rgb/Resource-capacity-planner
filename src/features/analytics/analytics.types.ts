@@ -4,7 +4,7 @@
  */
 
 export interface HeatMapCell {
-  month: string;        // YYYY-MM
+  month: string; // YYYY-MM
   totalHours: number;
   targetHours: number;
 }
@@ -25,24 +25,24 @@ export interface DepartmentGroup {
 
 export interface HeatMapResponse {
   departments: DepartmentGroup[];
-  months: string[];     // ordered YYYY-MM strings covering the range
-  generatedAt: string;  // ISO timestamp
+  months: string[]; // ordered YYYY-MM strings covering the range
+  generatedAt: string; // ISO timestamp
 }
 
 export interface HeatMapFilters {
   departmentId?: string;
   disciplineId?: string;
-  monthFrom: string;    // YYYY-MM
-  monthTo: string;      // YYYY-MM
+  monthFrom: string; // YYYY-MM
+  monthTo: string; // YYYY-MM
 }
 
 // --- Dashboard types (Phase 13) ---
 
 export interface DashboardKPIs {
   totalPeople: number;
-  utilizationPercent: number;   // 0-100+ (can exceed 100 if overloaded)
-  overloadedCount: number;      // >100% utilization
-  underutilizedCount: number;   // <50% utilization
+  utilizationPercent: number; // 0-100+ (can exceed 100 if overloaded)
+  overloadedCount: number; // >100% utilization
+  underutilizedCount: number; // <50% utilization
 }
 
 export interface DepartmentUtilization {
@@ -68,7 +68,7 @@ export interface CapacityAlert {
   departmentName: string;
   totalTarget: number;
   totalAllocated: number;
-  utilizationRatio: number;   // e.g. 1.25 = 125%, 0.3 = 30%
+  utilizationRatio: number; // e.g. 1.25 = 125%, 0.3 = 30%
   severity: AlertSeverity;
 }
 
@@ -86,6 +86,6 @@ export interface ProjectStaffingResponse {
   projectId: string;
   projectName: string;
   people: ProjectStaffingPerson[];
-  months: string[];       // ordered YYYY-MM array
+  months: string[]; // ordered YYYY-MM array
   generatedAt: string;
 }

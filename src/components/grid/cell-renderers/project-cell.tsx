@@ -14,7 +14,7 @@ export function ProjectCell(props: ProjectCellProps) {
 
   if (isPinned) {
     // Pinned rows (SUMMA, Target, Status): bold label
-    return <span className="font-semibold text-on-surface">{props.value}</span>;
+    return <span className="text-on-surface font-semibold">{props.value}</span>;
   }
 
   if (isAddRow) {
@@ -22,7 +22,7 @@ export function ProjectCell(props: ProjectCellProps) {
       <button
         type="button"
         onClick={() => props.onAddProject?.()}
-        className="w-full text-left italic text-on-surface-variant hover:text-primary"
+        className="text-on-surface-variant hover:text-primary w-full text-left italic"
       >
         + Add project...
       </button>

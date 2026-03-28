@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import type { Announcement, AnnouncementSeverity } from '@/features/announcements/announcement.types';
+import type {
+  Announcement,
+  AnnouncementSeverity,
+} from '@/features/announcements/announcement.types';
 
 const SEVERITY_BADGE: Record<AnnouncementSeverity, string> = {
   info: 'bg-blue-100 text-blue-800',
@@ -135,7 +138,9 @@ export default function AnnouncementsPage() {
 
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.message ?? `Failed to ${editingId ? 'update' : 'create'} announcement`);
+        throw new Error(
+          data.message ?? `Failed to ${editingId ? 'update' : 'create'} announcement`,
+        );
       }
 
       toast.success(editingId ? 'Announcement updated' : 'Announcement created');
@@ -249,7 +254,8 @@ export default function AnnouncementsPage() {
               </div>
               <div>
                 <label className="mb-1 block text-sm font-medium text-slate-700">
-                  Target Org IDs <span className="text-slate-400">(comma-separated, empty = all)</span>
+                  Target Org IDs{' '}
+                  <span className="text-slate-400">(comma-separated, empty = all)</span>
                 </label>
                 <textarea
                   value={form.targetOrgIds}

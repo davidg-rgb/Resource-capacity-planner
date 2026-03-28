@@ -11,9 +11,7 @@ export function HeatMapCell({ hours, targetHours }: HeatMapCellProps) {
   const status = calculateHeatMapStatus(hours, targetHours);
 
   return (
-    <td
-      className={`px-2 py-1 text-center text-xs tabular-nums ${HEAT_MAP_COLORS[status]}`}
-    >
+    <td className={`px-2 py-1 text-center text-xs tabular-nums ${HEAT_MAP_COLORS[status]}`}>
       {hours}
     </td>
   );

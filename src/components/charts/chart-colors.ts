@@ -22,16 +22,7 @@ export const CHART_COLORS = {
   idle: '#D1D5DB',
 
   // Ordered palette for multi-series charts
-  palette: [
-    '#496173',
-    '#586065',
-    '#5b6063',
-    '#3d5567',
-    '#727d80',
-    '#a9b4b7',
-    '#465e70',
-    '#4c5459',
-  ],
+  palette: ['#496173', '#586065', '#5b6063', '#3d5567', '#727d80', '#a9b4b7', '#465e70', '#4c5459'],
 } as const;
 
 export const CHART_FONT = {

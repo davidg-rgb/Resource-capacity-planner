@@ -164,13 +164,7 @@ export function useCreateDepartment() {
 export function useUpdateDepartment() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      id,
-      data,
-    }: {
-      id: string;
-      data: { name?: string };
-    }) => {
+    mutationFn: async ({ id, data }: { id: string; data: { name?: string } }) => {
       const res = await fetch(`/api/departments/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },

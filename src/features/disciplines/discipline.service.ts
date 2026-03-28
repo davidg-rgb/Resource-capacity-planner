@@ -52,9 +52,7 @@ export async function createDiscipline(orgId: string, data: DisciplineCreate) {
  * Throws NotFoundError if discipline not found or not in org.
  */
 export async function updateDiscipline(orgId: string, id: string, data: DisciplineUpdate) {
-  const rows = await withTenant(orgId)
-    .updateDiscipline(id, data)
-    .returning();
+  const rows = await withTenant(orgId).updateDiscipline(id, data).returning();
 
   if (rows.length === 0) {
     throw new NotFoundError('Discipline', id);

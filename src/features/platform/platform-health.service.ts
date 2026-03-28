@@ -35,7 +35,7 @@ export async function getSystemHealth(): Promise<SystemHealthMetrics> {
 
     // Query active connection count from pg_stat_activity
     const connResult = await db.execute(
-      sql`SELECT count(*)::int AS active FROM pg_stat_activity WHERE state = 'active'`
+      sql`SELECT count(*)::int AS active FROM pg_stat_activity WHERE state = 'active'`,
     );
     activeConnections = (connResult.rows[0] as { active: number })?.active ?? 0;
   } catch {

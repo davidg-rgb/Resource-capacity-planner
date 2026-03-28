@@ -41,7 +41,11 @@ export default function SubscriptionsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editState, setEditState] = useState<EditState>({ subscriptionStatus: '', trialEndsAt: '', platformNotes: '' });
+  const [editState, setEditState] = useState<EditState>({
+    subscriptionStatus: '',
+    trialEndsAt: '',
+    platformNotes: '',
+  });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -123,7 +127,7 @@ export default function SubscriptionsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 font-headline text-2xl font-semibold text-slate-900">Subscriptions</h1>
+      <h1 className="font-headline mb-6 text-2xl font-semibold text-slate-900">Subscriptions</h1>
 
       {loading ? (
         <div className="space-y-3">
@@ -138,11 +142,21 @@ export default function SubscriptionsPage() {
           <table className="min-w-full divide-y divide-slate-200">
             <thead className="bg-slate-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Organization</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Trial Ends</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Notes</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase">
+                  Organization
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase">
+                  Status
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase">
+                  Trial Ends
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase">
+                  Notes
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200">
@@ -150,41 +164,51 @@ export default function SubscriptionsPage() {
                 const isEditing = editingId === tenant.id;
                 return (
                   <tr key={tenant.id}>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900">
+                    <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-slate-900">
                       {tenant.name}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {isEditing ? (
                         <select
                           value={editState.subscriptionStatus}
-                          onChange={(e) => setEditState({ ...editState, subscriptionStatus: e.target.value })}
+                          onChange={(e) =>
+                            setEditState({ ...editState, subscriptionStatus: e.target.value })
+                          }
                           className="rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none"
                         >
                           {STATUS_OPTIONS.map((s) => (
-                            <option key={s} value={s}>{s}</option>
+                            <option key={s} value={s}>
+                              {s}
+                            </option>
                           ))}
                         </select>
                       ) : (
                         <StatusBadge status={tenant.subscriptionStatus} />
                       )}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500">
+                    <td className="px-6 py-4 text-sm whitespace-nowrap text-slate-500">
                       {isEditing ? (
                         <input
                           type="date"
                           value={editState.trialEndsAt}
-                          onChange={(e) => setEditState({ ...editState, trialEndsAt: e.target.value })}
+                          onChange={(e) =>
+                            setEditState({ ...editState, trialEndsAt: e.target.value })
+                          }
                           className="rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none"
                         />
+                      ) : tenant.trialEndsAt ? (
+                        new Date(tenant.trialEndsAt).toLocaleDateString()
                       ) : (
-                        tenant.trialEndsAt ? new Date(tenant.trialEndsAt).toLocaleDateString() : 'N/A'
+                        'N/A'
                       )}
                     </td>
                     <td className="px-6 py-4 text-sm text-slate-500">
                       {isEditing ? (
                         <textarea
                           value={editState.platformNotes}
-                          onChange={(e) => setEditState({ ...editState, platformNotes: e.target.value })}
+                          onChange={(e) =>
+                            setEditState({ ...editState, platformNotes: e.target.value })
+                          }
                           className="w-full min-w-[200px] rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-blue-500 focus:outline-none"
                           rows={2}
                         />
@@ -192,7 +216,7 @@ export default function SubscriptionsPage() {
                         <span className="line-clamp-2">{tenant.platformNotes ?? '-'}</span>
                       )}
                     </td>
-                    <td className="whitespace-nowrap px-6 py-4">
+                    <td className="px-6 py-4 whitespace-nowrap">
                       {isEditing ? (
                         <div className="flex gap-2">
                           <button

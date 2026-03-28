@@ -13,17 +13,9 @@ const DEFAULT_DISCIPLINES = [
   { name: 'Hardware', abbreviation: 'HW' },
 ];
 
-const DEFAULT_DEPARTMENTS = [
-  { name: 'Engineering' },
-  { name: 'Product' },
-  { name: 'Operations' },
-];
+const DEFAULT_DEPARTMENTS = [{ name: 'Engineering' }, { name: 'Product' }, { name: 'Operations' }];
 
-export async function createOrganization(data: {
-  clerkOrgId: string;
-  name: string;
-  slug: string;
-}) {
+export async function createOrganization(data: { clerkOrgId: string; name: string; slug: string }) {
   // Check for duplicate clerkOrgId
   const existing = await db
     .select()
@@ -61,7 +53,5 @@ export async function seedDefaults(orgId: string) {
     ),
   );
 
-  await Promise.all(
-    DEFAULT_DEPARTMENTS.map((d) => tenant.insertDepartment({ name: d.name })),
-  );
+  await Promise.all(DEFAULT_DEPARTMENTS.map((d) => tenant.insertDepartment({ name: d.name })));
 }

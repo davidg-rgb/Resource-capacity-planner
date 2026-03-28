@@ -31,11 +31,7 @@ export function PdfFooter({ generatedAt }: PdfFooterProps) {
   return (
     <View fixed style={styles.footer}>
       <Text>Generated: {generatedAt}</Text>
-      <Text
-        render={({ pageNumber, totalPages }) =>
-          `Page ${pageNumber} / ${totalPages}`
-        }
-      />
+      <Text render={({ pageNumber, totalPages }) => `Page ${pageNumber} / ${totalPages}`} />
     </View>
   );
 }

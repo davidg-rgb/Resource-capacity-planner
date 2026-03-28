@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 import { CHART_COLORS, CHART_FONT } from './chart-colors';
 import type { DepartmentUtilization } from '@/features/analytics/analytics.types';
@@ -53,11 +45,7 @@ export function DepartmentBarChart({ data }: DepartmentBarChartProps) {
             fontSize: CHART_FONT.size,
           }}
         />
-        <Bar
-          dataKey="utilizationPercent"
-          fill={CHART_COLORS.primary}
-          radius={[0, 4, 4, 0]}
-        />
+        <Bar dataKey="utilizationPercent" fill={CHART_COLORS.primary} radius={[0, 4, 4, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

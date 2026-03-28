@@ -30,10 +30,7 @@ export async function GET(request: NextRequest) {
     // Feature flag gate (PDF-01 / pitfall 5)
     const flags = await getOrgFlags(orgId);
     if (!flags.pdfExport) {
-      return NextResponse.json(
-        { error: 'Feature not available' },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: 'Feature not available' }, { status: 404 });
     }
 
     // Parse and validate query params (max 36 months)
@@ -57,9 +54,7 @@ export async function GET(request: NextRequest) {
     );
 
     // Convert Node.js stream to Web ReadableStream for NextResponse (pitfall 1)
-    const webStream = Readable.toWeb(
-      Readable.from(nodeStream),
-    ) as ReadableStream;
+    const webStream = Readable.toWeb(Readable.from(nodeStream)) as ReadableStream;
 
     return new NextResponse(webStream, {
       headers: {

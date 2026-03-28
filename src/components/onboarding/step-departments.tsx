@@ -106,8 +106,7 @@ export function StepDepartments({
       {/* Already-added list */}
       {existingDepartments.length > 0 && (
         <p className="text-on-surface-variant text-sm">
-          {existingDepartments.length} department{existingDepartments.length !== 1 ? 's' : ''}{' '}
-          added
+          {existingDepartments.length} department{existingDepartments.length !== 1 ? 's' : ''} added
         </p>
       )}
 

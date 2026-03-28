@@ -64,10 +64,10 @@ function TeamOverviewContent() {
       <Breadcrumbs />
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-headline text-3xl font-semibold tracking-tight text-on-surface">
+          <h1 className="font-headline text-on-surface text-3xl font-semibold tracking-tight">
             Team Overview
           </h1>
-          <p className="mt-1 text-sm text-on-surface-variant">
+          <p className="text-on-surface-variant mt-1 text-sm">
             Capacity heat map across all team members and months
           </p>
         </div>
@@ -75,7 +75,7 @@ function TeamOverviewContent() {
           <button
             onClick={handleExportPdf}
             disabled={exporting}
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-on-primary hover:bg-primary/90 disabled:opacity-50"
+            className="bg-primary text-on-primary hover:bg-primary/90 inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium disabled:opacity-50"
           >
             {exporting ? 'Exporting...' : 'Export PDF'}
           </button>
@@ -86,16 +86,12 @@ function TeamOverviewContent() {
         <HeatMapFilters filters={filters} onFilterChange={setFilter} />
       </div>
 
-      {isLoading && (
-        <div className="mt-6 text-sm text-on-surface-variant">Loading heat map...</div>
-      )}
+      {isLoading && <div className="text-on-surface-variant mt-6 text-sm">Loading heat map...</div>}
 
-      {error && (
-        <div className="mt-6 text-sm text-red-600">Failed to load heat map data</div>
-      )}
+      {error && <div className="mt-6 text-sm text-red-600">Failed to load heat map data</div>}
 
       {data && data.departments.length === 0 && (
-        <div className="mt-6 text-sm text-on-surface-variant">
+        <div className="text-on-surface-variant mt-6 text-sm">
           No people found for the selected filters
         </div>
       )}
@@ -107,7 +103,7 @@ function TeamOverviewContent() {
       )}
 
       {/* Color legend */}
-      <div className="mt-3 flex items-center gap-4 text-xs text-on-surface-variant">
+      <div className="text-on-surface-variant mt-3 flex items-center gap-4 text-xs">
         <span className="flex items-center gap-1">
           <span className="inline-block h-3 w-3 rounded bg-red-500/80" /> Over 100%
         </span>
@@ -127,7 +123,7 @@ function TeamOverviewContent() {
 
 export default function TeamOverviewPage() {
   return (
-    <Suspense fallback={<div className="text-sm text-on-surface-variant">Loading...</div>}>
+    <Suspense fallback={<div className="text-on-surface-variant text-sm">Loading...</div>}>
       <TeamOverviewContent />
     </Suspense>
   );

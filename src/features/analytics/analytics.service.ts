@@ -20,7 +20,10 @@ const MAX_MONTH_RANGE = 36;
 const MONTH_RE = /^\d{4}-\d{2}$/;
 
 /** Validate and constrain month range params. Throws ValidationError if invalid or too wide. */
-export function validateMonthRange(from: string | null, to: string | null): { from: string; to: string } {
+export function validateMonthRange(
+  from: string | null,
+  to: string | null,
+): { from: string; to: string } {
   if (!from || !to || !MONTH_RE.test(from) || !MONTH_RE.test(to)) {
     throw new ValidationError('Invalid parameters. Required: from (YYYY-MM), to (YYYY-MM)');
   }

@@ -91,7 +91,9 @@ export function ImpersonationBanner() {
   if (!actor) return null;
 
   const userName = user
-    ? [user.firstName, user.lastName].filter(Boolean).join(' ') || user.primaryEmailAddress?.emailAddress || 'Unknown user'
+    ? [user.firstName, user.lastName].filter(Boolean).join(' ') ||
+      user.primaryEmailAddress?.emailAddress ||
+      'Unknown user'
     : 'Loading...';
   const orgName = organization?.name ?? '';
 
@@ -107,8 +109,7 @@ export function ImpersonationBanner() {
     <div className="fixed top-0 right-0 left-0 z-50 bg-amber-500 px-4 py-2 text-center text-sm font-semibold text-black">
       <span>
         Impersonating {userName}
-        {orgName ? ` (${orgName})` : ''}
-        {' '}&mdash; Actions are being logged
+        {orgName ? ` (${orgName})` : ''} &mdash; Actions are being logged
         {timeRemaining !== null && (
           <span className="ml-2">({formatTimeRemaining(timeRemaining)} remaining)</span>
         )}

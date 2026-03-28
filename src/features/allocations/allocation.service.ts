@@ -36,10 +36,7 @@ export async function listAllocationsForPerson(
     .from(schema.allocations)
     .innerJoin(schema.projects, eq(schema.allocations.projectId, schema.projects.id))
     .where(
-      and(
-        eq(schema.allocations.organizationId, orgId),
-        eq(schema.allocations.personId, personId),
-      ),
+      and(eq(schema.allocations.organizationId, orgId), eq(schema.allocations.personId, personId)),
     );
 
   return rows.map((row) => ({
@@ -215,8 +212,7 @@ function buildFlatConditions(orgId: string, filters: FlatTableFilters) {
 function buildFlatBaseQuery() {
   return db
     .select({
-      personName:
-        sql<string>`${schema.people.firstName} || ' ' || ${schema.people.lastName}`,
+      personName: sql<string>`${schema.people.firstName} || ' ' || ${schema.people.lastName}`,
       departmentName: schema.departments.name,
       projectName: schema.projects.name,
       programName: schema.programs.name,
@@ -302,14 +298,7 @@ export async function exportAllocationsFlat(
   ];
 
   const ws = XLSX.utils.aoa_to_sheet(data);
-  ws['!cols'] = [
-    { wch: 25 },
-    { wch: 15 },
-    { wch: 25 },
-    { wch: 20 },
-    { wch: 10 },
-    { wch: 8 },
-  ];
+  ws['!cols'] = [{ wch: 25 }, { wch: 15 }, { wch: 25 }, { wch: 20 }, { wch: 10 }, { wch: 8 }];
 
   XLSX.utils.book_append_sheet(wb, ws, 'Allocations');
 

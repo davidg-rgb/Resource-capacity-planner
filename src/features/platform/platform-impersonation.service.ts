@@ -16,9 +16,12 @@ export async function startImpersonation(
   // Prevent overlapping impersonation sessions for this admin
   const activeSessions = await listActiveSessions(adminId);
   if (activeSessions.length > 0) {
-    throw new ConflictError('You already have an active impersonation session. End it before starting a new one.', {
-      activeSessionId: activeSessions[0].id,
-    });
+    throw new ConflictError(
+      'You already have an active impersonation session. End it before starting a new one.',
+      {
+        activeSessionId: activeSessions[0].id,
+      },
+    );
   }
 
   const expiresAt = new Date(Date.now() + env.IMPERSONATION_MAX_DURATION_MINUTES * 60 * 1000);
@@ -30,7 +33,9 @@ export async function startImpersonation(
     expiresInSeconds: env.IMPERSONATION_MAX_DURATION_MINUTES * 60,
   });
 
-  const tokenHash = createHash('sha256').update(actorToken.token ?? '').digest('hex');
+  const tokenHash = createHash('sha256')
+    .update(actorToken.token ?? '')
+    .digest('hex');
 
   const [session] = await db
     .insert(impersonationSessions)

@@ -40,15 +40,15 @@ function getEffectiveStatus(row: ValidationRow, fixes: UserFixes): RowStatus {
   const fix = fixes[row.rowIndex];
 
   // If the row has person fuzzy match and user hasn't fixed it yet, remains error-like
-  const personResolved =
-    row.personMatch.status !== 'fuzzy' || fix?.personId !== undefined;
-  const projectResolved =
-    row.projectMatch.status !== 'fuzzy' || fix?.projectId !== undefined;
+  const personResolved = row.personMatch.status !== 'fuzzy' || fix?.personId !== undefined;
+  const projectResolved = row.projectMatch.status !== 'fuzzy' || fix?.projectId !== undefined;
 
   // Check for unfixable errors (unknown with no suggestions)
   const hasUnfixableError =
-    (row.personMatch.status === 'unknown' && (!row.personMatch.suggestions || row.personMatch.suggestions.length === 0)) ||
-    (row.projectMatch.status === 'unknown' && (!row.projectMatch.suggestions || row.projectMatch.suggestions.length === 0));
+    (row.personMatch.status === 'unknown' &&
+      (!row.personMatch.suggestions || row.personMatch.suggestions.length === 0)) ||
+    (row.projectMatch.status === 'unknown' &&
+      (!row.projectMatch.suggestions || row.projectMatch.suggestions.length === 0));
 
   // Check for hours error that hasn't been fixed
   const hasHoursError = row.errors.some((e) => e.toLowerCase().includes('hours'));
@@ -160,17 +160,17 @@ export function StepValidate({
     <div className="space-y-4">
       {/* Summary cards */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-md bg-green-50 px-4 py-3 text-center">
-          <p className="text-2xl font-semibold tabular-nums text-green-700">{summary.ready}</p>
-          <p className="text-xs font-medium text-green-600">Ready</p>
+        <div className="bg-surface-container-lowest border-primary rounded-sm border-l-4 p-6 shadow-sm">
+          <p className="text-outline text-xs font-semibold tracking-wider uppercase">Ready</p>
+          <p className="text-4xl font-bold text-green-700 tabular-nums">{summary.ready}</p>
         </div>
-        <div className="rounded-md bg-amber-50 px-4 py-3 text-center">
-          <p className="text-2xl font-semibold tabular-nums text-amber-700">{summary.warnings}</p>
-          <p className="text-xs font-medium text-amber-600">Warnings</p>
+        <div className="bg-surface-container-lowest rounded-sm border-l-4 border-amber-500 p-6 shadow-sm">
+          <p className="text-outline text-xs font-semibold tracking-wider uppercase">Warnings</p>
+          <p className="text-4xl font-bold text-amber-700 tabular-nums">{summary.warnings}</p>
         </div>
-        <div className="rounded-md bg-red-50 px-4 py-3 text-center">
-          <p className="text-2xl font-semibold tabular-nums text-red-700">{summary.errors}</p>
-          <p className="text-xs font-medium text-red-600">Errors</p>
+        <div className="bg-surface-container-lowest border-error rounded-sm border-l-4 p-6 shadow-sm">
+          <p className="text-outline text-xs font-semibold tracking-wider uppercase">Errors</p>
+          <p className="text-4xl font-bold text-red-700 tabular-nums">{summary.errors}</p>
         </div>
       </div>
 
@@ -193,7 +193,7 @@ export function StepValidate({
       </div>
 
       {/* Row table */}
-      <div className="border-outline-variant max-h-[400px] overflow-auto rounded-md border">
+      <div className="border-outline-variant max-h-[400px] overflow-auto rounded-sm border">
         <table className="w-full text-sm">
           <thead className="bg-surface-container sticky top-0">
             <tr>
@@ -297,7 +297,7 @@ export function StepValidate({
           type="button"
           onClick={onNext}
           disabled={hasBlockingErrors}
-          className="bg-primary text-on-primary hover:bg-primary/90 rounded-md px-5 py-2 text-sm font-medium transition-colors disabled:opacity-50"
+          className="bg-primary text-on-primary hover:bg-primary/90 rounded-sm px-5 py-2 text-sm font-medium transition-colors disabled:opacity-50"
         >
           Next: Import
         </button>

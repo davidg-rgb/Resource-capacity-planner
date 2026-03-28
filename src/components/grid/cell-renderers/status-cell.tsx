@@ -9,10 +9,7 @@ export function StatusCell(props: ICellRendererParams) {
   const status = props.value as CapacityStatus | undefined;
   if (!status || status === 'empty') {
     return (
-      <span
-        className="inline-block h-3 w-3 rounded-full bg-gray-300"
-        title="No allocations"
-      />
+      <span className="inline-block h-3 w-3 rounded-full bg-gray-300" title="No allocations" />
     );
   }
   const { dot } = getStatusColor(status);
@@ -22,9 +19,6 @@ export function StatusCell(props: ICellRendererParams) {
     overloaded: 'Over capacity (>=100%)',
   };
   return (
-    <span
-      className={`inline-block h-3 w-3 rounded-full ${dot}`}
-      title={labels[status] ?? ''}
-    />
+    <span className={`inline-block h-3 w-3 rounded-full ${dot}`} title={labels[status] ?? ''} />
   );
 }

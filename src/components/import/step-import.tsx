@@ -48,12 +48,8 @@ export function StepImport({
     return (
       <div className="flex flex-col items-center py-10">
         <Loader2 className="text-primary h-10 w-10 animate-spin" />
-        <p className="text-on-surface mt-4 text-lg font-medium">
-          Importing allocations...
-        </p>
-        <p className="text-on-surface-variant mt-1 text-sm">
-          Please don&apos;t close this page.
-        </p>
+        <p className="text-on-surface mt-4 text-lg font-medium">Importing allocations...</p>
+        <p className="text-on-surface-variant mt-1 text-sm">Please don&apos;t close this page.</p>
       </div>
     );
   }
@@ -68,9 +64,7 @@ export function StepImport({
           {importResult.imported} rows imported
         </p>
         {importResult.skipped > 0 && (
-          <p className="text-on-surface-variant mt-1 text-sm">
-            {importResult.skipped} skipped
-          </p>
+          <p className="text-on-surface-variant mt-1 text-sm">{importResult.skipped} skipped</p>
         )}
         {importResult.warnings.length > 0 && (
           <div className="mt-4 w-full max-w-md">
@@ -103,9 +97,7 @@ export function StepImport({
       <div className="flex flex-col items-center py-10">
         <XCircle className="h-12 w-12 text-red-600" />
         <p className="text-on-surface mt-4 text-xl font-semibold">Import Failed</p>
-        {importResult?.error && (
-          <p className="text-error mt-2 text-sm">{importResult.error}</p>
-        )}
+        {importResult?.error && <p className="text-error mt-2 text-sm">{importResult.error}</p>}
         <p className="text-on-surface-variant mt-2 text-sm">
           The import was rolled back. No data was changed.
         </p>

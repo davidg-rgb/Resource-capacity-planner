@@ -9,10 +9,7 @@ import { handleApiError } from '@/lib/api-utils';
 import { requirePlatformAdmin } from '@/lib/platform-auth';
 import { logPlatformAction } from '@/lib/platform-audit';
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const admin = await requirePlatformAdmin();
     const { id } = await params;

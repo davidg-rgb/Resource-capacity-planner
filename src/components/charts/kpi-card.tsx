@@ -9,16 +9,14 @@ interface KPICardProps {
 
 export function KPICard({ title, value, subtitle, href }: KPICardProps) {
   const content = (
-    <div className="rounded-lg border border-outline-variant/30 bg-surface-container-low p-6">
-      <p className="font-headline text-xs font-semibold uppercase tracking-widest text-outline">
+    <div className="border-outline-variant/30 bg-surface-container-low rounded-lg border p-6">
+      <p className="font-headline text-outline text-xs font-semibold tracking-widest uppercase">
         {title}
       </p>
-      <p className="mt-2 font-headline text-3xl font-bold tracking-tight text-on-surface">
+      <p className="font-headline text-on-surface mt-2 text-3xl font-bold tracking-tight">
         {value}
       </p>
-      {subtitle && (
-        <p className="mt-1 text-sm text-on-surface-variant">{subtitle}</p>
-      )}
+      {subtitle && <p className="text-on-surface-variant mt-1 text-sm">{subtitle}</p>}
     </div>
   );
 

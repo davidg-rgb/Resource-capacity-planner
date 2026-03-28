@@ -30,9 +30,7 @@ function isEditableMonth(field: string | undefined, currentMonth: string): boole
  * Moves to the next editable cell, skipping pinned rows and read-only (past) cells.
  * Wraps across rows when reaching grid boundaries.
  */
-export function tabToNextCell(
-  params: TabToNextCellParams,
-): CellPosition | boolean {
+export function tabToNextCell(params: TabToNextCellParams): CellPosition | boolean {
   const { previousCellPosition, nextCellPosition, backwards, api } = params;
   const currentMonth = getCurrentMonth();
 
@@ -52,9 +50,7 @@ export function tabToNextCell(
   if (editableColumns.length === 0) return false;
 
   const currentColId = previousCellPosition.column.getColId();
-  const currentIdx = editableColumns.findIndex(
-    (col: Column) => col.getColId() === currentColId,
-  );
+  const currentIdx = editableColumns.findIndex((col: Column) => col.getColId() === currentColId);
   const rowCount = api.getDisplayedRowCount();
 
   if (!backwards) {
@@ -109,9 +105,7 @@ export function tabToNextCell(
  * Moves to the adjacent cell, staying put at grid boundaries
  * and skipping pinned rows.
  */
-export function navigateToNextCell(
-  params: NavigateToNextCellParams,
-): CellPosition | null {
+export function navigateToNextCell(params: NavigateToNextCellParams): CellPosition | null {
   const { previousCellPosition, nextCellPosition } = params;
 
   // At grid boundary -- stay put

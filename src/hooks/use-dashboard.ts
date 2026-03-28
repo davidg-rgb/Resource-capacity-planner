@@ -19,9 +19,7 @@ export function useDashboardKPIs(
   return useQuery<DashboardKPIs>({
     queryKey: ['dashboard-kpis', monthFrom, monthTo],
     queryFn: async () => {
-      const response = await fetch(
-        `/api/analytics/dashboard?from=${monthFrom}&to=${monthTo}`,
-      );
+      const response = await fetch(`/api/analytics/dashboard?from=${monthFrom}&to=${monthTo}`);
       if (!response.ok) {
         throw new Error(`Failed to fetch dashboard KPIs: ${response.status}`);
       }
@@ -41,9 +39,7 @@ export function useDepartmentUtilization(
   return useQuery<DepartmentUtilization[]>({
     queryKey: ['department-utilization', monthFrom, monthTo],
     queryFn: async () => {
-      const response = await fetch(
-        `/api/analytics/departments?from=${monthFrom}&to=${monthTo}`,
-      );
+      const response = await fetch(`/api/analytics/departments?from=${monthFrom}&to=${monthTo}`);
       if (!response.ok) {
         throw new Error(`Failed to fetch department utilization: ${response.status}`);
       }
@@ -63,9 +59,7 @@ export function useDisciplineBreakdown(
   return useQuery<DisciplineBreakdown[]>({
     queryKey: ['discipline-breakdown', monthFrom, monthTo],
     queryFn: async () => {
-      const response = await fetch(
-        `/api/analytics/disciplines?from=${monthFrom}&to=${monthTo}`,
-      );
+      const response = await fetch(`/api/analytics/disciplines?from=${monthFrom}&to=${monthTo}`);
       if (!response.ok) {
         throw new Error(`Failed to fetch discipline breakdown: ${response.status}`);
       }

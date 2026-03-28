@@ -42,7 +42,10 @@ export async function listTenants(): Promise<TenantListItem[]> {
       slug: organizations.slug,
       subscriptionStatus: organizations.subscriptionStatus,
       createdAt: organizations.createdAt,
-      userCount: sql<number>`(SELECT COUNT(*) FROM people WHERE people.organization_id = ${organizations.id})`.mapWith(Number),
+      userCount:
+        sql<number>`(SELECT COUNT(*) FROM people WHERE people.organization_id = ${organizations.id})`.mapWith(
+          Number,
+        ),
     })
     .from(organizations)
     .orderBy(sql`${organizations.createdAt} DESC`);
@@ -68,7 +71,10 @@ export async function getTenantDetail(orgId: string): Promise<TenantDetail> {
       platformNotes: organizations.platformNotes,
       createdAt: organizations.createdAt,
       updatedAt: organizations.updatedAt,
-      userCount: sql<number>`(SELECT COUNT(*) FROM people WHERE people.organization_id = ${organizations.id})`.mapWith(Number),
+      userCount:
+        sql<number>`(SELECT COUNT(*) FROM people WHERE people.organization_id = ${organizations.id})`.mapWith(
+          Number,
+        ),
     })
     .from(organizations)
     .where(eq(organizations.id, orgId));

@@ -25,14 +25,7 @@ export function generateFlatTemplate(): Buffer {
   const ws = XLSX.utils.aoa_to_sheet(data);
 
   // Set column widths
-  ws['!cols'] = [
-    { wch: 20 },
-    { wch: 20 },
-    { wch: 12 },
-    { wch: 10 },
-    { wch: 15 },
-    { wch: 15 },
-  ];
+  ws['!cols'] = [{ wch: 20 }, { wch: 20 }, { wch: 12 }, { wch: 10 }, { wch: 15 }, { wch: 15 }];
 
   XLSX.utils.book_append_sheet(wb, ws, 'Import Mall');
 

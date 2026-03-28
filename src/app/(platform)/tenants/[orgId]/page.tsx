@@ -488,13 +488,11 @@ export default function TenantDetailPage() {
       {/* Purge Dialog */}
       {showPurge && (
         <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
-          <h3 className="mb-2 text-sm font-semibold text-red-800">
-            Purge All Tenant Data (GDPR)
-          </h3>
+          <h3 className="mb-2 text-sm font-semibold text-red-800">Purge All Tenant Data (GDPR)</h3>
           <p className="mb-3 text-sm text-red-700">
             This will permanently delete ALL data for this organization (people, projects,
-            allocations, etc.) but keep the organization record. Type{' '}
-            <strong>{tenant.name}</strong> to confirm.
+            allocations, etc.) but keep the organization record. Type <strong>{tenant.name}</strong>{' '}
+            to confirm.
           </p>
           <input
             type="text"

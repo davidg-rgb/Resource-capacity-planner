@@ -28,10 +28,7 @@ export async function markOnboarded(orgId: string): Promise<void> {
     .update(schema.organizations)
     .set({ onboardingCompletedAt: new Date() })
     .where(
-      and(
-        eq(schema.organizations.id, orgId),
-        isNull(schema.organizations.onboardingCompletedAt),
-      ),
+      and(eq(schema.organizations.id, orgId), isNull(schema.organizations.onboardingCompletedAt)),
     );
 }
 

@@ -18,19 +18,13 @@ export async function POST(
     const confirmName = typeof body.confirmName === 'string' ? body.confirmName : '';
 
     if (!confirmName) {
-      return NextResponse.json(
-        { error: 'Confirmation name is required' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Confirmation name is required' }, { status: 400 });
     }
 
     const tenant = await getTenantDetail(orgId);
 
     if (confirmName !== tenant.name) {
-      return NextResponse.json(
-        { error: 'Confirmation name does not match' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Confirmation name does not match' }, { status: 400 });
     }
 
     const { deletedCounts } = await purgeTenantData(orgId);

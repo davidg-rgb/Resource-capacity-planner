@@ -37,6 +37,8 @@ export function usePersonDetail(personId: string | undefined) {
         firstName: string;
         lastName: string;
         targetHoursPerMonth: number;
+        disciplineName: string;
+        departmentName: string;
       };
     },
     enabled: !!personId,

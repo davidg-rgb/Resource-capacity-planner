@@ -38,7 +38,7 @@ export default function PlatformLoginPage() {
 
   return (
     <div className="w-full max-w-sm rounded-lg bg-white p-8 shadow-md">
-      <h1 className="mb-6 text-center font-headline text-2xl font-semibold text-slate-800">
+      <h1 className="font-headline mb-6 text-center text-2xl font-semibold text-slate-800">
         Platform Admin
       </h1>
 
@@ -53,7 +53,7 @@ export default function PlatformLoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
             placeholder="admin@example.com"
           />
         </div>
@@ -68,14 +68,12 @@ export default function PlatformLoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
             placeholder="Enter password"
           />
         </div>
 
-        {error && (
-          <p className="text-sm text-red-600">{error}</p>
-        )}
+        {error && <p className="text-sm text-red-600">{error}</p>}
 
         <button
           type="submit"

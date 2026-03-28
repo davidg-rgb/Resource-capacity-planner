@@ -18,41 +18,31 @@ const SECTION_NAV: Record<string, NavSection[]> = {
   '/input': [
     {
       heading: 'People',
-      items: [
-        { label: 'All People', href: '/input' },
-      ],
+      items: [{ label: 'All People', href: '/input' }],
     },
   ],
   '/team': [
     {
       heading: 'Team',
-      items: [
-        { label: 'Overview', href: '/team' },
-      ],
+      items: [{ label: 'Overview', href: '/team' }],
     },
   ],
   '/projects': [
     {
       heading: 'Projects',
-      items: [
-        { label: 'All Projects', href: '/projects' },
-      ],
+      items: [{ label: 'All Projects', href: '/projects' }],
     },
   ],
   '/data': [
     {
       heading: 'Data',
-      items: [
-        { label: 'Import', href: '/data' },
-      ],
+      items: [{ label: 'Import', href: '/data' }],
     },
   ],
   '/dashboard': [
     {
       heading: 'Dashboard',
-      items: [
-        { label: 'Overview', href: '/dashboard' },
-      ],
+      items: [{ label: 'Overview', href: '/dashboard' }],
     },
   ],
   '/admin': [
@@ -78,17 +68,17 @@ export function SideNav() {
   const sections = SECTION_NAV[sectionKey] ?? SECTION_NAV['/input']!;
 
   return (
-    <aside className="fixed left-0 top-14 z-40 flex h-[calc(100vh-3.5rem)] w-64 flex-col border-r border-outline-variant/15 bg-surface-container-low">
+    <aside className="border-outline-variant/15 bg-surface-container-low fixed top-14 left-0 z-40 flex h-[calc(100vh-3.5rem)] w-64 flex-col border-r">
       {/* Header */}
       <div className="flex items-center gap-3 px-6 py-6">
-        <div className="flex h-8 w-8 items-center justify-center rounded-sm bg-primary">
+        <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-sm">
           <LayoutDashboard size={16} className="text-on-primary" />
         </div>
         <div>
-          <p className="font-headline text-sm font-semibold tracking-tight text-on-surface">
+          <p className="font-headline text-on-surface text-sm font-semibold tracking-tight">
             Resource Planner
           </p>
-          <p className="text-xs text-on-surface-variant">Nordic Precision</p>
+          <p className="text-on-surface-variant text-xs">Nordic Precision</p>
         </div>
       </div>
 
@@ -97,7 +87,7 @@ export function SideNav() {
         {sections.map((section, idx) => (
           <div key={idx} className="mb-4">
             {section.heading && (
-              <p className="mb-2 px-3 font-headline text-xs font-semibold uppercase tracking-widest text-outline">
+              <p className="font-headline text-outline mb-2 px-3 text-xs font-semibold tracking-widest uppercase">
                 {section.heading}
               </p>
             )}
@@ -110,7 +100,7 @@ export function SideNav() {
                       href={item.href}
                       className={`block rounded-sm px-3 py-2 text-xs transition-colors ${
                         isActive
-                          ? 'bg-surface-container-high font-semibold text-primary'
+                          ? 'bg-surface-container-high text-primary font-semibold'
                           : 'text-on-surface-variant hover:bg-surface-container-high/50'
                       }`}
                     >
@@ -125,10 +115,10 @@ export function SideNav() {
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-outline-variant/15 p-3">
+      <div className="border-outline-variant/15 border-t p-3">
         <button
           type="button"
-          className="w-full rounded-sm bg-primary px-4 py-2 text-xs font-semibold text-on-primary hover:opacity-90"
+          className="bg-primary text-on-primary w-full rounded-sm px-4 py-2 text-xs font-semibold hover:opacity-90"
         >
           New Entry
         </button>

@@ -11,10 +11,7 @@ const resetSchema = z.object({
   generateTemporary: z.boolean().optional(),
 });
 
-export async function POST(
-  request: Request,
-  { params }: { params: Promise<{ userId: string }> },
-) {
+export async function POST(request: Request, { params }: { params: Promise<{ userId: string }> }) {
   try {
     const admin = await requirePlatformAdmin();
     const { userId } = await params;

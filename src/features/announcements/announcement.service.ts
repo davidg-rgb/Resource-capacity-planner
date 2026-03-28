@@ -120,7 +120,8 @@ export async function updateAnnouncement(
   if (data.severity !== undefined) values.severity = data.severity;
   if (data.targetOrgIds !== undefined) values.targetOrgIds = data.targetOrgIds;
   if (data.startsAt !== undefined) values.startsAt = new Date(data.startsAt);
-  if (data.expiresAt !== undefined) values.expiresAt = data.expiresAt ? new Date(data.expiresAt) : null;
+  if (data.expiresAt !== undefined)
+    values.expiresAt = data.expiresAt ? new Date(data.expiresAt) : null;
 
   const [row] = await db
     .update(systemAnnouncements)
