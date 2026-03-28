@@ -75,7 +75,10 @@ Plans:
   3. User can select a time range (next 3, 6, or 12 months) and all dashboard metrics and charts update accordingly
   4. User sees discipline breakdown as bar/pie chart showing hours by discipline per month
   5. All charts render with Nordic Precision design tokens (colors, fonts, spacing)
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 13-01-PLAN.md — Analytics service extension (KPI, department, discipline queries), API routes, hooks, chart colors
+- [ ] 13-02-PLAN.md — Recharts chart components, KPI cards, and full dashboard page with time range selector
 **UI hint**: yes
 
 ### Phase 14: Alerts & Project View
@@ -144,7 +147,7 @@ Phases execute in numeric order: 11 -> 11.x -> 12 -> 12.x -> ... -> 17
 | 10. Platform Admin | v1.0 | 4/4 | Complete | 2026-03-27 |
 | 11. Infrastructure & Feature Flags | v2.0 | 2/2 | Complete    | 2026-03-28 |
 | 12. Team Overview Heat Map | v2.0 | 2/2 | Complete    | 2026-03-28 |
-| 13. Dashboard & Charts | v2.0 | 0/? | Not started | - |
+| 13. Dashboard & Charts | v2.0 | 0/2 | Not started | - |
 | 14. Alerts & Project View | v2.0 | 0/? | Not started | - |
 | 15. PDF Export | v2.0 | 0/? | Not started | - |
 | 16. Onboarding & Announcements | v2.0 | 0/? | Not started | - |
