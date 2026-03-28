@@ -62,6 +62,10 @@ export default function TenantDetailPage() {
   const [showDelete, setShowDelete] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState('');
 
+  // Purge dialog
+  const [showPurge, setShowPurge] = useState(false);
+  const [purgeConfirm, setPurgeConfirm] = useState('');
+
   // Impersonation
   const [impersonateQuery, setImpersonateQuery] = useState('');
   const [impersonateResults, setImpersonateResults] = useState<ImpersonateUser[]>([]);
@@ -168,6 +172,36 @@ export default function TenantDetailPage() {
       router.push('/platform/tenants');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Action failed');
+    } finally {
+      setActionLoading(false);
+    }
+  }
+
+  function handleExport() {
+    toast.info('Exporting tenant data...');
+    window.open(`/api/platform/tenants/${orgId}/export`, '_blank');
+  }
+
+  async function handlePurge() {
+    if (purgeConfirm !== tenant?.name) return;
+    setActionLoading(true);
+    try {
+      const res = await fetch(`/api/platform/tenants/${orgId}/purge`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirmName: purgeConfirm }),
+      });
+      if (!res.ok) throw new Error('Purge failed');
+      const data = await res.json();
+      const counts = data.deletedCounts;
+      toast.success(
+        `Purged: ${counts.people} people, ${counts.projects} projects, ${counts.allocations} allocations`,
+      );
+      setShowPurge(false);
+      setPurgeConfirm('');
+      await fetchTenant();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Purge failed');
     } finally {
       setActionLoading(false);
     }
@@ -360,6 +394,20 @@ export default function TenantDetailPage() {
           </button>
         )}
         <button
+          onClick={handleExport}
+          disabled={actionLoading}
+          className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+        >
+          Export Data
+        </button>
+        <button
+          onClick={() => setShowPurge(true)}
+          disabled={actionLoading}
+          className="rounded-md border border-red-300 bg-red-100 px-4 py-2 text-sm font-medium text-red-800 hover:bg-red-200 disabled:opacity-50"
+        >
+          Purge Data
+        </button>
+        <button
           onClick={() => setShowDelete(true)}
           disabled={actionLoading}
           className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
@@ -426,6 +474,45 @@ export default function TenantDetailPage() {
               onClick={() => {
                 setShowDelete(false);
                 setDeleteConfirm('');
+              }}
+              className="rounded-md bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Purge Dialog */}
+      {showPurge && (
+        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
+          <h3 className="mb-2 text-sm font-semibold text-red-800">
+            Purge All Tenant Data (GDPR)
+          </h3>
+          <p className="mb-3 text-sm text-red-700">
+            This will permanently delete ALL data for this organization (people, projects,
+            allocations, etc.) but keep the organization record. Type{' '}
+            <strong>{tenant.name}</strong> to confirm.
+          </p>
+          <input
+            type="text"
+            value={purgeConfirm}
+            onChange={(e) => setPurgeConfirm(e.target.value)}
+            placeholder={tenant.name}
+            className="mb-3 w-full rounded-md border border-red-300 px-3 py-2 text-sm focus:border-red-500 focus:outline-none"
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={handlePurge}
+              disabled={actionLoading || purgeConfirm !== tenant.name}
+              className="rounded-md bg-red-600 px-3 py-1.5 text-sm text-white hover:bg-red-700 disabled:opacity-50"
+            >
+              Confirm Purge
+            </button>
+            <button
+              onClick={() => {
+                setShowPurge(false);
+                setPurgeConfirm('');
               }}
               className="rounded-md bg-white px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-100"
             >
