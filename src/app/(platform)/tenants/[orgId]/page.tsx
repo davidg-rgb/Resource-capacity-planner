@@ -2,6 +2,16 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+
+import { FLAG_NAMES, type FlagName } from '@/features/flags/flag.types';
+
+const FLAG_LABELS: Record<FlagName, string> = {
+  dashboards: 'Dashboards & Charts',
+  pdfExport: 'PDF Export',
+  alerts: 'Alerts',
+  onboarding: 'Onboarding Wizard',
+};
 
 interface ImpersonateUser {
   id: string;
@@ -59,6 +69,42 @@ export default function TenantDetailPage() {
   const [impersonateError, setImpersonateError] = useState('');
   const impersonateDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Feature flags state
+  const [flags, setFlags] = useState<Record<string, boolean>>({});
+  const [flagsLoading, setFlagsLoading] = useState(true);
+
+  const fetchFlags = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/platform/flags/${orgId}`);
+      if (!res.ok) throw new Error('Failed to fetch flags');
+      const rows: { flagName: string; enabled: boolean }[] = await res.json();
+      const flagMap: Record<string, boolean> = {};
+      for (const row of rows) {
+        flagMap[row.flagName] = row.enabled;
+      }
+      setFlags(flagMap);
+    } catch {
+      // Flags section will show all as disabled
+    } finally {
+      setFlagsLoading(false);
+    }
+  }, [orgId]);
+
+  async function handleToggleFlag(flagName: string, enabled: boolean) {
+    try {
+      const res = await fetch(`/api/platform/flags/${orgId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ flagName, enabled }),
+      });
+      if (!res.ok) throw new Error('Failed to update flag');
+      setFlags((prev) => ({ ...prev, [flagName]: enabled }));
+      toast.success('Flag updated');
+    } catch {
+      toast.error('Failed to update flag');
+    }
+  }
+
   const fetchTenant = useCallback(async () => {
     try {
       const res = await fetch(`/api/platform/tenants/${orgId}`);
@@ -73,7 +119,8 @@ export default function TenantDetailPage() {
 
   useEffect(() => {
     fetchTenant();
-  }, [fetchTenant]);
+    fetchFlags();
+  }, [fetchTenant, fetchFlags]);
 
   async function handleSuspend() {
     if (!suspendReason.trim()) return;
@@ -256,6 +303,40 @@ export default function TenantDetailPage() {
             </div>
           )}
         </dl>
+      </div>
+
+      {/* Feature Flags */}
+      <div className="mb-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="mb-4 text-lg font-semibold text-slate-800">Feature Flags</h2>
+        {flagsLoading ? (
+          <div className="space-y-3">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-8 animate-pulse rounded bg-slate-200" />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {FLAG_NAMES.map((flagName) => (
+              <div key={flagName} className="flex items-center justify-between">
+                <div>
+                  <span className="text-sm font-medium text-slate-700">
+                    {FLAG_LABELS[flagName]}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleToggleFlag(flagName, !flags[flagName])}
+                  className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                    flags[flagName]
+                      ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {flags[flagName] ? 'Enabled' : 'Disabled'}
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Actions */}
