@@ -32,7 +32,7 @@
 - [x] **DASH-01**: User can view KPI cards: overall utilization %, total headcount, overloaded count, underutilized count
 - [x] **DASH-02**: User can view departmental utilization as a bar chart
 - [x] **DASH-03**: User can select a time range for dashboard metrics (next 3, 6, or 12 months)
-- [ ] **DASH-04**: User can click a KPI card to drill down to the underlying people list
+- [x] **DASH-04**: User can click a KPI card to drill down to the underlying people list
 
 ### Alerts
 
@@ -116,7 +116,7 @@
 | DASH-01 | Phase 13 | Complete |
 | DASH-02 | Phase 13 | Complete |
 | DASH-03 | Phase 13 | Complete |
-| DASH-04 | Phase 13 | Pending |
+| DASH-04 | Phase 13 | Complete |
 | ALRT-01 | Phase 14 | Pending |
 | ALRT-02 | Phase 14 | Pending |
 | ALRT-03 | Phase 14 | Pending |
