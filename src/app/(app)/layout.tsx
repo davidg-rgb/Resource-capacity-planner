@@ -7,6 +7,7 @@ import { FlagGuard } from '@/features/flags/flag-guard';
 import { getOrgFlags } from '@/features/flags/flag.service';
 import { isOrgOnboarded } from '@/features/onboarding/onboarding.service';
 import { getTenantId } from '@/lib/auth';
+import { AnnouncementBanner } from '@/components/announcements/announcement-banner';
 import { ImpersonationBanner } from '@/components/platform/impersonation-banner';
 import { QueryProvider } from '@/components/providers/query-provider';
 
@@ -26,6 +27,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <QueryProvider>
       <FlagProvider flags={flags}>
         <ImpersonationBanner />
+        <AnnouncementBanner />
         <FlagGuard>
           <AppShell>{children}</AppShell>
         </FlagGuard>
