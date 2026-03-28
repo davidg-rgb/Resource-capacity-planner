@@ -7,6 +7,7 @@ import {
   FileText,
   LayoutDashboard,
   LogOut,
+  Megaphone,
   Users,
 } from 'lucide-react';
 
@@ -21,6 +22,7 @@ const NAV_ITEMS = [
   { label: 'Subscriptions', href: '/platform/subscriptions', icon: CreditCard },
   { label: 'Users', href: '/platform/users', icon: Users },
   { label: 'Audit Log', href: '/platform/audit', icon: FileText },
+  { label: 'Announcements', href: '/platform/announcements', icon: Megaphone },
 ] as const;
 
 export function PlatformSidebar({ adminName, adminEmail }: PlatformSidebarProps) {
