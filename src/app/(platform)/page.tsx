@@ -17,6 +17,28 @@ interface DashboardMetrics {
   }>;
 }
 
+interface SystemHealthMetrics {
+  dbLatencyMs: number;
+  dbConnected: boolean;
+  memoryUsageMb: { rss: number; heapUsed: number; heapTotal: number };
+  version: string;
+  uptime: number;
+  timestamp: string;
+}
+
+function formatUptime(seconds: number): string {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  return `${hours}h ${minutes}m`;
+}
+
+function latencyColorClass(ms: number): string {
+  if (ms < 0) return 'text-slate-400';
+  if (ms < 100) return 'text-green-600';
+  if (ms <= 500) return 'text-amber-600';
+  return 'text-red-600';
+}
+
 const STATUS_COLORS: Record<string, string> = {
   trial: 'bg-blue-100 text-blue-800',
   active: 'bg-green-100 text-green-800',
@@ -50,7 +72,7 @@ function MetricCard({
       {loading ? (
         <div className="mt-2 h-8 w-20 animate-pulse rounded bg-slate-200" />
       ) : (
-        <p className="mt-2 text-3xl font-semibold tabular-nums text-slate-900">{value}</p>
+        <p className="mt-2 text-3xl font-semibold text-slate-900 tabular-nums">{value}</p>
       )}
     </div>
   );
@@ -60,6 +82,8 @@ export default function PlatformDashboardPage() {
   const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [health, setHealth] = useState<SystemHealthMetrics | null>(null);
+  const [healthLoading, setHealthLoading] = useState(true);
 
   useEffect(() => {
     async function fetchMetrics() {
@@ -73,14 +97,26 @@ export default function PlatformDashboardPage() {
         setLoading(false);
       }
     }
+
+    async function fetchHealth() {
+      try {
+        const res = await fetch('/api/platform/health');
+        if (!res.ok) throw new Error('Failed to fetch health metrics');
+        setHealth(await res.json());
+      } catch {
+        // Health fetch failure is non-critical — dashboard still loads
+      } finally {
+        setHealthLoading(false);
+      }
+    }
+
     fetchMetrics();
+    fetchHealth();
   }, []);
 
   if (error) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">
-        {error}
-      </div>
+      <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700">{error}</div>
     );
   }
 
@@ -89,15 +125,23 @@ export default function PlatformDashboardPage() {
 
   return (
     <div>
-      <h1 className="mb-6 font-headline text-2xl font-semibold text-slate-900">Dashboard</h1>
+      <h1 className="font-headline mb-6 text-2xl font-semibold text-slate-900">Dashboard</h1>
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <MetricCard title="Total Organizations" value={metrics?.totalOrgs ?? 0} loading={loading} />
         <MetricCard title="Total People" value={metrics?.totalPeople ?? 0} loading={loading} />
-        <MetricCard title="Total Allocations" value={metrics?.totalAllocations ?? 0} loading={loading} />
+        <MetricCard
+          title="Total Allocations"
+          value={metrics?.totalAllocations ?? 0}
+          loading={loading}
+        />
         <MetricCard title="Active Orgs" value={activeOrgs} loading={loading} />
         <MetricCard title="Trial Orgs" value={trialOrgs} loading={loading} />
-        <MetricCard title="Suspended" value={metrics?.orgsByStatus?.suspended ?? 0} loading={loading} />
+        <MetricCard
+          title="Suspended"
+          value={metrics?.orgsByStatus?.suspended ?? 0}
+          loading={loading}
+        />
       </div>
 
       <div>
@@ -113,17 +157,27 @@ export default function PlatformDashboardPage() {
             <table className="min-w-full divide-y divide-slate-200">
               <thead className="bg-slate-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Status</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Last Updated</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase">
+                    Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-slate-500 uppercase">
+                    Last Updated
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {metrics.recentlyActive.map((org) => (
                   <tr key={org.id}>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900">{org.name}</td>
-                    <td className="whitespace-nowrap px-6 py-4"><StatusBadge status={org.subscriptionStatus} /></td>
-                    <td className="whitespace-nowrap px-6 py-4 text-sm text-slate-500">
+                    <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-slate-900">
+                      {org.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <StatusBadge status={org.subscriptionStatus} />
+                    </td>
+                    <td className="px-6 py-4 text-sm whitespace-nowrap text-slate-500">
                       {new Date(org.updatedAt).toLocaleDateString()}
                     </td>
                   </tr>
@@ -133,6 +187,47 @@ export default function PlatformDashboardPage() {
           </div>
         ) : (
           <p className="text-sm text-slate-500">No recently active organizations.</p>
+        )}
+      </div>
+
+      <div className="mt-8">
+        <h2 className="mb-4 text-lg font-semibold text-slate-800">System Health</h2>
+        <div className="mb-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+            <p className="text-sm font-medium text-slate-500">DB Latency</p>
+            {healthLoading ? (
+              <div className="mt-2 h-8 w-20 animate-pulse rounded bg-slate-200" />
+            ) : (
+              <p className={`mt-2 text-3xl font-semibold tabular-nums ${health ? latencyColorClass(health.dbLatencyMs) : 'text-slate-400'}`}>
+                {health && health.dbLatencyMs >= 0 ? `${health.dbLatencyMs}ms` : 'N/A'}
+              </p>
+            )}
+          </div>
+          <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+            <p className="text-sm font-medium text-slate-500">DB Status</p>
+            {healthLoading ? (
+              <div className="mt-2 h-8 w-20 animate-pulse rounded bg-slate-200" />
+            ) : (
+              <p className={`mt-2 text-3xl font-semibold ${health?.dbConnected ? 'text-green-600' : 'text-red-600'}`}>
+                {health?.dbConnected ? 'Connected' : 'Disconnected'}
+              </p>
+            )}
+          </div>
+          <MetricCard
+            title="Memory (RSS)"
+            value={health ? `${health.memoryUsageMb.rss} MB` : 'N/A'}
+            loading={healthLoading}
+          />
+          <MetricCard
+            title="Heap Used"
+            value={health ? `${health.memoryUsageMb.heapUsed} MB` : 'N/A'}
+            loading={healthLoading}
+          />
+        </div>
+        {!healthLoading && health && (
+          <p className="text-xs text-slate-400">
+            Version {health.version} | Uptime {formatUptime(health.uptime)}
+          </p>
         )}
       </div>
     </div>
