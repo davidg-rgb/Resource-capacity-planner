@@ -17,55 +17,69 @@ import {
   Menu,
   X,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
-const NAV_ITEMS = [
+import { useFlags } from '@/features/flags/flag.context';
+import type { FlagName } from '@/features/flags/flag.types';
+
+interface NavItem {
+  label: string;
+  href: string;
+  icon: LucideIcon;
+  flag?: FlagName;
+}
+
+const NAV_ITEMS: NavItem[] = [
   { label: 'Input', href: '/input', icon: FileInput },
   { label: 'Team', href: '/team', icon: Users },
   { label: 'Projects', href: '/projects', icon: FolderKanban },
   { label: 'Data', href: '/data', icon: Database },
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, flag: 'dashboards' },
   { label: 'Admin', href: '/admin/disciplines', icon: ShieldCheck },
   { label: 'Members', href: '/admin/members', icon: Users },
-] as const;
+];
 
 export function TopNav() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const flags = useFlags();
+  const visibleItems = NAV_ITEMS.filter((item) => !item.flag || flags[item.flag]);
 
   return (
     <>
-      <header className="sticky top-0 z-50 flex h-14 items-center border-b border-outline-variant/15 bg-surface px-4 md:px-6">
+      <header className="border-outline-variant/15 bg-surface sticky top-0 z-50 flex h-14 items-center border-b px-4 md:px-6">
         {/* Left: Hamburger (mobile) + App title */}
         <div className="flex items-center gap-3">
           <button
             type="button"
             aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
-            className="rounded-sm p-1.5 text-on-surface-variant hover:bg-surface-container-high lg:hidden"
+            className="text-on-surface-variant hover:bg-surface-container-high rounded-sm p-1.5 lg:hidden"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
-          <Link href="/input" className="font-headline text-2xl font-semibold tracking-tighter text-primary">
+          <Link
+            href="/input"
+            className="font-headline text-primary text-xl font-semibold tracking-tighter"
+          >
             Nordic Capacity
           </Link>
         </div>
 
         {/* Center: Nav items — hidden below lg */}
         <nav className="ml-12 hidden items-center gap-1 lg:flex">
-          {NAV_ITEMS.map((item) => {
+          {visibleItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
-            const Icon = item.icon;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-1.5 border-b-2 px-3 py-4 font-headline text-sm tracking-tight transition-colors ${
+                className={`font-headline border-b-2 px-3 py-4 text-sm tracking-tight transition-colors ${
                   isActive
-                    ? 'border-primary font-semibold text-primary'
-                    : 'border-transparent text-on-surface-variant hover:text-primary'
+                    ? 'border-primary text-primary font-bold'
+                    : 'text-on-surface-variant hover:text-primary border-transparent'
                 }`}
               >
-                <Icon size={16} />
                 {item.label}
               </Link>
             );
@@ -75,18 +89,18 @@ export function TopNav() {
         {/* Right: Search (hidden on small), notifications, settings, user */}
         <div className="ml-auto flex items-center gap-3">
           <div className="relative hidden md:block">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
+            <Search size={14} className="text-outline absolute top-1/2 left-3 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search..."
-              className="w-64 rounded-sm bg-surface-container-low py-1.5 pl-9 pr-4 text-xs text-on-surface placeholder:text-outline focus:ring-1 focus:ring-primary focus:outline-none"
+              className="bg-surface-container-low text-on-surface placeholder:text-outline focus:ring-primary w-64 rounded-sm py-1.5 pr-4 pl-9 text-xs focus:ring-1 focus:outline-none"
             />
           </div>
           <button
             type="button"
             aria-label="Notifications"
             title="Notifications"
-            className="rounded-sm p-1.5 text-on-surface-variant hover:bg-surface-container-high"
+            className="text-on-surface-variant hover:bg-surface-container-high rounded-sm p-1.5"
           >
             <Bell size={18} />
           </button>
@@ -94,7 +108,7 @@ export function TopNav() {
             type="button"
             aria-label="Settings"
             title="Settings"
-            className="hidden rounded-sm p-1.5 text-on-surface-variant hover:bg-surface-container-high sm:block"
+            className="text-on-surface-variant hover:bg-surface-container-high hidden rounded-sm p-1.5 sm:block"
           >
             <Settings size={18} />
           </button>
@@ -112,22 +126,25 @@ export function TopNav() {
             aria-hidden="true"
           />
           {/* Drawer */}
-          <nav className="relative z-10 flex max-h-[calc(100vh-3.5rem)] w-72 flex-col overflow-y-auto border-r border-outline-variant/15 bg-surface shadow-lg">
+          <nav className="border-outline-variant/15 bg-surface relative z-10 flex max-h-[calc(100vh-3.5rem)] w-72 flex-col overflow-y-auto border-r shadow-lg">
             {/* Search (shown in mobile drawer) */}
-            <div className="border-b border-outline-variant/15 p-4 md:hidden">
+            <div className="border-outline-variant/15 border-b p-4 md:hidden">
               <div className="relative">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-outline" />
+                <Search
+                  size={14}
+                  className="text-outline absolute top-1/2 left-3 -translate-y-1/2"
+                />
                 <input
                   type="text"
                   placeholder="Search..."
-                  className="w-full rounded-sm bg-surface-container-low py-1.5 pl-9 pr-4 text-xs text-on-surface placeholder:text-outline focus:ring-1 focus:ring-primary focus:outline-none"
+                  className="bg-surface-container-low text-on-surface placeholder:text-outline focus:ring-primary w-full rounded-sm py-1.5 pr-4 pl-9 text-xs focus:ring-1 focus:outline-none"
                 />
               </div>
             </div>
 
             {/* Nav links */}
             <div className="flex-1 space-y-1 p-3">
-              {NAV_ITEMS.map((item) => {
+              {visibleItems.map((item) => {
                 const isActive = pathname.startsWith(item.href);
                 const Icon = item.icon;
                 return (
@@ -137,7 +154,7 @@ export function TopNav() {
                     onClick={() => setMobileMenuOpen(false)}
                     className={`flex items-center gap-3 rounded-sm px-3 py-2.5 text-sm transition-colors ${
                       isActive
-                        ? 'bg-surface-container-high font-semibold text-primary'
+                        ? 'bg-surface-container-high text-primary font-semibold'
                         : 'text-on-surface-variant hover:bg-surface-container-high/50 hover:text-primary'
                     }`}
                   >
