@@ -22,10 +22,10 @@
 
 ### Project View
 
-- [ ] **PROJ-01**: User can select a project and see all people allocated to it with hours per month
-- [ ] **PROJ-02**: Project View shows a summary row with total hours per month across all people
-- [ ] **PROJ-03**: User can click a person name in Project View to navigate to their Person Input Form
-- [ ] **PROJ-04**: Project View shows months with no allocations as visually distinct (understaffed indicator)
+- [x] **PROJ-01**: User can select a project and see all people allocated to it with hours per month
+- [x] **PROJ-02**: Project View shows a summary row with total hours per month across all people
+- [x] **PROJ-03**: User can click a person name in Project View to navigate to their Person Input Form
+- [x] **PROJ-04**: Project View shows months with no allocations as visually distinct (understaffed indicator)
 
 ### Dashboard
 
@@ -109,10 +109,10 @@
 | TEAM-03 | Phase 12 | Complete |
 | TEAM-04 | Phase 12 | Complete |
 | TEAM-05 | Phase 12 | Complete |
-| PROJ-01 | Phase 14 | Pending |
-| PROJ-02 | Phase 14 | Pending |
-| PROJ-03 | Phase 14 | Pending |
-| PROJ-04 | Phase 14 | Pending |
+| PROJ-01 | Phase 14 | Complete |
+| PROJ-02 | Phase 14 | Complete |
+| PROJ-03 | Phase 14 | Complete |
+| PROJ-04 | Phase 14 | Complete |
 | DASH-01 | Phase 13 | Complete |
 | DASH-02 | Phase 13 | Complete |
 | DASH-03 | Phase 13 | Complete |

@@ -28,7 +28,7 @@
 - [x] **Phase 11: Infrastructure & Feature Flags** - Toast system and per-tenant feature flag gating for gradual v2 rollout (completed 2026-03-28)
 - [x] **Phase 12: Team Overview Heat Map** - Headline capacity heat map showing all people x months with utilization color-coding (completed 2026-03-28)
 - [x] **Phase 13: Dashboard & Charts** - Management KPI dashboard with departmental utilization and discipline breakdown charts (completed 2026-03-28)
-- [ ] **Phase 14: Alerts & Project View** - Capacity alert system and project-centric staffing view
+- [x] **Phase 14: Alerts & Project View** - Capacity alert system and project-centric staffing view (completed 2026-03-28)
 - [ ] **Phase 15: PDF Export** - Exportable Team Overview heat map as landscape PDF document
 - [ ] **Phase 16: Onboarding & Announcements** - New-tenant onboarding wizard and platform-wide announcement system
 - [ ] **Phase 17: Platform Operations** - System health monitoring and tenant data operations (export/purge)
@@ -94,7 +94,7 @@ Plans:
 **Plans**: 2 plans
 Plans:
 - [x] 14-01-PLAN.md — Alerts backend (types, service, API routes, hooks) + alert badge + alerts page + TopNav wiring
-- [ ] 14-02-PLAN.md — Project View UI (staffing grid, summary row, project detail page, projects list link)
+- [x] 14-02-PLAN.md — Project View UI (staffing grid, summary row, project detail page, projects list link)
 **UI hint**: yes
 
 ### Phase 15: PDF Export
@@ -151,7 +151,7 @@ Phases execute in numeric order: 11 -> 11.x -> 12 -> 12.x -> ... -> 17
 | 11. Infrastructure & Feature Flags | v2.0 | 2/2 | Complete    | 2026-03-28 |
 | 12. Team Overview Heat Map | v2.0 | 2/2 | Complete    | 2026-03-28 |
 | 13. Dashboard & Charts | v2.0 | 2/2 | Complete    | 2026-03-28 |
-| 14. Alerts & Project View | v2.0 | 1/2 | In Progress|  |
+| 14. Alerts & Project View | v2.0 | 2/2 | Complete   | 2026-03-28 |
 | 15. PDF Export | v2.0 | 0/? | Not started | - |
 | 16. Onboarding & Announcements | v2.0 | 0/? | Not started | - |
 | 17. Platform Operations | v2.0 | 0/? | Not started | - |
