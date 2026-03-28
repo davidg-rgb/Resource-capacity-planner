@@ -29,9 +29,9 @@
 
 ### Dashboard
 
-- [ ] **DASH-01**: User can view KPI cards: overall utilization %, total headcount, overloaded count, underutilized count
-- [ ] **DASH-02**: User can view departmental utilization as a bar chart
-- [ ] **DASH-03**: User can select a time range for dashboard metrics (next 3, 6, or 12 months)
+- [x] **DASH-01**: User can view KPI cards: overall utilization %, total headcount, overloaded count, underutilized count
+- [x] **DASH-02**: User can view departmental utilization as a bar chart
+- [x] **DASH-03**: User can select a time range for dashboard metrics (next 3, 6, or 12 months)
 - [ ] **DASH-04**: User can click a KPI card to drill down to the underlying people list
 
 ### Alerts
@@ -43,9 +43,9 @@
 
 ### Charts
 
-- [ ] **CHRT-01**: User can view discipline breakdown as bar/pie chart showing hours by discipline per month
-- [ ] **CHRT-02**: Discipline chart respects the same time range as dashboard
-- [ ] **CHRT-03**: Charts use Recharts with Nordic Precision design tokens (colors, fonts)
+- [x] **CHRT-01**: User can view discipline breakdown as bar/pie chart showing hours by discipline per month
+- [x] **CHRT-02**: Discipline chart respects the same time range as dashboard
+- [x] **CHRT-03**: Charts use Recharts with Nordic Precision design tokens (colors, fonts)
 
 ### PDF Export
 
@@ -113,17 +113,17 @@
 | PROJ-02 | Phase 14 | Pending |
 | PROJ-03 | Phase 14 | Pending |
 | PROJ-04 | Phase 14 | Pending |
-| DASH-01 | Phase 13 | Pending |
-| DASH-02 | Phase 13 | Pending |
-| DASH-03 | Phase 13 | Pending |
+| DASH-01 | Phase 13 | Complete |
+| DASH-02 | Phase 13 | Complete |
+| DASH-03 | Phase 13 | Complete |
 | DASH-04 | Phase 13 | Pending |
 | ALRT-01 | Phase 14 | Pending |
 | ALRT-02 | Phase 14 | Pending |
 | ALRT-03 | Phase 14 | Pending |
 | ALRT-04 | Phase 14 | Pending |
-| CHRT-01 | Phase 13 | Pending |
-| CHRT-02 | Phase 13 | Pending |
-| CHRT-03 | Phase 13 | Pending |
+| CHRT-01 | Phase 13 | Complete |
+| CHRT-02 | Phase 13 | Complete |
+| CHRT-03 | Phase 13 | Complete |
 | PDF-01 | Phase 15 | Pending |
 | PDF-02 | Phase 15 | Pending |
 | PDF-03 | Phase 15 | Pending |
