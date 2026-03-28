@@ -143,7 +143,7 @@ Phases execute in numeric order: 11 -> 11.x -> 12 -> 12.x -> ... -> 17
 | 9. Flat Table & Export | v1.0 | 2/2 | Complete | 2026-03-27 |
 | 10. Platform Admin | v1.0 | 4/4 | Complete | 2026-03-27 |
 | 11. Infrastructure & Feature Flags | v2.0 | 2/2 | Complete    | 2026-03-28 |
-| 12. Team Overview Heat Map | v2.0 | 2/2 | Complete   | 2026-03-28 |
+| 12. Team Overview Heat Map | v2.0 | 2/2 | Complete    | 2026-03-28 |
 | 13. Dashboard & Charts | v2.0 | 0/? | Not started | - |
 | 14. Alerts & Project View | v2.0 | 0/? | Not started | - |
 | 15. PDF Export | v2.0 | 0/? | Not started | - |
