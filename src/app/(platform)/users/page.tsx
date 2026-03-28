@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
 interface UserResult {
   id: string;
@@ -27,13 +28,7 @@ export default function UsersPage() {
   const [logoutTarget, setLogoutTarget] = useState<UserResult | null>(null);
 
   // Action feedback
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
-
-  const showToast = useCallback((type: 'success' | 'error', message: string) => {
-    setToast({ type, message });
-    setTimeout(() => setToast(null), 4000);
-  }, []);
 
   const searchUsers = useCallback(
     async (searchQuery: string) => {
@@ -50,12 +45,12 @@ export default function UsersPage() {
         setUsers(data);
         setSearched(true);
       } catch {
-        showToast('error', 'Failed to search users');
+        toast.error('Failed to search users');
       } finally {
         setLoading(false);
       }
     },
-    [showToast],
+    [],
   );
 
   useEffect(() => {
@@ -83,12 +78,12 @@ export default function UsersPage() {
       if (data.generatedPassword) {
         setGeneratedPassword(data.generatedPassword);
       } else {
-        showToast('success', `Password reset for ${resetTarget.email ?? resetTarget.id}`);
+        toast.success( `Password reset for ${resetTarget.email ?? resetTarget.id}`);
         setResetTarget(null);
         setNewPassword('');
       }
     } catch {
-      showToast('error', 'Failed to reset password');
+      toast.error( 'Failed to reset password');
     } finally {
       setActionLoading(false);
     }
@@ -103,13 +98,12 @@ export default function UsersPage() {
       });
       if (!res.ok) throw new Error('Logout failed');
       const data = await res.json();
-      showToast(
-        'success',
+      toast.success(
         `Revoked ${data.revokedCount} session(s) for ${logoutTarget.email ?? logoutTarget.id}`,
       );
       setLogoutTarget(null);
     } catch {
-      showToast('error', 'Failed to force logout');
+      toast.error( 'Failed to force logout');
     } finally {
       setActionLoading(false);
     }
@@ -118,17 +112,6 @@ export default function UsersPage() {
   return (
     <div>
       <h1 className="font-headline mb-6 text-2xl font-semibold text-slate-900">Users</h1>
-
-      {/* Toast */}
-      {toast && (
-        <div
-          className={`fixed top-4 right-4 z-50 rounded-md px-4 py-3 text-sm font-medium shadow-lg ${
-            toast.type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
-          }`}
-        >
-          {toast.message}
-        </div>
-      )}
 
       {/* Search */}
       <div className="mb-6">
@@ -179,15 +162,19 @@ export default function UsersPage() {
                   <td className="px-4 py-3 text-slate-800">
                     {[user.firstName, user.lastName].filter(Boolean).join(' ') || 'N/A'}
                   </td>
-                  <td className="px-4 py-3 text-slate-800 text-xs">
-                    {user.memberships && user.memberships.length > 0
-                      ? user.memberships.map((m) => m.orgName).join(', ')
-                      : <span className="text-slate-400">None</span>}
+                  <td className="px-4 py-3 text-xs text-slate-800">
+                    {user.memberships && user.memberships.length > 0 ? (
+                      user.memberships.map((m) => m.orgName).join(', ')
+                    ) : (
+                      <span className="text-slate-400">None</span>
+                    )}
                   </td>
-                  <td className="px-4 py-3 text-slate-800 text-xs">
-                    {user.memberships && user.memberships.length > 0
-                      ? user.memberships.map((m) => m.role.replace('org:', '')).join(', ')
-                      : <span className="text-slate-400">-</span>}
+                  <td className="px-4 py-3 text-xs text-slate-800">
+                    {user.memberships && user.memberships.length > 0 ? (
+                      user.memberships.map((m) => m.role.replace('org:', '')).join(', ')
+                    ) : (
+                      <span className="text-slate-400">-</span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-slate-600 tabular-nums">
                     {new Date(user.createdAt).toLocaleDateString()}
@@ -198,7 +185,10 @@ export default function UsersPage() {
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-2">
                       <button
-                        onClick={() => { setResetTarget(user); setGeneratedPassword(''); }}
+                        onClick={() => {
+                          setResetTarget(user);
+                          setGeneratedPassword('');
+                        }}
                         className="rounded bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-200"
                       >
                         Set Temp Password
@@ -226,7 +216,10 @@ export default function UsersPage() {
             <p className="mb-4 text-sm text-slate-500">For {resetTarget.email ?? resetTarget.id}</p>
             {generatedPassword ? (
               <div>
-                <p className="mb-2 text-sm text-slate-700">Temporary password generated. Share this with the user and instruct them to change it on next login:</p>
+                <p className="mb-2 text-sm text-slate-700">
+                  Temporary password generated. Share this with the user and instruct them to change
+                  it on next login:
+                </p>
                 <div className="mb-4 rounded border border-slate-300 bg-slate-50 px-3 py-2 font-mono text-sm select-all">
                   {generatedPassword}
                 </div>

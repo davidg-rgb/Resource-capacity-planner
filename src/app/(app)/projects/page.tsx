@@ -2,7 +2,8 @@
 
 import { useAuth } from '@clerk/nextjs';
 import { Archive, Pencil, Plus, X } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
 
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import type { ProjectRow } from '@/features/projects/project.types';
@@ -68,16 +69,7 @@ export default function ProjectsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
-  const [successMsg, setSuccessMsg] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  // ---- success toast auto-clear ----
-
-  useEffect(() => {
-    if (!successMsg) return;
-    const timer = setTimeout(() => setSuccessMsg(''), 3000);
-    return () => clearTimeout(timer);
-  }, [successMsg]);
 
   // ---- helpers ----
 
@@ -118,10 +110,10 @@ export default function ProjectsPage() {
       };
       if (editingId) {
         await updateProject.mutateAsync({ id: editingId, data: payload });
-        setSuccessMsg('Project updated successfully');
+        toast.success('Project updated successfully');
       } else {
         await createProject.mutateAsync(payload);
-        setSuccessMsg('Project created successfully');
+        toast.success('Project created successfully');
       }
       closeForm();
     },
@@ -138,7 +130,7 @@ export default function ProjectsPage() {
         return;
       }
       await archiveProject.mutateAsync(project.id);
-      setSuccessMsg(`${project.name} archived`);
+      toast.success(`${project.name} archived`);
     },
     [archiveProject],
   );
@@ -159,17 +151,17 @@ export default function ProjectsPage() {
 
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-headline text-3xl font-semibold tracking-tight text-on-surface">
+          <h1 className="font-headline text-on-surface text-3xl font-semibold tracking-tight">
             Projects
           </h1>
-          <p className="mt-1 text-sm text-on-surface-variant">
+          <p className="text-on-surface-variant mt-1 text-sm">
             Manage projects in your organization.
           </p>
         </div>
         {canEdit && (
           <button
             onClick={openCreate}
-            className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-2 text-sm font-medium text-on-primary shadow-sm hover:bg-primary/90"
+            className="bg-primary text-on-primary hover:bg-primary/90 inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium shadow-sm"
           >
             <Plus size={16} />
             Add Project
@@ -177,18 +169,11 @@ export default function ProjectsPage() {
         )}
       </div>
 
-      {/* Success toast */}
-      {successMsg && (
-        <div className="mt-4 rounded-md bg-green-50 border border-green-200 p-3 text-sm font-medium text-green-800">
-          {successMsg}
-        </div>
-      )}
-
       {/* Form dialog */}
       {showForm && (
-        <div className="mt-4 rounded-lg border border-outline-variant bg-surface-container p-4">
+        <div className="border-outline-variant bg-surface-container mt-4 rounded-lg border p-4">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-headline text-lg font-semibold text-on-surface">
+            <h2 className="font-headline text-on-surface text-lg font-semibold">
               {editingId ? 'Edit Project' : 'New Project'}
             </h2>
             <button onClick={closeForm} className="text-on-surface-variant hover:text-on-surface">
@@ -198,7 +183,7 @@ export default function ProjectsPage() {
 
           <form onSubmit={handleSubmit} className="grid gap-3 sm:grid-cols-2">
             <label className="block sm:col-span-2">
-              <span className="text-sm font-medium text-on-surface">Project Name</span>
+              <span className="text-on-surface text-sm font-medium">Project Name</span>
               <input
                 type="text"
                 required
@@ -206,19 +191,23 @@ export default function ProjectsPage() {
                 value={form.name}
                 onChange={(e) => {
                   updateField('name', e.target.value);
-                  if (errors.name) setErrors((prev) => { delete prev.name; return { ...prev }; });
+                  if (errors.name)
+                    setErrors((prev) => {
+                      delete prev.name;
+                      return { ...prev };
+                    });
                 }}
-                className="mt-1 block w-full rounded-sm border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:outline-none"
+                className="border-outline-variant bg-surface text-on-surface placeholder:text-on-surface-variant focus:border-primary mt-1 block w-full rounded-sm border px-3 py-2 text-sm focus:outline-none"
               />
-              {errors.name && <p className="text-sm text-red-600 mt-1">{errors.name}</p>}
+              {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name}</p>}
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-on-surface">Program</span>
+              <span className="text-on-surface text-sm font-medium">Program</span>
               <select
                 value={form.programId}
                 onChange={(e) => updateField('programId', e.target.value)}
-                className="mt-1 block w-full rounded-sm border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface focus:border-primary focus:outline-none"
+                className="border-outline-variant bg-surface text-on-surface focus:border-primary mt-1 block w-full rounded-sm border px-3 py-2 text-sm focus:outline-none"
               >
                 <option value="">None</option>
                 {programs?.map((p) => (
@@ -230,11 +219,11 @@ export default function ProjectsPage() {
             </label>
 
             <label className="block">
-              <span className="text-sm font-medium text-on-surface">Status</span>
+              <span className="text-on-surface text-sm font-medium">Status</span>
               <select
                 value={form.status}
                 onChange={(e) => updateField('status', e.target.value as 'active' | 'planned')}
-                className="mt-1 block w-full rounded-sm border border-outline-variant bg-surface px-3 py-2 text-sm text-on-surface focus:border-primary focus:outline-none"
+                className="border-outline-variant bg-surface text-on-surface focus:border-primary mt-1 block w-full rounded-sm border px-3 py-2 text-sm focus:outline-none"
               >
                 <option value="active">Active</option>
                 <option value="planned">Planned</option>
@@ -245,14 +234,14 @@ export default function ProjectsPage() {
               <button
                 type="submit"
                 disabled={createProject.isPending || updateProject.isPending}
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-on-primary shadow-sm hover:bg-primary/90 disabled:opacity-50"
+                className="bg-primary text-on-primary hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium shadow-sm disabled:opacity-50"
               >
                 {editingId ? 'Update' : 'Create'}
               </button>
               <button
                 type="button"
                 onClick={closeForm}
-                className="rounded-md border border-outline-variant px-4 py-2 text-sm font-medium text-on-surface hover:bg-surface-container"
+                className="border-outline-variant text-on-surface hover:bg-surface-container rounded-md border px-4 py-2 text-sm font-medium"
               >
                 Cancel
               </button>
@@ -264,13 +253,13 @@ export default function ProjectsPage() {
       {/* Loading state */}
       {isLoading && (
         <div className="mt-8 flex justify-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <div className="border-primary h-8 w-8 animate-spin rounded-full border-4 border-t-transparent" />
         </div>
       )}
 
       {/* Error state */}
       {error && (
-        <div className="mt-4 rounded-md bg-error-container p-3 text-sm text-on-error-container">
+        <div className="bg-error-container text-on-error-container mt-4 rounded-md p-3 text-sm">
           Failed to load projects: {error.message}
         </div>
       )}
@@ -279,20 +268,20 @@ export default function ProjectsPage() {
       {!isLoading && !error && (
         <div className="mt-6 overflow-x-auto">
           {projects && projects.length === 0 ? (
-            <p className="py-8 text-center text-sm text-on-surface-variant">
+            <p className="text-on-surface-variant py-8 text-center text-sm">
               No projects yet. Click &quot;Add Project&quot; to get started.
             </p>
           ) : (
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-outline-variant text-on-surface-variant">
+                <tr className="border-outline-variant text-on-surface-variant border-b">
                   <th className="py-2 pr-4 font-medium">Name</th>
                   <th className="py-2 pr-4 font-medium">Program</th>
                   <th className="py-2 pr-4 font-medium">Status</th>
                   {canEdit && <th className="py-2 font-medium">Actions</th>}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-outline-variant">
+              <tbody className="divide-outline-variant divide-y">
                 {projects?.map((project) => (
                   <tr key={project.id} className="text-on-surface">
                     <td className="py-2.5 pr-4 font-medium">{project.name}</td>
@@ -305,7 +294,7 @@ export default function ProjectsPage() {
                         <div className="flex gap-1">
                           <button
                             onClick={() => openEdit(project)}
-                            className="rounded p-1 text-on-surface-variant hover:bg-surface-container hover:text-on-surface"
+                            className="text-on-surface-variant hover:bg-surface-container hover:text-on-surface rounded p-1"
                             title="Edit"
                           >
                             <Pencil size={16} />
@@ -313,7 +302,7 @@ export default function ProjectsPage() {
                           <button
                             onClick={() => handleArchive(project)}
                             disabled={archiveProject.isPending}
-                            className="rounded p-1 text-on-surface-variant hover:bg-error-container hover:text-on-error-container disabled:opacity-50"
+                            className="text-on-surface-variant hover:bg-error-container hover:text-on-error-container rounded p-1 disabled:opacity-50"
                             title="Archive"
                           >
                             <Archive size={16} />

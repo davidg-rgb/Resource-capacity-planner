@@ -2,7 +2,8 @@
 
 import { useAuth } from '@clerk/nextjs';
 import { Pencil, Plus, Trash2, X } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
 
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import type { PersonRow } from '@/features/people/person.types';
@@ -54,16 +55,7 @@ export default function TeamPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
-  const [successMsg, setSuccessMsg] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
-
-  // ---- success toast auto-clear ----
-
-  useEffect(() => {
-    if (!successMsg) return;
-    const timer = setTimeout(() => setSuccessMsg(''), 3000);
-    return () => clearTimeout(timer);
-  }, [successMsg]);
 
   // ---- helpers ----
 
@@ -105,10 +97,10 @@ export default function TeamPage() {
       }
       if (editingId) {
         await updatePerson.mutateAsync({ id: editingId, data: form });
-        setSuccessMsg('Person updated successfully');
+        toast.success('Person updated successfully');
       } else {
         await createPerson.mutateAsync(form);
-        setSuccessMsg('Person created successfully');
+        toast.success('Person created successfully');
       }
       closeForm();
     },
@@ -125,7 +117,7 @@ export default function TeamPage() {
         return;
       }
       await deletePerson.mutateAsync(person.id);
-      setSuccessMsg(`${person.firstName} ${person.lastName} removed`);
+      toast.success(`${person.firstName} ${person.lastName} removed`);
     },
     [deletePerson],
   );
@@ -163,13 +155,6 @@ export default function TeamPage() {
           </button>
         )}
       </div>
-
-      {/* Success toast */}
-      {successMsg && (
-        <div className="mt-4 rounded-md border border-green-200 bg-green-50 p-3 text-sm font-medium text-green-800">
-          {successMsg}
-        </div>
-      )}
 
       {/* Form dialog */}
       {showForm && (
