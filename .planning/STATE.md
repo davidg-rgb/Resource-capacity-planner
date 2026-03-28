@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Visibility & Insights
-status: verifying
-stopped_at: Completed 15-01-PLAN.md
-last_updated: "2026-03-28T13:32:35.403Z"
+status: executing
+stopped_at: Completed 16-01-PLAN.md
+last_updated: "2026-03-28T13:48:33.377Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 7
   completed_phases: 5
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 12
+  completed_plans: 10
   percent: 0
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Real-time visibility into team capacity, project staffing, and resource utilization
-**Current focus:** Phase 15 — PDF Export
+**Current focus:** Phase 16 — Onboarding & Announcements
 
 ## Current Position
 
-Phase: 16
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 16 (Onboarding & Announcements) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
 Last activity: 2026-03-28
 
 Progress: [░░░░░░░░░░] 0% (v2.0)
@@ -79,6 +79,7 @@ Key architectural notes for v2.0:
 - [Phase 14]: Grid autosave invalidates alert caches across all three code paths (clean, error, conflict)
 - [Phase 14-02]: Used plain HTML table (not AG Grid) for read-only project staffing view
 - [Phase 15]: API route uses .tsx for JSX in renderToStream; button always visible when data loaded, API enforces flag gate
+- [Phase 16]: Nullable timestamp pattern for onboarding: NULL = not onboarded, non-null = onboarded; backfilled all existing orgs
 
 ### Pending Todos
 
@@ -92,8 +93,8 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-28T13:29:05.606Z
-Stopped at: Completed 15-01-PLAN.md
+Last session: 2026-03-28T13:48:33.372Z
+Stopped at: Completed 16-01-PLAN.md
 Resume file: None
 
 ---

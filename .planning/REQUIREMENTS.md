@@ -55,11 +55,11 @@
 
 ### Onboarding
 
-- [ ] **ONBR-01**: New tenant sees a multi-step onboarding wizard after org creation
+- [x] **ONBR-01**: New tenant sees a multi-step onboarding wizard after org creation
 - [ ] **ONBR-02**: Wizard guides through: add departments, add disciplines, create first person or import
-- [ ] **ONBR-03**: Wizard offers pre-filled suggestions for engineering departments and disciplines
-- [ ] **ONBR-04**: Existing tenants are marked as onboarded and skip the wizard
-- [ ] **ONBR-05**: User can skip the wizard and access the app directly
+- [x] **ONBR-03**: Wizard offers pre-filled suggestions for engineering departments and disciplines
+- [x] **ONBR-04**: Existing tenants are marked as onboarded and skip the wizard
+- [x] **ONBR-05**: User can skip the wizard and access the app directly
 
 ### Platform Operations
 
@@ -127,11 +127,11 @@
 | PDF-01 | Phase 15 | Complete |
 | PDF-02 | Phase 15 | Complete |
 | PDF-03 | Phase 15 | Complete |
-| ONBR-01 | Phase 16 | Pending |
+| ONBR-01 | Phase 16 | Complete |
 | ONBR-02 | Phase 16 | Pending |
-| ONBR-03 | Phase 16 | Pending |
-| ONBR-04 | Phase 16 | Pending |
-| ONBR-05 | Phase 16 | Pending |
+| ONBR-03 | Phase 16 | Complete |
+| ONBR-04 | Phase 16 | Complete |
+| ONBR-05 | Phase 16 | Complete |
 | PLOP-01 | Phase 17 | Pending |
 | PLOP-02 | Phase 16 | Pending |
 | PLOP-03 | Phase 16 | Pending |
