@@ -1,7 +1,8 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 import { useTeamHeatMap } from '@/hooks/use-team-heatmap';
 import { HeatMapTable } from '@/components/heat-map/heat-map-table';
@@ -35,16 +36,51 @@ function TeamOverviewContent() {
   };
 
   const { data, isLoading, error } = useTeamHeatMap(filters);
+  const [exporting, setExporting] = useState(false);
+
+  const handleExportPdf = async () => {
+    setExporting(true);
+    try {
+      const res = await fetch(
+        `/api/reports/team-heatmap?from=${filters.monthFrom}&to=${filters.monthTo}`,
+      );
+      if (!res.ok) throw new Error('Export failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `team-overview-${filters.monthFrom}-to-${filters.monthTo}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error('Failed to export PDF');
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <>
       <Breadcrumbs />
-      <h1 className="font-headline text-3xl font-semibold tracking-tight text-on-surface">
-        Team Overview
-      </h1>
-      <p className="mt-1 text-sm text-on-surface-variant">
-        Capacity heat map across all team members and months
-      </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-headline text-3xl font-semibold tracking-tight text-on-surface">
+            Team Overview
+          </h1>
+          <p className="mt-1 text-sm text-on-surface-variant">
+            Capacity heat map across all team members and months
+          </p>
+        </div>
+        {data && (
+          <button
+            onClick={handleExportPdf}
+            disabled={exporting}
+            className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-2 text-sm font-medium text-on-primary hover:bg-primary/90 disabled:opacity-50"
+          >
+            {exporting ? 'Exporting...' : 'Export PDF'}
+          </button>
+        )}
+      </div>
 
       <div className="mt-4">
         <HeatMapFilters filters={filters} onFilterChange={setFilter} />
