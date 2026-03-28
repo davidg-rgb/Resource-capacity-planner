@@ -91,7 +91,10 @@ Plans:
   3. Alerts are computed on demand from current allocation data with no separate storage
   4. User can select a project and see all people allocated to it with hours per month, plus a summary row of total hours
   5. Project View visually distinguishes months with no allocations (understaffed indicator)
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 14-01-PLAN.md — Alerts backend (types, service, API routes, hooks) + alert badge + alerts page + TopNav wiring
+- [ ] 14-02-PLAN.md — Project View UI (staffing grid, summary row, project detail page, projects list link)
 **UI hint**: yes
 
 ### Phase 15: PDF Export
@@ -148,7 +151,7 @@ Phases execute in numeric order: 11 -> 11.x -> 12 -> 12.x -> ... -> 17
 | 11. Infrastructure & Feature Flags | v2.0 | 2/2 | Complete    | 2026-03-28 |
 | 12. Team Overview Heat Map | v2.0 | 2/2 | Complete    | 2026-03-28 |
 | 13. Dashboard & Charts | v2.0 | 2/2 | Complete    | 2026-03-28 |
-| 14. Alerts & Project View | v2.0 | 0/? | Not started | - |
+| 14. Alerts & Project View | v2.0 | 0/2 | Not started | - |
 | 15. PDF Export | v2.0 | 0/? | Not started | - |
 | 16. Onboarding & Announcements | v2.0 | 0/? | Not started | - |
 | 17. Platform Operations | v2.0 | 0/? | Not started | - |
