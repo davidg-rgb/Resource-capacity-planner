@@ -20,6 +20,8 @@ interface DashboardMetrics {
 interface SystemHealthMetrics {
   dbLatencyMs: number;
   dbConnected: boolean;
+  activeConnections: number;
+  recentErrors: number;
   memoryUsageMb: { rss: number; heapUsed: number; heapTotal: number };
   version: string;
   uptime: number;
@@ -192,7 +194,7 @@ export default function PlatformDashboardPage() {
 
       <div className="mt-8">
         <h2 className="mb-4 text-lg font-semibold text-slate-800">System Health</h2>
-        <div className="mb-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
             <p className="text-sm font-medium text-slate-500">DB Latency</p>
             {healthLoading ? (
@@ -210,6 +212,21 @@ export default function PlatformDashboardPage() {
             ) : (
               <p className={`mt-2 text-3xl font-semibold ${health?.dbConnected ? 'text-green-600' : 'text-red-600'}`}>
                 {health?.dbConnected ? 'Connected' : 'Disconnected'}
+              </p>
+            )}
+          </div>
+          <MetricCard
+            title="Active Connections"
+            value={health ? health.activeConnections : 'N/A'}
+            loading={healthLoading}
+          />
+          <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+            <p className="text-sm font-medium text-slate-500">Error Rate</p>
+            {healthLoading ? (
+              <div className="mt-2 h-8 w-20 animate-pulse rounded bg-slate-200" />
+            ) : (
+              <p className={`mt-2 text-3xl font-semibold tabular-nums ${health && health.recentErrors > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                {health ? (health.recentErrors === 0 ? 'None' : `${health.recentErrors} err`) : 'N/A'}
               </p>
             )}
           </div>
