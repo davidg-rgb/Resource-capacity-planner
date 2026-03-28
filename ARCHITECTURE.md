@@ -342,7 +342,10 @@ The architecture is a modular monolith built on Next.js with PostgreSQL, designe
 | **Hosting**    | Vercel            | Pro        | Frontend hosting, serverless functions        |
 | **CI/CD**      | GitHub Actions    | -          | Automated testing, deployment                 |
 | **Fonts**      | Manrope + Inter   | Variable   | Design system typography via Google Fonts     |
-| **Icons**      | Material Symbols  | Outlined   | Icon set matching prototypes                  |
+| **Charts**     | Recharts          | 3.8.x      | Bar, line, pie charts for dashboard (v2.0)    |
+| **PDF**        | @react-pdf/renderer | 4.3.x    | Server-side PDF generation (v2.0)             |
+| **Toasts**     | Sonner            | 2.x        | Toast notifications (v2.0)                    |
+| **Icons**      | Lucide React      | 1.7+       | Icon set (replaced Material Symbols)          |
 
 ---
 
@@ -375,18 +378,21 @@ nordic-capacity/
 │   │       │   ├── page.tsx                # Person Input Form (F-003)
 │   │       │   └── [personId]/
 │   │       │       └── page.tsx            # Person Input Form for specific person
-│   │       ├── team/
-│   │       │   └── page.tsx                # Team Overview Heat Map (F-013, Phase 2)
 │   │       ├── projects/
 │   │       │   ├── page.tsx                # Project list
 │   │       │   └── [projectId]/
-│   │       │       └── page.tsx            # Project View (F-014, Phase 2)
+│   │       │       └── page.tsx            # Project View (F-014)
 │   │       ├── data/
 │   │       │   ├── page.tsx                # Flat Table View (F-009)
 │   │       │   └── import/
 │   │       │       └── page.tsx            # Bulk Import Wizard (F-006)
 │   │       ├── dashboard/
-│   │       │   └── page.tsx                # Management Dashboard (F-015, Phase 2)
+│   │       │   ├── page.tsx                # Management Dashboard (F-015)
+│   │       │   ├── dashboard-content.tsx   # Client component with charts + KPIs
+│   │       │   └── team/
+│   │       │       └── page.tsx            # Team Overview Heat Map (F-013)
+│   │       ├── alerts/
+│   │       │   └── page.tsx                # Capacity alerts list (F-016)
 │   │       └── admin/
 │   │           ├── page.tsx                # Admin overview
 │   │           ├── people/
@@ -401,24 +407,19 @@ nordic-capacity/
 │   │               └── page.tsx            # Program management
 │   │   └── (platform)/                     # Platform admin layout group (separate from tenant app)
 │   │       ├── layout.tsx                  # Platform admin shell: own nav, no tenant context
-│   │       └── platform/
-│   │           ├── page.tsx                # Platform dashboard (F-029)
-│   │           ├── organizations/
-│   │           │   ├── page.tsx            # All orgs list with health/status (F-031)
-│   │           │   └── [orgId]/
-│   │           │       └── page.tsx        # Single org detail, actions, impersonation (F-030)
-│   │           ├── subscriptions/
-│   │           │   └── page.tsx            # Manual subscription management (F-032)
-│   │           ├── health/
-│   │           │   └── page.tsx            # System health monitoring (F-033)
-│   │           ├── feature-flags/
-│   │           │   └── page.tsx            # Feature flags per tenant (F-034)
-│   │           ├── users/
-│   │           │   └── page.tsx            # Cross-tenant user management (F-037)
-│   │           ├── audit-log/
-│   │           │   └── page.tsx            # Platform audit log viewer (F-036)
-│   │           └── announcements/
-│   │               └── page.tsx            # System announcements (F-038)
+│   │       ├── page.tsx                    # Platform dashboard with health metrics (F-029, F-033)
+│   │       ├── tenants/
+│   │       │   ├── page.tsx                # All tenants list with health/status (F-031)
+│   │       │   └── [orgId]/
+│   │       │       └── page.tsx            # Tenant detail: actions, impersonation, feature flags (F-030, F-034)
+│   │       ├── subscriptions/
+│   │       │   └── page.tsx                # Manual subscription management (F-032)
+│   │       ├── users/
+│   │       │   └── page.tsx                # Cross-tenant user management (F-037)
+│   │       ├── audit/
+│   │       │   └── page.tsx                # Platform audit log viewer (F-036)
+│   │       └── announcements/
+│   │           └── page.tsx                # System announcements (F-038)
 │   ├── api/                                # Next.js API route handlers
 │   │   ├── allocations/
 │   │   │   ├── route.ts                    # GET (list/query), POST (create)
@@ -451,8 +452,32 @@ nordic-capacity/
 │   │   │   │   └── route.ts               # POST validate mapped data
 │   │   │   └── execute/
 │   │   │       └── route.ts               # POST execute import
-│   │   ├── dashboard/
-│   │   │   └── route.ts                    # GET aggregated KPI data (Phase 2)
+│   │   ├── analytics/                       # v2.0 analytics endpoints (split from single /dashboard)
+│   │   │   ├── team-heatmap/
+│   │   │   │   └── route.ts               # GET team heat map data
+│   │   │   ├── dashboard/
+│   │   │   │   └── route.ts               # GET KPI metrics
+│   │   │   ├── departments/
+│   │   │   │   └── route.ts               # GET department utilization
+│   │   │   ├── disciplines/
+│   │   │   │   └── route.ts               # GET discipline breakdown
+│   │   │   ├── alerts/
+│   │   │   │   ├── route.ts               # GET capacity alerts (flag-gated)
+│   │   │   │   └── count/
+│   │   │   │       └── route.ts           # GET alert count for badge
+│   │   │   └── project-staffing/
+│   │   │       └── route.ts               # GET project staffing grid
+│   │   ├── reports/
+│   │   │   └── team-heatmap/
+│   │   │       └── route.tsx              # GET PDF export of team heat map (flag-gated)
+│   │   ├── onboarding/
+│   │   │   ├── status/
+│   │   │   │   └── route.ts               # GET onboarding status
+│   │   │   └── complete/
+│   │   │       └── route.ts               # POST mark onboarding complete
+│   │   ├── announcements/
+│   │   │   └── active/
+│   │   │       └── route.ts               # GET active announcements for tenant
 │   │   ├── webhooks/
 │   │   │   ├── clerk/
 │   │   │   │   └── route.ts               # Clerk webhook handler
@@ -462,25 +487,28 @@ nordic-capacity/
 │   │   │   └── route.ts                    # Health check endpoint
 │   │   └── platform/                       # Platform admin API routes (F-029 to F-038)
 │   │       ├── auth/
-│   │       │   └── route.ts               # POST platform admin login
-│   │       ├── organizations/
-│   │       │   ├── route.ts               # GET list all orgs, POST create org
+│   │       │   └── route.ts               # POST platform admin login (cookie-based JWT)
+│   │       ├── tenants/
+│   │       │   ├── route.ts               # GET list all tenants, POST create
 │   │       │   └── [orgId]/
-│   │       │       ├── route.ts           # GET org detail, PATCH update, DELETE
+│   │       │       ├── route.ts           # GET detail, PATCH update, DELETE (with confirmation)
 │   │       │       ├── suspend/
-│   │       │       │   └── route.ts       # POST suspend org
+│   │       │       │   └── route.ts       # POST suspend tenant
 │   │       │       ├── reactivate/
-│   │       │       │   └── route.ts       # POST reactivate org
+│   │       │       │   └── route.ts       # POST reactivate tenant
 │   │       │       ├── impersonate/
 │   │       │       │   └── route.ts       # POST start impersonation session
 │   │       │       ├── subscription/
 │   │       │       │   └── route.ts       # PATCH manual subscription override
-│   │       │       ├── feature-flags/
-│   │       │       │   └── route.ts       # GET/PUT feature flags for org
 │   │       │       ├── export/
-│   │       │       │   └── route.ts       # GET full tenant data export
+│   │       │       │   └── route.ts       # GET full tenant data export (JSON)
+│   │       │       ├── purge/
+│   │       │       │   └── route.ts       # POST GDPR data purge (with name confirmation)
 │   │       │       └── users/
 │   │       │           └── route.ts       # GET users in org, POST reset/unlock/logout
+│   │       ├── flags/
+│   │       │   └── [orgId]/
+│   │       │       └── route.ts           # GET/PATCH per-tenant feature flags
 │   │       ├── health/
 │   │       │   └── route.ts               # GET system health metrics
 │   │       ├── audit-log/
@@ -522,21 +550,38 @@ nordic-capacity/
 │   │   ├── export/
 │   │   │   ├── export.service.ts           # Excel/CSV generation
 │   │   │   └── export.schema.ts            # Zod schemas for filter params
-│   │   ├── dashboard/
-│   │   │   ├── dashboard.service.ts        # KPI aggregation logic (Phase 2)
-│   │   │   └── dashboard.types.ts          # TypeScript types
+│   │   ├── analytics/                      # v2.0: Aggregation queries for dashboards, heat maps, alerts
+│   │   │   ├── analytics.service.ts        # CTE-based SQL aggregations (team heatmap, KPIs, dept util, discipline, alerts, project staffing)
+│   │   │   └── analytics.types.ts          # TypeScript types for all analytics responses
+│   │   ├── flags/                          # v2.0: Per-tenant feature flag system
+│   │   │   ├── flag.types.ts               # FeatureFlags interface, FlagName union, FLAG_ROUTE_MAP
+│   │   │   ├── flag.service.ts             # getOrgFlags() with React cache() deduplication
+│   │   │   ├── flag.context.tsx            # FlagProvider + useFlags() hook
+│   │   │   └── flag-guard.tsx              # Client-side route guard for flagged pages
+│   │   ├── onboarding/                     # v2.0: New-tenant guided setup wizard
+│   │   │   ├── onboarding.service.ts       # isOrgOnboarded, markOnboarded, getOnboardingStatus
+│   │   │   ├── onboarding.types.ts         # OnboardingStatus interface
+│   │   │   └── onboarding.constants.ts     # Department/discipline suggestion lists
+│   │   ├── announcements/                  # v2.0: Platform-wide announcement system
+│   │   │   ├── announcement.service.ts     # CRUD + active query with date filtering
+│   │   │   ├── announcement.schema.ts      # Zod create/update schemas
+│   │   │   └── announcement.types.ts       # Announcement interface
 │   │   ├── organizations/
 │   │   │   ├── organization.service.ts     # Org setup, settings
 │   │   │   └── organization.schema.ts      # Zod schemas
 │   │   ├── billing/
 │   │   │   ├── billing.service.ts          # Stripe subscription management
 │   │   │   └── billing.types.ts            # TypeScript types
-│   │   └── platform-admin/
-│   │       ├── platform-admin.service.ts   # Platform admin orchestration logic
-│   │       ├── platform-admin.queries.ts   # Drizzle queries for platform tables
-│   │       ├── platform-admin.schema.ts    # Zod schemas for platform admin inputs
-│   │       ├── platform-admin.types.ts     # TypeScript types
-│   │       └── platform-admin.auth.ts      # Platform admin auth (separate from Clerk)
+│   │   └── platform/                       # Platform admin (split from monolithic platform-admin)
+│   │       ├── platform-dashboard.service.ts # Dashboard metrics
+│   │       ├── platform-tenant.service.ts  # Tenant CRUD, suspend/reactivate
+│   │       ├── platform-tenant-data.service.ts # Tenant data export/purge (v2.0)
+│   │       ├── platform-health.service.ts  # System health metrics (v2.0)
+│   │       ├── platform-impersonation.service.ts # Clerk Actor Token impersonation
+│   │       ├── platform-user.service.ts    # Cross-tenant user management
+│   │       ├── platform-audit.service.ts   # Audit log queries
+│   │       ├── platform-tenant.schema.ts   # Zod schemas
+│   │       └── platform-admin.auth.ts      # Platform admin auth (cookie-based JWT)
 │   ├── components/                         # Shared UI components
 │   │   ├── layout/
 │   │   │   ├── top-nav.tsx                 # Top navigation bar
@@ -552,9 +597,10 @@ nordic-capacity/
 │   │   │   │   ├── summa-cell.tsx          # Bold summary cell
 │   │   │   │   └── project-cell.tsx        # Project name with dropdown
 │   │   │   └── drag-to-fill.tsx            # Custom drag-to-fill handler
-│   │   ├── heatmap/
-│   │   │   ├── team-heatmap.tsx            # Team overview grid (Phase 2)
-│   │   │   └── heatmap-cell.tsx            # Color-coded capacity cell
+│   │   ├── heat-map/                       # v2.0: Team Overview heat map (pure HTML table, not AG Grid)
+│   │   │   ├── heat-map-table.tsx          # Department-grouped table with collapsible sections
+│   │   │   ├── heat-map-cell.tsx           # Color-coded capacity cell
+│   │   │   └── heat-map-filters.tsx        # Department/discipline/date range filters
 │   │   ├── import/
 │   │   │   ├── import-wizard.tsx           # Import wizard container
 │   │   │   ├── step-upload.tsx             # File upload step
@@ -565,11 +611,30 @@ nordic-capacity/
 │   │   │   ├── flat-table.tsx              # Flat table view component
 │   │   │   ├── table-filters.tsx           # Filter bar component
 │   │   │   └── table-pagination.tsx        # Pagination component
-│   │   ├── dashboard/
-│   │   │   ├── kpi-card.tsx                # KPI metric card (Phase 2)
-│   │   │   ├── dept-heatmap.tsx            # Departmental heat map (Phase 2)
-│   │   │   ├── alert-card.tsx              # Strategic alert card (Phase 2)
-│   │   │   └── discipline-bars.tsx         # Discipline utilization bars (Phase 2)
+│   │   ├── charts/                         # v2.0: Recharts-based dashboard visualizations
+│   │   │   ├── kpi-card.tsx                # KPI metric card with optional drill-down link
+│   │   │   ├── department-bar-chart.tsx    # Recharts horizontal bar chart for dept utilization
+│   │   │   ├── discipline-chart.tsx        # Recharts horizontal bar chart for discipline hours
+│   │   │   └── chart-colors.ts            # Nordic Precision color constants for charts
+│   │   ├── alerts/                         # v2.0: Capacity alert components
+│   │   │   ├── alert-badge.tsx             # TopNav bell icon with count badge
+│   │   │   └── alert-list.tsx              # Alert list grouped by severity
+│   │   ├── project-view/                   # v2.0: Project-centric staffing view
+│   │   │   ├── project-staffing-grid.tsx   # Person x month hours table for a project
+│   │   │   └── project-summary-row.tsx     # Total hours row with understaffed indicators
+│   │   ├── pdf/                            # v2.0: @react-pdf/renderer PDF templates
+│   │   │   ├── heat-map-pdf.tsx            # Team Overview heat map PDF document
+│   │   │   ├── pdf-header-footer.tsx       # Fixed header/footer with org name, dates, page numbers
+│   │   │   └── pdf-styles.ts              # PDF StyleSheet and color definitions
+│   │   ├── onboarding/                     # v2.0: New-tenant onboarding wizard
+│   │   │   ├── onboarding-wizard.tsx       # Multi-step wizard orchestrator
+│   │   │   ├── step-departments.tsx        # Department creation with suggestions
+│   │   │   ├── step-disciplines.tsx        # Discipline creation with suggestions
+│   │   │   ├── step-people.tsx             # Person creation or import redirect
+│   │   │   └── step-complete.tsx           # Success screen with navigation
+│   │   ├── announcements/                  # v2.0: Announcement display
+│   │   │   ├── announcement-banner.tsx     # Dismissible banner in app layout
+│   │   │   └── use-dismissed-announcements.ts # localStorage dismissal state
 │   │   ├── person/
 │   │   │   ├── person-header.tsx           # Person name, nav arrows, attributes
 │   │   │   ├── person-sidebar.tsx          # Person list sidebar with search
@@ -599,8 +664,12 @@ nordic-capacity/
 │   │   ├── use-people.ts                   # TanStack Query hook for people
 │   │   ├── use-projects.ts                 # TanStack Query hook for projects
 │   │   ├── use-current-person.ts           # Current person context hook
-│   │   ├── use-grid-autosave.ts            # Auto-save on cell change
-│   │   └── use-keyboard-nav.ts             # Grid keyboard navigation
+│   │   ├── use-grid-autosave.ts            # Auto-save on cell change (invalidates analytics caches)
+│   │   ├── use-keyboard-nav.ts             # Grid keyboard navigation
+│   │   ├── use-team-heatmap.ts             # v2.0: TanStack Query for team heat map
+│   │   ├── use-dashboard.ts               # v2.0: TanStack Query for KPIs, dept util, discipline
+│   │   ├── use-alerts.ts                   # v2.0: TanStack Query for alerts + alert count
+│   │   └── use-project-staffing.ts         # v2.0: TanStack Query for project staffing view
 │   └── middleware.ts                       # Next.js middleware: auth + tenant resolution
 ├── tailwind.config.ts                      # Design system tokens from prototypes
 ├── drizzle.config.ts                       # Drizzle ORM configuration
@@ -1164,9 +1233,16 @@ generateImportTemplate(type: "people" | "projects" | "allocations"): Promise<Buf
   Calls: excelLib.createWorkbook
 ```
 
-### 6.11 Dashboard Service (`src/features/dashboard/dashboard.service.ts`) — Phase 2
+### 6.11 Analytics Service (`src/features/analytics/analytics.service.ts`) — v2.0
 
-**Purpose:** Aggregate capacity data for the management dashboard KPI cards, heat maps, and alerts.
+**Purpose:** CTE-based SQL aggregation queries for all v2.0 visualizations: team heat map, dashboard KPIs, department utilization, discipline breakdown, capacity alerts, alert counts, and project staffing. Uses raw SQL via Drizzle `sql` tagged templates for complex CTEs with `generate_series`. All queries scope by `organization_id` via parameterized orgId.
+
+**v2.0 Implementation Notes:**
+- Split from original single `/api/dashboard` endpoint into 7 focused endpoints under `/api/analytics/*`
+- Each endpoint validates month range (max 36 months) via shared `validateMonthRange()` helper
+- All routes use `handleApiError()` for proper HTTP status mapping (401/403/400/500)
+- Queries use CROSS JOIN with generate_series for gapless month grids
+- SUM(target_hours) across CROSS JOIN rows replaces `target_hours * month_count` for correctness
 
 ```
 getKpis(orgId: String): Promise<DashboardKpis>
@@ -1303,20 +1379,23 @@ handleWebhook(event: StripeEvent): Promise<Void>
 
 ```
 calculateStatus(totalHours: Number, targetHours: Number): "healthy" | "warning" | "overloaded" | "empty"
-  Purpose: Determine the capacity status of a person for a given month
+  Purpose: Determine the capacity status of a person for a given month (input form sidebar dots, grid status row)
   Params:
     - totalHours: sum of all allocations for the person in that month
     - targetHours: person's target capacity (e.g., 150h)
   Returns: Status string
   Side effects: None (pure function)
   Error cases: None
-  Called by: PersonHeader, StatusCell, TeamHeatmapCell, PersonSidebar
+  Called by: grid-config.ts (status row), StatusCell, PersonSidebar, person.service.ts
   Calls: None
   Logic:
     - empty: totalHours = 0
     - healthy: totalHours > 0 AND totalHours / targetHours < 0.85
     - warning: totalHours / targetHours >= 0.85 AND < 1.0
     - overloaded: totalHours / targetHours >= 1.0
+
+  Note: The heat map uses a SEPARATE function `calculateHeatMapStatus` with different thresholds
+  (over >100%, healthy 80-100%, under 50-79%, idle <50%) for the Team Overview color coding.
 ```
 
 ```
@@ -1333,20 +1412,20 @@ calculateUtilization(totalHours: Number, targetHours: Number): Number
 ```
 
 ```
-getStatusColor(status: String): { bg: String, text: String }
+getStatusColor(status: String): { bg: String, text: String, dot: String }
   Purpose: Map a capacity status to its CSS color classes from the design system
   Params:
     - status: "healthy" | "warning" | "overloaded" | "empty"
-  Returns: Tailwind CSS class strings for background and text
+  Returns: Tailwind CSS class strings: bg (container background), text (label text), dot (saturated indicator fill)
   Side effects: None
   Error cases: Returns gray for unknown status
-  Called by: StatusCell, HeatmapCell, StatusDot
+  Called by: StatusCell (.dot for 3x3 indicator), PersonSidebar (.dot for 2x2 indicator)
   Calls: None
   Mapping:
-    - healthy: { bg: "bg-green-50", text: "text-emerald-800" }
-    - warning: { bg: "bg-amber-50", text: "text-amber-800" }
-    - overloaded: { bg: "bg-error/10", text: "text-error" }
-    - empty: { bg: "bg-surface-container-low", text: "text-outline" }
+    - healthy: { bg: "bg-green-50", text: "text-emerald-800", dot: "bg-green-500" }
+    - warning: { bg: "bg-amber-50", text: "text-amber-800", dot: "bg-amber-500" }
+    - overloaded: { bg: "bg-red-50", text: "text-red-800", dot: "bg-red-500" }
+    - empty: { bg: "bg-gray-50", text: "text-gray-500", dot: "bg-gray-300" }
 ```
 
 ### 6.15 Date Utilities (`src/lib/date-utils.ts`)
