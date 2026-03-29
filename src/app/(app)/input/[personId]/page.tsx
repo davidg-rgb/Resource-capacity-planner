@@ -6,7 +6,9 @@ import { useAllocations, usePersonDetail } from '@/hooks/use-allocations';
 import { useGridAutosave } from '@/hooks/use-grid-autosave';
 import { useProjects } from '@/hooks/use-projects';
 import { AllocationGrid } from '@/components/grid/allocation-grid';
+import { GridFooter } from '@/components/grid/grid-footer';
 import { PersonHeader } from '@/components/person/person-header';
+import { PersonAnalytics } from '@/components/person/person-analytics';
 
 /** Person Input Form -- the core product interface. */
 export default function PersonInputPage({ params }: { params: Promise<{ personId: string }> }) {
@@ -59,7 +61,7 @@ export default function PersonInputPage({ params }: { params: Promise<{ personId
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <PersonHeader
         personId={personId}
         firstName={person.firstName}
@@ -78,8 +80,12 @@ export default function PersonInputPage({ params }: { params: Promise<{ personId
         onAddProject={handleAddProject}
       />
 
+      <GridFooter />
+
+      <PersonAnalytics />
+
       {showProjectSelector && projects && (
-        <div className="border-outline-variant bg-surface rounded-lg border p-4">
+        <div className="border-outline-variant bg-surface rounded-sm border p-4">
           <p className="text-on-surface mb-2 text-sm font-medium">Select a project to add:</p>
           <select
             className="border-outline-variant bg-surface text-on-surface w-full rounded border p-2 text-sm"

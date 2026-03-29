@@ -1,0 +1,39 @@
+.ag-theme-custom .ag-header {
+  background-color: var(--color-surface-container-low);
+}
+
+.ag-theme-custom .ag-header-cell-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-outline-variant);
+}
+
+.ag-theme-custom .ag-row {
+  border-bottom: 1px solid rgba(169, 180, 183, 0.1);
+}
+
+.ag-theme-custom .ag-row:hover {
+  background-color: var(--color-surface-container-low);
+}
+
+.ag-theme-custom .ag-cell {
+  border-right: 1px solid rgba(169, 180, 183, 0.15);
+  padding: 0.5rem 1rem;
+}
+
+.ag-theme-custom .ag-pinned-left-cols-container .ag-cell {
+  background-color: #ffffff;
+}
+
+.ag-theme-custom .ag-row-pinned {
+  background-color: var(--color-surface-container-low);
+  font-weight: 600;
+}
+
+.ag-theme-custom .ag-cell-focus {
+  outline: 2px solid #496173;
+  outline-offset: -2px;
+  background-color: #ffffff !important;
+}

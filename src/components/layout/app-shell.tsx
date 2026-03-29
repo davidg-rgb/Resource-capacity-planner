@@ -22,7 +22,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
         )}
         <main
-          className={`mx-auto max-w-[1440px] flex-1 p-4 sm:p-6 lg:p-8 ${showSideNav ? 'lg:ml-64' : ''}`}
+          className={`mx-auto max-w-[1600px] flex-1 p-4 sm:p-6 lg:p-8 ${showSideNav ? 'lg:ml-64' : ''}`}
         >
           {children}
         </main>

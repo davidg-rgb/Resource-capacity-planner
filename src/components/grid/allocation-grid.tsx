@@ -22,6 +22,7 @@ import { ProjectCell } from '@/components/grid/cell-renderers/project-cell';
 import { parseClipboardText, mapPasteToGridCells } from '@/lib/clipboard-handler';
 import { tabToNextCell, navigateToNextCell } from '@/hooks/use-keyboard-nav';
 import { DragToFillHandle } from '@/components/grid/drag-to-fill-handle';
+import '@/components/grid/grid-theme.css';
 
 type AllocationGridProps = {
   allocations: FlatAllocation[];
@@ -216,8 +217,12 @@ export function AllocationGrid({
   );
 
   return (
-    <div ref={gridContainerRef} className="relative h-[600px] w-full outline-none" tabIndex={0}>
-      <div className="bg-surface-container-lowest border-outline-variant/15 h-full overflow-hidden rounded-sm border shadow-sm">
+    <div
+      ref={gridContainerRef}
+      className="ag-theme-custom relative w-full outline-none"
+      tabIndex={0}
+    >
+      <div className="bg-surface-container-lowest border-outline-variant/15 overflow-hidden rounded-sm border shadow-sm">
         <AgGridReact
           modules={modules}
           rowData={localRowData}

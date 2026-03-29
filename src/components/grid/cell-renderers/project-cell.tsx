@@ -24,11 +24,11 @@ export function ProjectCell(props: ProjectCellProps) {
         onClick={() => props.onAddProject?.()}
         className="text-on-surface-variant hover:text-primary w-full text-left italic"
       >
-        + Add project...
+        Add project...
       </button>
     );
   }
 
   // Regular project row
-  return <span className="text-on-surface">{props.value}</span>;
+  return <span className="text-on-surface font-semibold">{props.value}</span>;
 }

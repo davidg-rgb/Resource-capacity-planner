@@ -70,17 +70,17 @@ export function TopNav() {
         </div>
 
         {/* Center: Nav items — hidden below lg */}
-        <nav className="ml-12 hidden items-center gap-1 lg:flex">
+        <nav className="ml-12 hidden items-center gap-6 lg:flex">
           {visibleItems.map((item) => {
             const isActive = pathname.startsWith(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`font-headline border-b-2 px-3 py-4 text-sm tracking-tight transition-colors ${
+                className={`font-headline text-sm tracking-tight transition-colors ${
                   isActive
-                    ? 'border-primary text-primary font-bold'
-                    : 'text-on-surface-variant hover:text-primary border-transparent'
+                    ? 'border-primary text-primary border-b-2 pb-1 font-bold'
+                    : 'hover:text-primary text-slate-500'
                 }`}
               >
                 {item.label}
@@ -95,7 +95,7 @@ export function TopNav() {
             <Search size={14} className="text-outline absolute top-1/2 left-3 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Global Search"
               className="bg-surface-container-low text-on-surface placeholder:text-outline focus:ring-primary w-64 rounded-sm py-1.5 pr-4 pl-9 text-xs focus:ring-1 focus:outline-none"
             />
           </div>
@@ -104,7 +104,7 @@ export function TopNav() {
               href="/alerts"
               aria-label="Capacity alerts"
               title="Capacity alerts"
-              className="text-on-surface-variant hover:bg-surface-container-high relative rounded-sm p-1.5"
+              className="text-on-surface-variant hover:bg-surface-container-low relative rounded-full p-2"
             >
               <Bell size={18} />
               <AlertBadge />
@@ -114,7 +114,7 @@ export function TopNav() {
             type="button"
             aria-label="Settings"
             title="Settings"
-            className="text-on-surface-variant hover:bg-surface-container-high hidden rounded-sm p-1.5 sm:block"
+            className="text-on-surface-variant hover:bg-surface-container-low hidden rounded-full p-2 sm:block"
           >
             <Settings size={18} />
           </button>
@@ -142,7 +142,7 @@ export function TopNav() {
                 />
                 <input
                   type="text"
-                  placeholder="Search..."
+                  placeholder="Global Search"
                   className="bg-surface-container-low text-on-surface placeholder:text-outline focus:ring-primary w-full rounded-sm py-1.5 pr-4 pl-9 text-xs focus:ring-1 focus:outline-none"
                 />
               </div>

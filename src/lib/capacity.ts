@@ -36,10 +36,10 @@ export function calculateStatus(sumHours: number, targetHours: number): Capacity
  */
 export function getStatusColor(status: CapacityStatus): { bg: string; text: string; dot: string } {
   const colors: Record<CapacityStatus, { bg: string; text: string; dot: string }> = {
-    healthy: { bg: 'bg-green-50', text: 'text-emerald-800', dot: 'bg-green-500' },
-    warning: { bg: 'bg-amber-50', text: 'text-amber-800', dot: 'bg-amber-500' },
-    overloaded: { bg: 'bg-red-50', text: 'text-red-800', dot: 'bg-red-500' },
-    empty: { bg: 'bg-gray-50', text: 'text-gray-500', dot: 'bg-gray-300' },
+    healthy: { bg: 'bg-green-50', text: 'text-emerald-800', dot: 'bg-on-secondary-container' },
+    warning: { bg: 'bg-amber-50', text: 'text-amber-800', dot: 'bg-outline-variant' },
+    overloaded: { bg: 'bg-red-50', text: 'text-red-800', dot: 'bg-error' },
+    empty: { bg: 'bg-gray-50', text: 'text-gray-500', dot: 'bg-on-secondary-container opacity-40' },
   };
   return colors[status];
 }
@@ -65,8 +65,8 @@ export function calculateHeatMapStatus(hours: number, targetHours: number): Heat
 }
 
 export const HEAT_MAP_COLORS: Record<HeatMapStatus, string> = {
-  over: 'bg-red-500/80 text-white',
-  healthy: 'bg-green-500/60 text-green-950',
-  under: 'bg-amber-400/60 text-amber-950',
-  idle: 'bg-gray-200 text-gray-500',
+  over: 'bg-error/10 text-error',
+  healthy: 'bg-green-50/60 text-emerald-800',
+  under: 'bg-amber-50 text-amber-800',
+  idle: 'bg-surface-container-low text-outline-variant',
 };

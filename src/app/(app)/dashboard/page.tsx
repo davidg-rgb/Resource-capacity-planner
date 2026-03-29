@@ -8,11 +8,9 @@ export default function DashboardPage() {
   return (
     <>
       <Breadcrumbs />
-      <h1 className="font-headline text-on-surface text-3xl font-semibold tracking-tight">
-        Dashboard
-      </h1>
-      <p className="text-on-surface-variant mt-2 text-sm">
-        Key capacity metrics and departmental overview.
+      <h1 className="font-headline text-on-surface text-2xl font-semibold">Management Overview</h1>
+      <p className="text-on-surface-variant font-body mt-1 text-sm">
+        Operational capacity and resource health for Q2-Q3 2024.
       </p>
 
       <Suspense

@@ -43,6 +43,33 @@ export function PersonSidebar({ activePersonId }: PersonSidebarProps) {
     return map;
   }, [filtered]);
 
+  const sidebarFooter = (
+    <div className="border-outline-variant/15 border-t p-4">
+      <button
+        type="button"
+        className="bg-primary text-on-primary mb-4 w-full rounded-sm py-2 text-xs font-bold shadow-sm transition-opacity hover:opacity-90"
+      >
+        New Entry
+      </button>
+      <div className="flex flex-col gap-1">
+        <a
+          href="#"
+          className="flex items-center gap-3 rounded-sm p-2 text-xs font-medium text-slate-600 hover:bg-[#e2e8f0] dark:text-slate-400 dark:hover:bg-slate-900"
+        >
+          <span className="material-symbols-outlined text-sm">help_outline</span>
+          Help
+        </a>
+        <a
+          href="#"
+          className="flex items-center gap-3 rounded-sm p-2 text-xs font-medium text-slate-600 hover:bg-[#e2e8f0] dark:text-slate-400 dark:hover:bg-slate-900"
+        >
+          <span className="material-symbols-outlined text-sm">archive</span>
+          Archive
+        </a>
+      </div>
+    </div>
+  );
+
   const sidebarContent = (
     <div className="flex-grow space-y-4 overflow-y-auto p-4">
       {/* Search */}
@@ -148,6 +175,7 @@ export function PersonSidebar({ activePersonId }: PersonSidebarProps) {
               </button>
             </div>
             {sidebarContent}
+            {sidebarFooter}
           </aside>
         </div>
       )}
@@ -155,6 +183,7 @@ export function PersonSidebar({ activePersonId }: PersonSidebarProps) {
       {/* Desktop sidebar — visible at lg and above */}
       <aside className="border-outline-variant/15 bg-surface-container-low hidden h-full w-72 flex-shrink-0 flex-col border-r lg:flex">
         {sidebarContent}
+        {sidebarFooter}
       </aside>
     </>
   );

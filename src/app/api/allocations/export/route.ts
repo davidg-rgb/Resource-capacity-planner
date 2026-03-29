@@ -14,6 +14,7 @@ export async function GET(request: NextRequest) {
 
     const filters: FlatTableFilters = {
       personName: params.get('personName') ?? undefined,
+      disciplineId: params.get('disciplineId') ?? undefined,
       projectId: params.get('projectId') ?? undefined,
       departmentId: params.get('departmentId') ?? undefined,
       monthFrom: params.get('monthFrom') ?? undefined,

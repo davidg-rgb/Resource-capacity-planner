@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   countAllocationsFlat,
   listAllocationsFlat,
+  sumHoursFlat,
 } from '@/features/allocations/allocation.service';
 import { handleApiError } from '@/lib/api-utils';
 import { getTenantId } from '@/lib/auth';
@@ -17,6 +18,7 @@ export async function GET(request: NextRequest) {
 
     const filters: FlatTableFilters = {
       personName: params.get('personName') ?? undefined,
+      disciplineId: params.get('disciplineId') ?? undefined,
       projectId: params.get('projectId') ?? undefined,
       departmentId: params.get('departmentId') ?? undefined,
       monthFrom: params.get('monthFrom') ?? undefined,
@@ -27,14 +29,16 @@ export async function GET(request: NextRequest) {
     const requestedSize = Number(params.get('pageSize') ?? '50');
     const pageSize = [25, 50, 100].includes(requestedSize) ? requestedSize : 50;
 
-    const [rows, total] = await Promise.all([
+    const [rows, total, totalHours] = await Promise.all([
       listAllocationsFlat(orgId, filters, { page, pageSize }),
       countAllocationsFlat(orgId, filters),
+      sumHoursFlat(orgId, filters),
     ]);
 
     return NextResponse.json({
       rows,
       pagination: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) },
+      totalHours,
     });
   } catch (error) {
     return handleApiError(error);

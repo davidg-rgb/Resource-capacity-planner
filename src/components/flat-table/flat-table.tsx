@@ -1,10 +1,9 @@
 'use client';
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback } from 'react';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { AllCommunityModule } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { Download, ChevronDown } from 'lucide-react';
 
 import { useFlatAllocations } from '@/hooks/use-flat-allocations';
 import { flatTableColumnDefs } from '@/components/flat-table/flat-table-columns';
@@ -18,12 +17,10 @@ export function FlatTable() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const [exportOpen, setExportOpen] = useState(false);
-  const exportRef = useRef<HTMLDivElement>(null);
-
   // Read filter state from URL search params
   const filters = {
     personName: searchParams.get('personName') ?? undefined,
+    disciplineId: searchParams.get('disciplineId') ?? undefined,
     projectId: searchParams.get('projectId') ?? undefined,
     departmentId: searchParams.get('departmentId') ?? undefined,
     monthFrom: searchParams.get('monthFrom') ?? undefined,
@@ -56,14 +53,15 @@ export function FlatTable() {
   );
 
   // Build export URL from current filter params (excluding page/pageSize)
-  const buildExportUrl = (format: 'xlsx' | 'csv') => {
+  const buildExportUrl = () => {
     const exportParams = new URLSearchParams();
     if (filters.personName) exportParams.set('personName', filters.personName);
+    if (filters.disciplineId) exportParams.set('disciplineId', filters.disciplineId);
     if (filters.projectId) exportParams.set('projectId', filters.projectId);
     if (filters.departmentId) exportParams.set('departmentId', filters.departmentId);
     if (filters.monthFrom) exportParams.set('monthFrom', filters.monthFrom);
     if (filters.monthTo) exportParams.set('monthTo', filters.monthTo);
-    exportParams.set('format', format);
+    exportParams.set('format', 'xlsx');
     return `/api/allocations/export?${exportParams.toString()}`;
   };
 
@@ -73,44 +71,15 @@ export function FlatTable() {
       <div className="flex items-end justify-between gap-4">
         <FlatTableFilters filters={filters} onFilterChange={setFilter} />
 
-        {/* Export dropdown */}
-        <div className="relative" ref={exportRef}>
-          <button
-            type="button"
-            onClick={() => setExportOpen((prev) => !prev)}
-            onBlur={(e) => {
-              // Close if focus leaves the dropdown entirely
-              if (!exportRef.current?.contains(e.relatedTarget)) {
-                setExportOpen(false);
-              }
-            }}
-            className="bg-primary text-on-primary inline-flex items-center gap-1.5 rounded-sm px-5 py-2.5 text-xs font-semibold shadow-md transition-colors"
-          >
-            <Download className="h-4 w-4" />
-            Export
-            <ChevronDown className="h-3.5 w-3.5" />
-          </button>
-          {exportOpen && (
-            <div className="bg-surface border-outline-variant absolute top-full right-0 z-10 mt-1 flex flex-col overflow-hidden rounded-sm border shadow-md">
-              <a
-                href={buildExportUrl('xlsx')}
-                download
-                onClick={() => setExportOpen(false)}
-                className="text-on-surface hover:bg-surface-container px-4 py-2 text-sm whitespace-nowrap"
-              >
-                Export Excel (.xlsx)
-              </a>
-              <a
-                href={buildExportUrl('csv')}
-                download
-                onClick={() => setExportOpen(false)}
-                className="text-on-surface hover:bg-surface-container px-4 py-2 text-sm whitespace-nowrap"
-              >
-                Export CSV (.csv)
-              </a>
-            </div>
-          )}
-        </div>
+        {/* Export button */}
+        <a
+          href={buildExportUrl()}
+          download
+          className="bg-primary text-on-primary flex items-center gap-2 rounded-sm px-5 py-2.5 text-xs font-semibold shadow-md transition-opacity hover:opacity-90"
+        >
+          <span className="material-symbols-outlined text-lg">download</span>
+          Export to Excel
+        </a>
       </div>
 
       {/* AG Grid */}
@@ -133,13 +102,14 @@ export function FlatTable() {
         />
       </div>
 
-      {/* Pagination */}
+      {/* Pagination / Stats */}
       {data?.pagination && (
         <FlatTablePagination
           page={data.pagination.page}
           pageSize={data.pagination.pageSize}
           total={data.pagination.total}
           totalPages={data.pagination.totalPages}
+          totalHours={data.totalHours ?? 0}
           onPageChange={(p) => setFilter('page', String(p))}
           onPageSizeChange={(s) => setFilter('pageSize', String(s))}
         />

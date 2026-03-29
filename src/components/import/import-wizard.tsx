@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 import type {
   ColumnMapping,
@@ -79,7 +79,6 @@ export function ImportWizard() {
   const validateMutation = useValidateRows();
   const executeMutation = useExecuteImport();
 
-  const currentStepIndex = STEP_ORDER.indexOf(state.step);
   const completedSteps = getCompletedSteps(state.step);
 
   // ----- Step handlers -----
@@ -196,15 +195,25 @@ export function ImportWizard() {
     });
   }, []);
 
-  // Count ready rows for import step
-  const readyCount = state.validationResult
-    ? state.validationResult.rows.filter((r) => r.status === 'ready' || r.status === 'warning')
-        .length
-    : 0;
+  const handleCancel = useCallback(() => {
+    setState(INITIAL_STATE);
+  }, []);
 
-  // Back button should be hidden during importing
-  const showBack =
-    currentStepIndex > 0 && state.importStatus !== 'importing' && state.importStatus !== 'success';
+  // Count ready rows for import step (accounts for user fixes turning fuzzy rows into ready)
+  const readyCount = state.validationResult
+    ? state.validationResult.rows.filter((r) => {
+        const fix = state.userFixes[r.rowIndex];
+        const personResolved = r.personMatch.status !== 'fuzzy' || fix?.personId !== undefined;
+        const projectResolved = r.projectMatch.status !== 'fuzzy' || fix?.projectId !== undefined;
+        const hasUnfixableError =
+          (r.personMatch.status === 'unknown' &&
+            (!r.personMatch.suggestions || r.personMatch.suggestions.length === 0)) ||
+          (r.projectMatch.status === 'unknown' &&
+            (!r.projectMatch.suggestions || r.projectMatch.suggestions.length === 0));
+        if (hasUnfixableError || !personResolved || !projectResolved) return false;
+        return true;
+      }).length
+    : 0;
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -225,6 +234,9 @@ export function ImportWizard() {
             mappings={state.columnMappings}
             onMappingsChange={handleMappingsChange}
             onNext={handleMappingsConfirmed}
+            onBack={handleBack}
+            fileName={state.parsedFile.sheetName}
+            rowCount={state.parsedFile.allRows.length}
           />
         )}
 
@@ -241,6 +253,8 @@ export function ImportWizard() {
                 userFixes={state.userFixes}
                 onUserFixesChange={handleUserFixesChange}
                 onNext={handleValidationConfirmed}
+                onBack={handleBack}
+                onCancel={handleCancel}
               />
             )}
           </>
@@ -255,23 +269,6 @@ export function ImportWizard() {
             onBack={handleBack}
           />
         )}
-      </div>
-
-      {/* Back navigation */}
-      <div className="border-outline-variant mt-6 flex items-center justify-between border-t pt-4">
-        <div>
-          {showBack && (
-            <button
-              type="button"
-              onClick={handleBack}
-              className="border-outline-variant text-on-surface hover:bg-surface-container inline-flex items-center gap-1.5 rounded-md border px-4 py-2 text-sm font-medium transition-colors"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back
-            </button>
-          )}
-        </div>
-        <div />
       </div>
     </div>
   );

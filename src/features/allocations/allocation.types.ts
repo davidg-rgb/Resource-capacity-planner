@@ -52,6 +52,7 @@ export type BatchUpsertResult = {
 /** A row in the flat allocation table (all joins resolved) */
 export type FlatTableRow = {
   personName: string;
+  discipline: string;
   departmentName: string;
   projectName: string;
   programName: string | null;
@@ -62,6 +63,7 @@ export type FlatTableRow = {
 /** Filters for the flat allocation table */
 export type FlatTableFilters = {
   personName?: string;
+  disciplineId?: string;
   projectId?: string;
   departmentId?: string;
   monthFrom?: string; // YYYY-MM
@@ -77,4 +79,5 @@ export type FlatTableResponse = {
     total: number;
     totalPages: number;
   };
+  totalHours: number;
 };

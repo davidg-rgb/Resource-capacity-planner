@@ -190,6 +190,9 @@ function buildFlatConditions(orgId: string, filters: FlatTableFilters) {
       ),
     );
   }
+  if (filters.disciplineId) {
+    conditions.push(eq(schema.people.disciplineId, filters.disciplineId));
+  }
   if (filters.projectId) {
     conditions.push(eq(schema.allocations.projectId, filters.projectId));
   }
@@ -213,6 +216,7 @@ function buildFlatBaseQuery() {
   return db
     .select({
       personName: sql<string>`${schema.people.firstName} || ' ' || ${schema.people.lastName}`,
+      discipline: schema.disciplines.abbreviation,
       departmentName: schema.departments.name,
       projectName: schema.projects.name,
       programName: schema.programs.name,
@@ -222,6 +226,7 @@ function buildFlatBaseQuery() {
     .from(schema.allocations)
     .innerJoin(schema.people, eq(schema.allocations.personId, schema.people.id))
     .innerJoin(schema.departments, eq(schema.people.departmentId, schema.departments.id))
+    .innerJoin(schema.disciplines, eq(schema.people.disciplineId, schema.disciplines.id))
     .innerJoin(schema.projects, eq(schema.allocations.projectId, schema.projects.id))
     .leftJoin(schema.programs, eq(schema.projects.programId, schema.programs.id));
 }
@@ -261,11 +266,29 @@ export async function countAllocationsFlat(
     .from(schema.allocations)
     .innerJoin(schema.people, eq(schema.allocations.personId, schema.people.id))
     .innerJoin(schema.departments, eq(schema.people.departmentId, schema.departments.id))
+    .innerJoin(schema.disciplines, eq(schema.people.disciplineId, schema.disciplines.id))
     .innerJoin(schema.projects, eq(schema.allocations.projectId, schema.projects.id))
     .leftJoin(schema.programs, eq(schema.projects.programId, schema.programs.id))
     .where(and(...buildFlatConditions(orgId, filters)));
 
   return Number(result[0].count);
+}
+
+/**
+ * Sum total hours across all flat allocation rows matching filters.
+ */
+export async function sumHoursFlat(orgId: string, filters: FlatTableFilters): Promise<number> {
+  const result = await db
+    .select({ sum: sql<number>`COALESCE(SUM(${schema.allocations.hours}), 0)` })
+    .from(schema.allocations)
+    .innerJoin(schema.people, eq(schema.allocations.personId, schema.people.id))
+    .innerJoin(schema.departments, eq(schema.people.departmentId, schema.departments.id))
+    .innerJoin(schema.disciplines, eq(schema.people.disciplineId, schema.disciplines.id))
+    .innerJoin(schema.projects, eq(schema.allocations.projectId, schema.projects.id))
+    .leftJoin(schema.programs, eq(schema.projects.programId, schema.programs.id))
+    .where(and(...buildFlatConditions(orgId, filters)));
+
+  return Number(result[0].sum);
 }
 
 /**
@@ -284,11 +307,20 @@ export async function exportAllocationsFlat(
 
   const wb = XLSX.utils.book_new();
 
-  const headers = ['Person Name', 'Department', 'Project Name', 'Program', 'Month', 'Hours'];
+  const headers = [
+    'Person Name',
+    'Discipline',
+    'Department',
+    'Project Name',
+    'Program',
+    'Month',
+    'Hours',
+  ];
   const data = [
     headers,
     ...rows.map((r) => [
       r.personName,
+      r.discipline ?? '',
       r.departmentName,
       r.projectName,
       r.programName ?? '',
@@ -298,7 +330,15 @@ export async function exportAllocationsFlat(
   ];
 
   const ws = XLSX.utils.aoa_to_sheet(data);
-  ws['!cols'] = [{ wch: 25 }, { wch: 15 }, { wch: 25 }, { wch: 20 }, { wch: 10 }, { wch: 8 }];
+  ws['!cols'] = [
+    { wch: 25 },
+    { wch: 12 },
+    { wch: 15 },
+    { wch: 25 },
+    { wch: 20 },
+    { wch: 10 },
+    { wch: 8 },
+  ];
 
   XLSX.utils.book_append_sheet(wb, ws, 'Allocations');
 

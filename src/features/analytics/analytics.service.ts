@@ -81,6 +81,7 @@ export async function getTeamHeatMap(
     target_hours: number;
     department_id: string;
     department_name: string;
+    discipline_abbreviation: string | null;
     month: string;
     total_hours: number;
   }>(sql`
@@ -99,9 +100,11 @@ export async function getTeamHeatMap(
         p.last_name,
         p.target_hours_per_month AS target_hours,
         p.department_id,
-        d.name AS department_name
+        d.name AS department_name,
+        disc.abbreviation AS discipline_abbreviation
       FROM people p
       INNER JOIN departments d ON d.id = p.department_id
+      LEFT JOIN disciplines disc ON disc.id = p.discipline_id
       WHERE p.organization_id = ${orgId}::uuid
         AND p.archived_at IS NULL
         ${deptFilter}
@@ -115,6 +118,7 @@ export async function getTeamHeatMap(
         ap.target_hours,
         ap.department_id,
         ap.department_name,
+        ap.discipline_abbreviation,
         ms.month
       FROM active_people ap
       CROSS JOIN month_series ms
@@ -126,6 +130,7 @@ export async function getTeamHeatMap(
       g.target_hours,
       g.department_id,
       g.department_name,
+      g.discipline_abbreviation,
       g.month,
       COALESCE(SUM(a.hours), 0)::int AS total_hours
     FROM grid g
@@ -135,7 +140,7 @@ export async function getTeamHeatMap(
       AND a.organization_id = ${orgId}::uuid
     GROUP BY
       g.person_id, g.first_name, g.last_name, g.target_hours,
-      g.department_id, g.department_name, g.month
+      g.department_id, g.department_name, g.discipline_abbreviation, g.month
     ORDER BY g.department_name, g.last_name, g.first_name, g.month
   `);
 
@@ -161,6 +166,7 @@ export async function getTeamHeatMap(
         firstName: row.first_name,
         lastName: row.last_name,
         targetHours: row.target_hours,
+        disciplineAbbreviation: row.discipline_abbreviation ?? undefined,
         months: {},
       } satisfies HeatMapPerson;
       dept.people.push(person);
@@ -541,22 +547,29 @@ export async function getProjectStaffing(
   const count = monthCount(monthFrom, monthTo);
   const months = generateMonthRange(monthFrom, count);
 
-  // Get project name
-  const projectResult = await db.execute<{ name: string }>(sql`
-    SELECT name FROM projects
-    WHERE id = ${projectId}::uuid
-      AND organization_id = ${orgId}::uuid
+  // Get project name and program
+  const projectResult = await db.execute<{
+    name: string;
+    program_name: string | null;
+  }>(sql`
+    SELECT pr.name, pg.name AS program_name
+    FROM projects pr
+    LEFT JOIN programs pg ON pg.id = pr.program_id
+    WHERE pr.id = ${projectId}::uuid
+      AND pr.organization_id = ${orgId}::uuid
     LIMIT 1
   `);
 
   const projectName = projectResult.rows[0]?.name ?? 'Unknown Project';
+  const programName = projectResult.rows[0]?.program_name ?? null;
 
-  // Get per-person-per-month allocations for this project
+  // Get per-person-per-month allocations for this project (with discipline)
   const result = await db.execute<{
     person_id: string;
     first_name: string;
     last_name: string;
     target_hours: number;
+    discipline: string;
     month: string;
     hours: number;
   }>(sql`
@@ -573,9 +586,11 @@ export async function getProjectStaffing(
         p.id AS person_id,
         p.first_name,
         p.last_name,
-        p.target_hours_per_month AS target_hours
+        p.target_hours_per_month AS target_hours,
+        d.abbreviation AS discipline
       FROM people p
       INNER JOIN allocations a ON a.person_id = p.id
+      INNER JOIN disciplines d ON d.id = p.discipline_id
       WHERE p.organization_id = ${orgId}::uuid
         AND p.archived_at IS NULL
         AND a.project_id = ${projectId}::uuid
@@ -588,6 +603,7 @@ export async function getProjectStaffing(
       pp.first_name,
       pp.last_name,
       pp.target_hours,
+      pp.discipline,
       ms.month,
       COALESCE(a.hours, 0)::int AS hours
     FROM project_people pp
@@ -610,6 +626,7 @@ export async function getProjectStaffing(
         personId: row.person_id,
         firstName: row.first_name,
         lastName: row.last_name,
+        discipline: row.discipline,
         targetHoursPerMonth: row.target_hours,
         months: {},
       };
@@ -621,6 +638,7 @@ export async function getProjectStaffing(
   return {
     projectId,
     projectName,
+    programName,
     people: Array.from(personMap.values()),
     months,
     generatedAt: new Date().toISOString(),

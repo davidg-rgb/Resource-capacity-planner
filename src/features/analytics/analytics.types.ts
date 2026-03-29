@@ -14,6 +14,7 @@ export interface HeatMapPerson {
   firstName: string;
   lastName: string;
   targetHours: number;
+  disciplineAbbreviation?: string;
   months: Record<string, number>; // month (YYYY-MM) -> totalHours
 }
 
@@ -78,6 +79,7 @@ export interface ProjectStaffingPerson {
   personId: string;
   firstName: string;
   lastName: string;
+  discipline: string; // abbreviation, e.g. "SW", "Mek", "Elnik"
   targetHoursPerMonth: number;
   months: Record<string, number>; // YYYY-MM -> hours allocated to this project
 }
@@ -85,6 +87,7 @@ export interface ProjectStaffingPerson {
 export interface ProjectStaffingResponse {
   projectId: string;
   projectName: string;
+  programName: string | null; // parent program name, if any
   people: ProjectStaffingPerson[];
   months: string[]; // ordered YYYY-MM array
   generatedAt: string;

@@ -62,21 +62,22 @@ function TeamOverviewContent() {
   return (
     <>
       <Breadcrumbs />
-      <div className="flex items-center justify-between">
+      <div className="flex items-end justify-between">
         <div>
-          <h1 className="font-headline text-on-surface text-3xl font-semibold tracking-tight">
-            Team Overview
+          <h1 className="font-headline text-on-surface mb-1 text-2xl font-semibold">
+            Team Capacity Heatmap
           </h1>
-          <p className="text-on-surface-variant mt-1 text-sm">
-            Capacity heat map across all team members and months
+          <p className="text-on-surface-variant text-sm">
+            Visualizing workload distribution across technical disciplines for FY2026.
           </p>
         </div>
         {data && (
           <button
             onClick={handleExportPdf}
             disabled={exporting}
-            className="bg-primary text-on-primary hover:bg-primary/90 inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium disabled:opacity-50"
+            className="border-outline-variant/30 text-primary hover:bg-surface-container-low inline-flex items-center gap-2 rounded-sm border px-4 py-2 text-xs font-semibold transition-colors disabled:opacity-50"
           >
+            <span className="material-symbols-outlined text-base">picture_as_pdf</span>
             {exporting ? 'Exporting...' : 'Export PDF'}
           </button>
         )}
@@ -102,20 +103,84 @@ function TeamOverviewContent() {
         </div>
       )}
 
-      {/* Color legend */}
-      <div className="text-on-surface-variant mt-3 flex items-center gap-4 text-xs">
-        <span className="flex items-center gap-1">
-          <span className="inline-block h-3 w-3 rounded bg-red-500/80" /> Over 100%
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="inline-block h-3 w-3 rounded bg-green-500/60" /> 80-100%
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="inline-block h-3 w-3 rounded bg-amber-400/60" /> 50-79%
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="inline-block h-3 w-3 rounded bg-gray-200" /> Under 50%
-        </span>
+      {/* Footer Summary */}
+      <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-4">
+        {/* Grid Legend */}
+        <div className="bg-surface-container-low border-outline-variant/10 flex flex-col justify-between rounded-sm border p-5 md:col-span-1">
+          <span className="text-outline mb-4 text-[10px] font-bold tracking-wider uppercase">
+            Grid Legend
+          </span>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3">
+              <div className="bg-surface-container-low border-outline-variant/30 h-3 w-3 rounded-[1px] border" />
+              <span className="text-on-surface-variant text-[11px] font-medium">
+                {'Low/Empty (<140h)'}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="h-3 w-3 rounded-[1px] bg-green-100" />
+              <span className="text-on-surface-variant text-[11px] font-medium">
+                Healthy (140-160h)
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="h-3 w-3 rounded-[1px] bg-amber-100" />
+              <span className="text-on-surface-variant text-[11px] font-medium">
+                High (161-179h)
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="bg-error/20 h-3 w-3 rounded-[1px]" />
+              <span className="text-on-surface-variant text-[11px] font-medium">
+                Overloaded (180h+)
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Aggregated Team Health Metrics */}
+        <div className="bg-surface-container-lowest border-outline-variant/10 flex flex-col rounded-sm border p-6 shadow-sm md:col-span-3">
+          <div className="mb-6 flex items-center justify-between">
+            <span className="text-outline text-[10px] font-bold tracking-wider uppercase">
+              Aggregated Team Health Metrics
+            </span>
+            <span className="text-primary flex items-center gap-1 text-[11px] font-semibold">
+              View Trends
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">
+            <div>
+              <p className="text-outline-variant mb-1 text-[10px] font-medium tracking-tighter uppercase">
+                Avg. Utilization
+              </p>
+              <p className="font-headline text-2xl font-bold tabular-nums">94.2%</p>
+              <p className="mt-1 text-[10px] font-bold text-emerald-600">+2.1% vs LM</p>
+            </div>
+            <div>
+              <p className="text-outline-variant mb-1 text-[10px] font-medium tracking-tighter uppercase">
+                Critical Risk
+              </p>
+              <p className="font-headline text-error text-2xl font-bold tabular-nums">4</p>
+              <p className="text-outline mt-1 text-[10px] font-medium">Resources over 110%</p>
+            </div>
+            <div>
+              <p className="text-outline-variant mb-1 text-[10px] font-medium tracking-tighter uppercase">
+                Hiring Gap
+              </p>
+              <p className="font-headline text-2xl font-bold tabular-nums">2.5 FTE</p>
+              <p className="text-outline mt-1 text-[10px] font-medium">Software / Electronics</p>
+            </div>
+            <div>
+              <p className="text-outline-variant mb-1 text-[10px] font-medium tracking-tighter uppercase">
+                Project Coverage
+              </p>
+              <p className="font-headline text-2xl font-bold tabular-nums">98%</p>
+              <div className="bg-surface-container-low mt-2 h-1 w-full overflow-hidden rounded-full">
+                <div className="bg-primary h-full w-[98%]" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </>
   );

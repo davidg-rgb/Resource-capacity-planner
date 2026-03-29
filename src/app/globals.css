@@ -77,3 +77,24 @@
   --color-error-dim: #4e0309;
   --color-on-error: #fff7f6;
 }
+
+/* Utility: tabular-nums for numeric columns */
+@utility font-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom scrollbar for heat map and data tables */
+.custom-scrollbar::-webkit-scrollbar {
+  height: 4px;
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: 2px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-outline);
+}

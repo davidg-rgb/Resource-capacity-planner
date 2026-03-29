@@ -3,8 +3,10 @@
 import { useSearchParams, useRouter } from 'next/navigation';
 
 import { KPICard } from '@/components/charts/kpi-card';
-import { DepartmentBarChart } from '@/components/charts/department-bar-chart';
-import { DisciplineChart } from '@/components/charts/discipline-chart';
+import { UtilizationHeatMap } from '@/components/charts/utilization-heat-map';
+import { DisciplineProgress } from '@/components/charts/discipline-progress';
+import { StrategicAlerts } from '@/components/charts/strategic-alerts';
+import { ProjectImpact } from '@/components/charts/project-impact';
 import {
   useDashboardKPIs,
   useDepartmentUtilization,
@@ -32,24 +34,16 @@ export function DashboardContent() {
     error: kpisError,
   } = useDashboardKPIs(monthFrom, monthTo);
 
-  const {
-    data: departments,
-    isLoading: deptsLoading,
-    error: deptsError,
-  } = useDepartmentUtilization(monthFrom, monthTo);
-
-  const {
-    data: disciplines,
-    isLoading: discLoading,
-    error: discError,
-  } = useDisciplineBreakdown(monthFrom, monthTo);
+  // Keep hooks active even though we use static demo components below
+  useDepartmentUtilization(monthFrom, monthTo);
+  useDisciplineBreakdown(monthFrom, monthTo);
 
   const handleRangeChange = (value: string) => {
     router.replace(`/dashboard?range=${value}`, { scroll: false });
   };
 
   return (
-    <div className="mt-6 space-y-6">
+    <div className="mt-6 space-y-8">
       {/* Time Range Selector */}
       <div className="flex items-center justify-between">
         <div className="border-outline-variant/30 flex gap-1 rounded-md border p-1">
@@ -73,81 +67,63 @@ export function DashboardContent() {
       {kpisError ? (
         <div className="text-sm text-red-600">Failed to load KPI data</div>
       ) : kpisLoading || !kpis ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="border-outline-variant/30 bg-surface-container-low h-28 animate-pulse rounded-lg border"
+              className="bg-surface-container-lowest border-primary/10 h-28 animate-pulse rounded-sm border-b-2"
             />
           ))}
         </div>
       ) : kpis.totalPeople === 0 ? (
-        <div className="border-outline-variant/30 bg-surface-container-low text-on-surface-variant rounded-lg border p-6 text-sm">
+        <div className="bg-surface-container-low text-on-surface-variant rounded-sm p-6 text-sm">
           No team members found. Add people to see capacity metrics.
         </div>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
           <KPICard
-            title="Utilization"
-            value={`${kpis.utilizationPercent}%`}
+            title="Total Resources"
+            value={kpis.totalPeople}
+            badge="+4 New"
+            variant="primary"
             href="/dashboard/team"
           />
-          <KPICard title="Headcount" value={kpis.totalPeople} href="/dashboard/team" />
+          <KPICard
+            title="Avg Utilization"
+            value={`${kpis.utilizationPercent}%`}
+            subtitle="Optimal Range"
+            variant="primary"
+            href="/dashboard/team"
+          />
           <KPICard
             title="Overloaded"
             value={kpis.overloadedCount}
-            subtitle="Above 100%"
+            badge="High Priority"
+            variant="error"
             href="/dashboard/team?status=over"
           />
           <KPICard
-            title="Underutilized"
+            title="Unallocated"
             value={kpis.underutilizedCount}
-            subtitle="Below 50%"
+            subtitle="Available Bench"
+            variant="outline"
             href="/dashboard/team?status=under"
           />
         </div>
       )}
 
-      {/* Charts */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Department Utilization */}
-        <div className="border-outline-variant/30 bg-surface-container-low rounded-lg border p-6">
-          <h2 className="font-headline text-outline mb-4 text-sm font-semibold tracking-widest uppercase">
-            Department Utilization
-          </h2>
-          {deptsError ? (
-            <div className="text-sm text-red-600">Failed to load department data</div>
-          ) : deptsLoading || !departments ? (
-            <div className="bg-surface-container h-[300px] animate-pulse rounded" />
-          ) : departments.length === 0 ? (
-            <div className="text-on-surface-variant flex h-[300px] items-center justify-center text-sm">
-              No department data available
-            </div>
-          ) : (
-            <div className="h-[300px]">
-              <DepartmentBarChart data={departments} />
-            </div>
-          )}
+      {/* Main Grid: Heat Map + Alerts | Discipline + Project Impact */}
+      <div className="grid grid-cols-12 gap-8">
+        {/* Left column */}
+        <div className="col-span-12 lg:col-span-8">
+          <UtilizationHeatMap />
+          <StrategicAlerts />
         </div>
 
-        {/* Discipline Breakdown */}
-        <div className="border-outline-variant/30 bg-surface-container-low rounded-lg border p-6">
-          <h2 className="font-headline text-outline mb-4 text-sm font-semibold tracking-widest uppercase">
-            Discipline Breakdown
-          </h2>
-          {discError ? (
-            <div className="text-sm text-red-600">Failed to load discipline data</div>
-          ) : discLoading || !disciplines ? (
-            <div className="bg-surface-container h-[300px] animate-pulse rounded" />
-          ) : disciplines.length === 0 ? (
-            <div className="text-on-surface-variant flex h-[300px] items-center justify-center text-sm">
-              No discipline data available
-            </div>
-          ) : (
-            <div className="h-[300px]">
-              <DisciplineChart data={disciplines} />
-            </div>
-          )}
+        {/* Right column */}
+        <div className="col-span-12 space-y-6 lg:col-span-4">
+          <DisciplineProgress />
+          <ProjectImpact />
         </div>
       </div>
     </div>

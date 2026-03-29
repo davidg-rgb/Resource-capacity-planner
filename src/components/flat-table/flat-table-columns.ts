@@ -5,10 +5,25 @@ import type { FlatTableRow } from '@/features/allocations/allocation.types';
 export const flatTableColumnDefs: ColDef<FlatTableRow>[] = [
   {
     field: 'personName',
-    headerName: 'Person Name',
+    headerName: 'Person',
     sortable: true,
     flex: 2,
     minWidth: 150,
+    cellClass: 'font-medium',
+  },
+  {
+    field: 'discipline',
+    headerName: 'Discipline',
+    sortable: true,
+    width: 110,
+    cellRenderer: (params: { value: string }) => {
+      if (!params.value) return '';
+      const span = document.createElement('span');
+      span.className =
+        'bg-secondary-container text-on-secondary-fixed rounded-full px-2 py-0.5 text-[10px] font-bold uppercase';
+      span.textContent = params.value;
+      return span;
+    },
   },
   {
     field: 'departmentName',
@@ -19,7 +34,7 @@ export const flatTableColumnDefs: ColDef<FlatTableRow>[] = [
   },
   {
     field: 'projectName',
-    headerName: 'Project Name',
+    headerName: 'Project',
     sortable: true,
     flex: 2,
     minWidth: 150,

@@ -12,38 +12,21 @@ export function ProjectSummaryRow({ people, months }: ProjectSummaryRowProps) {
     people.reduce((sum, person) => sum + (person.months[month] ?? 0), 0),
   );
 
-  const hasPeople = people.length > 0;
+  const grandTotal = totals.reduce((sum, t) => sum + t, 0);
 
   return (
-    <tr className="bg-surface-container-low">
-      <td className="text-on-surface px-3 py-2 font-bold">Total</td>
-      {months.map((month, i) => {
-        const total = totals[i];
-        const isUnderstaffed = total === 0 && hasPeople;
-
-        if (isUnderstaffed) {
-          return (
-            <td
-              key={month}
-              className="border border-dashed border-amber-300 bg-amber-100 px-2 py-2 text-center tabular-nums"
-              title="No allocations this month"
-            >
-              --
-            </td>
-          );
-        }
-
-        return (
-          <td
-            key={month}
-            className={`px-2 py-2 text-center tabular-nums ${
-              total > 0 ? 'text-on-surface font-semibold' : 'text-on-surface-variant/50'
-            }`}
-          >
-            {total}
-          </td>
-        );
-      })}
+    <tr className="bg-surface-container-high border-outline-variant/10 border-t-2 font-bold">
+      <td className="bg-surface-container-high text-on-surface sticky left-0 z-10 border-r border-[#a9b4b7]/10 px-6 py-4 text-xs tracking-widest uppercase">
+        Monthly Project Total
+      </td>
+      {months.map((month, i) => (
+        <td key={month} className="font-tabular px-6 py-4 text-right text-sm">
+          {totals[i].toLocaleString()}
+        </td>
+      ))}
+      <td className="font-tabular bg-primary text-on-primary px-6 py-4 text-right text-sm font-bold">
+        {grandTotal.toLocaleString()}
+      </td>
     </tr>
   );
 }
