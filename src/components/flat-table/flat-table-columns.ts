@@ -18,11 +18,11 @@ export const flatTableColumnDefs: ColDef<FlatTableRow>[] = [
     width: 110,
     cellRenderer: (params: { value: string }) => {
       if (!params.value) return '';
-      const span = document.createElement('span');
-      span.className =
-        'bg-secondary-container text-on-secondary-fixed rounded-full px-2 py-0.5 text-[10px] font-bold uppercase';
-      span.textContent = params.value;
-      return span;
+      const escaped = params.value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+      return `<span class="bg-secondary-container text-on-secondary-fixed rounded-full px-2 py-0.5 text-[10px] font-bold uppercase">${escaped}</span>`;
     },
   },
   {
