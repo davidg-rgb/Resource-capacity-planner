@@ -95,7 +95,7 @@ export function OnboardingWizard() {
     try {
       const res = await fetch('/api/onboarding/complete', { method: 'POST' });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      router.push('/input');
+      router.push('/dashboard/team');
     } catch {
       toast.error('Failed to complete onboarding');
     }

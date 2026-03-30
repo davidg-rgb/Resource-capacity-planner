@@ -23,7 +23,7 @@ export function FlagGuard({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (blocked) {
-      router.replace('/input');
+      router.replace('/dashboard/team');
     }
   }, [blocked, router]);
 
