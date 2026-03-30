@@ -70,16 +70,15 @@
 - [x] **PLOP-05**: Platform admin can bulk export all data for a tenant as JSON
 - [x] **PLOP-06**: Platform admin can purge all data for a tenant (GDPR deletion)
 
-## v3.0 Requirements (Deferred)
+## v3.0 Requirements
 
-### Visibility Enhancements
+Moved to [v3.0-REQUIREMENTS.md](v3.0-REQUIREMENTS.md) — 15 UX requirements focused on "Switch from Excel" milestone.
+
+### Deferred Feature Requirements (v4.0+)
 
 - **VIS-01**: Editable Project View (edit hours directly from project perspective)
 - **VIS-02**: Dashboard trend lines (utilization over past vs future months)
 - **VIS-03**: Configurable alert thresholds per tenant
-
-### Platform
-
 - **PLAT-V3-01**: Email notifications for capacity alerts
 - **PLAT-V3-02**: Custom report builder
 - **PLAT-V3-03**: Tenant data migration between orgs

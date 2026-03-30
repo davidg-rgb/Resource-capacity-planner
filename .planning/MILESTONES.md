@@ -33,4 +33,16 @@
 - System health monitoring — DB latency, active connections, error rate, memory on platform dashboard
 - Tenant data operations — JSON export and GDPR purge with transactional deletion and name confirmation
 
+## v3.0 Switch from Excel (In Progress)
+
+**Defined:** 2026-03-30
+**Phases:** 18-22 (5 phases, Phase 22 is stretch)
+**Requirements:** 15 (UX-01 through UX-15)
+
+**Goal:** Make the app self-explanatory enough that a line manager can import their spreadsheet, see immediate value, and never go back to Excel. No new features — UX clarity, role-based experience, and friction removal.
+
+**Context:** After shipping v1.0 and v2.0, the core features exist but the interface doesn't make value obvious enough to switch from Excel. The heat map (strongest differentiator) is buried 2 clicks deep. Navigation labels are generic. Users land on a person list instead of the value view.
+
+**Key insight from client phone call:** Line managers want to see team load month by month, plan hours per person per project, and get flagged when someone is overbooked. The app already does all of this — but the UX doesn't make it self-explanatory.
+
 ---

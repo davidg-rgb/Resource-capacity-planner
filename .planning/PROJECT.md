@@ -2,23 +2,41 @@
 
 ## What This Is
 
-A multi-tenant SaaS web application that replaces Excel/Access-based resource planning for engineering organizations. Provides spreadsheet-familiar editing for capacity planning at monthly granularity across 12-18 month horizons.
+A capacity planning tool deployed by a consulting business for engineering clients. Replaces Excel-based resource planning with a shared, visual system that shows team load at a glance and flags problems before they become project delays.
 
-**Target users:** Engineering orgs (20-500 managed resources) with multi-disciplinary teams (software, mechanical, electronics, test, systems, hardware) who have outgrown spreadsheets but don't need enterprise PPM tools.
+**Core promise:** See your team's load at a glance. Plan hours like Excel. Get alerted before problems happen.
 
-**Core value proposition:** "The capacity planner for engineering teams that have outgrown Excel but don't need enterprise PPM." Zero-friction Excel import, engineering-native taxonomy, monthly planning density, spreadsheet-familiar editing.
+**Deployment model:**
+- **Operator:** Consulting business (manages tenants, onboards client organizations)
+- **Tenants:** Engineering organizations (1-2 initially) running long-term projects with 20-200+ managed resources
+- **End users:** Line managers and department heads who plan team capacity monthly over 12-24 month horizons
 
 ## Why It Exists
 
-Engineering organizations manage resource planning through spreadsheets that break down as teams grow:
+Line managers at engineering organizations plan resource allocation in shared Excel files. This works until it doesn't:
 
-- No real-time visibility into over/under-allocation
-- Manual effort to detect conflicts and capacity issues
-- Data locked in single-user files with no shared source of truth
-- No visual feedback — planners mentally parse raw numbers
-- No collaboration across line managers or departments
+- **No big picture** — a manager has to mentally sum columns to know if someone is overbooked
+- **No overload detection** — double-bookings go unnoticed until a project slips
+- **Single-user lock** — one person edits at a time, everyone else waits
+- **No shared visibility** — departments can't see each other's plans, conflicts across teams are invisible
+- **Raw numbers, no visual feedback** — planners parse spreadsheets of hours without color coding or alerts
 
-Competitors (Float, Runn, Resource Guru) are all agency/consulting-focused. The engineering operations model — "Do we have the right people with the right disciplines available over the next 12-18 months?" — is underserved.
+The tool gives these managers what Excel can't: a heat map that instantly shows who's overloaded, shared access for multiple planners, and automatic alerts when someone is overbooked.
+
+## Target Users
+
+**Line manager (linjechef):** Manages 10-30 engineers across multiple projects. Plans hours per person per project per month. Primary workflow: open heat map → spot issues → click person → edit their hours in the planning grid. Needs the grid to feel like Excel (drag, copy-paste, tab between cells).
+
+**Department head (avdelningschef):** Oversees multiple teams. Needs the bird's-eye view: which departments are stretched, who's overloaded, are projects adequately staffed. Consumes dashboards, heat maps, and alerts — rarely edits hours directly.
+
+**Project manager (projektledare):** Wants to know who's allocated to their project and whether they have enough hours. Views the project staffing grid. May flag understaffing to line managers.
+
+## Core Value — The Switch-from-Excel Story
+
+1. **Import your spreadsheet** — zero-friction on-ramp. The import wizard handles Swedish headers, column mapping, and validation. Existing data is live in minutes.
+2. **See what Excel never showed you** — land on a heat map of your team's load. Red = overbooked. Green = available. This is the moment they can't go back to Excel.
+3. **Plan like you always did** — the editing grid feels like a spreadsheet. Drag to copy, tab between cells, auto-save. No new paradigm to learn.
+4. **Share visibility** — multiple planners, real-time, no file locking. Departments can see each other. Conflicts surface automatically.
 
 ## Who's Building It
 
@@ -126,33 +144,34 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [x] Platform audit log (F-036 / PLAT-08) — Phase 10
 - [x] Cross-tenant user management via Clerk SDK (F-037 / PLAT-09) — Phase 10
 
-## Current Milestone: v2.0 Visibility & Insights
+## Shipped: v2.0 Visibility & Insights (2026-03-28)
 
-**Goal:** Give managers and planners real-time visibility into team capacity, project staffing, and resource utilization through dashboards, heat maps, and alerts.
+All v2.0 features delivered. See [MILESTONES.md](MILESTONES.md) for details.
 
-**Target features:**
-- [ ] Team Overview heat map (F-013)
-- [ ] Project View staffing grid (F-014)
-- [ ] Management Dashboard with KPIs (F-015)
-- [ ] Capacity alerts (F-016)
-- [ ] Discipline breakdown charts (F-017)
-- [ ] PDF export from Team Overview (F-027)
-- [ ] Onboarding wizard (F-028)
-- [ ] System health monitoring (F-033)
-- [ ] Feature flags per tenant (F-034)
-- [ ] Tenant data operations (F-035)
-- [ ] Announcements (F-038)
+## Current Milestone: v3.0 — Switch from Excel
+
+**Goal:** Make the app self-explanatory enough that a line manager can import their spreadsheet, see immediate value, and never go back to Excel. No new features — UX clarity, role-based experience, and removing friction.
+
+**Target outcomes:**
+- [ ] Heat map is the front door — users land on team load view, not a person list
+- [ ] Navigation labels tell users what each view does, in their language
+- [ ] Overloaded people are impossible to miss (sorted to top, summary banner)
+- [ ] Import flows directly into the "wow" moment (heat map with their data)
+- [ ] A line manager can use the app without someone explaining what each tab does
+
+See [v3.0-ROADMAP.md](v3.0-ROADMAP.md) and [v3.0-REQUIREMENTS.md](v3.0-REQUIREMENTS.md) for phase breakdown and requirements.
 
 ### Out of Scope
 
-- Stripe billing integration — Not needed for MVP, defer to post-MVP
-- SSO / SAML (F-023) — Enterprise feature, Phase 3
-- Audit trail (F-024) — Phase 3
-- Public API (F-025) — Phase 3
-- Department-level scoping (F-022) — Phase 3
-- Jira/HR system integrations — Phase 3
-- Dark mode (A9) — Phase 2+
-- Weekly granularity (A3) — Phase 3
+- Stripe billing integration — 1-2 orgs initially, manual billing sufficient
+- SSO / SAML (F-023) — Enterprise feature, no demand from current clients
+- Audit trail (F-024) — Not requested by target users
+- Public API (F-025) — No integration demand yet
+- Department-level scoping (F-022) — Adds complexity without clear client need
+- Jira/HR system integrations — No client request
+- Dark mode (A9) — No planning value
+- Weekly granularity (A3) — Clients plan monthly, confirmed by phone notes
+- New features or capabilities — v3.0 is polish, not features
 
 ## Key Decisions
 
@@ -191,4 +210,4 @@ This document evolves at phase transitions and milestone boundaries.
 
 ---
 
-_Last updated: 2026-03-28 — Milestone v2.0 started_
+_Last updated: 2026-03-30 — Scope revised, v3.0 milestone defined_
