@@ -2,63 +2,64 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
-interface NavItem {
-  label: string;
+interface NavItemDef {
+  labelKey: string;
   href: string;
   icon: string;
 }
 
-interface NavSection {
-  heading?: string;
-  items: NavItem[];
+interface NavSectionDef {
+  headingKey?: string;
+  items: NavItemDef[];
 }
 
 function MaterialIcon({ name, className = '' }: { name: string; className?: string }) {
   return <span className={`material-symbols-outlined text-lg ${className}`}>{name}</span>;
 }
 
-const SECTION_NAV: Record<string, NavSection[]> = {
+const SECTION_NAV: Record<string, NavSectionDef[]> = {
   '/input': [
     {
-      heading: 'Medarbetare',
-      items: [{ label: 'Alla medarbetare', href: '/input', icon: 'group' }],
+      headingKey: 'staff',
+      items: [{ labelKey: 'allStaff', href: '/input', icon: 'group' }],
     },
   ],
   '/team': [
     {
-      heading: 'Personal',
-      items: [{ label: 'Översikt', href: '/team', icon: 'group' }],
+      headingKey: 'team',
+      items: [{ labelKey: 'teamOverview', href: '/team', icon: 'group' }],
     },
   ],
   '/projects': [
     {
-      heading: 'Projekt',
-      items: [{ label: 'Alla projekt', href: '/projects', icon: 'flag' }],
+      headingKey: 'projects',
+      items: [{ labelKey: 'allProjects', href: '/projects', icon: 'flag' }],
     },
   ],
   '/data': [
     {
-      heading: 'Data',
-      items: [{ label: 'Exportera', href: '/data', icon: 'description' }],
+      headingKey: 'data',
+      items: [{ labelKey: 'export', href: '/data', icon: 'description' }],
     },
   ],
   '/dashboard': [
     {
-      heading: 'Översikt',
+      headingKey: 'overview',
       items: [
-        { label: 'KPI-dashboard', href: '/dashboard', icon: 'bar_chart' },
-        { label: 'Teambelastning', href: '/dashboard/team', icon: 'groups' },
+        { labelKey: 'kpiDashboard', href: '/dashboard', icon: 'bar_chart' },
+        { labelKey: 'teamLoad', href: '/dashboard/team', icon: 'groups' },
       ],
     },
   ],
   '/admin': [
     {
-      heading: 'Referensdata',
+      headingKey: 'referenceData',
       items: [
-        { label: 'Discipliner', href: '/admin/disciplines', icon: 'category' },
-        { label: 'Avdelningar', href: '/admin/departments', icon: 'corporate_fare' },
-        { label: 'Program', href: '/admin/programs', icon: 'flag' },
+        { labelKey: 'disciplines', href: '/admin/disciplines', icon: 'category' },
+        { labelKey: 'departments', href: '/admin/departments', icon: 'corporate_fare' },
+        { labelKey: 'programs', href: '/admin/programs', icon: 'flag' },
       ],
     },
   ],
@@ -71,6 +72,7 @@ function getSectionKey(pathname: string): string {
 
 export function SideNav() {
   const pathname = usePathname();
+  const t = useTranslations('sidebar');
   const sectionKey = getSectionKey(pathname);
   const sections = SECTION_NAV[sectionKey] ?? SECTION_NAV['/dashboard']!;
 
@@ -93,9 +95,9 @@ export function SideNav() {
       <nav className="flex-1 overflow-y-auto px-4">
         {sections.map((section, idx) => (
           <div key={idx} className="mb-4">
-            {section.heading && (
+            {section.headingKey && (
               <p className="font-headline text-outline mb-2 px-3 text-xs font-semibold tracking-widest uppercase">
-                {section.heading}
+                {t(section.headingKey)}
               </p>
             )}
             <ul className="space-y-0.5">
@@ -115,7 +117,7 @@ export function SideNav() {
                       }`}
                     >
                       <MaterialIcon name={item.icon} className={isActive ? 'text-primary' : ''} />
-                      {item.label}
+                      {t(item.labelKey)}
                     </Link>
                   </li>
                 );
@@ -132,7 +134,7 @@ export function SideNav() {
           className="bg-primary text-on-primary mb-6 flex w-full items-center justify-center gap-2 rounded-sm py-2.5 text-xs font-semibold hover:opacity-90"
         >
           <MaterialIcon name="add" className="text-on-primary !text-base" />
-          Ny post
+          {t('newEntry')}
         </button>
         <div className="space-y-1">
           <Link
@@ -140,14 +142,14 @@ export function SideNav() {
             className="text-on-surface-variant hover:text-primary flex items-center gap-2 px-1 text-xs transition-colors"
           >
             <MaterialIcon name="help_outline" className="!text-base" />
-            Hjälp
+            {t('help')}
           </Link>
           <Link
             href="#"
             className="text-on-surface-variant hover:text-primary flex items-center gap-2 px-1 text-xs transition-colors"
           >
             <MaterialIcon name="archive" className="!text-base" />
-            Arkiv
+            {t('archive')}
           </Link>
         </div>
       </div>

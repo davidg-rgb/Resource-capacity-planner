@@ -21,67 +21,56 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 import { AlertBadge } from '@/components/alerts/alert-badge';
 import { useFlags } from '@/features/flags/flag.context';
 import type { FlagName } from '@/features/flags/flag.types';
 
-interface NavItem {
-  label: string;
-  description: string;
+interface NavItemDef {
+  labelKey: string;
+  descKey: string;
   href: string;
   icon: LucideIcon;
   flag?: FlagName;
 }
 
-const NAV_ITEMS: NavItem[] = [
+const NAV_ITEMS: NavItemDef[] = [
   {
-    label: 'Teambelastning',
-    description: 'Se teamets beläggning',
+    labelKey: 'teamLoad',
+    descKey: 'teamLoadDesc',
     href: '/dashboard/team',
     icon: LayoutDashboard,
     flag: 'dashboards',
   },
+  { labelKey: 'planHours', descKey: 'planHoursDesc', href: '/input', icon: FileInput },
+  { labelKey: 'projects', descKey: 'projectsDesc', href: '/projects', icon: FolderKanban },
   {
-    label: 'Planera timmar',
-    description: 'Redigera timmar per person',
-    href: '/input',
-    icon: FileInput,
-  },
-  { label: 'Projekt', description: 'Hantera projekt', href: '/projects', icon: FolderKanban },
-  {
-    label: 'Översikt',
-    description: 'KPI:er och statistik',
+    labelKey: 'overview',
+    descKey: 'overviewDesc',
     href: '/dashboard',
     icon: BarChart3,
     flag: 'dashboards',
   },
   {
-    label: 'Varningar',
-    description: 'Överbelastade och underbelagda',
+    labelKey: 'warnings',
+    descKey: 'warningsDesc',
     href: '/alerts',
     icon: AlertTriangle,
     flag: 'alerts',
   },
-  { label: 'Personal', description: 'Hantera medarbetare', href: '/team', icon: Users },
-  { label: 'Exportera', description: 'Tabell och Excel-export', href: '/data', icon: Database },
-  {
-    label: 'Admin',
-    description: 'Referensdata och inställningar',
-    href: '/admin/disciplines',
-    icon: ShieldCheck,
-  },
-  {
-    label: 'Medlemmar',
-    description: 'Bjud in och hantera användare',
-    href: '/admin/members',
-    icon: Users,
-  },
+  { labelKey: 'staff', descKey: 'staffDesc', href: '/team', icon: Users },
+  { labelKey: 'export', descKey: 'exportDesc', href: '/data', icon: Database },
+  { labelKey: 'admin', descKey: 'adminDesc', href: '/admin/disciplines', icon: ShieldCheck },
+  { labelKey: 'members', descKey: 'membersDesc', href: '/admin/members', icon: Users },
 ];
 
 export function TopNav() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const flags = useFlags();
+  const t = useTranslations('nav');
+  const tc = useTranslations('common');
   const visibleItems = NAV_ITEMS.filter((item) => !item.flag || flags[item.flag]);
 
   // Precise active detection: /dashboard/team must not match /dashboard
@@ -98,7 +87,7 @@ export function TopNav() {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            aria-label={mobileMenuOpen ? 'Stäng meny' : 'Öppna meny'}
+            aria-label={mobileMenuOpen ? tc('closeMenu') : tc('openMenu')}
             className="text-on-surface-variant hover:bg-surface-container-high rounded-sm p-1.5 lg:hidden"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
           >
@@ -120,14 +109,14 @@ export function TopNav() {
               <Link
                 key={item.href}
                 href={item.href}
-                title={item.description}
+                title={t(item.descKey)}
                 className={`font-headline text-sm tracking-tight transition-colors ${
                   isActive
                     ? 'border-primary text-primary border-b-2 pb-1 font-bold'
                     : 'hover:text-primary text-slate-500'
                 }`}
               >
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             );
           })}
@@ -139,15 +128,15 @@ export function TopNav() {
             <Search size={14} className="text-outline absolute top-1/2 left-3 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Sök"
+              placeholder={tc('search')}
               className="bg-surface-container-low text-on-surface placeholder:text-outline focus:ring-primary w-64 rounded-sm py-1.5 pr-4 pl-9 text-xs focus:ring-1 focus:outline-none"
             />
           </div>
           {flags.alerts && (
             <Link
               href="/alerts"
-              aria-label="Kapacitetsvarningar"
-              title="Kapacitetsvarningar"
+              aria-label={tc('capacityAlerts')}
+              title={tc('capacityAlerts')}
               className="text-on-surface-variant hover:bg-surface-container-low relative rounded-full p-2"
             >
               <Bell size={18} />
@@ -156,8 +145,8 @@ export function TopNav() {
           )}
           <button
             type="button"
-            aria-label="Inställningar"
-            title="Inställningar"
+            aria-label={tc('settings')}
+            title={tc('settings')}
             className="text-on-surface-variant hover:bg-surface-container-low hidden rounded-full p-2 sm:block"
           >
             <Settings size={18} />
@@ -186,7 +175,7 @@ export function TopNav() {
                 />
                 <input
                   type="text"
-                  placeholder="Sök"
+                  placeholder={tc('search')}
                   className="bg-surface-container-low text-on-surface placeholder:text-outline focus:ring-primary w-full rounded-sm py-1.5 pr-4 pl-9 text-xs focus:ring-1 focus:outline-none"
                 />
               </div>
@@ -210,9 +199,9 @@ export function TopNav() {
                   >
                     <Icon size={18} />
                     <div>
-                      <span className="block">{item.label}</span>
+                      <span className="block">{t(item.labelKey)}</span>
                       <span className="text-outline block text-[11px] font-normal">
-                        {item.description}
+                        {t(item.descKey)}
                       </span>
                     </div>
                   </Link>

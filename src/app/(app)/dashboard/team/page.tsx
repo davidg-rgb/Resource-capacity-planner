@@ -5,6 +5,8 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { CheckCircle2, X } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 import { useTeamHeatMap } from '@/hooks/use-team-heatmap';
 import { HeatMapTable } from '@/components/heat-map/heat-map-table';
 import { HeatMapFilters } from '@/components/heat-map/heat-map-filters';
@@ -62,6 +64,8 @@ function TeamOverviewContent() {
     }
   }, [showImportBanner, dismissImportBanner]);
 
+  const t = useTranslations('heatMap');
+
   const { data, isLoading, error } = useTeamHeatMap(filters);
   const [exporting, setExporting] = useState(false);
 
@@ -80,7 +84,7 @@ function TeamOverviewContent() {
       a.click();
       URL.revokeObjectURL(url);
     } catch {
-      toast.error('Kunde inte exportera PDF');
+      toast.error(t('exportFailed'));
     } finally {
       setExporting(false);
     }
@@ -92,11 +96,9 @@ function TeamOverviewContent() {
       <div className="flex items-end justify-between">
         <div>
           <h1 className="font-headline text-on-surface mb-1 text-2xl font-semibold">
-            Teambelastning
+            {t('title')}
           </h1>
-          <p className="text-on-surface-variant text-sm">
-            Beläggningsöversikt per medarbetare och månad
-          </p>
+          <p className="text-on-surface-variant text-sm">{t('subtitle')}</p>
         </div>
         <div className="flex items-center gap-3">
           <HeatMapActions />
@@ -107,7 +109,7 @@ function TeamOverviewContent() {
               className="border-outline-variant/30 text-primary hover:bg-surface-container-low inline-flex items-center gap-2 rounded-sm border px-4 py-2 text-xs font-semibold transition-colors disabled:opacity-50"
             >
               <span className="material-symbols-outlined text-base">picture_as_pdf</span>
-              {exporting ? 'Exporterar...' : 'Exportera PDF'}
+              {exporting ? t('exporting') : t('exportPdf')}
             </button>
           )}
         </div>
@@ -118,7 +120,7 @@ function TeamOverviewContent() {
           <div className="flex items-center gap-3">
             <CheckCircle2 size={18} className="shrink-0 text-emerald-600" />
             <p className="text-sm font-medium text-emerald-800">
-              {importedCount} medarbetare importerade — här ser du teamets belastning
+              {t('importSuccess', { count: importedCount })}
             </p>
           </div>
           <button
@@ -142,16 +144,12 @@ function TeamOverviewContent() {
         <HeatMapFilters filters={filters} onFilterChange={setFilter} />
       </div>
 
-      {isLoading && (
-        <div className="text-on-surface-variant mt-6 text-sm">Laddar beläggningsdata...</div>
-      )}
+      {isLoading && <div className="text-on-surface-variant mt-6 text-sm">{t('loading')}</div>}
 
-      {error && <div className="mt-6 text-sm text-red-600">Kunde inte ladda beläggningsdata</div>}
+      {error && <div className="mt-6 text-sm text-red-600">{t('loadFailed')}</div>}
 
       {data && data.departments.length === 0 && (
-        <div className="text-on-surface-variant mt-6 text-sm">
-          Inga medarbetare hittades för valda filter
-        </div>
+        <div className="text-on-surface-variant mt-6 text-sm">{t('noResults')}</div>
       )}
 
       {data && data.departments.length > 0 && (
@@ -165,31 +163,31 @@ function TeamOverviewContent() {
         {/* Grid Legend */}
         <div className="bg-surface-container-low border-outline-variant/10 flex flex-col justify-between rounded-sm border p-5 md:col-span-1">
           <span className="text-outline mb-4 text-[10px] font-bold tracking-wider uppercase">
-            Färgkarta
+            {t('legend')}
           </span>
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <div className="bg-surface-container-low border-outline-variant/30 h-3 w-3 rounded-[1px] border" />
               <span className="text-on-surface-variant text-[11px] font-medium">
-                {'Låg/Tom (<50%)'}
+                {t('legendLow')}
               </span>
             </div>
             <div className="flex items-center gap-3">
               <div className="h-3 w-3 rounded-[1px] bg-amber-100" />
               <span className="text-on-surface-variant text-[11px] font-medium">
-                Under (50–79%)
+                {t('legendUnder')}
               </span>
             </div>
             <div className="flex items-center gap-3">
               <div className="h-3 w-3 rounded-[1px] bg-green-100" />
               <span className="text-on-surface-variant text-[11px] font-medium">
-                Hälsosam (80–100%)
+                {t('legendHealthy')}
               </span>
             </div>
             <div className="flex items-center gap-3">
               <div className="bg-error/20 h-3 w-3 rounded-[1px]" />
               <span className="text-on-surface-variant text-[11px] font-medium">
-                {'Överbelastad (>100%)'}
+                {t('legendOver')}
               </span>
             </div>
           </div>
@@ -198,12 +196,12 @@ function TeamOverviewContent() {
         {/* Team Health Summary — placeholder for future computed metrics */}
         <div className="bg-surface-container-lowest border-outline-variant/10 flex flex-col items-center justify-center rounded-sm border p-6 shadow-sm md:col-span-3">
           <span className="text-outline text-[10px] font-bold tracking-wider uppercase">
-            Sammanfattande teamhälsa
+            {t('teamHealth')}
           </span>
           <p className="text-on-surface-variant mt-3 text-center text-sm">
-            Detaljerade nyckeltal visas på{' '}
+            {t('teamHealthLink')}{' '}
             <a href="/dashboard" className="text-primary font-medium hover:underline">
-              KPI-dashboarden
+              {t('kpiDashboard')}
             </a>
           </p>
         </div>

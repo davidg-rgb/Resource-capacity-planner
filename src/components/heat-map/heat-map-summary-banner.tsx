@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { calculateHeatMapStatus } from '@/lib/capacity';
 import type { HeatMapResponse } from '@/features/analytics/analytics.types';
@@ -53,6 +54,7 @@ function getOverloadSummary(data: HeatMapResponse): {
 
 export function HeatMapSummaryBanner({ data }: HeatMapSummaryBannerProps) {
   const { overloadedCount, criticalMonth } = useMemo(() => getOverloadSummary(data), [data]);
+  const t = useTranslations('heatMap');
 
   if (data.departments.length === 0) return null;
 
@@ -60,23 +62,22 @@ export function HeatMapSummaryBanner({ data }: HeatMapSummaryBannerProps) {
     return (
       <div className="flex items-center gap-3 rounded-sm border border-green-200 bg-green-50 px-4 py-3">
         <CheckCircle2 size={18} className="shrink-0 text-emerald-600" />
-        <p className="text-sm font-medium text-emerald-800">Inga överbelastade medarbetare</p>
+        <p className="text-sm font-medium text-emerald-800">{t('noOverloads')}</p>
       </div>
     );
   }
 
-  const personWord = overloadedCount === 1 ? 'person' : 'personer';
   const criticalLabel = criticalMonth ? formatMonthLabel(criticalMonth) : '';
 
   return (
     <div className="bg-error/5 border-error/20 flex items-center gap-3 rounded-sm border px-4 py-3">
       <AlertTriangle size={18} className="text-error shrink-0" />
       <p className="text-error text-sm font-medium">
-        {overloadedCount} {personWord} överbelastade
+        {t('overloadedBanner', { count: overloadedCount })}
         {criticalLabel && (
           <span className="text-on-surface-variant font-normal">
             {' '}
-            — mest kritiskt: {criticalLabel}
+            — {t('criticalMonth', { month: criticalLabel })}
           </span>
         )}
       </p>

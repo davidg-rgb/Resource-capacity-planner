@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { CheckCircle2, Loader2, XCircle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import type { ImportResult } from '@/features/import/import.types';
 
@@ -21,23 +22,22 @@ export function StepImport({
   onBack,
 }: StepImportProps) {
   const router = useRouter();
+  const t = useTranslations('import');
 
   // Idle: confirmation screen
   if (importStatus === 'idle') {
     return (
       <div className="flex flex-col items-center py-10">
         <p className="text-on-surface text-lg font-medium">
-          Redo att importera {readyCount} bokningar
+          {t('readyToImport', { count: readyCount })}
         </p>
-        <p className="text-on-surface-variant mt-2 text-sm">
-          Detta skapar eller uppdaterar bokningar i en enda transaktion.
-        </p>
+        <p className="text-on-surface-variant mt-2 text-sm">{t('transactionNote')}</p>
         <button
           type="button"
           onClick={onExecute}
           className="bg-primary text-on-primary hover:bg-primary/90 mt-6 rounded-md px-6 py-2.5 text-sm font-medium transition-colors"
         >
-          Importera
+          {t('importButton')}
         </button>
       </div>
     );
@@ -48,8 +48,8 @@ export function StepImport({
     return (
       <div className="flex flex-col items-center py-10">
         <Loader2 className="text-primary h-10 w-10 animate-spin" />
-        <p className="text-on-surface mt-4 text-lg font-medium">Importerar bokningar...</p>
-        <p className="text-on-surface-variant mt-1 text-sm">Stäng inte denna sida.</p>
+        <p className="text-on-surface mt-4 text-lg font-medium">{t('importing')}</p>
+        <p className="text-on-surface-variant mt-1 text-sm">{t('doNotClose')}</p>
       </div>
     );
   }
@@ -59,18 +59,19 @@ export function StepImport({
     return (
       <div className="flex flex-col items-center py-10">
         <CheckCircle2 className="h-12 w-12 text-green-600" />
-        <p className="text-on-surface mt-4 text-xl font-semibold">Import genomförd</p>
+        <p className="text-on-surface mt-4 text-xl font-semibold">{t('success')}</p>
         <p className="text-on-surface mt-2 text-3xl font-bold tabular-nums">
-          {importResult.imported} rader importerade
+          {t('rowsImported', { count: importResult.imported })}
         </p>
         {importResult.skipped > 0 && (
-          <p className="text-on-surface-variant mt-1 text-sm">{importResult.skipped} överhoppade</p>
+          <p className="text-on-surface-variant mt-1 text-sm">
+            {t('skipped', { count: importResult.skipped })}
+          </p>
         )}
         {importResult.warnings.length > 0 && (
           <div className="mt-4 w-full max-w-md">
             <p className="text-xs font-medium text-amber-600">
-              {importResult.warnings.length} varning{importResult.warnings.length !== 1 ? 'ar' : ''}
-              :
+              {t('warningCount', { count: importResult.warnings.length })}:
             </p>
             <ul className="mt-1 space-y-0.5">
               {importResult.warnings.map((w, i) => (
@@ -81,9 +82,7 @@ export function StepImport({
             </ul>
           </div>
         )}
-        <p className="text-on-surface-variant mt-4 text-sm">
-          Tryck &quot;Visa teambelastning&quot; för att se resultatet.
-        </p>
+        <p className="text-on-surface-variant mt-4 text-sm">{t('seeResult')}</p>
         <div className="mt-6 flex gap-3">
           <button
             type="button"
@@ -92,14 +91,14 @@ export function StepImport({
             }
             className="bg-primary text-on-primary hover:bg-primary/90 rounded-md px-6 py-2.5 text-sm font-medium transition-colors"
           >
-            Visa teambelastning
+            {t('viewTeamLoad')}
           </button>
           <button
             type="button"
             onClick={() => router.push('/data')}
             className="border-outline-variant text-on-surface hover:bg-surface-container rounded-md border px-4 py-2 text-sm font-medium transition-colors"
           >
-            Stanna på datasidan
+            {t('stayOnDataPage')}
           </button>
         </div>
       </div>
@@ -111,25 +110,23 @@ export function StepImport({
     return (
       <div className="flex flex-col items-center py-10">
         <XCircle className="h-12 w-12 text-red-600" />
-        <p className="text-on-surface mt-4 text-xl font-semibold">Importen misslyckades</p>
+        <p className="text-on-surface mt-4 text-xl font-semibold">{t('failed')}</p>
         {importResult?.error && <p className="text-error mt-2 text-sm">{importResult.error}</p>}
-        <p className="text-on-surface-variant mt-2 text-sm">
-          Importen har rullats tillbaka. Ingen data har ändrats.
-        </p>
+        <p className="text-on-surface-variant mt-2 text-sm">{t('rolledBack')}</p>
         <div className="mt-6 flex gap-3">
           <button
             type="button"
             onClick={onBack}
             className="border-outline-variant text-on-surface hover:bg-surface-container rounded-md border px-4 py-2 text-sm font-medium transition-colors"
           >
-            Tillbaka
+            {t('back')}
           </button>
           <button
             type="button"
             onClick={onExecute}
             className="bg-primary text-on-primary hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium transition-colors"
           >
-            Försök igen
+            {t('tryAgain')}
           </button>
         </div>
       </div>
