@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import { useTeamHeatMap } from '@/hooks/use-team-heatmap';
 import { HeatMapTable } from '@/components/heat-map/heat-map-table';
 import { HeatMapFilters } from '@/components/heat-map/heat-map-filters';
+import { HeatMapSummaryBanner } from '@/components/heat-map/heat-map-summary-banner';
+import { HeatMapActions } from '@/components/heat-map/heat-map-actions';
 import { getCurrentMonth, generateMonthRange } from '@/lib/date-utils';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import type { HeatMapFilters as HeatMapFiltersType } from '@/features/analytics/analytics.types';
@@ -65,23 +67,32 @@ function TeamOverviewContent() {
       <div className="flex items-end justify-between">
         <div>
           <h1 className="font-headline text-on-surface mb-1 text-2xl font-semibold">
-            Team Capacity Heatmap
+            Teambelastning
           </h1>
           <p className="text-on-surface-variant text-sm">
-            Visualizing workload distribution across technical disciplines for FY2026.
+            Beläggningsöversikt per medarbetare och månad
           </p>
         </div>
-        {data && (
-          <button
-            onClick={handleExportPdf}
-            disabled={exporting}
-            className="border-outline-variant/30 text-primary hover:bg-surface-container-low inline-flex items-center gap-2 rounded-sm border px-4 py-2 text-xs font-semibold transition-colors disabled:opacity-50"
-          >
-            <span className="material-symbols-outlined text-base">picture_as_pdf</span>
-            {exporting ? 'Exporting...' : 'Export PDF'}
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          <HeatMapActions />
+          {data && (
+            <button
+              onClick={handleExportPdf}
+              disabled={exporting}
+              className="border-outline-variant/30 text-primary hover:bg-surface-container-low inline-flex items-center gap-2 rounded-sm border px-4 py-2 text-xs font-semibold transition-colors disabled:opacity-50"
+            >
+              <span className="material-symbols-outlined text-base">picture_as_pdf</span>
+              {exporting ? 'Exporterar...' : 'Exportera PDF'}
+            </button>
+          )}
+        </div>
       </div>
+
+      {data && (
+        <div className="mt-4">
+          <HeatMapSummaryBanner data={data} />
+        </div>
+      )}
 
       <div className="mt-4">
         <HeatMapFilters filters={filters} onFilterChange={setFilter} />
@@ -108,31 +119,31 @@ function TeamOverviewContent() {
         {/* Grid Legend */}
         <div className="bg-surface-container-low border-outline-variant/10 flex flex-col justify-between rounded-sm border p-5 md:col-span-1">
           <span className="text-outline mb-4 text-[10px] font-bold tracking-wider uppercase">
-            Grid Legend
+            Färgkarta
           </span>
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <div className="bg-surface-container-low border-outline-variant/30 h-3 w-3 rounded-[1px] border" />
               <span className="text-on-surface-variant text-[11px] font-medium">
-                {'Low/Empty (<140h)'}
+                {'Låg/Tom (<140 tim)'}
               </span>
             </div>
             <div className="flex items-center gap-3">
               <div className="h-3 w-3 rounded-[1px] bg-green-100" />
               <span className="text-on-surface-variant text-[11px] font-medium">
-                Healthy (140-160h)
+                Hälsosam (140–160 tim)
               </span>
             </div>
             <div className="flex items-center gap-3">
               <div className="h-3 w-3 rounded-[1px] bg-amber-100" />
               <span className="text-on-surface-variant text-[11px] font-medium">
-                High (161-179h)
+                Hög (161–179 tim)
               </span>
             </div>
             <div className="flex items-center gap-3">
               <div className="bg-error/20 h-3 w-3 rounded-[1px]" />
               <span className="text-on-surface-variant text-[11px] font-medium">
-                Overloaded (180h+)
+                Överbelastad (180+ tim)
               </span>
             </div>
           </div>
@@ -142,10 +153,10 @@ function TeamOverviewContent() {
         <div className="bg-surface-container-lowest border-outline-variant/10 flex flex-col rounded-sm border p-6 shadow-sm md:col-span-3">
           <div className="mb-6 flex items-center justify-between">
             <span className="text-outline text-[10px] font-bold tracking-wider uppercase">
-              Aggregated Team Health Metrics
+              Sammanfattande teamhälsa
             </span>
             <span className="text-primary flex items-center gap-1 text-[11px] font-semibold">
-              View Trends
+              Visa trender
             </span>
           </div>
           <div className="grid grid-cols-2 gap-8 lg:grid-cols-4">

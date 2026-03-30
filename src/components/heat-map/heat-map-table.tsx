@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
+import Link from 'next/link';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
 import { formatMonthHeader } from '@/lib/date-utils';
 import { HeatMapCell } from './heat-map-cell';
-import type { HeatMapResponse } from '@/features/analytics/analytics.types';
+import type { HeatMapResponse, HeatMapPerson } from '@/features/analytics/analytics.types';
 
 interface HeatMapTableProps {
   data: HeatMapResponse;
@@ -22,9 +23,34 @@ function getCurrentMonth(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 }
 
+/** Sort people by max utilization ratio descending — overloaded float to top. */
+function sortPeopleByUtilization(people: HeatMapPerson[]): HeatMapPerson[] {
+  return [...people].sort((a, b) => {
+    const maxA = Object.values(a.months).reduce(
+      (max, h) => Math.max(max, a.targetHours > 0 ? h / a.targetHours : 0),
+      0,
+    );
+    const maxB = Object.values(b.months).reduce(
+      (max, h) => Math.max(max, b.targetHours > 0 ? h / b.targetHours : 0),
+      0,
+    );
+    return maxB - maxA;
+  });
+}
+
 export function HeatMapTable({ data }: HeatMapTableProps) {
   const [collapsedDepts, setCollapsedDepts] = useState<Set<string>>(new Set());
   const currentMonth = getCurrentMonth();
+
+  // Sort people within each department by utilization (overloaded first)
+  const sortedDepartments = useMemo(
+    () =>
+      data.departments.map((dept) => ({
+        ...dept,
+        people: sortPeopleByUtilization(dept.people),
+      })),
+    [data.departments],
+  );
 
   const toggleDept = useCallback((deptId: string) => {
     setCollapsedDepts((prev) => {
@@ -45,7 +71,7 @@ export function HeatMapTable({ data }: HeatMapTableProps) {
           <thead>
             <tr className="bg-surface-container-low text-outline border-outline-variant/10 border-b text-[11px] font-bold tracking-wider uppercase">
               <th className="bg-surface-container-low sticky left-0 z-20 w-64 px-6 py-4">
-                Resource Name
+                Medarbetare
               </th>
               {data.months.map((m) => (
                 <th
@@ -57,7 +83,7 @@ export function HeatMapTable({ data }: HeatMapTableProps) {
               ))}
             </tr>
           </thead>
-          {data.departments.map((dept) => {
+          {sortedDepartments.map((dept) => {
             const isCollapsed = collapsedDepts.has(dept.departmentId);
             return (
               <tbody key={dept.departmentId} className="divide-outline-variant/5 divide-y">
@@ -91,9 +117,13 @@ export function HeatMapTable({ data }: HeatMapTableProps) {
                             {getInitials(person.firstName, person.lastName)}
                           </div>
                           <div>
-                            <p className="text-on-surface text-xs font-semibold">
+                            <Link
+                              href={`/input/${person.personId}`}
+                              className="text-on-surface hover:text-primary text-xs font-semibold transition-colors"
+                              onClick={(e) => e.stopPropagation()}
+                            >
                               {person.firstName} {person.lastName}
-                            </p>
+                            </Link>
                             {person.disciplineAbbreviation && (
                               <span className="bg-secondary-container/50 rounded-full px-1.5 py-0.5 text-[9px] font-bold">
                                 {person.disciplineAbbreviation}

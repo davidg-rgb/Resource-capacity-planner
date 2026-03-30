@@ -65,7 +65,7 @@ export function calculateHeatMapStatus(hours: number, targetHours: number): Heat
 }
 
 export const HEAT_MAP_COLORS: Record<HeatMapStatus, string> = {
-  over: 'bg-error/10 text-error',
+  over: 'bg-error/20 text-error font-semibold',
   healthy: 'bg-green-50/60 text-emerald-800',
   under: 'bg-amber-50 text-amber-800',
   idle: 'bg-surface-container-low text-outline-variant',
