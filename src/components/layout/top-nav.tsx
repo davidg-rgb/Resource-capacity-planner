@@ -13,6 +13,7 @@ import {
   FolderKanban,
   Database,
   LayoutDashboard,
+  BarChart3,
   ShieldCheck,
   AlertTriangle,
   Menu,
@@ -26,20 +27,55 @@ import type { FlagName } from '@/features/flags/flag.types';
 
 interface NavItem {
   label: string;
+  description: string;
   href: string;
   icon: LucideIcon;
   flag?: FlagName;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Input', href: '/input', icon: FileInput },
-  { label: 'Team', href: '/team', icon: Users },
-  { label: 'Projects', href: '/projects', icon: FolderKanban },
-  { label: 'Data', href: '/data', icon: Database },
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, flag: 'dashboards' },
-  { label: 'Alerts', href: '/alerts', icon: AlertTriangle, flag: 'alerts' },
-  { label: 'Admin', href: '/admin/disciplines', icon: ShieldCheck },
-  { label: 'Members', href: '/admin/members', icon: Users },
+  {
+    label: 'Teambelastning',
+    description: 'Se teamets beläggning',
+    href: '/dashboard/team',
+    icon: LayoutDashboard,
+    flag: 'dashboards',
+  },
+  {
+    label: 'Planera timmar',
+    description: 'Redigera timmar per person',
+    href: '/input',
+    icon: FileInput,
+  },
+  { label: 'Projekt', description: 'Hantera projekt', href: '/projects', icon: FolderKanban },
+  {
+    label: 'Översikt',
+    description: 'KPI:er och statistik',
+    href: '/dashboard',
+    icon: BarChart3,
+    flag: 'dashboards',
+  },
+  {
+    label: 'Varningar',
+    description: 'Överbelastade och underbelagda',
+    href: '/alerts',
+    icon: AlertTriangle,
+    flag: 'alerts',
+  },
+  { label: 'Personal', description: 'Hantera medarbetare', href: '/team', icon: Users },
+  { label: 'Exportera', description: 'Tabell och Excel-export', href: '/data', icon: Database },
+  {
+    label: 'Admin',
+    description: 'Referensdata och inställningar',
+    href: '/admin/disciplines',
+    icon: ShieldCheck,
+  },
+  {
+    label: 'Medlemmar',
+    description: 'Bjud in och hantera användare',
+    href: '/admin/members',
+    icon: Users,
+  },
 ];
 
 export function TopNav() {
@@ -47,6 +83,13 @@ export function TopNav() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const flags = useFlags();
   const visibleItems = NAV_ITEMS.filter((item) => !item.flag || flags[item.flag]);
+
+  // Precise active detection: /dashboard/team must not match /dashboard
+  function isNavActive(href: string): boolean {
+    if (href === '/dashboard/team') return pathname.startsWith('/dashboard/team');
+    if (href === '/dashboard') return pathname === '/dashboard';
+    return pathname.startsWith(href);
+  }
 
   return (
     <>
@@ -62,7 +105,7 @@ export function TopNav() {
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
           <Link
-            href="/input"
+            href="/"
             className="font-headline text-primary text-xl font-semibold tracking-tighter"
           >
             Nordic Capacity
@@ -72,11 +115,12 @@ export function TopNav() {
         {/* Center: Nav items — hidden below lg */}
         <nav className="ml-12 hidden items-center gap-6 lg:flex">
           {visibleItems.map((item) => {
-            const isActive = pathname.startsWith(item.href);
+            const isActive = isNavActive(item.href);
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                title={item.description}
                 className={`font-headline text-sm tracking-tight transition-colors ${
                   isActive
                     ? 'border-primary text-primary border-b-2 pb-1 font-bold'
@@ -95,15 +139,15 @@ export function TopNav() {
             <Search size={14} className="text-outline absolute top-1/2 left-3 -translate-y-1/2" />
             <input
               type="text"
-              placeholder="Global Search"
+              placeholder="Sök"
               className="bg-surface-container-low text-on-surface placeholder:text-outline focus:ring-primary w-64 rounded-sm py-1.5 pr-4 pl-9 text-xs focus:ring-1 focus:outline-none"
             />
           </div>
           {flags.alerts && (
             <Link
               href="/alerts"
-              aria-label="Capacity alerts"
-              title="Capacity alerts"
+              aria-label="Kapacitetsvarningar"
+              title="Kapacitetsvarningar"
               className="text-on-surface-variant hover:bg-surface-container-low relative rounded-full p-2"
             >
               <Bell size={18} />
@@ -112,8 +156,8 @@ export function TopNav() {
           )}
           <button
             type="button"
-            aria-label="Settings"
-            title="Settings"
+            aria-label="Inställningar"
+            title="Inställningar"
             className="text-on-surface-variant hover:bg-surface-container-low hidden rounded-full p-2 sm:block"
           >
             <Settings size={18} />
@@ -142,7 +186,7 @@ export function TopNav() {
                 />
                 <input
                   type="text"
-                  placeholder="Global Search"
+                  placeholder="Sök"
                   className="bg-surface-container-low text-on-surface placeholder:text-outline focus:ring-primary w-full rounded-sm py-1.5 pr-4 pl-9 text-xs focus:ring-1 focus:outline-none"
                 />
               </div>
@@ -151,7 +195,7 @@ export function TopNav() {
             {/* Nav links */}
             <div className="flex-1 space-y-1 p-3">
               {visibleItems.map((item) => {
-                const isActive = pathname.startsWith(item.href);
+                const isActive = isNavActive(item.href);
                 const Icon = item.icon;
                 return (
                   <Link
@@ -165,7 +209,12 @@ export function TopNav() {
                     }`}
                   >
                     <Icon size={18} />
-                    {item.label}
+                    <div>
+                      <span className="block">{item.label}</span>
+                      <span className="text-outline block text-[11px] font-normal">
+                        {item.description}
+                      </span>
+                    </div>
                   </Link>
                 );
               })}

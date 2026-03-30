@@ -21,41 +21,44 @@ function MaterialIcon({ name, className = '' }: { name: string; className?: stri
 const SECTION_NAV: Record<string, NavSection[]> = {
   '/input': [
     {
-      heading: 'People',
-      items: [{ label: 'All People', href: '/input', icon: 'group' }],
+      heading: 'Medarbetare',
+      items: [{ label: 'Alla medarbetare', href: '/input', icon: 'group' }],
     },
   ],
   '/team': [
     {
-      heading: 'Team',
-      items: [{ label: 'Overview', href: '/team', icon: 'group' }],
+      heading: 'Personal',
+      items: [{ label: 'Översikt', href: '/team', icon: 'group' }],
     },
   ],
   '/projects': [
     {
-      heading: 'Projects',
-      items: [{ label: 'All Projects', href: '/projects', icon: 'flag' }],
+      heading: 'Projekt',
+      items: [{ label: 'Alla projekt', href: '/projects', icon: 'flag' }],
     },
   ],
   '/data': [
     {
       heading: 'Data',
-      items: [{ label: 'Import', href: '/data', icon: 'description' }],
+      items: [{ label: 'Exportera', href: '/data', icon: 'description' }],
     },
   ],
   '/dashboard': [
     {
-      heading: 'Dashboard',
-      items: [{ label: 'Overview', href: '/dashboard', icon: 'bar_chart' }],
+      heading: 'Översikt',
+      items: [
+        { label: 'KPI-dashboard', href: '/dashboard', icon: 'bar_chart' },
+        { label: 'Teambelastning', href: '/dashboard/team', icon: 'groups' },
+      ],
     },
   ],
   '/admin': [
     {
-      heading: 'Reference Data',
+      heading: 'Referensdata',
       items: [
-        { label: 'Disciplines', href: '/admin/disciplines', icon: 'category' },
-        { label: 'Departments', href: '/admin/departments', icon: 'corporate_fare' },
-        { label: 'Programs', href: '/admin/programs', icon: 'flag' },
+        { label: 'Discipliner', href: '/admin/disciplines', icon: 'category' },
+        { label: 'Avdelningar', href: '/admin/departments', icon: 'corporate_fare' },
+        { label: 'Program', href: '/admin/programs', icon: 'flag' },
       ],
     },
   ],
@@ -63,13 +66,13 @@ const SECTION_NAV: Record<string, NavSection[]> = {
 
 function getSectionKey(pathname: string): string {
   const match = pathname.match(/^\/([^/]+)/);
-  return match ? `/${match[1]}` : '/input';
+  return match ? `/${match[1]}` : '/dashboard';
 }
 
 export function SideNav() {
   const pathname = usePathname();
   const sectionKey = getSectionKey(pathname);
-  const sections = SECTION_NAV[sectionKey] ?? SECTION_NAV['/input']!;
+  const sections = SECTION_NAV[sectionKey] ?? SECTION_NAV['/dashboard']!;
 
   return (
     <aside className="border-outline-variant/15 bg-surface-container-low fixed top-14 left-0 z-40 flex h-[calc(100vh-3.5rem)] w-64 flex-col border-r">
@@ -97,7 +100,10 @@ export function SideNav() {
             )}
             <ul className="space-y-0.5">
               {section.items.map((item) => {
-                const isActive = pathname === item.href;
+                const isActive =
+                  item.href === '/dashboard/team'
+                    ? pathname.startsWith('/dashboard/team')
+                    : pathname === item.href;
                 return (
                   <li key={item.href}>
                     <Link
@@ -126,7 +132,7 @@ export function SideNav() {
           className="bg-primary text-on-primary mb-6 flex w-full items-center justify-center gap-2 rounded-sm py-2.5 text-xs font-semibold hover:opacity-90"
         >
           <MaterialIcon name="add" className="text-on-primary !text-base" />
-          New Entry
+          Ny post
         </button>
         <div className="space-y-1">
           <Link
@@ -134,14 +140,14 @@ export function SideNav() {
             className="text-on-surface-variant hover:text-primary flex items-center gap-2 px-1 text-xs transition-colors"
           >
             <MaterialIcon name="help_outline" className="!text-base" />
-            Help
+            Hjälp
           </Link>
           <Link
             href="#"
             className="text-on-surface-variant hover:text-primary flex items-center gap-2 px-1 text-xs transition-colors"
           >
             <MaterialIcon name="archive" className="!text-base" />
-            Archive
+            Arkiv
           </Link>
         </div>
       </div>
