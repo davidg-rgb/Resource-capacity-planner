@@ -1,8 +1,9 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { CheckCircle2, X } from 'lucide-react';
 
 import { useTeamHeatMap } from '@/hooks/use-team-heatmap';
 import { HeatMapTable } from '@/components/heat-map/heat-map-table';
@@ -36,6 +37,27 @@ function TeamOverviewContent() {
     }
     router.replace(`?${params.toString()}`);
   };
+
+  // Import success banner state (from import wizard redirect)
+  const importedCount = searchParams.get('imported');
+  const [showImportBanner, setShowImportBanner] = useState(!!importedCount);
+
+  const dismissImportBanner = useCallback(() => {
+    setShowImportBanner(false);
+    // Clean URL params
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('imported');
+    params.delete('source');
+    const remaining = params.toString();
+    router.replace(remaining ? `?${remaining}` : '/dashboard/team');
+  }, [searchParams, router]);
+
+  useEffect(() => {
+    if (showImportBanner) {
+      const timer = setTimeout(dismissImportBanner, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, [showImportBanner, dismissImportBanner]);
 
   const { data, isLoading, error } = useTeamHeatMap(filters);
   const [exporting, setExporting] = useState(false);
@@ -87,6 +109,25 @@ function TeamOverviewContent() {
           )}
         </div>
       </div>
+
+      {showImportBanner && importedCount && (
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-sm border border-green-200 bg-green-50 px-4 py-3">
+          <div className="flex items-center gap-3">
+            <CheckCircle2 size={18} className="shrink-0 text-emerald-600" />
+            <p className="text-sm font-medium text-emerald-800">
+              {importedCount} medarbetare importerade — här ser du teamets belastning
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={dismissImportBanner}
+            className="shrink-0 rounded-sm p-1 text-emerald-600 hover:bg-green-100"
+            aria-label="Stäng"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      )}
 
       {data && (
         <div className="mt-4">

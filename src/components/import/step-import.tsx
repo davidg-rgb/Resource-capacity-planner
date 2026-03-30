@@ -54,22 +54,23 @@ export function StepImport({
     );
   }
 
-  // Success: results summary
+  // Success: results summary with redirect to heat map
   if (importStatus === 'success' && importResult) {
     return (
       <div className="flex flex-col items-center py-10">
         <CheckCircle2 className="h-12 w-12 text-green-600" />
-        <p className="text-on-surface mt-4 text-xl font-semibold">Import Complete</p>
+        <p className="text-on-surface mt-4 text-xl font-semibold">Import genomförd</p>
         <p className="text-on-surface mt-2 text-3xl font-bold tabular-nums">
-          {importResult.imported} rows imported
+          {importResult.imported} rader importerade
         </p>
         {importResult.skipped > 0 && (
-          <p className="text-on-surface-variant mt-1 text-sm">{importResult.skipped} skipped</p>
+          <p className="text-on-surface-variant mt-1 text-sm">{importResult.skipped} överhoppade</p>
         )}
         {importResult.warnings.length > 0 && (
           <div className="mt-4 w-full max-w-md">
             <p className="text-xs font-medium text-amber-600">
-              {importResult.warnings.length} warning{importResult.warnings.length !== 1 ? 's' : ''}:
+              {importResult.warnings.length} varning{importResult.warnings.length !== 1 ? 'ar' : ''}
+              :
             </p>
             <ul className="mt-1 space-y-0.5">
               {importResult.warnings.map((w, i) => (
@@ -80,13 +81,27 @@ export function StepImport({
             </ul>
           </div>
         )}
-        <button
-          type="button"
-          onClick={() => router.push('/data')}
-          className="bg-primary text-on-primary hover:bg-primary/90 mt-6 rounded-md px-6 py-2.5 text-sm font-medium transition-colors"
-        >
-          Done
-        </button>
+        <p className="text-on-surface-variant mt-4 text-sm">
+          Tryck &quot;Visa teambelastning&quot; för att se resultatet.
+        </p>
+        <div className="mt-6 flex gap-3">
+          <button
+            type="button"
+            onClick={() =>
+              router.push(`/dashboard/team?imported=${importResult.imported}&source=import`)
+            }
+            className="bg-primary text-on-primary hover:bg-primary/90 rounded-md px-6 py-2.5 text-sm font-medium transition-colors"
+          >
+            Visa teambelastning
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push('/data')}
+            className="border-outline-variant text-on-surface hover:bg-surface-container rounded-md border px-4 py-2 text-sm font-medium transition-colors"
+          >
+            Stanna på datasidan
+          </button>
+        </div>
       </div>
     );
   }
