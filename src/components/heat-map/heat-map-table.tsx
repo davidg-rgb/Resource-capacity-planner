@@ -90,7 +90,16 @@ export function HeatMapTable({ data }: HeatMapTableProps) {
                 {/* Department group row */}
                 <tr
                   className="bg-surface-container-low/30 cursor-pointer"
+                  role="button"
+                  tabIndex={0}
+                  aria-expanded={!isCollapsed}
                   onClick={() => toggleDept(dept.departmentId)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      toggleDept(dept.departmentId);
+                    }
+                  }}
                 >
                   <td
                     colSpan={data.months.length + 1}

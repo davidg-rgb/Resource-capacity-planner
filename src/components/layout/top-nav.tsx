@@ -98,7 +98,7 @@ export function TopNav() {
         <div className="flex items-center gap-3">
           <button
             type="button"
-            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-label={mobileMenuOpen ? 'Stäng meny' : 'Öppna meny'}
             className="text-on-surface-variant hover:bg-surface-container-high rounded-sm p-1.5 lg:hidden"
             onClick={() => setMobileMenuOpen((prev) => !prev)}
           >

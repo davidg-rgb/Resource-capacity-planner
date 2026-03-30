@@ -27,17 +27,17 @@ export function StepImport({
     return (
       <div className="flex flex-col items-center py-10">
         <p className="text-on-surface text-lg font-medium">
-          Ready to import {readyCount} allocation{readyCount !== 1 ? 's' : ''}
+          Redo att importera {readyCount} bokningar
         </p>
         <p className="text-on-surface-variant mt-2 text-sm">
-          This will create or update allocation records in a single transaction.
+          Detta skapar eller uppdaterar bokningar i en enda transaktion.
         </p>
         <button
           type="button"
           onClick={onExecute}
           className="bg-primary text-on-primary hover:bg-primary/90 mt-6 rounded-md px-6 py-2.5 text-sm font-medium transition-colors"
         >
-          Import
+          Importera
         </button>
       </div>
     );
@@ -48,8 +48,8 @@ export function StepImport({
     return (
       <div className="flex flex-col items-center py-10">
         <Loader2 className="text-primary h-10 w-10 animate-spin" />
-        <p className="text-on-surface mt-4 text-lg font-medium">Importing allocations...</p>
-        <p className="text-on-surface-variant mt-1 text-sm">Please don&apos;t close this page.</p>
+        <p className="text-on-surface mt-4 text-lg font-medium">Importerar bokningar...</p>
+        <p className="text-on-surface-variant mt-1 text-sm">Stäng inte denna sida.</p>
       </div>
     );
   }
@@ -111,10 +111,10 @@ export function StepImport({
     return (
       <div className="flex flex-col items-center py-10">
         <XCircle className="h-12 w-12 text-red-600" />
-        <p className="text-on-surface mt-4 text-xl font-semibold">Import Failed</p>
+        <p className="text-on-surface mt-4 text-xl font-semibold">Importen misslyckades</p>
         {importResult?.error && <p className="text-error mt-2 text-sm">{importResult.error}</p>}
         <p className="text-on-surface-variant mt-2 text-sm">
-          The import was rolled back. No data was changed.
+          Importen har rullats tillbaka. Ingen data har ändrats.
         </p>
         <div className="mt-6 flex gap-3">
           <button
@@ -122,14 +122,14 @@ export function StepImport({
             onClick={onBack}
             className="border-outline-variant text-on-surface hover:bg-surface-container rounded-md border px-4 py-2 text-sm font-medium transition-colors"
           >
-            Back
+            Tillbaka
           </button>
           <button
             type="button"
             onClick={onExecute}
             className="bg-primary text-on-primary hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium transition-colors"
           >
-            Try Again
+            Försök igen
           </button>
         </div>
       </div>
