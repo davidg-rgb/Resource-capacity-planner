@@ -11,11 +11,14 @@ export function FlagGuard({ children }: { children: ReactNode }) {
   const flags = useFlags();
   const router = useRouter();
 
-  // Check if current path is gated by a disabled flag
+  // Check if current path is gated by a disabled flag.
+  // Match route exactly or as a prefix followed by '/' so that
+  // '/dashboard' gates both '/dashboard' and '/dashboard/team'.
   let blocked = false;
   for (const [flagName, routes] of Object.entries(FLAG_ROUTE_MAP)) {
     for (const route of routes) {
-      if (pathname.startsWith(route) && !flags[flagName as FlagName]) {
+      const isMatch = pathname === route || pathname.startsWith(route + '/');
+      if (isMatch && !flags[flagName as FlagName]) {
         blocked = true;
       }
     }
@@ -23,7 +26,9 @@ export function FlagGuard({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (blocked) {
-      router.replace('/dashboard/team');
+      // Redirect to /input — always safe, never flag-gated.
+      // Cannot use /dashboard/team here as it may itself be gated.
+      router.replace('/input');
     }
   }, [blocked, router]);
 
