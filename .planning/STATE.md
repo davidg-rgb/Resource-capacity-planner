@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0
-milestone_name: Visibility & Insights
-status: v2.0 milestone complete
-stopped_at: v2.0 shipped
-last_updated: "2026-03-28T16:00:00.000Z"
-last_activity: 2026-03-28
+milestone: v3.0
+milestone_name: Switch from Excel
+status: executing
+stopped_at: phase 18
+last_updated: "2026-03-30T12:00:00.000Z"
+last_activity: 2026-03-30
 progress:
-  total_phases: 7
-  completed_phases: 7
-  total_plans: 14
-  completed_plans: 14
-  percent: 100
+  total_phases: 5
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Nordic Capacity -- Project State

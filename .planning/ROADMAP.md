@@ -3,7 +3,8 @@
 ## Milestones
 
 - **v1.0 MVP** -- Phases 1-10 (shipped 2026-03-27) | [Archive](milestones/v1.0-ROADMAP.md)
-- **v2.0 Visibility & Insights** -- Phases 11-17 (in progress)
+- **v2.0 Visibility & Insights** -- Phases 11-17 (shipped 2026-03-28) | [Archive](v2.0-ROADMAP.md)
+- **v3.0 Switch from Excel** -- Phases 18-22 (in progress) | [Details](v3.0-ROADMAP.md)
 
 ## Phases
 
@@ -23,15 +24,26 @@
 
 </details>
 
-### v2.0 Visibility & Insights
+<details>
+<summary>v2.0 Visibility & Insights (Phases 11-17) -- SHIPPED 2026-03-28</summary>
 
-- [x] **Phase 11: Infrastructure & Feature Flags** - Toast system and per-tenant feature flag gating for gradual v2 rollout (completed 2026-03-28)
-- [x] **Phase 12: Team Overview Heat Map** - Headline capacity heat map showing all people x months with utilization color-coding (completed 2026-03-28)
-- [x] **Phase 13: Dashboard & Charts** - Management KPI dashboard with departmental utilization and discipline breakdown charts (completed 2026-03-28)
-- [x] **Phase 14: Alerts & Project View** - Capacity alert system and project-centric staffing view (completed 2026-03-28)
-- [x] **Phase 15: PDF Export** - Exportable Team Overview heat map as landscape PDF document (completed 2026-03-28)
-- [x] **Phase 16: Onboarding & Announcements** - New-tenant onboarding wizard and platform-wide announcement system (completed 2026-03-28)
-- [x] **Phase 17: Platform Operations** - System health monitoring and tenant data operations (export/purge) (completed 2026-03-28)
+- [x] Phase 11: Infrastructure & Feature Flags (completed 2026-03-28)
+- [x] Phase 12: Team Overview Heat Map (completed 2026-03-28)
+- [x] Phase 13: Dashboard & Charts (completed 2026-03-28)
+- [x] Phase 14: Alerts & Project View (completed 2026-03-28)
+- [x] Phase 15: PDF Export (completed 2026-03-28)
+- [x] Phase 16: Onboarding & Announcements (completed 2026-03-28)
+- [x] Phase 17: Platform Operations (completed 2026-03-28)
+
+</details>
+
+### v3.0 Switch from Excel
+
+- [x] **Phase 18: Role-Based Landing Experience** - Route users to role-appropriate view; heat map as the front door (completed 2026-03-30)
+- [x] **Phase 19: Self-Explanatory Navigation** - Task-oriented nav labels; make each view's purpose obvious (completed 2026-03-30)
+- [x] **Phase 20: Heat Map as Hero** - Overloaded people sorted to top, summary banner, click-to-edit (completed 2026-03-30)
+- [x] **Phase 21: Import-to-Value Flow** - After import, redirect to heat map; import accessible from heat map (completed 2026-03-30)
+- [ ] **Phase 22: Swedish Localization** - i18n framework, Swedish as primary language (stretch)
 
 ## Phase Details
 
@@ -164,8 +176,14 @@ Phases execute in numeric order: 11 -> 11.x -> 12 -> 12.x -> ... -> 17
 | 15. PDF Export | v2.0 | 1/1 | Complete    | 2026-03-28 |
 | 16. Onboarding & Announcements | v2.0 | 3/3 | Complete    | 2026-03-28 |
 | 17. Platform Operations | v2.0 | 2/2 | Complete    | 2026-03-28 |
+| 18. Role-Based Landing | v3.0 | 1/1 | Complete | 2026-03-30 |
+| 19. Self-Explanatory Nav | v3.0 | 1/1 | Complete | 2026-03-30 |
+| 20. Heat Map as Hero | v3.0 | 1/1 | Complete | 2026-03-30 |
+| 21. Import-to-Value Flow | v3.0 | 1/1 | Complete | 2026-03-30 |
+| 22. Swedish Localization | v3.0 | 0/? | Pending (stretch) | - |
 
 ---
 
 _60 v1 requirements shipped across 10 phases, 26 plans. Full archive: milestones/v1.0-ROADMAP.md_
 _38 v2 requirements across 7 phases. Coverage: 38/38 mapped._
+_15 v3 requirements across 5 phases. Coverage: 15/15 mapped. See v3.0-REQUIREMENTS.md_
