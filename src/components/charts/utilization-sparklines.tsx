@@ -226,12 +226,18 @@ export const UtilizationSparklines = React.memo(function UtilizationSparklines({
       <table className="w-full">
         <thead>
           <tr className="text-on-surface-variant border-b border-[var(--md-sys-color-outline-variant)] text-xs">
-            <th className="pr-4 pb-2 text-left font-medium">
+            <th scope="col" className="pr-4 pb-2 text-left font-medium">
               {viewMode === 'department' ? 'Department' : 'Person'}
             </th>
-            <th className="pr-4 pb-2 text-left font-medium">6-month trend</th>
-            <th className="pr-4 pb-2 text-right font-medium">Current</th>
-            <th className="pb-2 text-right font-medium">Direction</th>
+            <th scope="col" className="pr-4 pb-2 text-left font-medium">
+              6-month trend
+            </th>
+            <th scope="col" className="pr-4 pb-2 text-right font-medium">
+              Current
+            </th>
+            <th scope="col" className="pb-2 text-right font-medium">
+              Direction
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-[var(--md-sys-color-outline-variant)]/30">

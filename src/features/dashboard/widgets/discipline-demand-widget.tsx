@@ -109,9 +109,9 @@ const DisciplineDemandContent = React.memo(function DisciplineDemandContent({
         <table className="w-full min-w-[700px] border-collapse text-xs">
           <thead>
             <tr className="text-outline border-outline-variant/10 border-b text-[10px] font-bold tracking-wider uppercase">
-              <th className="w-28 py-3 text-left" />
+              <th scope="col" className="w-28 py-3 text-left" />
               {months.map((m) => (
-                <th key={m} className="py-3 text-center whitespace-nowrap">
+                <th scope="col" key={m} className="py-3 text-center whitespace-nowrap">
                   {formatMonthHeader(m)}
                 </th>
               ))}

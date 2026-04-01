@@ -122,7 +122,7 @@ function StaffingGauge({ percent }: { percent: number }) {
     percent >= 80 ? CHART_COLORS.healthy : percent >= 50 ? CHART_COLORS.under : CHART_COLORS.over;
 
   return (
-    <div className="flex flex-col items-center gap-1">
+    <div className="relative flex flex-col items-center gap-1">
       <svg width="100" height="100" viewBox="0 0 100 100" className="rotate-[-90deg]">
         <circle
           cx="50"
@@ -255,7 +255,7 @@ const ProgramRollupContent = React.memo(function ProgramRollupContent({
           Staffing Completeness
         </div>
         <div className="flex items-center gap-4">
-          <div className="relative flex items-center justify-center">
+          <div className="flex items-center justify-center">
             <StaffingGauge percent={data.staffingCompleteness} />
           </div>
           <div className="text-on-surface-variant text-[11px]">

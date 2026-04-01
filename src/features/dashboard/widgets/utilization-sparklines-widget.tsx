@@ -14,11 +14,16 @@ import type { WidgetProps } from '../widget-registry.types';
 // ---------------------------------------------------------------------------
 
 const UtilizationSparklinesContent = React.memo(function UtilizationSparklinesContent({
-  timeRange: _timeRange,
+  timeRange,
 }: WidgetProps) {
   const [viewMode, setViewMode] = useState<'department' | 'person'>('department');
   const limit = viewMode === 'person' ? 10 : undefined;
-  const { data, isLoading, error } = useUtilizationTrends(viewMode, limit);
+  const { data, isLoading, error } = useUtilizationTrends(
+    viewMode,
+    limit,
+    timeRange.from,
+    timeRange.to,
+  );
 
   if (error) {
     return (

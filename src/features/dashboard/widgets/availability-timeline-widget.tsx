@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState, useCallback, useMemo } from 'react';
-import Link from 'next/link';
 import { CalendarRange, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 
 import { formatMonthHeader } from '@/lib/date-utils';
 import { CHART_COLORS } from '@/components/charts/chart-colors';
 import { useAvailabilityTimeline } from '@/hooks/use-availability-timeline';
+import { usePersonCard } from '@/features/dashboard/person-card/person-card-provider';
 import { registerWidget } from '../widget-registry';
 import type { WidgetProps } from '../widget-registry.types';
 
@@ -142,6 +142,7 @@ function TimelineCell({ monthData, targetHours, isCurrentMonth }: TimelineCellPr
 const AvailabilityTimelineContent = React.memo(function AvailabilityTimelineContent({
   timeRange,
 }: WidgetProps) {
+  const { openPersonCard } = usePersonCard();
   const [collapsedDepts, setCollapsedDepts] = useState<Set<string>>(new Set());
   const [showAvailableOnly, setShowAvailableOnly] = useState(false);
 
@@ -220,11 +221,15 @@ const AvailabilityTimelineContent = React.memo(function AvailabilityTimelineCont
           <table className="w-full min-w-[900px] border-collapse text-left">
             <thead>
               <tr className="bg-surface-container-low text-outline border-outline-variant/10 border-b text-[11px] font-bold tracking-wider uppercase">
-                <th className="bg-surface-container-low sticky left-0 z-20 w-52 px-4 py-3">
+                <th
+                  scope="col"
+                  className="bg-surface-container-low sticky left-0 z-20 w-52 px-4 py-3"
+                >
                   Person
                 </th>
                 {data.months.map((m) => (
                   <th
+                    scope="col"
                     key={m}
                     className={`px-2 py-3 text-center whitespace-nowrap ${m === currentMonth ? 'bg-surface-container-high/50' : ''}`}
                   >
@@ -277,13 +282,15 @@ const AvailabilityTimelineContent = React.memo(function AvailabilityTimelineCont
                               {getInitials(person.firstName, person.lastName)}
                             </div>
                             <div className="min-w-0">
-                              <Link
-                                href={`/input/${person.personId}`}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openPersonCard(person.personId);
+                                }}
                                 className="text-on-surface hover:text-primary block truncate text-[11px] font-semibold transition-colors"
-                                onClick={(e) => e.stopPropagation()}
                               >
                                 {person.firstName} {person.lastName}
-                              </Link>
+                              </button>
                               <div className="flex items-center gap-1">
                                 {person.disciplineAbbreviation && (
                                   <span className="bg-secondary-container/50 rounded-full px-1 py-0 text-[8px] font-bold">

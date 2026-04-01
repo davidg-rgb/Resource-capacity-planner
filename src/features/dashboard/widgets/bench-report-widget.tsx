@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 
 import { useBenchReport } from '@/hooks/use-bench-report';
+import { usePersonCard } from '@/features/dashboard/person-card/person-card-provider';
 import { registerWidget } from '../widget-registry';
 import type { WidgetProps } from '../widget-registry.types';
 
@@ -38,6 +39,7 @@ function InlineBar({ value, max }: { value: number; max: number }) {
 }
 
 const BenchReportContent = React.memo(function BenchReportContent({ timeRange }: WidgetProps) {
+  const { openPersonCard } = usePersonCard();
   const [showAllPeople, setShowAllPeople] = useState(false);
   const { data, isLoading, error } = useBenchReport(
     timeRange.from,
@@ -119,10 +121,16 @@ const BenchReportContent = React.memo(function BenchReportContent({ timeRange }:
           <table className="w-full text-xs">
             <thead>
               <tr className="text-outline border-outline-variant/10 border-b text-[10px] font-bold tracking-wider uppercase">
-                <th className="py-2 text-left">Department</th>
-                <th className="w-1/3 py-2" />
-                <th className="py-2 text-right">Hours</th>
-                <th className="py-2 text-right">FTE</th>
+                <th scope="col" className="py-2 text-left">
+                  Department
+                </th>
+                <th scope="col" className="w-1/3 py-2" />
+                <th scope="col" className="py-2 text-right">
+                  Hours
+                </th>
+                <th scope="col" className="py-2 text-right">
+                  FTE
+                </th>
               </tr>
             </thead>
             <tbody className="divide-outline-variant/5 divide-y">
@@ -157,10 +165,16 @@ const BenchReportContent = React.memo(function BenchReportContent({ timeRange }:
           <table className="w-full text-xs">
             <thead>
               <tr className="text-outline border-outline-variant/10 border-b text-[10px] font-bold tracking-wider uppercase">
-                <th className="py-2 text-left">Discipline</th>
-                <th className="w-1/3 py-2" />
-                <th className="py-2 text-right">Hours</th>
-                <th className="py-2 text-right">FTE</th>
+                <th scope="col" className="py-2 text-left">
+                  Discipline
+                </th>
+                <th scope="col" className="w-1/3 py-2" />
+                <th scope="col" className="py-2 text-right">
+                  Hours
+                </th>
+                <th scope="col" className="py-2 text-right">
+                  FTE
+                </th>
               </tr>
             </thead>
             <tbody className="divide-outline-variant/5 divide-y">
@@ -200,9 +214,12 @@ const BenchReportContent = React.memo(function BenchReportContent({ timeRange }:
               >
                 <div className="flex items-center gap-3">
                   <span className="text-outline w-5 text-right tabular-nums">{idx + 1}.</span>
-                  <span className="text-on-surface font-medium">
+                  <button
+                    onClick={() => openPersonCard(person.personId)}
+                    className="text-primary font-medium hover:underline"
+                  >
                     {person.firstName} {person.lastName}
-                  </span>
+                  </button>
                   <span className="bg-secondary-container/50 rounded-full px-1.5 py-0.5 text-[9px] font-bold">
                     {person.disciplineAbbreviation}
                   </span>

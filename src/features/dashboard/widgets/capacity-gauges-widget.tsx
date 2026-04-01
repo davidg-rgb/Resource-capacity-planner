@@ -14,9 +14,14 @@ import type { WidgetProps } from '../widget-registry.types';
 // ---------------------------------------------------------------------------
 
 const CapacityGaugesContent = React.memo(function CapacityGaugesContent({
-  timeRange: _timeRange,
+  timeRange,
 }: WidgetProps) {
-  const { data, isLoading, error } = useUtilizationTrends('department');
+  const { data, isLoading, error } = useUtilizationTrends(
+    'department',
+    undefined,
+    timeRange.from,
+    timeRange.to,
+  );
 
   if (error) {
     return (

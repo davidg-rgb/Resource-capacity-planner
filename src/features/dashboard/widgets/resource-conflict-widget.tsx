@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AlertOctagon } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -65,7 +65,7 @@ function ConflictBar({
 
   return (
     <div className="flex items-center gap-2">
-      <div className="bg-surface-container relative h-5 w-full max-w-[200px] overflow-hidden rounded">
+      <div className="bg-surface-container relative h-5 w-full max-w-[200px] rounded">
         <div
           className={`h-full rounded transition-all ${isOverflow ? 'bg-red-500' : 'bg-primary'}`}
           style={{ width: `${Math.min(pct, 100)}%` }}
@@ -108,6 +108,7 @@ function RedistributeModal({
   targetHours: number;
 }) {
   const queryClient = useQueryClient();
+  const redistDialogRef = useRef<HTMLDivElement>(null);
   const [editedHours, setEditedHours] = useState<Record<string, number>>(() =>
     Object.fromEntries(projects.map((p) => [p.projectId, p.hours])),
   );
@@ -117,6 +118,24 @@ function RedistributeModal({
     [editedHours],
   );
   const isValid = total <= targetHours;
+
+  // Escape key handler
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  // Auto-focus first input on open
+  useEffect(() => {
+    if (isOpen && redistDialogRef.current) {
+      const firstInput = redistDialogRef.current.querySelector<HTMLElement>('input, button');
+      firstInput?.focus();
+    }
+  }, [isOpen]);
 
   const mutation = useMutation({
     mutationFn: async (
@@ -158,11 +177,15 @@ function RedistributeModal({
       onClick={onClose}
     >
       <div
+        ref={redistDialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="redistribute-title"
         className="bg-surface-container-lowest border-outline-variant w-full max-w-md rounded-lg border shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="border-outline-variant border-b p-4">
-          <h3 className="text-on-surface text-lg font-semibold">
+          <h3 id="redistribute-title" className="text-on-surface text-lg font-semibold">
             Redistribute hours: {person.firstName} {person.lastName}
           </h3>
           <p className="text-on-surface-variant text-sm">

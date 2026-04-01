@@ -98,15 +98,36 @@ function DeltaArrow({ delta }: { delta: number }) {
 // Main Component
 // ---------------------------------------------------------------------------
 
-const PeriodComparisonContent = React.memo(function PeriodComparisonContent(_props: WidgetProps) {
-  // Default: compare previous quarter vs current quarter
-  const current = getCurrentQuarter();
-  const prev = getPreviousQuarter(current.year, current.quarter);
+/** Compute period A (same duration as B, immediately preceding B). */
+function computePrecedingPeriod(from: string, to: string): { from: string; to: string } {
+  const [fromY, fromM] = from.split('-').map(Number);
+  const [toY, toM] = to.split('-').map(Number);
+  const durationMonths = (toY - fromY) * 12 + (toM - fromM) + 1;
 
-  const [periodA, setPeriodA] = useState(() => getQuarterRange(prev.year, prev.quarter));
-  const [periodB, setPeriodB] = useState(() => getQuarterRange(current.year, current.quarter));
-  const [labelA, setLabelA] = useState(() => formatQuarterLabel(prev.year, prev.quarter));
-  const [labelB, setLabelB] = useState(() => formatQuarterLabel(current.year, current.quarter));
+  // Shift back by durationMonths
+  const aToDate = new Date(fromY, fromM - 2, 1); // month before B.from
+  const aFromDate = new Date(aToDate.getFullYear(), aToDate.getMonth() - durationMonths + 1, 1);
+  return {
+    from: `${aFromDate.getFullYear()}-${String(aFromDate.getMonth() + 1).padStart(2, '0')}`,
+    to: `${aToDate.getFullYear()}-${String(aToDate.getMonth() + 1).padStart(2, '0')}`,
+  };
+}
+
+const PeriodComparisonContent = React.memo(function PeriodComparisonContent({
+  timeRange,
+}: WidgetProps) {
+  // Use timeRange from props as period B; period A is the same duration immediately before
+  const [periodB, setPeriodB] = useState(() => ({ from: timeRange.from, to: timeRange.to }));
+  const [periodA, setPeriodA] = useState(() =>
+    computePrecedingPeriod(timeRange.from, timeRange.to),
+  );
+  const [labelB, setLabelB] = useState(() =>
+    timeRange.from === timeRange.to ? timeRange.from : `${timeRange.from} \u2013 ${timeRange.to}`,
+  );
+  const [labelA, setLabelA] = useState(() => {
+    const a = computePrecedingPeriod(timeRange.from, timeRange.to);
+    return a.from === a.to ? a.from : `${a.from} \u2013 ${a.to}`;
+  });
 
   const { data, isLoading, error } = usePeriodComparison(
     periodA.from,
@@ -195,11 +216,21 @@ const PeriodComparisonContent = React.memo(function PeriodComparisonContent(_pro
         <table className="w-full text-[11px]">
           <thead>
             <tr className="border-outline-variant/10 text-outline-variant border-b text-[9px] tracking-wider uppercase">
-              <th className="px-4 py-2 text-left font-bold">Metric</th>
-              <th className="px-3 py-2 text-right font-bold">{displayLabelA}</th>
-              <th className="px-3 py-2 text-right font-bold">{displayLabelB}</th>
-              <th className="px-3 py-2 text-right font-bold">Delta</th>
-              <th className="w-10 px-3 py-2 text-center font-bold">Signal</th>
+              <th scope="col" className="px-4 py-2 text-left font-bold">
+                Metric
+              </th>
+              <th scope="col" className="px-3 py-2 text-right font-bold">
+                {displayLabelA}
+              </th>
+              <th scope="col" className="px-3 py-2 text-right font-bold">
+                {displayLabelB}
+              </th>
+              <th scope="col" className="px-3 py-2 text-right font-bold">
+                Delta
+              </th>
+              <th scope="col" className="w-10 px-3 py-2 text-center font-bold">
+                Signal
+              </th>
             </tr>
           </thead>
           <tbody className="divide-outline-variant/5 divide-y">
@@ -249,12 +280,18 @@ const PeriodComparisonContent = React.memo(function PeriodComparisonContent(_pro
           <table className="w-full text-[11px]">
             <thead>
               <tr className="border-outline-variant/10 text-outline-variant border-b text-[9px] tracking-wider uppercase">
-                <th className="px-4 py-2 text-left font-bold">Department</th>
-                <th className="px-3 py-2 text-center font-bold">
+                <th scope="col" className="px-4 py-2 text-left font-bold">
+                  Department
+                </th>
+                <th scope="col" className="px-3 py-2 text-center font-bold">
                   {displayLabelA} &rarr; {displayLabelB}
                 </th>
-                <th className="px-3 py-2 text-right font-bold">Change</th>
-                <th className="w-24 px-3 py-2 text-right font-bold">Note</th>
+                <th scope="col" className="px-3 py-2 text-right font-bold">
+                  Change
+                </th>
+                <th scope="col" className="w-24 px-3 py-2 text-right font-bold">
+                  Note
+                </th>
               </tr>
             </thead>
             <tbody className="divide-outline-variant/5 divide-y">

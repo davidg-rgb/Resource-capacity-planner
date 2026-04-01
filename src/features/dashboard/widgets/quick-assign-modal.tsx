@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { useProjects } from '@/hooks/use-projects';
@@ -81,6 +81,7 @@ export const QuickAssignModal = React.memo(function QuickAssignModal({
 }: QuickAssignModalProps) {
   const queryClient = useQueryClient();
   const { data: projects } = useProjects();
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [rangeFrom, setRangeFrom] = useState(monthFrom ?? getDefaultMonthFrom);
@@ -106,6 +107,24 @@ export const QuickAssignModal = React.memo(function QuickAssignModal({
     }
   }, [isOpen, monthFrom, monthTo]);
 
+  // Escape key handler
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  // Auto-focus first input on open
+  useEffect(() => {
+    if (isOpen && dialogRef.current) {
+      const firstInput = dialogRef.current.querySelector<HTMLElement>('select, input, button');
+      firstInput?.focus();
+    }
+  }, [isOpen]);
+
   const mutation = useMutation({
     mutationFn: async (
       allocations: { personId: string; projectId: string; month: string; hours: number }[],
@@ -119,7 +138,6 @@ export const QuickAssignModal = React.memo(function QuickAssignModal({
       return res.json();
     },
     onSuccess: () => {
-      // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ['availability-search'] });
       queryClient.invalidateQueries({ queryKey: ['conflicts'] });
       queryClient.invalidateQueries({ queryKey: ['allocations'] });
@@ -165,12 +183,16 @@ export const QuickAssignModal = React.memo(function QuickAssignModal({
       onClick={onClose}
     >
       <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="quick-assign-title"
         className="bg-surface-container-lowest border-outline-variant w-full max-w-lg rounded-lg border shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="border-outline-variant border-b p-4">
-          <h3 className="text-on-surface text-lg font-semibold">
+          <h3 id="quick-assign-title" className="text-on-surface text-lg font-semibold">
             Assign {person.firstName} {person.lastName}
           </h3>
           <p className="text-on-surface-variant text-sm">Create allocation for a project</p>
