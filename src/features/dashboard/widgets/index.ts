@@ -8,3 +8,7 @@ import './project-impact-widget';
 import './strategic-alerts-widget';
 import './department-bar-widget';
 import './discipline-chart-widget';
+import './capacity-gauges-widget';
+import './utilization-sparklines-widget';
+import './capacity-forecast-widget';
+import './capacity-distribution-widget';
