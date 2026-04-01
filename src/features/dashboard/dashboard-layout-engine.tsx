@@ -1,0 +1,225 @@
+'use client';
+
+import React, { useCallback, useMemo, useState } from 'react';
+import {
+  closestCenter,
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+  type DragStartEvent,
+} from '@dnd-kit/core';
+import { arrayMove, SortableContext } from '@dnd-kit/sortable';
+import { Loader2 } from 'lucide-react';
+
+import { useDashboardLayout, useSaveLayout } from './use-dashboard-layout';
+import { EditModeToggle, SortableWidget, WidgetDrawer } from './dashboard-edit-mode';
+import { useWidgetTimeRange } from './dashboard-time-range';
+import { getWidget } from './widget-registry';
+import type { WidgetPlacement } from './widget-registry.types';
+
+// ---------------------------------------------------------------------------
+// DashboardGrid
+// ---------------------------------------------------------------------------
+
+export function DashboardGrid({ dashboardId = 'manager' }: { dashboardId?: string }) {
+  const { layout, isLoading, isError } = useDashboardLayout(dashboardId);
+  const { saveLayout } = useSaveLayout(dashboardId);
+  const timeRange = useWidgetTimeRange();
+
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [widgets, setWidgets] = useState<WidgetPlacement[]>([]);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  // Sync layout data from server into local state
+  const layoutWidgets = layout?.widgets;
+  React.useEffect(() => {
+    if (layoutWidgets) {
+      setWidgets(layoutWidgets);
+    }
+  }, [layoutWidgets]);
+
+  // dnd-kit sensors: require 8px movement before drag starts
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+
+  const sortableItems = useMemo(() => widgets.map((w) => w.widgetId), [widgets]);
+
+  // ------- Drag handlers -------
+
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    setActiveId(String(event.active.id));
+  }, []);
+
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      setActiveId(null);
+      const { active, over } = event;
+      if (!over || active.id === over.id) return;
+
+      setWidgets((prev) => {
+        const oldIndex = prev.findIndex((w) => w.widgetId === active.id);
+        const newIndex = prev.findIndex((w) => w.widgetId === over.id);
+        if (oldIndex === -1 || newIndex === -1) return prev;
+
+        const reordered = arrayMove(prev, oldIndex, newIndex).map((w, i) => ({
+          ...w,
+          position: i,
+        }));
+        saveLayout(reordered);
+        return reordered;
+      });
+    },
+    [saveLayout],
+  );
+
+  // ------- Widget mutations -------
+
+  const handleResize = useCallback(
+    (widgetId: string) => {
+      setWidgets((prev) => {
+        const updated = prev.map((w) => {
+          if (w.widgetId !== widgetId) return w;
+          const def = getWidget(widgetId);
+          const minSpan = def?.minColSpan ?? 4;
+          const cycle: Array<4 | 6 | 12> = [4, 6, 12];
+          const validCycle = cycle.filter((s) => s >= minSpan);
+          const currentIdx = validCycle.indexOf(w.colSpan);
+          const nextSpan = validCycle[(currentIdx + 1) % validCycle.length];
+          return { ...w, colSpan: nextSpan };
+        });
+        saveLayout(updated);
+        return updated;
+      });
+    },
+    [saveLayout],
+  );
+
+  const handleRemove = useCallback(
+    (widgetId: string) => {
+      setWidgets((prev) => {
+        const updated = prev
+          .filter((w) => w.widgetId !== widgetId)
+          .map((w, i) => ({ ...w, position: i }));
+        saveLayout(updated);
+        return updated;
+      });
+    },
+    [saveLayout],
+  );
+
+  const handleAddWidget = useCallback(
+    (widgetId: string) => {
+      const def = getWidget(widgetId);
+      if (!def) return;
+      setWidgets((prev) => {
+        if (prev.some((w) => w.widgetId === widgetId)) return prev;
+        const newPlacement: WidgetPlacement = {
+          widgetId,
+          position: prev.length,
+          colSpan: def.defaultColSpan,
+        };
+        const updated = [...prev, newPlacement];
+        saveLayout(updated);
+        return updated;
+      });
+    },
+    [saveLayout],
+  );
+
+  // ------- Active drag overlay widget -------
+
+  const activeWidget = activeId ? widgets.find((w) => w.widgetId === activeId) : null;
+  const ActiveWidgetComponent = activeWidget ? getWidget(activeWidget.widgetId)?.component : null;
+
+  // ------- Render -------
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="text-destructive flex items-center justify-center py-20">
+        Kunde inte ladda dashboard-layout
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative">
+      {/* Edit mode controls */}
+      <div className="mb-4 flex items-center justify-end gap-2">
+        {isEditMode && (
+          <button
+            type="button"
+            onClick={() => setIsDrawerOpen((o) => !o)}
+            className="hover:bg-accent rounded-md border px-3 py-1.5 text-sm font-medium transition-colors"
+          >
+            Lagg till widget
+          </button>
+        )}
+        <EditModeToggle isEditMode={isEditMode} onToggle={() => setIsEditMode((v) => !v)} />
+      </div>
+
+      {/* Widget drawer */}
+      {isEditMode && (
+        <WidgetDrawer
+          isOpen={isDrawerOpen}
+          onClose={() => setIsDrawerOpen(false)}
+          dashboardId={dashboardId}
+          currentWidgetIds={sortableItems}
+          onAddWidget={handleAddWidget}
+        />
+      )}
+
+      {/* Grid */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext items={sortableItems} strategy={() => null}>
+          <div className="grid grid-cols-12 gap-6">
+            {widgets.map((placement) => {
+              const def = getWidget(placement.widgetId);
+              if (!def) return null;
+              return (
+                <SortableWidget
+                  key={placement.widgetId}
+                  placement={placement}
+                  component={def.component}
+                  minColSpan={def.minColSpan}
+                  timeRange={timeRange}
+                  isEditMode={isEditMode}
+                  onResize={handleResize}
+                  onRemove={handleRemove}
+                />
+              );
+            })}
+          </div>
+        </SortableContext>
+
+        <DragOverlay dropAnimation={null}>
+          {activeWidget && ActiveWidgetComponent ? (
+            <div
+              className="bg-card rounded-lg border opacity-80 shadow-lg"
+              style={{ width: `${(activeWidget.colSpan / 12) * 100}%`, maxWidth: '100%' }}
+            >
+              <ActiveWidgetComponent timeRange={timeRange} isEditMode={false} />
+            </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+    </div>
+  );
+}
+
+export default DashboardGrid;
