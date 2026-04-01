@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Dashboard Visualizations & Customization
-status: executing phase 23
-stopped_at: Completed 23-03-PLAN.md (Person 360 Card)
+status: executing phase 24
+stopped_at: Completed 24-01-PLAN.md (Types + Supply vs Demand)
 last_updated: "2026-04-01T12:00:00.000Z"
 last_activity: 2026-04-01
 progress:
   total_phases: 10
   completed_phases: 0
   total_plans: 0
-  completed_plans: 1
-  percent: 5
+  completed_plans: 2
+  percent: 10
 ---
 
 # Nordic Capacity -- Project State
@@ -28,19 +28,19 @@ Roadmap: .planning/ROADMAP-V4.md
 
 ## Current Position
 
-Phase: 23 (executing)
-Plan: 23-03 complete, next plan pending
-Status: Phase 23 in progress -- Person 360 Card shipped
+Phase: 24 (executing)
+Plan: 24-01 complete, 24-02 next
+Status: Phase 24 in progress -- Group A endpoints shipped
 Last activity: 2026-04-01
 
-Progress: [▓░░░░░░░░░] 5% (v4.0)
+Progress: [▓▓░░░░░░░░] 10% (v4.0)
 
 ## Phase Status
 
 | Phase | Name | Status | Started | Completed |
 | ----- | ---- | ------ | ------- | --------- |
 | 23 | Dashboard Framework + V7 Person Card | In Progress | 2026-04-01 | - |
-| 24 | Full Data Layer (11 endpoints) | Planning | - | - |
+| 24 | Full Data Layer (11 endpoints) | In Progress | 2026-04-01 | - |
 | 25 | Gauges + Sparklines (C1) | Pending | - | - |
 | 26 | Forecast + Stacked Area (C2a) | Pending | - | - |
 | 27 | Bench + Discipline Demand (C2b) | Pending | - | - |
@@ -79,6 +79,7 @@ Key architectural decisions for v4.0:
 - dnd-kit chosen over react-beautiful-dnd (lighter, more accessible, actively maintained)
 - Person 360 capacity thresholds: <80% available, >=80% fully-allocated, >100% overloaded
 - Person summary email returns null (people table has no email column, field kept for future)
+- v4 PersonSummaryResponse renamed to PersonDetailResponse to avoid collision with Phase 23 type
 
 ### Pending Todos
 
@@ -92,8 +93,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Completed 23-03-PLAN.md (Person 360 Card overlay + provider + endpoint)
-Resume file: .planning/phases/23-dashboard-framework/23-03-SUMMARY.md
+Stopped at: Completed 24-01-PLAN.md (Types + Supply vs Demand endpoints)
+Resume file: .planning/phases/24-data-layer/24-01-SUMMARY.md
 
 ---
 
