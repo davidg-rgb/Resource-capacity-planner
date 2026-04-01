@@ -19,3 +19,5 @@ import './resource-conflict-widget';
 import './availability-timeline-widget';
 import './program-rollup-widget';
 import './period-comparison-widget';
+import './allocation-trends-widget';
+import './discipline-distribution-widget';

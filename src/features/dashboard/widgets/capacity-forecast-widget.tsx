@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { TrendingUp, Loader2 } from 'lucide-react';
 
 import { CapacityForecastChart } from '@/components/charts/capacity-forecast-chart';
 import { useCapacityForecast } from '@/hooks/use-capacity-forecast';
+import { useCrossLinks } from '../dashboard-cross-links';
 import { registerWidget } from '../widget-registry';
 import type { WidgetProps } from '../widget-registry.types';
 
@@ -20,6 +21,19 @@ const CapacityForecastContent = React.memo(function CapacityForecastContent({
     projectId: config?.projectId as string | undefined,
     departmentId: config?.departmentId as string | undefined,
   });
+
+  const { emit } = useCrossLinks();
+
+  const handleDeficitClick = useCallback(
+    (month: string) => {
+      emit({
+        source: 'capacity-forecast',
+        action: 'open-finder',
+        payload: { month },
+      });
+    },
+    [emit],
+  );
 
   if (error) {
     return (
@@ -55,6 +69,7 @@ const CapacityForecastContent = React.memo(function CapacityForecastContent({
         gap={data.gap}
         summary={data.summary}
         hiringTrigger={config?.hiringTrigger as number | undefined}
+        onDeficitClick={handleDeficitClick}
       />
     </div>
   );
@@ -68,7 +83,7 @@ registerWidget({
   id: 'capacity-forecast',
   name: 'Capacity Forecast',
   description:
-    'Line chart showing demand vs supply over time with gap shading and optional hiring trigger line.',
+    'Line chart showing demand vs supply over time with gap shading and optional hiring trigger line. Click a deficit month to find available resources.',
   category: 'health-capacity',
   icon: TrendingUp,
   component: CapacityForecastContent,

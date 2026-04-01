@@ -49,8 +49,15 @@ const SECTION_NAV: Record<string, NavSectionDef[]> = {
       headingKey: 'overview',
       items: [
         { labelKey: 'kpiDashboard', href: '/dashboard', icon: 'bar_chart' },
+        { labelKey: 'projectDashboard', href: '/dashboard/projects', icon: 'folder_open' },
         { labelKey: 'teamLoad', href: '/dashboard/team', icon: 'groups' },
       ],
+    },
+  ],
+  '/scenarios': [
+    {
+      headingKey: 'scenarios',
+      items: [{ labelKey: 'allScenarios', href: '/scenarios', icon: 'science' }],
     },
   ],
   '/admin': [
@@ -105,7 +112,9 @@ export function SideNav() {
                 const isActive =
                   item.href === '/dashboard/team'
                     ? pathname.startsWith('/dashboard/team')
-                    : pathname === item.href;
+                    : item.href === '/dashboard/projects'
+                      ? pathname.startsWith('/dashboard/projects')
+                      : pathname === item.href;
                 return (
                   <li key={item.href}>
                     <Link

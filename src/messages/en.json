@@ -17,7 +17,11 @@
     "staffDesc": "Manage staff",
     "exportDesc": "Table and Excel export",
     "adminDesc": "Reference data and settings",
-    "membersDesc": "Invite and manage users"
+    "membersDesc": "Invite and manage users",
+    "projectDashboard": "Project View",
+    "projectDashboardDesc": "Staffing and capacity per project",
+    "scenarios": "Scenarios",
+    "scenariosDesc": "Explore hypothetical staffing plans"
   },
   "sidebar": {
     "staff": "Staff",
@@ -30,11 +34,14 @@
     "export": "Export",
     "overview": "Overview",
     "kpiDashboard": "KPI Dashboard",
+    "projectDashboard": "Project View",
     "teamLoad": "Team Load",
     "referenceData": "Reference Data",
     "disciplines": "Disciplines",
     "departments": "Departments",
     "programs": "Programs",
+    "scenarios": "Scenarios",
+    "allScenarios": "All Scenarios",
     "newEntry": "New Entry",
     "help": "Help",
     "archive": "Archive"

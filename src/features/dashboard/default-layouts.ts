@@ -14,24 +14,33 @@ export const DEFAULT_LAYOUTS: Record<string, WidgetPlacement[]> = {
   'manager:desktop': [
     { widgetId: 'kpi-cards', position: 0, colSpan: 12 },
     { widgetId: 'utilization-heat-map', position: 1, colSpan: 12 },
-    { widgetId: 'department-bar-chart', position: 2, colSpan: 6 },
-    { widgetId: 'discipline-chart', position: 3, colSpan: 6 },
-    { widgetId: 'strategic-alerts', position: 4, colSpan: 12 },
-    { widgetId: 'discipline-progress', position: 5, colSpan: 4 },
-    { widgetId: 'project-impact', position: 6, colSpan: 4 },
+    { widgetId: 'capacity-forecast', position: 2, colSpan: 12 },
+    { widgetId: 'capacity-gauges', position: 3, colSpan: 6 },
+    { widgetId: 'utilization-sparklines', position: 4, colSpan: 6 },
+    { widgetId: 'department-bar-chart', position: 5, colSpan: 6 },
+    { widgetId: 'discipline-chart', position: 6, colSpan: 6 },
+    { widgetId: 'resource-conflicts', position: 7, colSpan: 12 },
+    { widgetId: 'bench-report', position: 8, colSpan: 12 },
+    { widgetId: 'discipline-demand', position: 9, colSpan: 12 },
+    { widgetId: 'period-comparison', position: 10, colSpan: 12 },
+    { widgetId: 'strategic-alerts', position: 11, colSpan: 12 },
+    { widgetId: 'discipline-progress', position: 12, colSpan: 4 },
+    { widgetId: 'project-impact', position: 13, colSpan: 4 },
+    { widgetId: 'availability-finder', position: 14, colSpan: 12 },
   ],
 
   // -----------------------------------------------------------------------
-  // Manager — Mobile (all full-width, stacked vertically)
+  // Manager — Mobile (essential widgets, all full-width)
   // -----------------------------------------------------------------------
   'manager:mobile': [
     { widgetId: 'kpi-cards', position: 0, colSpan: 12 },
     { widgetId: 'utilization-heat-map', position: 1, colSpan: 12 },
-    { widgetId: 'department-bar-chart', position: 2, colSpan: 12 },
-    { widgetId: 'discipline-chart', position: 3, colSpan: 12 },
-    { widgetId: 'strategic-alerts', position: 4, colSpan: 12 },
-    { widgetId: 'discipline-progress', position: 5, colSpan: 12 },
-    { widgetId: 'project-impact', position: 6, colSpan: 12 },
+    { widgetId: 'capacity-forecast', position: 2, colSpan: 12 },
+    { widgetId: 'capacity-gauges', position: 3, colSpan: 12 },
+    { widgetId: 'resource-conflicts', position: 4, colSpan: 12 },
+    { widgetId: 'department-bar-chart', position: 5, colSpan: 12 },
+    { widgetId: 'discipline-chart', position: 6, colSpan: 12 },
+    { widgetId: 'strategic-alerts', position: 7, colSpan: 12 },
   ],
 
   // -----------------------------------------------------------------------
@@ -39,25 +48,28 @@ export const DEFAULT_LAYOUTS: Record<string, WidgetPlacement[]> = {
   // -----------------------------------------------------------------------
   'project-leader:desktop': [
     { widgetId: 'kpi-cards', position: 0, colSpan: 12 },
-    { widgetId: 'stacked-area-chart', position: 1, colSpan: 12 },
+    { widgetId: 'capacity-distribution', position: 1, colSpan: 12 },
     { widgetId: 'availability-timeline', position: 2, colSpan: 12 },
     { widgetId: 'capacity-forecast', position: 3, colSpan: 12 },
     { widgetId: 'allocation-trends', position: 4, colSpan: 6 },
     { widgetId: 'discipline-distribution', position: 5, colSpan: 6 },
-    { widgetId: 'availability-finder', position: 6, colSpan: 12 },
+    { widgetId: 'program-rollup', position: 6, colSpan: 12 },
+    { widgetId: 'resource-conflicts', position: 7, colSpan: 12 },
+    { widgetId: 'availability-finder', position: 8, colSpan: 12 },
+    { widgetId: 'period-comparison', position: 9, colSpan: 12 },
   ],
 
   // -----------------------------------------------------------------------
-  // Project Leader — Mobile (all full-width, stacked vertically)
+  // Project Leader — Mobile (essential widgets, all full-width)
   // -----------------------------------------------------------------------
   'project-leader:mobile': [
     { widgetId: 'kpi-cards', position: 0, colSpan: 12 },
-    { widgetId: 'stacked-area-chart', position: 1, colSpan: 12 },
+    { widgetId: 'capacity-distribution', position: 1, colSpan: 12 },
     { widgetId: 'availability-timeline', position: 2, colSpan: 12 },
     { widgetId: 'capacity-forecast', position: 3, colSpan: 12 },
-    { widgetId: 'allocation-trends', position: 4, colSpan: 12 },
-    { widgetId: 'discipline-distribution', position: 5, colSpan: 12 },
-    { widgetId: 'availability-finder', position: 6, colSpan: 12 },
+    { widgetId: 'resource-conflicts', position: 4, colSpan: 12 },
+    { widgetId: 'availability-finder', position: 5, colSpan: 12 },
+    { widgetId: 'program-rollup', position: 6, colSpan: 12 },
   ],
 };
 

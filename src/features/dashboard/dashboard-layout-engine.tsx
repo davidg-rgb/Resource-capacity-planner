@@ -17,7 +17,7 @@ import { FileDown, Loader2 } from 'lucide-react';
 import { useDashboardLayout, useSaveLayout } from './use-dashboard-layout';
 import { EditModeToggle, SortableWidget, WidgetDrawer } from './dashboard-edit-mode';
 import { useWidgetTimeRange } from './dashboard-time-range';
-import { CrossLinkProvider } from './dashboard-cross-links';
+import { CrossLinkProvider, useCrossLinks } from './dashboard-cross-links';
 import { ExportPdfModal, usePdfExport } from './pdf-export';
 import { getWidget } from './widget-registry';
 import type { WidgetPlacement } from './widget-registry.types';
@@ -38,6 +38,7 @@ function DashboardGridInner({ dashboardId = 'manager' }: { dashboardId?: string 
   const { layout, isLoading, isError } = useDashboardLayout(dashboardId);
   const { saveLayout } = useSaveLayout(dashboardId);
   const timeRange = useWidgetTimeRange();
+  const { registerWidgetRef } = useCrossLinks();
   const [isEditMode, setIsEditMode] = useState(false);
   const [widgets, setWidgets] = useState<WidgetPlacement[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -250,6 +251,7 @@ function DashboardGridInner({ dashboardId = 'manager' }: { dashboardId?: string 
                   onResize={handleResize}
                   onRemove={handleRemove}
                   onExportPdf={handleExportWidgetPdf}
+                  onRegisterRef={registerWidgetRef}
                 />
               );
             })}

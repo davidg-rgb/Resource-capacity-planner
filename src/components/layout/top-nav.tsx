@@ -16,6 +16,7 @@ import {
   BarChart3,
   ShieldCheck,
   AlertTriangle,
+  FlaskConical,
   Menu,
   X,
 } from 'lucide-react';
@@ -53,6 +54,20 @@ const NAV_ITEMS: NavItemDef[] = [
     flag: 'dashboards',
   },
   {
+    labelKey: 'projectDashboard',
+    descKey: 'projectDashboardDesc',
+    href: '/dashboard/projects',
+    icon: FolderKanban,
+    flag: 'dashboards',
+  },
+  {
+    labelKey: 'scenarios',
+    descKey: 'scenariosDesc',
+    href: '/scenarios',
+    icon: FlaskConical,
+    flag: 'scenarios',
+  },
+  {
     labelKey: 'warnings',
     descKey: 'warningsDesc',
     href: '/alerts',
@@ -73,10 +88,12 @@ export function TopNav() {
   const tc = useTranslations('common');
   const visibleItems = NAV_ITEMS.filter((item) => !item.flag || flags[item.flag]);
 
-  // Precise active detection: /dashboard/team must not match /dashboard
+  // Precise active detection: /dashboard/team and /dashboard/projects must not match /dashboard
   function isNavActive(href: string): boolean {
     if (href === '/dashboard/team') return pathname.startsWith('/dashboard/team');
+    if (href === '/dashboard/projects') return pathname.startsWith('/dashboard/projects');
     if (href === '/dashboard') return pathname === '/dashboard';
+    if (href === '/scenarios') return pathname.startsWith('/scenarios');
     return pathname.startsWith(href);
   }
 

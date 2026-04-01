@@ -6,6 +6,7 @@ import { Search } from 'lucide-react';
 import { useAvailabilitySearch } from '@/hooks/use-availability';
 import { useDisciplines, useDepartments } from '@/hooks/use-reference-data';
 import { usePersonCard } from '@/features/dashboard/person-card/person-card-provider';
+import { useCrossLinkSubscription } from '../dashboard-cross-links';
 import { registerWidget } from '../widget-registry';
 import type { WidgetProps } from '../widget-registry.types';
 import { QuickAssignModal } from './quick-assign-modal';
@@ -69,6 +70,14 @@ const AvailabilityFinderContent = React.memo(function AvailabilityFinderContent(
   const [departmentId, setDepartmentId] = useState('');
   const [minHours, setMinHours] = useState<number>(0);
   const [sort, setSort] = useState<SortOption>('available');
+
+  // Subscribe to cross-link events (e.g., forecast deficit click -> pre-fill discipline)
+  const handleCrossLink = useCallback((payload: Record<string, unknown>) => {
+    if (payload.disciplineId) {
+      setDisciplineId(payload.disciplineId as string);
+    }
+  }, []);
+  useCrossLinkSubscription('open-finder', handleCrossLink);
 
   // Quick-assign modal state
   const [assignTarget, setAssignTarget] = useState<AssignTarget | null>(null);

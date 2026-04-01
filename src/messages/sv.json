@@ -17,7 +17,11 @@
     "staffDesc": "Hantera medarbetare",
     "exportDesc": "Tabell och Excel-export",
     "adminDesc": "Referensdata och inställningar",
-    "membersDesc": "Bjud in och hantera användare"
+    "membersDesc": "Bjud in och hantera användare",
+    "projectDashboard": "Projektvy",
+    "projectDashboardDesc": "Beläggning och bemanning per projekt",
+    "scenarios": "Scenarier",
+    "scenariosDesc": "Utforska hypotetiska personalplaneringar"
   },
   "sidebar": {
     "staff": "Medarbetare",
@@ -30,11 +34,14 @@
     "export": "Exportera",
     "overview": "Översikt",
     "kpiDashboard": "KPI-dashboard",
+    "projectDashboard": "Projektvy",
     "teamLoad": "Teambelastning",
     "referenceData": "Referensdata",
     "disciplines": "Discipliner",
     "departments": "Avdelningar",
     "programs": "Program",
+    "scenarios": "Scenarier",
+    "allScenarios": "Alla scenarier",
     "newEntry": "Ny post",
     "help": "Hjälp",
     "archive": "Arkiv"
