@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Dashboard Visualizations & Customization
-status: executing phase 26
-stopped_at: Completed 26-01-PLAN.md (Forecast + Stacked Area Charts)
-last_updated: "2026-04-01T17:00:00Z"
+status: executing phase 29
+stopped_at: Completed 29-01-PLAN.md (Timeline + Program + Comparison)
+last_updated: "2026-04-01T13:11:00Z"
 last_activity: 2026-04-01
 progress:
   total_phases: 10
-  completed_phases: 4
-  total_plans: 10
-  completed_plans: 9
-  percent: 55
+  completed_phases: 7
+  total_plans: 11
+  completed_plans: 11
+  percent: 70
 ---
 
 # Nordic Capacity -- Project State
@@ -24,16 +24,16 @@ UX Review: .planning/V13-SCENARIO-UX-REVIEW.md
 Roadmap: .planning/ROADMAP-V4.md
 
 **Core value:** Customizable dashboard with 13 visualizations that make the tool irreplaceable vs Excel
-**Current focus:** v4.0 build — Phase 26 (Forecast + Stacked Area) complete, next Phase 27
+**Current focus:** v4.0 build — Phase 28 (Availability Finder + Conflicts) complete, next Phase 29
 
 ## Current Position
 
-Phase: 26 (complete)
-Plan: 26-01 complete, next Phase 27
-Status: V1 Capacity Forecast + V5 Stacked Area charts built and registered
+Phase: 28 (complete)
+Plan: 28-01 complete, next Phase 29
+Status: V3 Availability Finder + V9 Resource Conflicts + Quick-Assign Modal built and registered
 Last activity: 2026-04-01
 
-Progress: [▓▓▓▓▓▓░░░░] 55% (v4.0)
+Progress: [▓▓▓▓▓▓▓░░░] 65% (v4.0)
 
 ## Phase Status
 
@@ -43,8 +43,8 @@ Progress: [▓▓▓▓▓▓░░░░] 55% (v4.0)
 | 24 | Full Data Layer (11 endpoints) | Complete | 2026-04-01 | 2026-04-01 |
 | 25 | Gauges + Sparklines (C1) | Complete | 2026-04-01 | 2026-04-01 |
 | 26 | Forecast + Stacked Area (C2a) | Complete | 2026-04-01 | 2026-04-01 |
-| 27 | Bench + Discipline Demand (C2b) | Pending | - | - |
-| 28 | Availability Finder + Conflicts (C3) | Pending | - | - |
+| 27 | Bench + Discipline Demand (C2b) | Complete | 2026-04-01 | 2026-04-01 |
+| 28 | Availability Finder + Conflicts (C3) | Complete | 2026-04-01 | 2026-04-01 |
 | 29 | Timeline + Program + Comparison (C4) | Pending | - | - |
 | 30 | Integration & Wiring (D) | Pending | - | - |
 | 31 | PDF Export Enhancement (E) | Pending | - | - |
@@ -84,6 +84,9 @@ Key architectural decisions for v4.0:
 - Person 360 capacity thresholds: <80% available, >=80% fully-allocated, >100% overloaded
 - Person summary email returns null (people table has no email column, field kept for future)
 - v4 PersonSummaryResponse renamed to PersonDetailResponse to avoid collision with Phase 23 type
+- Quick-assign modal is shared component, not embedded in widgets
+- Conflict dismiss state in localStorage (key: nordic-capacity-dismissed-conflicts)
+- Redistribute modal validates total <= target before save
 
 ### Pending Todos
 
@@ -99,8 +102,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Completed 26-01-PLAN.md (Forecast + Stacked Area Charts)
-Resume file: .planning/phases/26-forecast-stacked-area/26-01-SUMMARY.md
+Stopped at: Completed 28-01-PLAN.md (Availability Finder + Conflicts)
+Resume file: .planning/phases/28-availability-finder-conflicts/28-01-SUMMARY.md
 
 ---
 
