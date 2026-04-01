@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { ArrowRightLeft, Loader2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { usePeriodComparison } from '@/hooks/use-period-comparison';
 import { registerWidget } from '../widget-registry';
@@ -116,6 +117,9 @@ function computePrecedingPeriod(from: string, to: string): { from: string; to: s
 const PeriodComparisonContent = React.memo(function PeriodComparisonContent({
   timeRange,
 }: WidgetProps) {
+  const t = useTranslations('widgets.periodComparison');
+  const tc = useTranslations('widgets.common');
+
   // Use timeRange from props as period B; period A is the same duration immediately before
   const [periodB, setPeriodB] = useState(() => ({ from: timeRange.from, to: timeRange.to }));
   const [periodA, setPeriodA] = useState(() =>
@@ -166,7 +170,7 @@ const PeriodComparisonContent = React.memo(function PeriodComparisonContent({
   if (error) {
     return (
       <div className="text-destructive flex items-center justify-center py-10 text-sm">
-        Failed to load comparison data
+        {t('error')}
       </div>
     );
   }
@@ -186,38 +190,38 @@ const PeriodComparisonContent = React.memo(function PeriodComparisonContent({
     <div>
       {/* Header + Presets */}
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <h4 className="font-headline text-sm font-semibold">Period Comparison</h4>
+        <h4 className="font-headline text-sm font-semibold">{t('title')}</h4>
         <div className="flex gap-1.5">
           <button
             onClick={() => applyPreset('mom')}
             className="bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high rounded px-2 py-0.5 text-[10px] font-medium transition-colors"
           >
-            Month vs Month
+            {t('monthVsMonth')}
           </button>
           <button
             onClick={() => applyPreset('qoq')}
             className="bg-surface-container-low text-on-surface-variant hover:bg-surface-container-high rounded px-2 py-0.5 text-[10px] font-medium transition-colors"
           >
-            Quarter vs Quarter
+            {t('quarterVsQuarter')}
           </button>
         </div>
       </div>
 
       <div className="text-on-surface-variant mb-3 text-[11px]">
-        Comparing <span className="font-bold">{displayLabelA}</span> vs{' '}
+        {tc('comparing')} <span className="font-bold">{displayLabelA}</span> {tc('vs')}{' '}
         <span className="font-bold">{displayLabelB}</span>
       </div>
 
       {/* Key Metrics Table */}
       <div className="bg-surface-container-lowest border-outline-variant/10 mb-4 overflow-hidden rounded-sm border">
         <div className="text-outline-variant bg-surface-container-low/30 px-4 py-2 text-[10px] font-bold tracking-wider uppercase">
-          Key Metrics
+          {t('keyMetrics')}
         </div>
         <table className="w-full text-[11px]">
           <thead>
             <tr className="border-outline-variant/10 text-outline-variant border-b text-[9px] tracking-wider uppercase">
               <th scope="col" className="px-4 py-2 text-left font-bold">
-                Metric
+                {tc('metric')}
               </th>
               <th scope="col" className="px-3 py-2 text-right font-bold">
                 {displayLabelA}
@@ -226,10 +230,10 @@ const PeriodComparisonContent = React.memo(function PeriodComparisonContent({
                 {displayLabelB}
               </th>
               <th scope="col" className="px-3 py-2 text-right font-bold">
-                Delta
+                {tc('delta')}
               </th>
               <th scope="col" className="w-10 px-3 py-2 text-center font-bold">
-                Signal
+                {tc('signal')}
               </th>
             </tr>
           </thead>
@@ -275,22 +279,22 @@ const PeriodComparisonContent = React.memo(function PeriodComparisonContent({
       {sortedDepartments.length > 0 && (
         <div className="bg-surface-container-lowest border-outline-variant/10 mb-4 overflow-hidden rounded-sm border">
           <div className="text-outline-variant bg-surface-container-low/30 px-4 py-2 text-[10px] font-bold tracking-wider uppercase">
-            Department Shifts
+            {t('departmentShifts')}
           </div>
           <table className="w-full text-[11px]">
             <thead>
               <tr className="border-outline-variant/10 text-outline-variant border-b text-[9px] tracking-wider uppercase">
                 <th scope="col" className="px-4 py-2 text-left font-bold">
-                  Department
+                  {tc('department')}
                 </th>
                 <th scope="col" className="px-3 py-2 text-center font-bold">
                   {displayLabelA} &rarr; {displayLabelB}
                 </th>
                 <th scope="col" className="px-3 py-2 text-right font-bold">
-                  Change
+                  {tc('change')}
                 </th>
                 <th scope="col" className="w-24 px-3 py-2 text-right font-bold">
-                  Note
+                  {tc('note')}
                 </th>
               </tr>
             </thead>
@@ -308,7 +312,7 @@ const PeriodComparisonContent = React.memo(function PeriodComparisonContent({
                     <DeltaArrow delta={dept.delta} />
                   </td>
                   <td className="text-outline-variant px-3 py-2 text-right text-[10px]">
-                    {dept.note ?? (Math.abs(dept.delta) < 2 ? 'stable' : '')}
+                    {dept.note ?? (Math.abs(dept.delta) < 2 ? tc('stable') : '')}
                   </td>
                 </tr>
               ))}
@@ -321,7 +325,7 @@ const PeriodComparisonContent = React.memo(function PeriodComparisonContent({
       {data.notableChanges.length > 0 && (
         <div className="border-outline-variant/10 bg-surface-container-lowest rounded-sm border px-4 py-3">
           <div className="text-outline-variant mb-2 text-[10px] font-bold tracking-wider uppercase">
-            Notable Changes
+            {t('notableChanges')}
           </div>
           <ul className="space-y-1">
             {data.notableChanges.map((change, idx) => (

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { PieChart, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { DisciplineChart } from '@/components/charts/discipline-chart';
 import { useDisciplineBreakdown } from '@/hooks/use-dashboard';
@@ -15,12 +16,13 @@ import type { WidgetProps } from '../widget-registry.types';
 const DisciplineChartContent = React.memo(function DisciplineChartContent({
   timeRange,
 }: WidgetProps) {
+  const t = useTranslations('widgets.disciplineChart');
   const { data, isLoading, error } = useDisciplineBreakdown(timeRange.from, timeRange.to);
 
   if (error) {
     return (
       <div className="text-destructive flex items-center justify-center py-10 text-sm">
-        Failed to load discipline data
+        {t('error')}
       </div>
     );
   }
@@ -34,16 +36,12 @@ const DisciplineChartContent = React.memo(function DisciplineChartContent({
   }
 
   if (data.length === 0) {
-    return (
-      <div className="text-on-surface-variant py-10 text-center text-sm">
-        No discipline data available
-      </div>
-    );
+    return <div className="text-on-surface-variant py-10 text-center text-sm">{t('empty')}</div>;
   }
 
   return (
     <div>
-      <h4 className="font-headline mb-4 text-sm font-semibold">Discipline Breakdown</h4>
+      <h4 className="font-headline mb-4 text-sm font-semibold">{t('title')}</h4>
       <DisciplineChart data={data} />
     </div>
   );

@@ -10,6 +10,7 @@
 
 import { useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 import type { PdfWidgetEntry } from './dashboard-pdf-document';
 import { captureWidgetSnapshots } from './svg-snapshot';
@@ -39,6 +40,7 @@ interface UsePdfExportReturn {
 }
 
 export function usePdfExport(): UsePdfExportReturn {
+  const t = useTranslations('pdfExport');
   const [isExporting, setIsExporting] = useState(false);
   const [progress, setProgress] = useState('');
   const isExportingRef = useRef(false);
@@ -49,7 +51,7 @@ export function usePdfExport(): UsePdfExportReturn {
       const { pdf } = await import('@react-pdf/renderer');
       const { DashboardPdfDocument } = await import('./dashboard-pdf-document');
 
-      setProgress('Genererar PDF...');
+      setProgress(t('generatingPdf'));
 
       const element = DashboardPdfDocument({
         orgName: options.orgName,
@@ -74,7 +76,7 @@ export function usePdfExport(): UsePdfExportReturn {
       a.click();
       URL.revokeObjectURL(url);
     },
-    [],
+    [t],
   );
 
   const exportDashboard = useCallback(
@@ -82,7 +84,7 @@ export function usePdfExport(): UsePdfExportReturn {
       if (isExportingRef.current) return;
       isExportingRef.current = true;
       setIsExporting(true);
-      setProgress('Fanger widget-bilder...');
+      setProgress(t('capturingWidgets'));
 
       try {
         // Capture SVG snapshots from live DOM
@@ -103,17 +105,17 @@ export function usePdfExport(): UsePdfExportReturn {
           .filter((w): w is PdfWidgetEntry => w !== null);
 
         await generateAndDownload(widgets, options);
-        toast.success('PDF exporterad');
+        toast.success(t('exportSuccess'));
       } catch (err) {
         console.error('PDF export failed:', err);
-        toast.error('Kunde inte exportera PDF');
+        toast.error(t('exportFailed'));
       } finally {
         isExportingRef.current = false;
         setIsExporting(false);
         setProgress('');
       }
     },
-    [generateAndDownload],
+    [generateAndDownload, t],
   );
 
   const exportSingleWidget = useCallback(
@@ -128,7 +130,7 @@ export function usePdfExport(): UsePdfExportReturn {
       if (isExportingRef.current) return;
       isExportingRef.current = true;
       setIsExporting(true);
-      setProgress('Exporterar widget...');
+      setProgress(t('exportingWidget'));
 
       try {
         const snapshots = await captureWidgetSnapshots([options.widgetId]);
@@ -146,17 +148,17 @@ export function usePdfExport(): UsePdfExportReturn {
           orientation: 'landscape',
           includeCoverPage: false,
         });
-        toast.success('PDF exporterad');
+        toast.success(t('exportSuccess'));
       } catch (err) {
         console.error('Single widget PDF export failed:', err);
-        toast.error('Kunde inte exportera PDF');
+        toast.error(t('exportFailed'));
       } finally {
         isExportingRef.current = false;
         setIsExporting(false);
         setProgress('');
       }
     },
-    [generateAndDownload],
+    [generateAndDownload, t],
   );
 
   return { isExporting, progress, exportDashboard, exportSingleWidget };

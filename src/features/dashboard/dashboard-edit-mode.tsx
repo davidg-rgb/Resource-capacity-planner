@@ -3,6 +3,7 @@
 import React, { memo, useCallback, useMemo, useRef, useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { FileDown, GripVertical, MoreHorizontal, Pencil, Plus, Search, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { getWidgetsByDashboard } from './widget-registry';
 import type {
@@ -23,6 +24,7 @@ export function EditModeToggle({
   isEditMode: boolean;
   onToggle: () => void;
 }) {
+  const t = useTranslations('widgets.editMode');
   return (
     <button
       type="button"
@@ -35,11 +37,11 @@ export function EditModeToggle({
       ].join(' ')}
     >
       {isEditMode ? (
-        <>Klar</>
+        <>{t('done')}</>
       ) : (
         <>
           <Pencil className="h-4 w-4" />
-          Redigera
+          {t('edit')}
         </>
       )}
     </button>
@@ -51,6 +53,7 @@ export function EditModeToggle({
 // ---------------------------------------------------------------------------
 
 function ResizeHandle({ colSpan, onResize }: { colSpan: 4 | 6 | 12; onResize: () => void }) {
+  const t = useTranslations('widgets.editMode');
   const label = `${colSpan}/12`;
   return (
     <button
@@ -59,7 +62,7 @@ function ResizeHandle({ colSpan, onResize }: { colSpan: 4 | 6 | 12; onResize: ()
         e.stopPropagation();
         onResize();
       }}
-      title={`Storlek: ${label} (klicka for att andra)`}
+      title={t('sizeLabel', { size: label })}
       className="bg-muted text-muted-foreground hover:bg-muted-foreground/20 absolute right-1 bottom-1 z-10 flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold transition-colors"
     >
       {label}
@@ -72,6 +75,7 @@ function ResizeHandle({ colSpan, onResize }: { colSpan: 4 | 6 | 12; onResize: ()
 // ---------------------------------------------------------------------------
 
 function RemoveButton({ onRemove }: { onRemove: () => void }) {
+  const t = useTranslations('widgets.editMode');
   return (
     <button
       type="button"
@@ -79,7 +83,7 @@ function RemoveButton({ onRemove }: { onRemove: () => void }) {
         e.stopPropagation();
         onRemove();
       }}
-      title="Ta bort widget"
+      title={t('removeWidget')}
       className="bg-destructive/10 text-destructive hover:bg-destructive/20 absolute top-1 right-1 z-10 flex h-6 w-6 items-center justify-center rounded-full transition-colors"
     >
       <X className="h-3.5 w-3.5" />
@@ -110,10 +114,11 @@ const MemoizedWidgetContent = memo(function MemoizedWidgetContent({
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------
-// WidgetMenu — always-visible ⋯ menu with "Export as PDF" action (R31-04)
+// WidgetMenu — always-visible ... menu with "Export as PDF" action (R31-04)
 // ---------------------------------------------------------------------------
 
 function WidgetMenu({ onExportPdf }: { onExportPdf: () => void }) {
+  const t = useTranslations('widgets.editMode');
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -149,7 +154,7 @@ function WidgetMenu({ onExportPdf }: { onExportPdf: () => void }) {
         type="button"
         onClick={handleToggle}
         className="text-muted-foreground hover:bg-accent flex h-7 w-7 items-center justify-center rounded-md transition-colors"
-        title="Widgetalternativ"
+        title={t('widgetOptions')}
       >
         <MoreHorizontal className="h-4 w-4" />
       </button>
@@ -161,7 +166,7 @@ function WidgetMenu({ onExportPdf }: { onExportPdf: () => void }) {
             className="hover:bg-accent flex w-full items-center gap-2 px-3 py-1.5 text-left text-sm"
           >
             <FileDown className="h-3.5 w-3.5" />
-            Exportera som PDF
+            {t('exportAsPdf')}
           </button>
         </div>
       )}
@@ -242,7 +247,7 @@ export const SortableWidget = memo(function SortableWidget({
         </>
       )}
 
-      {/* Widget ⋯ menu (always visible on hover) */}
+      {/* Widget ... menu (always visible on hover) */}
       {!isEditMode && (
         <div className="opacity-0 transition-opacity group-hover:opacity-100">
           <WidgetMenu onExportPdf={handleWidgetExport} />
@@ -270,17 +275,6 @@ export const SortableWidget = memo(function SortableWidget({
 });
 
 // ---------------------------------------------------------------------------
-// Category labels
-// ---------------------------------------------------------------------------
-
-const CATEGORY_LABELS: Record<WidgetCategory, string> = {
-  'health-capacity': 'Halsa & Kapacitet',
-  'timelines-planning': 'Tidslinjer & Planering',
-  breakdowns: 'Fordelningar',
-  'alerts-actions': 'Notiser & Atgarder',
-};
-
-// ---------------------------------------------------------------------------
 // WidgetDrawer
 // ---------------------------------------------------------------------------
 
@@ -292,10 +286,12 @@ function WidgetDrawerItem({
   def,
   isAdded,
   onAdd,
+  addedLabel,
 }: {
   def: WidgetDefinition;
   isAdded: boolean;
   onAdd: (id: string) => void;
+  addedLabel: string;
 }) {
   const Icon = def.icon;
   return (
@@ -315,7 +311,7 @@ function WidgetDrawerItem({
           <span className="text-sm font-medium">{def.name}</span>
           {isAdded ? (
             <span className="bg-primary/10 text-primary rounded px-1.5 py-0.5 text-[10px] font-semibold">
-              Tillagd
+              {addedLabel}
             </span>
           ) : (
             <span className="bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-[10px] font-semibold">
@@ -347,9 +343,20 @@ export function WidgetDrawer({
   currentWidgetIds: string[];
   onAddWidget: (widgetId: string) => void;
 }) {
+  const t = useTranslations('widgets.editMode');
   const [searchQuery, setSearchQuery] = useState('');
 
   const availableWidgets = getWidgetsByDashboard(dashboardId);
+
+  const categoryLabels: Record<WidgetCategory, string> = useMemo(
+    () => ({
+      'health-capacity': t('categoryHealthCapacity'),
+      'timelines-planning': t('categoryTimelinesPlanning'),
+      breakdowns: t('categoryBreakdowns'),
+      'alerts-actions': t('categoryAlertsActions'),
+    }),
+    [t],
+  );
 
   // Filter by search query (name or description)
   const filteredWidgets = useMemo(() => {
@@ -397,7 +404,7 @@ export function WidgetDrawer({
     >
       {/* Header */}
       <div className="flex items-center justify-between border-b p-4">
-        <h3 className="text-sm font-semibold">Tillgangliga widgets</h3>
+        <h3 className="text-sm font-semibold">{t('availableWidgets')}</h3>
         <button
           type="button"
           onClick={onClose}
@@ -415,7 +422,7 @@ export function WidgetDrawer({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Sok widgets..."
+            placeholder={t('searchWidgets')}
             className="bg-muted/50 text-foreground placeholder:text-muted-foreground focus:ring-primary/30 w-full rounded-md border py-1.5 pr-3 pl-9 text-sm focus:ring-2 focus:outline-none"
           />
           {searchQuery && (
@@ -434,14 +441,14 @@ export function WidgetDrawer({
       <div className="overflow-y-auto p-4" style={{ maxHeight: 'calc(100% - 120px)' }}>
         {sortedEntries.length === 0 && (
           <p className="text-muted-foreground py-6 text-center text-sm">
-            Inga widgets matchar &quot;{searchQuery}&quot;
+            {t('noMatch', { query: searchQuery })}
           </p>
         )}
 
         {sortedEntries.map(([category, widgets]) => (
           <div key={category} className="mb-6">
             <h4 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
-              {CATEGORY_LABELS[category] ?? category}
+              {categoryLabels[category] ?? category}
             </h4>
             <div className="space-y-2">
               {widgets.map((def) => (
@@ -450,6 +457,7 @@ export function WidgetDrawer({
                   def={def}
                   isAdded={currentWidgetIds.includes(def.id)}
                   onAdd={onAddWidget}
+                  addedLabel={t('added')}
                 />
               ))}
             </div>

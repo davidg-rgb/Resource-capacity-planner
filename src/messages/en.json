@@ -284,7 +284,12 @@
       "disciplineCoverage": "Discipline Coverage",
       "monthlyLoad": "Monthly Load",
       "peak": "Peak",
-      "projectsInProgram": "Projects in Program"
+      "projectsInProgram": "Projects in Program",
+      "people": "People",
+      "active": "active",
+      "assigned": "assigned",
+      "perMonth": "per month",
+      "pers": "pers"
     },
     "resourceConflicts": {
       "error": "Failed to load conflict data",
@@ -340,6 +345,23 @@
     },
     "layoutEngine": {
       "loadError": "Failed to load dashboard layout"
+    },
+    "gaugesChart": {
+      "people": "people",
+      "empty": "No department data available"
+    },
+    "sparklinesChart": {
+      "view": "View:",
+      "departments": "Departments",
+      "peopleTop10": "People (top 10)",
+      "department": "Department",
+      "person": "Person",
+      "sixMonthTrend": "6-month trend",
+      "current": "Current",
+      "direction": "Direction",
+      "empty": "No utilization trend data available",
+      "legendOverloaded": "currently overloaded (>100%)",
+      "legendTrendPeriod": "Trend period: last 6 months vs current month"
     }
   },
   "pdfExport": {
@@ -359,6 +381,7 @@
     "exportSuccess": "PDF exported",
     "exportFailed": "Failed to export PDF",
     "exportAsPdf": "Export as PDF",
-    "widgetOptions": "Widget options"
+    "widgetOptions": "Widget options",
+    "exportingWidget": "Exporting widget..."
   }
 }

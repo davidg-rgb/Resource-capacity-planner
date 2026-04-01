@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Layers, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { StackedAreaDistributionChart } from '@/components/charts/stacked-area-chart';
 import { useCapacityDistribution } from '@/hooks/use-capacity-distribution';
@@ -12,11 +13,7 @@ import type { WidgetProps } from '../widget-registry.types';
 // Group-by toggle options
 // ---------------------------------------------------------------------------
 
-const GROUP_OPTIONS = [
-  { value: 'project' as const, label: 'Project' },
-  { value: 'department' as const, label: 'Department' },
-  { value: 'discipline' as const, label: 'Discipline' },
-];
+const GROUP_VALUES = ['project', 'department', 'discipline'] as const;
 
 const MAX_GROUPS = 8; // Top 7 + "Other" bucket
 
@@ -28,6 +25,7 @@ const CapacityDistributionContent = React.memo(function CapacityDistributionCont
   timeRange,
   config,
 }: WidgetProps) {
+  const t = useTranslations('widgets.capacityDistribution');
   const defaultGroupBy = (config?.groupBy as 'project' | 'department' | 'discipline') ?? 'project';
   const [groupBy, setGroupBy] = useState<'project' | 'department' | 'discipline'>(defaultGroupBy);
 
@@ -41,7 +39,7 @@ const CapacityDistributionContent = React.memo(function CapacityDistributionCont
   if (error) {
     return (
       <div className="text-destructive flex items-center justify-center py-10 text-sm">
-        Failed to load capacity distribution
+        {t('error')}
       </div>
     );
   }
@@ -55,29 +53,25 @@ const CapacityDistributionContent = React.memo(function CapacityDistributionCont
   }
 
   if (data.groups.length === 0) {
-    return (
-      <div className="text-on-surface-variant py-10 text-center text-sm">
-        No distribution data available for the selected period
-      </div>
-    );
+    return <div className="text-on-surface-variant py-10 text-center text-sm">{t('empty')}</div>;
   }
 
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <h4 className="font-headline text-sm font-semibold">Capacity Distribution</h4>
+        <h4 className="font-headline text-sm font-semibold">{t('title')}</h4>
         <div className="flex gap-1 rounded-md border p-0.5 text-xs">
-          {GROUP_OPTIONS.map((opt) => (
+          {GROUP_VALUES.map((value) => (
             <button
-              key={opt.value}
-              onClick={() => setGroupBy(opt.value)}
+              key={value}
+              onClick={() => setGroupBy(value)}
               className={`rounded-sm px-2 py-0.5 transition-colors ${
-                groupBy === opt.value
+                groupBy === value
                   ? 'bg-primary text-on-primary'
                   : 'text-on-surface-variant hover:bg-surface-container'
               }`}
             >
-              {opt.label}
+              {t(value)}
             </button>
           ))}
         </div>

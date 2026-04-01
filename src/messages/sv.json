@@ -284,7 +284,12 @@
       "disciplineCoverage": "Disciplintackning",
       "monthlyLoad": "Månadsbelastning",
       "peak": "Topp",
-      "projectsInProgram": "Projekt i programmet"
+      "projectsInProgram": "Projekt i programmet",
+      "people": "Personer",
+      "active": "aktiva",
+      "assigned": "tilldelade",
+      "perMonth": "per månad",
+      "pers": "pers"
     },
     "resourceConflicts": {
       "error": "Kunde inte ladda konfliktdata",
@@ -340,6 +345,23 @@
     },
     "layoutEngine": {
       "loadError": "Kunde inte ladda dashboard-layout"
+    },
+    "gaugesChart": {
+      "people": "personer",
+      "empty": "Ingen avdelningsdata tillganglig"
+    },
+    "sparklinesChart": {
+      "view": "Visa:",
+      "departments": "Avdelningar",
+      "peopleTop10": "Personer (topp 10)",
+      "department": "Avdelning",
+      "person": "Person",
+      "sixMonthTrend": "6-manaders trend",
+      "current": "Nuvarande",
+      "direction": "Riktning",
+      "empty": "Ingen belaggningstrenddata tillganglig",
+      "legendOverloaded": "for narvarande overbelastad (>100%)",
+      "legendTrendPeriod": "Trendperiod: senaste 6 manaderna mot aktuell manad"
     }
   },
   "pdfExport": {
@@ -359,6 +381,7 @@
     "exportSuccess": "PDF exporterad",
     "exportFailed": "Kunde inte exportera PDF",
     "exportAsPdf": "Exportera som PDF",
-    "widgetOptions": "Widgetalternativ"
+    "widgetOptions": "Widgetalternativ",
+    "exportingWidget": "Exporterar widget..."
   }
 }

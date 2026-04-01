@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { FolderKanban, Loader2, AlertTriangle } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { CHART_COLORS } from '@/components/charts/chart-colors';
 import { formatMonthHeader } from '@/lib/date-utils';
@@ -40,9 +41,10 @@ interface CoverageBarProps {
     peopleCount: number;
     gapFte: number;
   };
+  persLabel: string;
 }
 
-function CoverageBar({ discipline }: CoverageBarProps) {
+function CoverageBar({ discipline, persLabel }: CoverageBarProps) {
   const isLow = discipline.coveragePercent < 80;
   const widthPercent = Math.min(discipline.coveragePercent, 100);
 
@@ -64,7 +66,9 @@ function CoverageBar({ discipline }: CoverageBarProps) {
       </div>
       <div className="flex shrink-0 items-center gap-1.5 text-[10px]">
         <span className="font-bold tabular-nums">{discipline.coveragePercent}%</span>
-        <span className="text-outline-variant">{discipline.peopleCount} pers</span>
+        <span className="text-outline-variant">
+          {discipline.peopleCount} {persLabel}
+        </span>
         {discipline.gapFte > 0 && (
           <span className="text-error flex items-center gap-0.5 font-medium">
             <AlertTriangle size={10} />+{discipline.gapFte}
@@ -80,9 +84,10 @@ interface MonthLoadBarProps {
   hours: number;
   maxHours: number;
   isPeak: boolean;
+  peakLabel: string;
 }
 
-function MonthLoadBar({ month, hours, maxHours, isPeak }: MonthLoadBarProps) {
+function MonthLoadBar({ month, hours, maxHours, isPeak, peakLabel }: MonthLoadBarProps) {
   const widthPercent = maxHours > 0 ? (hours / maxHours) * 100 : 0;
   return (
     <div className="flex items-center gap-3">
@@ -104,7 +109,7 @@ function MonthLoadBar({ month, hours, maxHours, isPeak }: MonthLoadBarProps) {
         <span className={isPeak ? 'text-on-surface font-bold' : 'text-outline-variant'}>
           {hours.toLocaleString()}h
         </span>
-        {isPeak && <span className="text-primary text-[8px] font-bold uppercase">Peak</span>}
+        {isPeak && <span className="text-primary text-[8px] font-bold uppercase">{peakLabel}</span>}
       </div>
     </div>
   );
@@ -180,6 +185,7 @@ const ProgramRollupContent = React.memo(function ProgramRollupContent({
   timeRange,
   config,
 }: WidgetProps) {
+  const t = useTranslations('widgets.programRollup');
   // Program ID from widget config -- dropdown will be wired when program list endpoint is available
   const selectedProgram = (config?.programId as string) ?? undefined;
 
@@ -203,7 +209,7 @@ const ProgramRollupContent = React.memo(function ProgramRollupContent({
   if (error) {
     return (
       <div className="text-destructive flex items-center justify-center py-10 text-sm">
-        Failed to load program data
+        {t('error')}
       </div>
     );
   }
@@ -216,14 +222,14 @@ const ProgramRollupContent = React.memo(function ProgramRollupContent({
     );
   }
 
-  const programLabel = data.program?.programName ?? 'All Programs';
+  const programLabel = data.program?.programName ?? t('allPrograms');
   const peakHours = monthEntries.length > 0 ? Math.max(...monthEntries.map(([, h]) => h)) : 0;
 
   return (
     <div>
       {/* Header */}
       <div className="mb-4 flex items-center justify-between">
-        <h4 className="font-headline text-sm font-semibold">Program Overview</h4>
+        <h4 className="font-headline text-sm font-semibold">{t('title')}</h4>
         {/* Program selector placeholder -- would use a dropdown of programs in production */}
         <div className="text-on-surface-variant bg-surface-container-low rounded px-2 py-1 text-[11px] font-medium">
           {programLabel}
@@ -233,34 +239,32 @@ const ProgramRollupContent = React.memo(function ProgramRollupContent({
       {/* KPI Row */}
       <div className="mb-4 grid grid-cols-3 gap-3">
         <KpiCard
-          label="Projects"
+          label={t('projects')}
           value={data.program?.projectCount ?? data.projects.length}
-          sub="active"
+          sub={t('active')}
         />
         <KpiCard
-          label="People"
+          label={t('people')}
           value={data.program?.totalPeople ?? data.projects.reduce((s, p) => s + p.peopleCount, 0)}
-          sub="assigned"
+          sub={t('assigned')}
         />
         <KpiCard
-          label="Peak Load"
+          label={t('peakLoad')}
           value={`${(data.program?.peakMonthlyHours ?? peakHours).toLocaleString()}h`}
-          sub="per month"
+          sub={t('perMonth')}
         />
       </div>
 
       {/* Staffing Completeness */}
       <div className="bg-surface-container-lowest border-outline-variant/10 mb-4 rounded-sm border p-4">
         <div className="text-outline-variant mb-2 text-[10px] font-bold tracking-wider uppercase">
-          Staffing Completeness
+          {t('staffingCompleteness')}
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center justify-center">
             <StaffingGauge percent={data.staffingCompleteness} />
           </div>
-          <div className="text-on-surface-variant text-[11px]">
-            Based on allocation vs target across all projects
-          </div>
+          <div className="text-on-surface-variant text-[11px]">{t('basedOnAllocation')}</div>
         </div>
       </div>
 
@@ -268,11 +272,11 @@ const ProgramRollupContent = React.memo(function ProgramRollupContent({
       {data.disciplineCoverage.length > 0 && (
         <div className="mb-4">
           <div className="text-outline-variant mb-2 text-[10px] font-bold tracking-wider uppercase">
-            Discipline Coverage
+            {t('disciplineCoverage')}
           </div>
           <div className="space-y-2">
             {data.disciplineCoverage.map((disc) => (
-              <CoverageBar key={disc.disciplineId} discipline={disc} />
+              <CoverageBar key={disc.disciplineId} discipline={disc} persLabel={t('pers')} />
             ))}
           </div>
         </div>
@@ -282,7 +286,7 @@ const ProgramRollupContent = React.memo(function ProgramRollupContent({
       {monthEntries.length > 0 && (
         <div className="mb-4">
           <div className="text-outline-variant mb-2 text-[10px] font-bold tracking-wider uppercase">
-            Monthly Load
+            {t('monthlyLoad')}
           </div>
           <div className="space-y-1.5">
             {monthEntries.map(([month, hours]) => (
@@ -292,6 +296,7 @@ const ProgramRollupContent = React.memo(function ProgramRollupContent({
                 hours={hours}
                 maxHours={peakHours}
                 isPeak={month === peakMonth}
+                peakLabel={t('peak')}
               />
             ))}
           </div>
@@ -302,7 +307,7 @@ const ProgramRollupContent = React.memo(function ProgramRollupContent({
       {data.projects.length > 0 && (
         <div className="mb-3">
           <div className="text-outline-variant mb-2 text-[10px] font-bold tracking-wider uppercase">
-            Projects in Program
+            {t('projectsInProgram')}
           </div>
           <div className="divide-outline-variant/10 divide-y">
             {data.projects.map((proj) => (
@@ -320,7 +325,9 @@ const ProgramRollupContent = React.memo(function ProgramRollupContent({
                   </Link>
                 </div>
                 <div className="text-outline-variant flex shrink-0 items-center gap-3 text-[10px]">
-                  <span>{proj.peopleCount} pers</span>
+                  <span>
+                    {proj.peopleCount} {t('pers')}
+                  </span>
                   <span className="tabular-nums">{proj.monthlyHours.toLocaleString()}h/mo</span>
                   <StatusBadge status={proj.status} />
                 </div>

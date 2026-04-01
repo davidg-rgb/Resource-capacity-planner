@@ -3,6 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AlertOctagon } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 import { useConflicts } from '@/hooks/use-conflicts';
 import { usePersonCard } from '@/features/dashboard/person-card/person-card-provider';
@@ -107,6 +108,8 @@ function RedistributeModal({
   projects: { projectId: string; projectName: string; hours: number }[];
   targetHours: number;
 }) {
+  const t = useTranslations('widgets.resourceConflicts');
+  const tc = useTranslations('widgets.common');
   const queryClient = useQueryClient();
   const redistDialogRef = useRef<HTMLDivElement>(null);
   const [editedHours, setEditedHours] = useState<Record<string, number>>(() =>
@@ -186,10 +189,10 @@ function RedistributeModal({
       >
         <div className="border-outline-variant border-b p-4">
           <h3 id="redistribute-title" className="text-on-surface text-lg font-semibold">
-            Redistribute hours: {person.firstName} {person.lastName}
+            {t('redistributeTitle', { name: `${person.firstName} ${person.lastName}` })}
           </h3>
           <p className="text-on-surface-variant text-sm">
-            {formatMonth(month)} — Target: {targetHours}h
+            {formatMonth(month)} — {t('targetLabel', { hours: targetHours })}
           </p>
         </div>
 
@@ -217,22 +220,20 @@ function RedistributeModal({
 
           <div className="border-outline-variant border-t pt-3">
             <div className="flex items-center justify-between">
-              <span className="text-on-surface text-sm font-medium">Total</span>
+              <span className="text-on-surface text-sm font-medium">{tc('total')}</span>
               <span
                 className={`text-sm font-semibold tabular-nums ${isValid ? 'text-on-surface' : 'text-red-600'}`}
               >
                 {total}h / {targetHours}h
               </span>
             </div>
-            {!isValid && (
-              <p className="mt-1 text-xs text-red-600">
-                Total exceeds target. Reduce hours to save.
-              </p>
-            )}
+            {!isValid && <p className="mt-1 text-xs text-red-600">{t('totalExceedsTarget')}</p>}
           </div>
 
           {mutation.error && (
-            <p className="text-sm text-red-600">Failed: {mutation.error.message}</p>
+            <p className="text-sm text-red-600">
+              {t('failedPrefix', { message: mutation.error.message })}
+            </p>
           )}
         </div>
 
@@ -241,14 +242,14 @@ function RedistributeModal({
             onClick={onClose}
             className="text-on-surface-variant rounded-md px-4 py-2 text-sm font-medium hover:bg-black/5"
           >
-            Cancel
+            {tc('cancel')}
           </button>
           <button
             onClick={handleSave}
             disabled={!isValid || mutation.isPending}
             className="bg-primary text-on-primary rounded-md px-4 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50"
           >
-            {mutation.isPending ? 'Saving...' : 'Save'}
+            {mutation.isPending ? tc('saving') : tc('save')}
           </button>
         </div>
       </div>
@@ -263,6 +264,8 @@ function RedistributeModal({
 const ResourceConflictContent = React.memo(function ResourceConflictContent({
   timeRange,
 }: WidgetProps) {
+  const t = useTranslations('widgets.resourceConflicts');
+  const tc = useTranslations('widgets.common');
   const { openPersonCard } = usePersonCard();
 
   const [viewMode, setViewMode] = useState<'current' | 'multi'>('current');
@@ -384,7 +387,7 @@ const ResourceConflictContent = React.memo(function ResourceConflictContent({
   const hiddenCount = sortedConflicts.length - 3;
 
   if (error) {
-    return <div className="text-sm text-red-600">Failed to load conflict data</div>;
+    return <div className="text-sm text-red-600">{t('error')}</div>;
   }
 
   return (
@@ -392,7 +395,7 @@ const ResourceConflictContent = React.memo(function ResourceConflictContent({
       {/* Controls */}
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-2">
-          <label className="text-on-surface-variant text-xs">Show:</label>
+          <label className="text-on-surface-variant text-xs">{t('show')}</label>
           <button
             onClick={() => setViewMode('current')}
             className={`rounded-md px-3 py-1 text-xs font-medium ${
@@ -401,7 +404,7 @@ const ResourceConflictContent = React.memo(function ResourceConflictContent({
                 : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
             }`}
           >
-            Current month
+            {t('currentMonth')}
           </button>
           <button
             onClick={() => setViewMode('multi')}
@@ -411,7 +414,7 @@ const ResourceConflictContent = React.memo(function ResourceConflictContent({
                 : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
             }`}
           >
-            Next 3 months
+            {t('next3Months')}
           </button>
         </div>
       </div>
@@ -428,16 +431,14 @@ const ResourceConflictContent = React.memo(function ResourceConflictContent({
       {/* Count badge */}
       {data && !isLoading && (
         <p className="text-on-surface-variant text-sm">
-          <span className="text-on-surface font-medium">{activeConflicts.length}</span>{' '}
-          {activeConflicts.length === 1 ? 'person' : 'people'} overallocated across competing
-          projects
+          {t('peopleOverallocated', { count: activeConflicts.length })}
         </p>
       )}
 
       {/* Empty state */}
       {data && activeConflicts.length === 0 && !isLoading && (
         <div className="bg-surface-container-low text-on-surface-variant rounded-lg p-6 text-center text-sm">
-          No resource conflicts detected. All allocations are within target hours.
+          {t('emptyState')}
         </div>
       )}
 
@@ -477,12 +478,14 @@ const ResourceConflictContent = React.memo(function ResourceConflictContent({
 
                   <div className="mb-2 flex items-center gap-4 text-xs">
                     <span className="text-on-surface-variant">
-                      Target: {conflict.targetHoursPerMonth}h
+                      {t('targetLabel', { hours: conflict.targetHoursPerMonth })}
                     </span>
                     <span className="text-on-surface-variant">
-                      Total: {monthData.totalAllocated}h
+                      {tc('total')}: {monthData.totalAllocated}h
                     </span>
-                    <span className="font-medium text-red-600">Over by: {monthData.overBy}h</span>
+                    <span className="font-medium text-red-600">
+                      {t('overBy', { hours: monthData.overBy })}
+                    </span>
                   </div>
 
                   {/* Project bars */}
@@ -500,15 +503,17 @@ const ResourceConflictContent = React.memo(function ResourceConflictContent({
                   {/* Target line indicator */}
                   <div className="text-on-surface-variant mb-2 text-xs">
                     <span className="border-outline-variant inline-block w-[200px] border-t border-dashed" />{' '}
-                    {conflict.targetHoursPerMonth}h target
+                    {t('targetHours', { hours: conflict.targetHoursPerMonth })}
                   </div>
 
                   {/* Suggested resolution */}
                   {monthData.suggestedResolution && (
                     <p className="text-on-surface-variant mb-2 text-xs italic">
-                      Suggested: Reduce {monthData.suggestedResolution.projectName} by{' '}
-                      {monthData.suggestedResolution.reduceBy}h (to{' '}
-                      {monthData.suggestedResolution.newHours}h)
+                      {t('suggested', {
+                        project: monthData.suggestedResolution.projectName,
+                        reduceBy: monthData.suggestedResolution.reduceBy,
+                        newHours: monthData.suggestedResolution.newHours,
+                      })}
                     </p>
                   )}
 
@@ -526,7 +531,7 @@ const ResourceConflictContent = React.memo(function ResourceConflictContent({
                         disabled={applySuggestion.isPending}
                         className="bg-primary text-on-primary rounded-md px-3 py-1 text-xs font-medium hover:opacity-90 disabled:opacity-50"
                       >
-                        Apply suggestion
+                        {t('applySuggestion')}
                       </button>
                     )}
                     <button
@@ -544,13 +549,13 @@ const ResourceConflictContent = React.memo(function ResourceConflictContent({
                       }
                       className="border-outline-variant text-on-surface rounded-md border px-3 py-1 text-xs font-medium hover:bg-black/5"
                     >
-                      Redistribute manually
+                      {t('redistributeManually')}
                     </button>
                     <button
                       onClick={() => handleDismiss(conflict.personId, month)}
                       className="text-on-surface-variant rounded-md px-3 py-1 text-xs hover:bg-black/5"
                     >
-                      Dismiss
+                      {tc('dismiss')}
                     </button>
                   </div>
                 </div>
@@ -566,7 +571,7 @@ const ResourceConflictContent = React.memo(function ResourceConflictContent({
           onClick={() => setShowAll(true)}
           className="text-primary text-sm font-medium hover:underline"
         >
-          Show {hiddenCount} more {hiddenCount === 1 ? 'conflict' : 'conflicts'}
+          {t('showMoreConflicts', { count: hiddenCount })}
         </button>
       )}
 
@@ -577,8 +582,8 @@ const ResourceConflictContent = React.memo(function ResourceConflictContent({
             onClick={() => setShowDismissed(!showDismissed)}
             className="text-on-surface-variant text-xs hover:underline"
           >
-            {showDismissed ? 'Hide' : 'Show'} {dismissedConflicts.length} acknowledged{' '}
-            {dismissedConflicts.length === 1 ? 'conflict' : 'conflicts'}
+            {showDismissed ? t('hideAcknowledged') : t('showAcknowledged')}{' '}
+            {t('acknowledgedConflicts', { count: dismissedConflicts.length })}
           </button>
           {showDismissed && (
             <div className="mt-2 space-y-1">
@@ -595,8 +600,10 @@ const ResourceConflictContent = React.memo(function ResourceConflictContent({
       {/* History footer */}
       {data?.summary && (
         <div className="border-outline-variant text-on-surface-variant border-t pt-3 text-xs">
-          {data.summary.resolvedThisMonth} conflicts resolved this month,{' '}
-          {data.summary.totalConflicts} pending
+          {t('resolvedThisMonth', {
+            resolved: data.summary.resolvedThisMonth,
+            pending: data.summary.totalConflicts,
+          })}
         </div>
       )}
 

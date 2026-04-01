@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 import { useProjects } from '@/hooks/use-projects';
 
@@ -79,6 +80,8 @@ export const QuickAssignModal = React.memo(function QuickAssignModal({
   monthFrom,
   monthTo,
 }: QuickAssignModalProps) {
+  const t = useTranslations('widgets.quickAssign');
+  const tc = useTranslations('widgets.common');
   const queryClient = useQueryClient();
   const { data: projects } = useProjects();
   const dialogRef = useRef<HTMLDivElement>(null);
@@ -193,22 +196,22 @@ export const QuickAssignModal = React.memo(function QuickAssignModal({
         {/* Header */}
         <div className="border-outline-variant border-b p-4">
           <h3 id="quick-assign-title" className="text-on-surface text-lg font-semibold">
-            Assign {person.firstName} {person.lastName}
+            {t('title', { name: `${person.firstName} ${person.lastName}` })}
           </h3>
-          <p className="text-on-surface-variant text-sm">Create allocation for a project</p>
+          <p className="text-on-surface-variant text-sm">{t('subtitle')}</p>
         </div>
 
         {/* Body */}
         <div className="space-y-4 p-4">
           {/* Project selector */}
           <div>
-            <label className="text-on-surface mb-1 block text-sm font-medium">Project</label>
+            <label className="text-on-surface mb-1 block text-sm font-medium">{t('project')}</label>
             <select
               value={selectedProjectId}
               onChange={(e) => setSelectedProjectId(e.target.value)}
               className="border-outline-variant bg-surface-container-lowest text-on-surface w-full rounded-md border px-3 py-2 text-sm"
             >
-              <option value="">Select project...</option>
+              <option value="">{t('selectProject')}</option>
               {projects?.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
@@ -220,7 +223,7 @@ export const QuickAssignModal = React.memo(function QuickAssignModal({
           {/* Month range */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-on-surface mb-1 block text-sm font-medium">From</label>
+              <label className="text-on-surface mb-1 block text-sm font-medium">{t('from')}</label>
               <input
                 type="month"
                 value={rangeFrom}
@@ -229,7 +232,7 @@ export const QuickAssignModal = React.memo(function QuickAssignModal({
               />
             </div>
             <div>
-              <label className="text-on-surface mb-1 block text-sm font-medium">To</label>
+              <label className="text-on-surface mb-1 block text-sm font-medium">{t('to')}</label>
               <input
                 type="month"
                 value={rangeTo}
@@ -243,7 +246,7 @@ export const QuickAssignModal = React.memo(function QuickAssignModal({
           <div className="flex items-end gap-3">
             <div className="flex-1">
               <label className="text-on-surface mb-1 block text-sm font-medium">
-                Hours per month
+                {t('hoursPerMonth')}
               </label>
               <input
                 type="number"
@@ -258,7 +261,7 @@ export const QuickAssignModal = React.memo(function QuickAssignModal({
               onClick={handleApplyUniform}
               className="bg-primary text-on-primary rounded-md px-4 py-2 text-sm font-medium hover:opacity-90"
             >
-              Apply to all
+              {t('applyToAll')}
             </button>
           </div>
 
@@ -287,7 +290,9 @@ export const QuickAssignModal = React.memo(function QuickAssignModal({
           )}
 
           {mutation.error && (
-            <p className="text-sm text-red-600">Failed to save: {mutation.error.message}</p>
+            <p className="text-sm text-red-600">
+              {t('failedToSave', { message: mutation.error.message })}
+            </p>
           )}
         </div>
 
@@ -297,14 +302,14 @@ export const QuickAssignModal = React.memo(function QuickAssignModal({
             onClick={onClose}
             className="text-on-surface-variant rounded-md px-4 py-2 text-sm font-medium hover:bg-black/5"
           >
-            Cancel
+            {tc('cancel')}
           </button>
           <button
             onClick={handleSave}
             disabled={!canSave || mutation.isPending}
             className="bg-primary text-on-primary rounded-md px-4 py-2 text-sm font-medium hover:opacity-90 disabled:opacity-50"
           >
-            {mutation.isPending ? 'Saving...' : 'Save allocation'}
+            {mutation.isPending ? tc('saving') : tc('save')}
           </button>
         </div>
       </div>

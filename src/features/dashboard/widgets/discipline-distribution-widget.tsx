@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { PieChart, Loader2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { DisciplineDistribution } from '@/components/project-view/discipline-distribution';
 import { useProjectStaffing } from '@/hooks/use-project-staffing';
@@ -16,21 +17,20 @@ const DisciplineDistributionContent = React.memo(function DisciplineDistribution
   timeRange,
   config,
 }: WidgetProps) {
+  const t = useTranslations('widgets.disciplineDistribution');
   const projectId = config?.projectId as string | undefined;
   const { data, isLoading, error } = useProjectStaffing(projectId, timeRange.from, timeRange.to);
 
   if (!projectId) {
     return (
-      <div className="text-on-surface-variant py-10 text-center text-sm">
-        Select a project to view discipline distribution
-      </div>
+      <div className="text-on-surface-variant py-10 text-center text-sm">{t('selectProject')}</div>
     );
   }
 
   if (error) {
     return (
       <div className="text-destructive flex items-center justify-center py-10 text-sm">
-        Failed to load discipline distribution
+        {t('error')}
       </div>
     );
   }
@@ -44,11 +44,7 @@ const DisciplineDistributionContent = React.memo(function DisciplineDistribution
   }
 
   if (data.people.length === 0) {
-    return (
-      <div className="text-on-surface-variant py-10 text-center text-sm">
-        No staffing data for this project in the selected period
-      </div>
-    );
+    return <div className="text-on-surface-variant py-10 text-center text-sm">{t('empty')}</div>;
   }
 
   return <DisciplineDistribution people={data.people} months={data.months} />;
