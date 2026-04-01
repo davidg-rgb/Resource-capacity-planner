@@ -89,5 +89,24 @@
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "dismiss": "Dismiss"
+  },
+  "pdfExport": {
+    "exportPdf": "Export PDF",
+    "exportDashboard": "Export Dashboard to PDF",
+    "selectContent": "Select content",
+    "selectAll": "Select all",
+    "clearAll": "Clear all",
+    "orientation": "Orientation",
+    "landscape": "Landscape",
+    "portrait": "Portrait",
+    "includeCoverPage": "Include cover page",
+    "cancel": "Cancel",
+    "exporting": "Exporting...",
+    "capturingWidgets": "Capturing widget images...",
+    "generatingPdf": "Generating PDF...",
+    "exportSuccess": "PDF exported",
+    "exportFailed": "Failed to export PDF",
+    "exportAsPdf": "Export as PDF",
+    "widgetOptions": "Widget options"
   }
 }

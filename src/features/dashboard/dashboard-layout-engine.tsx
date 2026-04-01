@@ -12,11 +12,13 @@ import {
   type DragStartEvent,
 } from '@dnd-kit/core';
 import { arrayMove, SortableContext } from '@dnd-kit/sortable';
-import { Loader2 } from 'lucide-react';
+import { FileDown, Loader2 } from 'lucide-react';
 
 import { useDashboardLayout, useSaveLayout } from './use-dashboard-layout';
 import { EditModeToggle, SortableWidget, WidgetDrawer } from './dashboard-edit-mode';
 import { useWidgetTimeRange } from './dashboard-time-range';
+import { CrossLinkProvider } from './dashboard-cross-links';
+import { ExportPdfModal, usePdfExport } from './pdf-export';
 import { getWidget } from './widget-registry';
 import type { WidgetPlacement } from './widget-registry.types';
 
@@ -25,14 +27,23 @@ import type { WidgetPlacement } from './widget-registry.types';
 // ---------------------------------------------------------------------------
 
 export function DashboardGrid({ dashboardId = 'manager' }: { dashboardId?: string }) {
+  return (
+    <CrossLinkProvider>
+      <DashboardGridInner dashboardId={dashboardId} />
+    </CrossLinkProvider>
+  );
+}
+
+function DashboardGridInner({ dashboardId = 'manager' }: { dashboardId?: string }) {
   const { layout, isLoading, isError } = useDashboardLayout(dashboardId);
   const { saveLayout } = useSaveLayout(dashboardId);
   const timeRange = useWidgetTimeRange();
-
   const [isEditMode, setIsEditMode] = useState(false);
   const [widgets, setWidgets] = useState<WidgetPlacement[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const { exportSingleWidget } = usePdfExport();
 
   // Sync layout data from server into local state
   const layoutWidgets = layout?.widgets;
@@ -129,6 +140,22 @@ export function DashboardGrid({ dashboardId = 'manager' }: { dashboardId?: strin
     [saveLayout],
   );
 
+  // ------- Single-widget PDF export (R31-04) -------
+
+  const handleExportWidgetPdf = useCallback(
+    (widgetId: string, widgetName: string, colSpan: 4 | 6 | 12) => {
+      exportSingleWidget({
+        widgetId,
+        widgetName,
+        colSpan,
+        orgName: 'Nordic Capacity', // TODO: resolve from org context
+        dashboardTitle: dashboardId === 'manager' ? 'Management Overview' : 'Dashboard',
+        dateRange: timeRange,
+      });
+    },
+    [exportSingleWidget, dashboardId, timeRange],
+  );
+
   // ------- Active drag overlay widget -------
 
   const activeWidget = activeId ? widgets.find((w) => w.widgetId === activeId) : null;
@@ -154,8 +181,18 @@ export function DashboardGrid({ dashboardId = 'manager' }: { dashboardId?: strin
 
   return (
     <div className="relative">
-      {/* Edit mode controls */}
+      {/* Edit mode controls + Export PDF */}
       <div className="mb-4 flex items-center justify-end gap-2">
+        {!isEditMode && (
+          <button
+            type="button"
+            onClick={() => setIsExportModalOpen(true)}
+            className="border-outline-variant/30 text-primary hover:bg-surface-container-low inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors"
+          >
+            <FileDown className="h-4 w-4" />
+            Exportera PDF
+          </button>
+        )}
         {isEditMode && (
           <button
             type="button"
@@ -167,6 +204,16 @@ export function DashboardGrid({ dashboardId = 'manager' }: { dashboardId?: strin
         )}
         <EditModeToggle isEditMode={isEditMode} onToggle={() => setIsEditMode((v) => !v)} />
       </div>
+
+      {/* PDF Export Modal (R31-01) */}
+      <ExportPdfModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        widgets={widgets}
+        orgName="Nordic Capacity"
+        dashboardTitle={dashboardId === 'manager' ? 'Management Overview' : 'Dashboard'}
+        dateRange={timeRange}
+      />
 
       {/* Widget drawer */}
       {isEditMode && (
@@ -196,11 +243,13 @@ export function DashboardGrid({ dashboardId = 'manager' }: { dashboardId?: strin
                   key={placement.widgetId}
                   placement={placement}
                   component={def.component}
+                  widgetName={def.name}
                   minColSpan={def.minColSpan}
                   timeRange={timeRange}
                   isEditMode={isEditMode}
                   onResize={handleResize}
                   onRemove={handleRemove}
+                  onExportPdf={handleExportWidgetPdf}
                 />
               );
             })}

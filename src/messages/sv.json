@@ -89,5 +89,24 @@
     "openMenu": "Öppna meny",
     "closeMenu": "Stäng meny",
     "dismiss": "Stäng"
+  },
+  "pdfExport": {
+    "exportPdf": "Exportera PDF",
+    "exportDashboard": "Exportera dashboard till PDF",
+    "selectContent": "Välj innehåll",
+    "selectAll": "Markera alla",
+    "clearAll": "Avmarkera alla",
+    "orientation": "Orientering",
+    "landscape": "Liggande",
+    "portrait": "Stående",
+    "includeCoverPage": "Inkludera försättsblad",
+    "cancel": "Avbryt",
+    "exporting": "Exporterar...",
+    "capturingWidgets": "Fångar widget-bilder...",
+    "generatingPdf": "Genererar PDF...",
+    "exportSuccess": "PDF exporterad",
+    "exportFailed": "Kunde inte exportera PDF",
+    "exportAsPdf": "Exportera som PDF",
+    "widgetOptions": "Widgetalternativ"
   }
 }
