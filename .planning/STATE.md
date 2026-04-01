@@ -10,7 +10,7 @@ progress:
   total_phases: 10
   completed_phases: 9
   total_plans: 11
-  completed_plans: 11
+  completed_plans: 12
   percent: 90
 ---
 
@@ -46,7 +46,7 @@ Progress: [▓▓▓▓▓▓▓▓▓░] 90% (v4.0)
 | 27 | Bench + Discipline Demand (C2b) | Complete | 2026-04-01 | 2026-04-01 |
 | 28 | Availability Finder + Conflicts (C3) | Complete | 2026-04-01 | 2026-04-01 |
 | 29 | Timeline + Program + Comparison (C4) | Complete | 2026-04-01 | 2026-04-01 |
-| 30 | Integration & Wiring (D) | Pending | - | - |
+| 30 | Integration & Wiring (D) | Complete | 2026-04-01 | 2026-04-01 |
 | 31 | PDF Export Enhancement (E) | Complete | 2026-04-01 | 2026-04-01 |
 | 32 | What-If Scenarios (F) | Pending | - | - |
 
@@ -94,6 +94,9 @@ Key architectural decisions for v4.0:
 - V10 staffing gauge: inline SVG donut, no external chart lib
 - V10 program selector via config.programId (no program list endpoint yet)
 - V11 defaults to quarter-over-quarter with preset buttons
+- Cross-linking uses event bus (subscribe/emit) pattern, not shared state (ESLint strict rules)
+- allocation-trends and discipline-distribution wrapped as dashboard widgets via useProjectStaffing
+- Mobile layouts: essential subset (7-8 widgets) at colSpan 12, users can customize via edit mode
 
 ### Pending Todos
 
