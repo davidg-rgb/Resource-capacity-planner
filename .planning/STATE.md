@@ -24,16 +24,16 @@ UX Review: .planning/V13-SCENARIO-UX-REVIEW.md
 Roadmap: .planning/ROADMAP-V4.md
 
 **Core value:** Customizable dashboard with 13 visualizations that make the tool irreplaceable vs Excel
-**Current focus:** v4.0 build — Phase 28 (Availability Finder + Conflicts) complete, next Phase 29
+**Current focus:** v4.0 build — Phase 29 (Timeline + Program + Comparison) complete, next Phase 30
 
 ## Current Position
 
-Phase: 28 (complete)
-Plan: 28-01 complete, next Phase 29
-Status: V3 Availability Finder + V9 Resource Conflicts + Quick-Assign Modal built and registered
+Phase: 29 (complete)
+Plan: 29-01 complete, next Phase 30
+Status: V2 Timeline + V10 Program Roll-up + V11 Period Comparison built and registered
 Last activity: 2026-04-01
 
-Progress: [▓▓▓▓▓▓▓░░░] 65% (v4.0)
+Progress: [▓▓▓▓▓▓▓░░░] 70% (v4.0)
 
 ## Phase Status
 
@@ -45,7 +45,7 @@ Progress: [▓▓▓▓▓▓▓░░░] 65% (v4.0)
 | 26 | Forecast + Stacked Area (C2a) | Complete | 2026-04-01 | 2026-04-01 |
 | 27 | Bench + Discipline Demand (C2b) | Complete | 2026-04-01 | 2026-04-01 |
 | 28 | Availability Finder + Conflicts (C3) | Complete | 2026-04-01 | 2026-04-01 |
-| 29 | Timeline + Program + Comparison (C4) | Pending | - | - |
+| 29 | Timeline + Program + Comparison (C4) | Complete | 2026-04-01 | 2026-04-01 |
 | 30 | Integration & Wiring (D) | Pending | - | - |
 | 31 | PDF Export Enhancement (E) | Pending | - | - |
 | 32 | What-If Scenarios (F) | Pending | - | - |
@@ -87,6 +87,10 @@ Key architectural decisions for v4.0:
 - Quick-assign modal is shared component, not embedded in widgets
 - Conflict dismiss state in localStorage (key: nordic-capacity-dismissed-conflicts)
 - Redistribute modal validates total <= target before save
+- V2 uses custom HTML table with allocation bars (same pattern as heat-map-table)
+- V10 staffing gauge: inline SVG donut, no external chart lib
+- V10 program selector via config.programId (no program list endpoint yet)
+- V11 defaults to quarter-over-quarter with preset buttons
 
 ### Pending Todos
 
@@ -102,8 +106,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Completed 28-01-PLAN.md (Availability Finder + Conflicts)
-Resume file: .planning/phases/28-availability-finder-conflicts/28-01-SUMMARY.md
+Stopped at: Completed 29-01-PLAN.md (Timeline + Program + Comparison)
+Resume file: .planning/phases/29-timeline-program-comparison/29-01-SUMMARY.md
 
 ---
 
