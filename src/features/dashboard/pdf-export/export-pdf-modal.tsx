@@ -198,7 +198,9 @@ export function ExportPdfModal({
         <div className="flex items-center justify-between border-b px-6 py-4">
           <div className="flex items-center gap-2">
             <FileDown className="text-primary h-5 w-5" />
-            <h2 id={headingId} className="text-base font-semibold">Exportera dashboard till PDF</h2>
+            <h2 id={headingId} className="text-base font-semibold">
+              Exportera dashboard till PDF
+            </h2>
           </div>
           <button
             type="button"
