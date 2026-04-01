@@ -192,7 +192,7 @@
       "mostAvailable": "Most available",
       "leastUtilized": "Least utilized",
       "name": "Name",
-      "foundPeople": "Found <bold>{count}</bold> people",
+      "foundPeople": "Found {count} people",
       "withMinHours": "with \u2265{hours}h available",
       "emptyState": "No one matching your filters has availability in this period. Try widening the date range or removing the discipline filter.",
       "totalAvailable": "Total available:",

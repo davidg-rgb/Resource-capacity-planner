@@ -192,7 +192,7 @@
       "mostAvailable": "Mest tillganglig",
       "leastUtilized": "Lagst belaggning",
       "name": "Namn",
-      "foundPeople": "Hittade <bold>{count}</bold> personer",
+      "foundPeople": "Hittade {count} personer",
       "withMinHours": "med \u2265{hours}h tillgangligt",
       "emptyState": "Ingen som matchar dina filter har tillganglighet i denna period. Prova att utoka datumintervallet eller ta bort disciplinfiltret.",
       "totalAvailable": "Totalt tillgangligt:",

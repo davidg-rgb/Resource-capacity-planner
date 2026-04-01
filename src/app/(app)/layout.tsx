@@ -9,6 +9,7 @@ import { isOrgOnboarded } from '@/features/onboarding/onboarding.service';
 import { getTenantId } from '@/lib/auth';
 import { AnnouncementBanner } from '@/components/announcements/announcement-banner';
 import { ImpersonationBanner } from '@/components/platform/impersonation-banner';
+import { PersonCardProvider } from '@/features/dashboard/person-card/person-card-provider';
 import { QueryProvider } from '@/components/providers/query-provider';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -26,12 +27,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <QueryProvider>
       <FlagProvider flags={flags}>
-        <ImpersonationBanner />
-        <AnnouncementBanner />
-        <FlagGuard>
-          <AppShell>{children}</AppShell>
-        </FlagGuard>
-        <Toaster position="top-right" richColors closeButton />
+        <PersonCardProvider>
+          <ImpersonationBanner />
+          <AnnouncementBanner />
+          <FlagGuard>
+            <AppShell>{children}</AppShell>
+          </FlagGuard>
+          <Toaster position="top-right" richColors closeButton />
+        </PersonCardProvider>
       </FlagProvider>
     </QueryProvider>
   );
