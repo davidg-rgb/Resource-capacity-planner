@@ -77,6 +77,9 @@ Key architectural decisions for v4.0:
 - Person 360: global overlay (React portal), not a widget
 - New dependency: @dnd-kit/core + @dnd-kit/sortable
 - dnd-kit chosen over react-beautiful-dnd (lighter, more accessible, actively maintained)
+- Sentinel value '__tenant_default__' for clerk_user_id in dashboard_layouts (NULL uniqueness workaround)
+- Module-level Map singleton for widget registry (no class/context needed)
+- Default time range: 3 months from current month, URL param overridable
 - Person 360 capacity thresholds: <80% available, >=80% fully-allocated, >100% overloaded
 - Person summary email returns null (people table has no email column, field kept for future)
 - v4 PersonSummaryResponse renamed to PersonDetailResponse to avoid collision with Phase 23 type
