@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Dashboard Visualizations & Customization
-status: executing phase 29
-stopped_at: Completed 29-01-PLAN.md (Timeline + Program + Comparison)
-last_updated: "2026-04-01T13:11:00Z"
+status: executing phase 31
+stopped_at: Completed 31-01-PLAN.md (PDF Export Enhancement)
+last_updated: "2026-04-01T13:22:00Z"
 last_activity: 2026-04-01
 progress:
   total_phases: 10
-  completed_phases: 7
+  completed_phases: 9
   total_plans: 11
   completed_plans: 11
-  percent: 70
+  percent: 90
 ---
 
 # Nordic Capacity -- Project State
@@ -24,16 +24,16 @@ UX Review: .planning/V13-SCENARIO-UX-REVIEW.md
 Roadmap: .planning/ROADMAP-V4.md
 
 **Core value:** Customizable dashboard with 13 visualizations that make the tool irreplaceable vs Excel
-**Current focus:** v4.0 build — Phase 29 (Timeline + Program + Comparison) complete, next Phase 30
+**Current focus:** v4.0 build — Phase 31 (PDF Export Enhancement) complete, next Phase 32
 
 ## Current Position
 
-Phase: 29 (complete)
-Plan: 29-01 complete, next Phase 30
-Status: V2 Timeline + V10 Program Roll-up + V11 Period Comparison built and registered
+Phase: 31 (complete)
+Plan: 31-01 complete, next Phase 32
+Status: PDF export enhanced with multi-widget support, SVG snapshots, cover page
 Last activity: 2026-04-01
 
-Progress: [▓▓▓▓▓▓▓░░░] 70% (v4.0)
+Progress: [▓▓▓▓▓▓▓▓▓░] 90% (v4.0)
 
 ## Phase Status
 
@@ -47,7 +47,7 @@ Progress: [▓▓▓▓▓▓▓░░░] 70% (v4.0)
 | 28 | Availability Finder + Conflicts (C3) | Complete | 2026-04-01 | 2026-04-01 |
 | 29 | Timeline + Program + Comparison (C4) | Complete | 2026-04-01 | 2026-04-01 |
 | 30 | Integration & Wiring (D) | Pending | - | - |
-| 31 | PDF Export Enhancement (E) | Pending | - | - |
+| 31 | PDF Export Enhancement (E) | Complete | 2026-04-01 | 2026-04-01 |
 | 32 | What-If Scenarios (F) | Pending | - | - |
 
 ## Previous Milestones
@@ -70,6 +70,9 @@ Progress: [▓▓▓▓▓▓▓░░░] 70% (v4.0)
 ### Decisions
 
 Key architectural decisions for v4.0:
+- Client-side PDF generation via pdf().toBlob() instead of server-side API route (SVG snapshots are DOM-dependent)
+- SVG-to-PNG via Canvas at 2x resolution for crisp PDF output
+- Dynamic import of @react-pdf/renderer for code splitting
 - Widget IDs in wrappers match default-layouts.ts exactly (e.g., 'utilization-heat-map')
 - Widget Registry Pattern: central registry, adding widget = create component + register
 - Persona-based defaults: Line Manager + Project Leader get different layouts
@@ -98,7 +101,7 @@ None.
 
 ### Blockers/Concerns
 
-- SVG snapshot for chart-to-PDF needs prototyping (Phase 31)
+- SVG snapshot for chart-to-PDF: resolved in Phase 31 (Canvas 2x approach)
 - dnd-kit CSS Grid integration: resolved with strategy={() => null} and inline translate3d
 - Recharts 3.x gap shading: range-type [min,max] tuples instead of baseLine prop (deprecated)
 - MAX_GROUPS=8 for stacked area chart (top 7 + Other bucket per spec)
@@ -106,8 +109,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Completed 29-01-PLAN.md (Timeline + Program + Comparison)
-Resume file: .planning/phases/29-timeline-program-comparison/29-01-SUMMARY.md
+Stopped at: Completed 31-01-PLAN.md (PDF Export Enhancement)
+Resume file: .planning/phases/31-pdf-export-enhancement/31-01-SUMMARY.md
 
 ---
 
