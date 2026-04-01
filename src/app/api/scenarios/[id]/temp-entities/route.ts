@@ -62,6 +62,8 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       );
     }
 
+    z.string().uuid().parse(entityId);
+
     await deleteTempEntity(orgId, id, entityId);
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -18,7 +18,7 @@ const allocationItemSchema = z.object({
   projectId: z.string().uuid().optional(),
   tempProjectName: z.string().optional(),
   month: z.string().regex(/^\d{4}-\d{2}$/, 'Month must be YYYY-MM format'),
-  hours: z.number().int().min(0),
+  hours: z.number().int().min(0).max(744),
 });
 
 const putAllocationsSchema = z.object({

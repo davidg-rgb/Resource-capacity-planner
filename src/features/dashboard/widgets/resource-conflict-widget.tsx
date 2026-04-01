@@ -354,7 +354,7 @@ const ResourceConflictContent = React.memo(function ResourceConflictContent({
     if (!data?.conflicts) return { activeConflicts: [], dismissedConflicts: [] };
 
     const active: typeof data.conflicts = [];
-    const dimissed: typeof data.conflicts = [];
+    const dismissed_: typeof data.conflicts = [];
 
     for (const conflict of data.conflicts) {
       const monthKeys = Object.keys(conflict.months);
@@ -362,13 +362,13 @@ const ResourceConflictContent = React.memo(function ResourceConflictContent({
         dismissed.has(makeDismissKey(conflict.personId, m)),
       );
       if (allDismissed) {
-        dimissed.push(conflict);
+        dismissed_.push(conflict);
       } else {
         active.push(conflict);
       }
     }
 
-    return { activeConflicts: active, dismissedConflicts: dimissed };
+    return { activeConflicts: active, dismissedConflicts: dismissed_ };
   }, [data, dismissed]);
 
   // Sort by severity (most overallocated first)

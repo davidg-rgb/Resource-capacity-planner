@@ -98,6 +98,16 @@
     "dismiss": "Stäng"
   },
   "personCard": {
+    "title": "Persondetaljer",
+    "close": "Stäng personkort",
+    "department": "Avdelning",
+    "disciplines": "Discipliner",
+    "utilization": "Beläggning",
+    "fteEquivalent": "FTE-ekvivalent",
+    "activeAllocations": "Aktiva allokeringar",
+    "noAllocations": "Inga aktiva allokeringar",
+    "error": "Kunde inte ladda persondata",
+    "retry": "Försök igen",
     "status": {
       "available": "Tillgänglig",
       "fullyAllocated": "Fullt allokerad",

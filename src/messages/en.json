@@ -97,6 +97,23 @@
     "closeMenu": "Close menu",
     "dismiss": "Dismiss"
   },
+  "personCard": {
+    "title": "Person Details",
+    "close": "Close person card",
+    "department": "Department",
+    "disciplines": "Disciplines",
+    "utilization": "Utilization",
+    "fteEquivalent": "FTE Equivalent",
+    "activeAllocations": "Active Allocations",
+    "noAllocations": "No active allocations",
+    "error": "Failed to load person data",
+    "retry": "Retry",
+    "status": {
+      "available": "Available",
+      "fullyAllocated": "Fully Allocated",
+      "overloaded": "Overloaded"
+    }
+  },
   "pdfExport": {
     "exportPdf": "Export PDF",
     "exportDashboard": "Export Dashboard to PDF",

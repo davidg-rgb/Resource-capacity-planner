@@ -38,6 +38,7 @@ const STATUS_LABEL_KEYS: Record<string, string> = {
 
 export function PersonCardOverlay({ personId, isOpen, onClose }: PersonCardOverlayProps) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations('personCard');
   const { data, isLoading, isError, refetch } = usePersonSummary(personId);
 
   // Close on Escape key
@@ -64,7 +65,7 @@ export function PersonCardOverlay({ personId, isOpen, onClose }: PersonCardOverl
       <div
         ref={panelRef}
         role="dialog"
-        aria-label="Person details"
+        aria-label={t('title')}
         aria-modal="true"
         className={`bg-surface border-outline-variant/30 fixed top-0 right-0 z-[60] flex h-full w-[360px] flex-col border-l shadow-xl transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
@@ -72,11 +73,11 @@ export function PersonCardOverlay({ personId, isOpen, onClose }: PersonCardOverl
       >
         {/* Header */}
         <div className="border-outline-variant/30 flex items-center justify-between border-b px-5 py-4">
-          <h2 className="text-on-surface font-headline text-lg font-semibold">Person Details</h2>
+          <h2 className="text-on-surface font-headline text-lg font-semibold">{t('title')}</h2>
           <button
             onClick={onClose}
             className="text-on-surface-variant hover:bg-surface-container-low rounded-full p-1.5 transition-colors"
-            aria-label="Close person card"
+            aria-label={t('close')}
           >
             <X className="h-5 w-5" />
           </button>
@@ -123,11 +124,11 @@ function PersonContent({
 
       {/* Info section */}
       <div className="border-outline-variant/30 bg-surface-container-low space-y-3 rounded-lg border p-4">
-        {data.department && <InfoRow label="Department" value={data.department.name} />}
+        {data.department && <InfoRow label={t('department')} value={data.department.name} />}
         {data.disciplines.length > 0 && (
           <div>
             <span className="text-on-surface-variant text-xs font-medium tracking-wide uppercase">
-              Disciplines
+              {t('disciplines')}
             </span>
             <div className="mt-1 flex flex-wrap gap-1.5">
               {data.disciplines.map((d) => (
@@ -146,7 +147,7 @@ function PersonContent({
         <div>
           <div className="flex items-center justify-between">
             <span className="text-on-surface-variant text-xs font-medium tracking-wide uppercase">
-              Utilization
+              {t('utilization')}
             </span>
             <span className="text-on-surface text-sm font-semibold">
               {data.utilizationPercent}%
@@ -167,14 +168,14 @@ function PersonContent({
         </div>
 
         {data.totalFteEquivalent > 0 && (
-          <InfoRow label="FTE Equivalent" value={data.totalFteEquivalent.toFixed(2)} />
+          <InfoRow label={t('fteEquivalent')} value={data.totalFteEquivalent.toFixed(2)} />
         )}
       </div>
 
       {/* Active allocations */}
       {data.activeAllocations.length > 0 && (
         <div>
-          <h4 className="text-on-surface mb-3 text-sm font-semibold">Active Allocations</h4>
+          <h4 className="text-on-surface mb-3 text-sm font-semibold">{t('activeAllocations')}</h4>
           <div className="space-y-2">
             {data.activeAllocations.map((alloc) => (
               <div
@@ -207,7 +208,7 @@ function PersonContent({
 
       {data.activeAllocations.length === 0 && (
         <div className="border-outline-variant/30 bg-surface-container-low rounded-lg border p-4 text-center">
-          <p className="text-on-surface-variant text-sm">No active allocations</p>
+          <p className="text-on-surface-variant text-sm">{t('noAllocations')}</p>
         </div>
       )}
     </div>
@@ -239,14 +240,16 @@ function LoadingSkeleton() {
 }
 
 function ErrorState({ onRetry }: { onRetry: () => void }) {
+  const t = useTranslations('personCard');
+
   return (
     <div className="flex flex-col items-center justify-center p-8">
-      <p className="text-on-surface-variant mb-3 text-sm">Failed to load person data</p>
+      <p className="text-on-surface-variant mb-3 text-sm">{t('error')}</p>
       <button
         onClick={onRetry}
         className="bg-primary text-on-primary rounded-md px-4 py-2 text-sm font-medium transition-colors hover:opacity-90"
       >
-        Retry
+        {t('retry')}
       </button>
     </div>
   );
