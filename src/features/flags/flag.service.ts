@@ -12,6 +12,7 @@ const DEFAULT_FLAGS: FeatureFlags = {
   pdfExport: false,
   alerts: false,
   onboarding: false,
+  scenarios: false,
 };
 
 /**

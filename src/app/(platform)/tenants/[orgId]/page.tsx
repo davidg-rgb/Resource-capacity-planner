@@ -11,6 +11,7 @@ const FLAG_LABELS: Record<FlagName, string> = {
   pdfExport: 'PDF Export',
   alerts: 'Alerts',
   onboarding: 'Onboarding Wizard',
+  scenarios: 'What-If Scenarios',
 };
 
 interface ImpersonateUser {

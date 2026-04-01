@@ -43,6 +43,17 @@ export const announcementSeverityEnum = pgEnum('announcement_severity', [
   'critical',
 ]);
 
+export const scenarioStatusEnum = pgEnum('scenario_status', ['draft', 'active', 'archived']);
+
+export const scenarioVisibilityEnum = pgEnum('scenario_visibility', [
+  'private',
+  'shared_readonly',
+  'shared_collaborative',
+  'published',
+]);
+
+export const tempEntityTypeEnum = pgEnum('temp_entity_type', ['person', 'project']);
+
 // ---------------------------------------------------------------------------
 // Tables
 // ---------------------------------------------------------------------------
@@ -389,6 +400,94 @@ export const dashboardLayouts = pgTable(
   ],
 );
 
+// o) Scenarios — tenant-scoped, what-if scenario containers
+export const scenarios = pgTable(
+  'scenarios',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organizations.id),
+    name: varchar('name', { length: 200 }).notNull(),
+    description: varchar('description', { length: 1000 }),
+    status: scenarioStatusEnum('status').default('draft').notNull(),
+    visibility: scenarioVisibilityEnum('visibility').default('private').notNull(),
+    createdBy: text('created_by').notNull(), // Clerk user ID
+    baselineSnapshotAt: timestamp('baseline_snapshot_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [
+    index('scenarios_org_status_idx').on(t.organizationId, t.status),
+    index('scenarios_org_created_by_idx').on(t.organizationId, t.createdBy),
+    index('scenarios_org_updated_idx').on(t.organizationId, t.updatedAt),
+  ],
+);
+
+// p) Scenario Allocations — scenario-scoped allocation data
+export const scenarioAllocations = pgTable(
+  'scenario_allocations',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    scenarioId: uuid('scenario_id')
+      .notNull()
+      .references(() => scenarios.id, { onDelete: 'cascade' }),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organizations.id),
+    personId: uuid('person_id').references(() => people.id),
+    tempEntityId: uuid('temp_entity_id'),
+    projectId: uuid('project_id').references(() => projects.id),
+    tempProjectName: varchar('temp_project_name', { length: 200 }),
+    month: date('month', { mode: 'string' }).notNull(),
+    hours: integer('hours').notNull(),
+    isModified: boolean('is_modified').default(false).notNull(),
+    isNew: boolean('is_new').default(false).notNull(),
+    isRemoved: boolean('is_removed').default(false).notNull(),
+    promotedAt: timestamp('promoted_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [
+    index('scenario_alloc_scenario_idx').on(t.scenarioId),
+    index('scenario_alloc_person_month_idx').on(t.scenarioId, t.personId, t.month),
+    index('scenario_alloc_project_month_idx').on(t.scenarioId, t.projectId, t.month),
+    index('scenario_alloc_org_idx').on(t.organizationId),
+  ],
+);
+
+// q) Scenario Temp Entities — hypothetical people/projects within a scenario
+export const scenarioTempEntities = pgTable(
+  'scenario_temp_entities',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    scenarioId: uuid('scenario_id')
+      .notNull()
+      .references(() => scenarios.id, { onDelete: 'cascade' }),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organizations.id),
+    entityType: tempEntityTypeEnum('entity_type').notNull(),
+    name: varchar('name', { length: 200 }).notNull(),
+    departmentId: uuid('department_id').references(() => departments.id),
+    disciplineId: uuid('discipline_id').references(() => disciplines.id),
+    targetHoursPerMonth: integer('target_hours_per_month').default(160),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    index('scenario_temp_entities_scenario_idx').on(t.scenarioId),
+    index('scenario_temp_entities_type_idx').on(t.scenarioId, t.entityType),
+  ],
+);
+
 // ---------------------------------------------------------------------------
 // Relations
 // ---------------------------------------------------------------------------
@@ -404,6 +503,7 @@ export const organizationsRelations = relations(organizations, ({ many }) => ({
   importSessions: many(importSessions),
   impersonationSessions: many(impersonationSessions),
   dashboardLayouts: many(dashboardLayouts),
+  scenarios: many(scenarios),
 }));
 
 export const departmentsRelations = relations(departments, ({ one, many }) => ({
@@ -536,5 +636,52 @@ export const dashboardLayoutsRelations = relations(dashboardLayouts, ({ one }) =
   organization: one(organizations, {
     fields: [dashboardLayouts.organizationId],
     references: [organizations.id],
+  }),
+}));
+
+export const scenariosRelations = relations(scenarios, ({ one, many }) => ({
+  organization: one(organizations, {
+    fields: [scenarios.organizationId],
+    references: [organizations.id],
+  }),
+  allocations: many(scenarioAllocations),
+  tempEntities: many(scenarioTempEntities),
+}));
+
+export const scenarioAllocationsRelations = relations(scenarioAllocations, ({ one }) => ({
+  scenario: one(scenarios, {
+    fields: [scenarioAllocations.scenarioId],
+    references: [scenarios.id],
+  }),
+  organization: one(organizations, {
+    fields: [scenarioAllocations.organizationId],
+    references: [organizations.id],
+  }),
+  person: one(people, {
+    fields: [scenarioAllocations.personId],
+    references: [people.id],
+  }),
+  project: one(projects, {
+    fields: [scenarioAllocations.projectId],
+    references: [projects.id],
+  }),
+}));
+
+export const scenarioTempEntitiesRelations = relations(scenarioTempEntities, ({ one }) => ({
+  scenario: one(scenarios, {
+    fields: [scenarioTempEntities.scenarioId],
+    references: [scenarios.id],
+  }),
+  organization: one(organizations, {
+    fields: [scenarioTempEntities.organizationId],
+    references: [organizations.id],
+  }),
+  department: one(departments, {
+    fields: [scenarioTempEntities.departmentId],
+    references: [departments.id],
+  }),
+  discipline: one(disciplines, {
+    fields: [scenarioTempEntities.disciplineId],
+    references: [disciplines.id],
   }),
 }));
