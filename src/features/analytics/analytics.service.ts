@@ -1124,7 +1124,7 @@ export async function getDisciplineDemand(
       SELECT
         g.discipline_id,
         g.month,
-        COUNT(ap.id)::int * COALESCE(MAX(ap.target_hours), 0) AS total
+        COALESCE(SUM(ap.target_hours), 0)::int AS total
       FROM grid g
       LEFT JOIN active_people ap ON ap.discipline_id = g.discipline_id
       GROUP BY g.discipline_id, g.month

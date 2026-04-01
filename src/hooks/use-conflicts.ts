@@ -20,6 +20,5 @@ export function useConflicts(month?: string, months?: number): UseQueryResult<Co
       return response.json();
     },
     staleTime: 60_000,
-    enabled: !!month,
   });
 }

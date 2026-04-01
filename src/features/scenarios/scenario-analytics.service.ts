@@ -273,6 +273,39 @@ export async function getScenarioImpact(
   const scenarioKPIs = await getScenarioDashboardKPIs(orgId, scenarioId, from, to);
 
   // Count new conflicts in scenario
+  // Compute scenario bench hours: sum of unused capacity for people with utilization < 80%
+  const scenarioBenchResult = await db.execute<{ bench_hours: number }>(sql`
+    WITH scenario_person_totals AS (
+      SELECT
+        sa.person_id,
+        SUM(sa.hours) as total_hours,
+        p.target_hours_per_month
+      FROM scenario_allocations sa
+      JOIN people p ON p.id = sa.person_id
+      WHERE sa.scenario_id = ${scenarioId}
+        AND sa.organization_id = ${orgId}
+        AND sa.person_id IS NOT NULL
+        AND sa.is_removed = false
+        AND sa.month >= ${fromDate}::date
+        AND sa.month <= ${toDate}::date
+      GROUP BY sa.person_id, p.target_hours_per_month
+    ),
+    month_count AS (
+      SELECT (
+        (EXTRACT(YEAR FROM ${toDate}::date) - EXTRACT(YEAR FROM ${fromDate}::date)) * 12 +
+        EXTRACT(MONTH FROM ${toDate}::date) - EXTRACT(MONTH FROM ${fromDate}::date) + 1
+      ) as months
+    )
+    SELECT COALESCE(SUM(
+      GREATEST(0, spt.target_hours_per_month * (SELECT months FROM month_count) - spt.total_hours)
+    ), 0)::int as bench_hours
+    FROM scenario_person_totals spt
+    WHERE spt.target_hours_per_month > 0
+      AND (spt.total_hours::numeric / (spt.target_hours_per_month * (SELECT months FROM month_count))) < 0.8
+  `);
+
+  const scenarioBenchRow = scenarioBenchResult.rows[0];
+
   const conflictResult = await db.execute<{ new_conflicts: number }>(sql`
     WITH scenario_person_totals AS (
       SELECT sa.person_id, sa.month, SUM(sa.hours) as total_hours
@@ -312,7 +345,7 @@ export async function getScenarioImpact(
     actualOverloaded: Number(actualRow?.overloaded ?? 0),
     scenarioOverloaded: scenarioKPIs.overloadedCount,
     actualBenchHours: Number(actualRow?.bench_hours ?? 0),
-    scenarioBenchHours: 0, // Computed separately if needed
+    scenarioBenchHours: Number(scenarioBenchRow?.bench_hours ?? 0),
     newConflicts: Number(conflictRow?.new_conflicts ?? 0),
   };
 }

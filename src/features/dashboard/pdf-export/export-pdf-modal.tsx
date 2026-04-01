@@ -7,7 +7,7 @@
 
 'use client';
 
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FileDown, Loader2, X } from 'lucide-react';
 
 import { getWidget } from '../widget-registry';
@@ -127,6 +127,55 @@ export function ExportPdfModal({
     onClose,
   ]);
 
+  const modalRef = useRef<HTMLDivElement>(null);
+  const headingId = 'export-pdf-modal-heading';
+
+  // Escape key handler
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose();
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
+  // Focus trap: focus first focusable on open + trap Tab
+  useEffect(() => {
+    if (!isOpen || !modalRef.current) return;
+    const modal = modalRef.current;
+    const focusableSelector =
+      'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+    const focusableEls = modal.querySelectorAll<HTMLElement>(focusableSelector);
+
+    // Focus first element on mount
+    focusableEls[0]?.focus();
+
+    function handleTab(e: KeyboardEvent) {
+      if (e.key !== 'Tab') return;
+      // Re-query in case DOM changed
+      const currentFocusable = modal.querySelectorAll<HTMLElement>(focusableSelector);
+      const first = currentFocusable[0];
+      const last = currentFocusable[currentFocusable.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    }
+
+    document.addEventListener('keydown', handleTab);
+    return () => document.removeEventListener('keydown', handleTab);
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const selectedCount = selectedIds.size;
@@ -135,15 +184,21 @@ export function ExportPdfModal({
   return (
     <>
       {/* Backdrop */}
-      <div className="fixed inset-0 z-50 bg-black/40" onClick={onClose} aria-hidden />
+      <div className="fixed inset-0 z-50 bg-black/40" onClick={onClose} aria-hidden="true" />
 
       {/* Modal */}
-      <div className="bg-background fixed top-1/2 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg border shadow-xl">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={headingId}
+        className="bg-background fixed top-1/2 left-1/2 z-50 w-full max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg border shadow-xl"
+      >
         {/* Header */}
         <div className="flex items-center justify-between border-b px-6 py-4">
           <div className="flex items-center gap-2">
             <FileDown className="text-primary h-5 w-5" />
-            <h2 className="text-base font-semibold">Exportera dashboard till PDF</h2>
+            <h2 id={headingId} className="text-base font-semibold">Exportera dashboard till PDF</h2>
           </div>
           <button
             type="button"

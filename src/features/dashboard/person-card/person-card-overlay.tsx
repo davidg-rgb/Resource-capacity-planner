@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { usePersonSummary } from './use-person-card';
 
@@ -25,10 +26,10 @@ const STATUS_STYLES: Record<string, string> = {
   overloaded: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
 };
 
-const STATUS_LABELS: Record<string, string> = {
-  available: 'Available',
-  'fully-allocated': 'Fully Allocated',
-  overloaded: 'Overloaded',
+const STATUS_LABEL_KEYS: Record<string, string> = {
+  available: 'available',
+  'fully-allocated': 'fullyAllocated',
+  overloaded: 'overloaded',
 };
 
 // ---------------------------------------------------------------------------
@@ -101,8 +102,10 @@ function PersonContent({
 }: {
   data: NonNullable<ReturnType<typeof usePersonSummary>['data']>;
 }) {
+  const t = useTranslations('personCard');
   const statusStyle = STATUS_STYLES[data.capacityStatus] ?? STATUS_STYLES.available;
-  const statusLabel = STATUS_LABELS[data.capacityStatus] ?? data.capacityStatus;
+  const labelKey = STATUS_LABEL_KEYS[data.capacityStatus];
+  const statusLabel = labelKey ? t(`status.${labelKey}`) : data.capacityStatus;
 
   return (
     <div className="space-y-5 p-5">

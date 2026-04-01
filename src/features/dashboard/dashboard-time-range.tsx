@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getCurrentMonth, generateMonthRange } from '@/lib/date-utils';
 
@@ -38,7 +38,8 @@ function getDefaultRange(): TimeRange {
 export function TimeRangeProvider({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
 
-  const initialRange = useMemo(() => {
+  // Derive range from URL search params — recalculated on every param change
+  const urlRange = useMemo(() => {
     const fromParam = searchParams.get('from');
     const toParam = searchParams.get('to');
     if (fromParam && toParam) {
@@ -47,10 +48,25 @@ export function TimeRangeProvider({ children }: { children: React.ReactNode }) {
     return getDefaultRange();
   }, [searchParams]);
 
-  const [range, setRange] = useState<TimeRange>(initialRange);
+  // Track the URL-derived key so we can detect external navigation
+  const urlKey = `${urlRange.from}|${urlRange.to}`;
+  const prevUrlKeyRef = useRef(urlKey);
+
+  const [rangeOverride, setRangeOverride] = useState<TimeRange | null>(null);
+
+  // If URL params changed externally, clear any programmatic override
+  // This runs synchronously during render (no useEffect needed)
+  if (prevUrlKeyRef.current !== urlKey) {
+    prevUrlKeyRef.current = urlKey;
+    if (rangeOverride !== null) {
+      setRangeOverride(null);
+    }
+  }
+
+  const range = rangeOverride ?? urlRange;
 
   const setTimeRange = useCallback((newRange: TimeRange) => {
-    setRange(newRange);
+    setRangeOverride(newRange);
   }, []);
 
   const value = useMemo(

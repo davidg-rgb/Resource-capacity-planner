@@ -321,64 +321,73 @@ export async function upsertScenarioAllocations(
 ) {
   await getScenarioOrThrow(scenarioId, orgId);
 
-  const results = [];
-
-  for (const alloc of allocations) {
-    const monthDate = alloc.month.length === 7 ? `${alloc.month}-01` : alloc.month;
-
-    // Check if this allocation already exists
-    const existing = await db
-      .select()
+  return db.transaction(async (tx) => {
+    // Batch-fetch all existing allocations for this scenario to avoid N+1 selects
+    const existingRows = await tx
+      .select({
+        id: schema.scenarioAllocations.id,
+        personId: schema.scenarioAllocations.personId,
+        tempEntityId: schema.scenarioAllocations.tempEntityId,
+        projectId: schema.scenarioAllocations.projectId,
+        tempProjectName: schema.scenarioAllocations.tempProjectName,
+        month: schema.scenarioAllocations.month,
+      })
       .from(schema.scenarioAllocations)
       .where(
         and(
           eq(schema.scenarioAllocations.scenarioId, scenarioId),
-          eq(schema.scenarioAllocations.month, monthDate),
-          alloc.personId
-            ? eq(schema.scenarioAllocations.personId, alloc.personId)
-            : eq(schema.scenarioAllocations.tempEntityId, alloc.tempEntityId!),
-          alloc.projectId
-            ? eq(schema.scenarioAllocations.projectId, alloc.projectId)
-            : sql`${schema.scenarioAllocations.tempProjectName} = ${alloc.tempProjectName}`,
+          eq(schema.scenarioAllocations.organizationId, orgId),
         ),
-      )
-      .limit(1);
+      );
 
-    if (existing.length > 0) {
-      // Update
-      const [updated] = await db
-        .update(schema.scenarioAllocations)
-        .set({
-          hours: alloc.hours,
-          isModified: true,
-          isRemoved: alloc.hours === 0,
-        })
-        .where(eq(schema.scenarioAllocations.id, existing[0]!.id))
-        .returning();
-      results.push(updated);
-    } else {
-      // Insert new
-      const [inserted] = await db
-        .insert(schema.scenarioAllocations)
-        .values({
-          scenarioId,
-          organizationId: orgId,
-          personId: alloc.personId ?? null,
-          tempEntityId: alloc.tempEntityId ?? null,
-          projectId: alloc.projectId ?? null,
-          tempProjectName: alloc.tempProjectName ?? null,
-          month: monthDate,
-          hours: alloc.hours,
-          isModified: true,
-          isNew: true,
-          isRemoved: false,
-        })
-        .returning();
-      results.push(inserted);
+    // Build a lookup map: key -> existing row id
+    const existingMap = new Map<string, string>();
+    for (const row of existingRows) {
+      const key = `${row.personId ?? ''}|${row.tempEntityId ?? ''}|${row.projectId ?? ''}|${row.tempProjectName ?? ''}|${row.month}`;
+      existingMap.set(key, row.id);
     }
-  }
 
-  return results;
+    const results = [];
+
+    for (const alloc of allocations) {
+      const monthDate = alloc.month.length === 7 ? `${alloc.month}-01` : alloc.month;
+      const key = `${alloc.personId ?? ''}|${alloc.tempEntityId ?? ''}|${alloc.projectId ?? ''}|${alloc.tempProjectName ?? ''}|${monthDate}`;
+      const existingId = existingMap.get(key);
+
+      if (existingId) {
+        const [updated] = await tx
+          .update(schema.scenarioAllocations)
+          .set({
+            hours: alloc.hours,
+            isModified: true,
+            isRemoved: alloc.hours === 0,
+          })
+          .where(eq(schema.scenarioAllocations.id, existingId))
+          .returning();
+        results.push(updated);
+      } else {
+        const [inserted] = await tx
+          .insert(schema.scenarioAllocations)
+          .values({
+            scenarioId,
+            organizationId: orgId,
+            personId: alloc.personId ?? null,
+            tempEntityId: alloc.tempEntityId ?? null,
+            projectId: alloc.projectId ?? null,
+            tempProjectName: alloc.tempProjectName ?? null,
+            month: monthDate,
+            hours: alloc.hours,
+            isModified: true,
+            isNew: true,
+            isRemoved: false,
+          })
+          .returning();
+        results.push(inserted);
+      }
+    }
+
+    return results;
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -396,100 +405,109 @@ export async function promoteAllocations(
 
   await getScenarioOrThrow(scenarioId, orgId);
 
-  let promoted = 0;
-  let skipped = 0;
-  const errors: string[] = [];
+  return db.transaction(async (tx) => {
+    let promoted = 0;
+    let skipped = 0;
+    const errors: string[] = [];
 
-  for (const allocId of data.allocationIds) {
-    const [scenAlloc] = await db
+    // Batch-fetch all requested allocations in one query
+    const scenAllocs = await tx
       .select()
       .from(schema.scenarioAllocations)
       .where(
         and(
-          eq(schema.scenarioAllocations.id, allocId),
           eq(schema.scenarioAllocations.scenarioId, scenarioId),
+          sql`${schema.scenarioAllocations.id} = ANY(${data.allocationIds}::uuid[])`,
         ),
-      )
-      .limit(1);
+      );
 
-    if (!scenAlloc) {
-      errors.push(`Allocation ${allocId} not found`);
-      skipped++;
-      continue;
-    }
+    const scenAllocMap = new Map(scenAllocs.map((a) => [a.id, a]));
 
-    // Skip already promoted
-    if (scenAlloc.promotedAt) {
-      skipped++;
-      continue;
-    }
+    // Batch-fetch all people for archived check
+    const personIds = [...new Set(scenAllocs.filter((a) => a.personId).map((a) => a.personId!))];
+    const peopleRows =
+      personIds.length > 0
+        ? await tx
+            .select({ id: schema.people.id, archivedAt: schema.people.archivedAt })
+            .from(schema.people)
+            .where(sql`${schema.people.id} = ANY(${personIds}::uuid[])`)
+        : [];
+    const archivedPeople = new Set(peopleRows.filter((p) => p.archivedAt).map((p) => p.id));
 
-    // Skip temp entities (can't promote hypothetical people to actual)
-    if (scenAlloc.tempEntityId && !scenAlloc.personId) {
-      errors.push(`Cannot promote temp entity allocation ${allocId} — create the person first`);
-      skipped++;
-      continue;
-    }
+    const promotedIds: string[] = [];
 
-    // Skip if person is archived
-    if (scenAlloc.personId) {
-      const [person] = await db
-        .select({ archivedAt: schema.people.archivedAt })
-        .from(schema.people)
-        .where(eq(schema.people.id, scenAlloc.personId))
-        .limit(1);
+    for (const allocId of data.allocationIds) {
+      const scenAlloc = scenAllocMap.get(allocId);
 
-      if (person?.archivedAt) {
+      if (!scenAlloc) {
+        errors.push(`Allocation ${allocId} not found`);
+        skipped++;
+        continue;
+      }
+
+      if (scenAlloc.promotedAt) {
+        skipped++;
+        continue;
+      }
+
+      if (scenAlloc.tempEntityId && !scenAlloc.personId) {
+        errors.push(`Cannot promote temp entity allocation ${allocId} — create the person first`);
+        skipped++;
+        continue;
+      }
+
+      if (scenAlloc.personId && archivedPeople.has(scenAlloc.personId)) {
         errors.push(`Cannot promote — person is archived`);
         skipped++;
         continue;
       }
+
+      if (scenAlloc.isRemoved && scenAlloc.personId && scenAlloc.projectId) {
+        await tx
+          .delete(schema.allocations)
+          .where(
+            and(
+              eq(schema.allocations.organizationId, orgId),
+              eq(schema.allocations.personId, scenAlloc.personId),
+              eq(schema.allocations.projectId, scenAlloc.projectId),
+              eq(schema.allocations.month, scenAlloc.month),
+            ),
+          );
+      } else if (scenAlloc.personId && scenAlloc.projectId) {
+        await tx
+          .insert(schema.allocations)
+          .values({
+            organizationId: orgId,
+            personId: scenAlloc.personId,
+            projectId: scenAlloc.projectId,
+            month: scenAlloc.month,
+            hours: scenAlloc.hours,
+          })
+          .onConflictDoUpdate({
+            target: [
+              schema.allocations.organizationId,
+              schema.allocations.personId,
+              schema.allocations.projectId,
+              schema.allocations.month,
+            ],
+            set: { hours: scenAlloc.hours },
+          });
+      }
+
+      promotedIds.push(allocId);
+      promoted++;
     }
 
-    if (scenAlloc.isRemoved && scenAlloc.personId && scenAlloc.projectId) {
-      // Delete actual allocation
-      await db
-        .delete(schema.allocations)
-        .where(
-          and(
-            eq(schema.allocations.organizationId, orgId),
-            eq(schema.allocations.personId, scenAlloc.personId),
-            eq(schema.allocations.projectId, scenAlloc.projectId),
-            eq(schema.allocations.month, scenAlloc.month),
-          ),
-        );
-    } else if (scenAlloc.personId && scenAlloc.projectId) {
-      // Upsert actual allocation
-      await db
-        .insert(schema.allocations)
-        .values({
-          organizationId: orgId,
-          personId: scenAlloc.personId,
-          projectId: scenAlloc.projectId,
-          month: scenAlloc.month,
-          hours: scenAlloc.hours,
-        })
-        .onConflictDoUpdate({
-          target: [
-            schema.allocations.organizationId,
-            schema.allocations.personId,
-            schema.allocations.projectId,
-            schema.allocations.month,
-          ],
-          set: { hours: scenAlloc.hours },
-        });
+    // Batch-mark all promoted allocations
+    if (promotedIds.length > 0) {
+      await tx
+        .update(schema.scenarioAllocations)
+        .set({ promotedAt: new Date() })
+        .where(sql`${schema.scenarioAllocations.id} = ANY(${promotedIds}::uuid[])`);
     }
 
-    // Mark as promoted
-    await db
-      .update(schema.scenarioAllocations)
-      .set({ promotedAt: new Date() })
-      .where(eq(schema.scenarioAllocations.id, allocId));
-
-    promoted++;
-  }
-
-  return { promoted, skipped, errors };
+    return { promoted, skipped, errors };
+  });
 }
 
 // ---------------------------------------------------------------------------

@@ -169,7 +169,7 @@ function WidgetMenu({ onExportPdf }: { onExportPdf: () => void }) {
   );
 }
 
-export function SortableWidget({
+export const SortableWidget = memo(function SortableWidget({
   placement,
   component: Component,
   widgetName,
@@ -267,7 +267,7 @@ export function SortableWidget({
       </div>
     </div>
   );
-}
+});
 
 // ---------------------------------------------------------------------------
 // Category labels

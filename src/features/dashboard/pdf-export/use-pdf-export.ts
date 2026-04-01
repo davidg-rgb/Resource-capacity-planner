@@ -8,7 +8,7 @@
 
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import type { PdfWidgetEntry } from './dashboard-pdf-document';
@@ -41,6 +41,7 @@ interface UsePdfExportReturn {
 export function usePdfExport(): UsePdfExportReturn {
   const [isExporting, setIsExporting] = useState(false);
   const [progress, setProgress] = useState('');
+  const isExportingRef = useRef(false);
 
   const generateAndDownload = useCallback(
     async (widgets: PdfWidgetEntry[], options: Omit<ExportOptions, 'widgetIds' | 'widgetMeta'>) => {
@@ -78,7 +79,8 @@ export function usePdfExport(): UsePdfExportReturn {
 
   const exportDashboard = useCallback(
     async (options: ExportOptions) => {
-      if (isExporting) return;
+      if (isExportingRef.current) return;
+      isExportingRef.current = true;
       setIsExporting(true);
       setProgress('Fanger widget-bilder...');
 
@@ -106,11 +108,12 @@ export function usePdfExport(): UsePdfExportReturn {
         console.error('PDF export failed:', err);
         toast.error('Kunde inte exportera PDF');
       } finally {
+        isExportingRef.current = false;
         setIsExporting(false);
         setProgress('');
       }
     },
-    [isExporting, generateAndDownload],
+    [generateAndDownload],
   );
 
   const exportSingleWidget = useCallback(
@@ -122,7 +125,8 @@ export function usePdfExport(): UsePdfExportReturn {
       dashboardTitle: string;
       dateRange: { from: string; to: string };
     }) => {
-      if (isExporting) return;
+      if (isExportingRef.current) return;
+      isExportingRef.current = true;
       setIsExporting(true);
       setProgress('Exporterar widget...');
 
@@ -147,11 +151,12 @@ export function usePdfExport(): UsePdfExportReturn {
         console.error('Single widget PDF export failed:', err);
         toast.error('Kunde inte exportera PDF');
       } finally {
+        isExportingRef.current = false;
         setIsExporting(false);
         setProgress('');
       }
     },
-    [isExporting, generateAndDownload],
+    [generateAndDownload],
   );
 
   return { isExporting, progress, exportDashboard, exportSingleWidget };

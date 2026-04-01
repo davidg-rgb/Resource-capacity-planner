@@ -5,13 +5,14 @@ import {
   closestCenter,
   DndContext,
   DragOverlay,
+  KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
-import { arrayMove, SortableContext } from '@dnd-kit/sortable';
+import { arrayMove, SortableContext, rectSortingStrategy, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { FileDown, Loader2 } from 'lucide-react';
 
 import { useDashboardLayout, useSaveLayout } from './use-dashboard-layout';
@@ -54,8 +55,11 @@ function DashboardGridInner({ dashboardId = 'manager' }: { dashboardId?: string 
     }
   }, [layoutWidgets]);
 
-  // dnd-kit sensors: require 8px movement before drag starts
-  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
+  // dnd-kit sensors: require 8px movement before drag starts + keyboard for a11y
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
 
   const sortableItems = useMemo(() => widgets.map((w) => w.widgetId), [widgets]);
 
@@ -234,7 +238,7 @@ function DashboardGridInner({ dashboardId = 'manager' }: { dashboardId?: string 
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <SortableContext items={sortableItems} strategy={() => null}>
+        <SortableContext items={sortableItems} strategy={rectSortingStrategy}>
           <div className="grid grid-cols-12 gap-6">
             {widgets.map((placement) => {
               const def = getWidget(placement.widgetId);

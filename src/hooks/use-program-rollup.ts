@@ -24,5 +24,6 @@ export function useProgramRollup(
       return response.json();
     },
     staleTime: 60_000,
+    enabled: !!monthFrom && !!monthTo,
   });
 }

@@ -119,10 +119,9 @@ export function useSaveLayout(dashboardId: string = 'manager') {
       if ((context as { previous?: LayoutResponse })?.previous) {
         queryClient.setQueryData(queryKey, (context as { previous: LayoutResponse }).previous);
       }
-      toast.error('Kunde inte spara layout');
-    },
-    onSettled: () => {
+      // Invalidate on error to re-fetch the true server state
       queryClient.invalidateQueries({ queryKey });
+      toast.error('Kunde inte spara layout');
     },
   });
 

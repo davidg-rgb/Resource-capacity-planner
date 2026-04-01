@@ -97,6 +97,13 @@
     "closeMenu": "Stäng meny",
     "dismiss": "Stäng"
   },
+  "personCard": {
+    "status": {
+      "available": "Tillgänglig",
+      "fullyAllocated": "Fullt allokerad",
+      "overloaded": "Överbelastad"
+    }
+  },
   "pdfExport": {
     "exportPdf": "Exportera PDF",
     "exportDashboard": "Exportera dashboard till PDF",

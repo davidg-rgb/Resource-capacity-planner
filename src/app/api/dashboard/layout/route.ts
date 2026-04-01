@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
 
     const params = request.nextUrl.searchParams;
     const dashboardId = params.get('dashboardId') ?? 'manager';
-    const deviceClass = (params.get('deviceClass') ?? 'desktop') as 'desktop' | 'mobile';
+    const deviceClass = z.enum(['desktop', 'mobile']).parse(params.get('deviceClass') ?? 'desktop');
 
     // Tier 1: personal layout (exact user + device)
     const [personal] = await db

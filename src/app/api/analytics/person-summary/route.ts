@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 
 import { getPersonDetail, getPersonSummary } from '@/features/analytics/analytics.service';
 import { getTenantId } from '@/lib/auth';
@@ -17,6 +18,8 @@ export async function GET(request: NextRequest) {
         { status: 400 },
       );
     }
+
+    z.string().uuid().parse(personId);
 
     // If detail=true, return full V7 PersonDetailResponse (360 card)
     // Otherwise return basic PersonSummaryResponse for backward compatibility

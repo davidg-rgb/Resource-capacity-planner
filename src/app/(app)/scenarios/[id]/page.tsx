@@ -2,6 +2,7 @@
 
 import { useState, use } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@clerk/nextjs';
 import { toast } from 'sonner';
 import { Shield } from 'lucide-react';
 
@@ -27,6 +28,8 @@ function getDefaultRange() {
 export default function ScenarioEditorPage({ params }: { params: Promise<{ id: string }> }) {
   const { id: scenarioId } = use(params);
   const router = useRouter();
+  const { orgRole } = useAuth();
+  const isAdmin = orgRole === 'org:admin' || orgRole === 'org:owner';
   const { from, to } = getDefaultRange();
 
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -131,21 +134,23 @@ export default function ScenarioEditorPage({ params }: { params: Promise<{ id: s
           <ImpactBar impact={impact} isLoading={impactLoading} />
         </div>
 
-        {/* Promote button (admin only — gating done server-side) */}
-        <div className="mb-6 flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setShowPromoteModal(true)}
-            disabled={promotableAllocations.length === 0}
-            className="inline-flex items-center gap-1.5 rounded-md bg-amber-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Shield className="h-4 w-4" />
-            Tillampa pa verklig planering
-          </button>
-          <span className="text-xs text-slate-500">
-            {promotableAllocations.filter((a) => !a.isPromoted).length} andringar att tillampa
-          </span>
-        </div>
+        {/* Promote button (admin/owner only) */}
+        {isAdmin && (
+          <div className="mb-6 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setShowPromoteModal(true)}
+              disabled={promotableAllocations.length === 0}
+              className="inline-flex items-center gap-1.5 rounded-md bg-amber-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Shield className="h-4 w-4" />
+              Tillampa pa verklig planering
+            </button>
+            <span className="text-xs text-slate-500">
+              {promotableAllocations.filter((a) => !a.isPromoted).length} andringar att tillampa
+            </span>
+          </div>
+        )}
 
         {/* Allocations list */}
         {allocationsLoading ? (

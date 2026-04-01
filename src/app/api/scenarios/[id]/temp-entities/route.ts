@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 
 import {
   createTempEntity,
@@ -7,6 +8,18 @@ import {
 } from '@/features/scenarios/scenario.service';
 import { handleApiError } from '@/lib/api-utils';
 import { getTenantId } from '@/lib/auth';
+
+// ---------------------------------------------------------------------------
+// Validation
+// ---------------------------------------------------------------------------
+
+const createTempEntitySchema = z.object({
+  entityType: z.enum(['person', 'project']),
+  name: z.string().min(1).max(200),
+  departmentId: z.string().uuid().optional(),
+  disciplineId: z.string().uuid().optional(),
+  targetHoursPerMonth: z.number().int().min(0).optional(),
+});
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -27,7 +40,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     const orgId = await getTenantId();
     const { id } = await params;
-    const body = await request.json();
+    const body = createTempEntitySchema.parse(await request.json());
     const entity = await createTempEntity(orgId, id, body);
     return NextResponse.json({ entity }, { status: 201 });
   } catch (error) {
