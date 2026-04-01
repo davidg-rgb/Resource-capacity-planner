@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: v3.0
-milestone_name: Switch from Excel
-status: executing
-stopped_at: phase 18
-last_updated: "2026-03-30T12:00:00.000Z"
-last_activity: 2026-03-30
+milestone: v4.0
+milestone_name: Dashboard Visualizations & Customization
+status: executing phase 23
+stopped_at: Completed 23-03-PLAN.md (Person 360 Card)
+last_updated: "2026-04-01T12:00:00.000Z"
+last_activity: 2026-04-01
 progress:
-  total_phases: 5
+  total_phases: 10
   completed_phases: 0
   total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_plans: 1
+  percent: 5
 ---
 
 # Nordic Capacity -- Project State
@@ -19,88 +19,82 @@ progress:
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-03-28)
+Spec: .planning/DASHBOARD-VISUALIZATIONS-SPEC.md (v2.0)
+UX Review: .planning/V13-SCENARIO-UX-REVIEW.md
+Roadmap: .planning/ROADMAP-V4.md
 
-**Core value:** Real-time visibility into team capacity, project staffing, and resource utilization
-**Current focus:** Phase 17 — Platform Operations
+**Core value:** Customizable dashboard with 13 visualizations that make the tool irreplaceable vs Excel
+**Current focus:** v4.0 build — Phase 23 (Dashboard Framework) + Phase 24 (Data Layer) in parallel
 
 ## Current Position
 
-Phase: 17
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-03-28
+Phase: 23 (executing)
+Plan: 23-03 complete, next plan pending
+Status: Phase 23 in progress -- Person 360 Card shipped
+Last activity: 2026-04-01
 
-Progress: [░░░░░░░░░░] 0% (v2.0)
+Progress: [▓░░░░░░░░░] 5% (v4.0)
 
 ## Phase Status
 
 | Phase | Name | Status | Started | Completed |
 | ----- | ---- | ------ | ------- | --------- |
-| 11 | Infrastructure & Feature Flags | Not started | - | - |
-| 12 | Team Overview Heat Map | Not started | - | - |
-| 13 | Dashboard & Charts | Not started | - | - |
-| 14 | Alerts & Project View | Not started | - | - |
-| 15 | PDF Export | Not started | - | - |
-| 16 | Onboarding & Announcements | Not started | - | - |
-| 17 | Platform Operations | Not started | - | - |
+| 23 | Dashboard Framework + V7 Person Card | In Progress | 2026-04-01 | - |
+| 24 | Full Data Layer (11 endpoints) | Planning | - | - |
+| 25 | Gauges + Sparklines (C1) | Pending | - | - |
+| 26 | Forecast + Stacked Area (C2a) | Pending | - | - |
+| 27 | Bench + Discipline Demand (C2b) | Pending | - | - |
+| 28 | Availability Finder + Conflicts (C3) | Pending | - | - |
+| 29 | Timeline + Program + Comparison (C4) | Pending | - | - |
+| 30 | Integration & Wiring (D) | Pending | - | - |
+| 31 | PDF Export Enhancement (E) | Pending | - | - |
+| 32 | What-If Scenarios (F) | Pending | - | - |
+
+## Previous Milestones
+
+| Milestone | Phases | Status | Shipped |
+| --------- | ------ | ------ | ------- |
+| v1.0 Core Platform | 1-10 | Complete | 2026-03-27 |
+| v2.0 Visibility & Insights | 11-17 | Complete | 2026-03-28 |
+| v3.0 Switch from Excel | 18-22 | Complete | 2026-03-30 |
 
 ## Performance Metrics
 
-**Velocity (v1.0 baseline):**
-
-- v1.0: 26 plans across 10 phases (shipped 2026-03-27)
-
-**By Phase:** Updated after plan completion.
+**Velocity:**
+- v1.0: 26 plans across 10 phases
+- v2.0: 16 plans across 7 phases
+- v3.0: 5 plans across 5 phases (lighter UX-focused phases)
 
 ## Accumulated Context
 
 ### Decisions
 
-Decisions logged in PROJECT.md Key Decisions table.
-
-Key architectural notes for v2.0:
-
-- Analytics service (aggregation SQL) is critical path -- built in Phase 12, reused by 13-15
-- Heat map: pure HTML/CSS table with Tailwind, NOT AG Grid
-- Charts: Recharts 3.x; heat map: custom CSS grid or @nivo/heatmap
-- PDF: @react-pdf/renderer (no Puppeteer -- Vercel 50MB limit)
-- Feature flags at route level, not component level, max 3-4 flags
-- Alerts computed on demand (no background jobs)
-- All v2.0 features are read-only computed views over existing allocations table
-- [Phase 11]: Used React cache() for getOrgFlags deduplication and dedupe'd Clerk-to-UUID resolver in flag definitions
-- [Phase 11]: Sonner Toaster added to both (app) and (platform) layouts; all hand-rolled toast patterns replaced
-- [Phase 11-02]: Used useEffect + router.replace for FlagGuard redirect to avoid hydration issues
-- [Phase 11-02]: Optional flag property on NavItem for incremental nav gating
-- [Phase 12]: Single CTE query with generate_series for gapless month grid avoids N+1 and Neon cold-start multiplication
-- [Phase 12]: URL-based filter state (searchParams) for shareable heat map filter configurations
-- [Phase 13-dashboard-charts]: COUNT FILTER for single-pass overloaded/underutilized aggregation; division-by-zero returns 0 utilization
-- [Phase 13]: Split dashboard into server shell + client DashboardContent for Suspense/useSearchParams compatibility
-- [Phase 14]: Alert count badge uses 30s staleTime with refetchOnWindowFocus for near-real-time updates
-- [Phase 14]: Grid autosave invalidates alert caches across all three code paths (clean, error, conflict)
-- [Phase 14-02]: Used plain HTML table (not AG Grid) for read-only project staffing view
-- [Phase 15]: API route uses .tsx for JSX in renderToStream; button always visible when data loaded, API enforces flag gate
-- [Phase 16]: Nullable timestamp pattern for onboarding: NULL = not onboarded, non-null = onboarded; backfilled all existing orgs
-- [Phase 16]: Announcement banner in document flow (not fixed) to avoid z-index conflicts with impersonation banner
-- [Phase 16]: Person step requires firstName+lastName+departmentId+disciplineId per existing schema
-- [Phase 17-01]: Used performance.now() for sub-ms DB latency measurement; health fetch failure non-critical to dashboard
-- [Phase 17]: Purge deletes tenant data in FK-safe order without transaction wrapping for idempotent retry safety
+Key architectural decisions for v4.0:
+- Widget Registry Pattern: central registry, adding widget = create component + register
+- Persona-based defaults: Line Manager + Project Leader get different layouts
+- Layout persistence: DB-backed JSONB, 4-tier resolution (personal → device clone → tenant → built-in)
+- Scenario isolation: ~31 new files, 0 modifications, separate DB tables/API routes/cache keys
+- Person 360: global overlay (React portal), not a widget
+- New dependency: @dnd-kit/core + @dnd-kit/sortable
+- dnd-kit chosen over react-beautiful-dnd (lighter, more accessible, actively maintained)
+- Person 360 capacity thresholds: <80% available, >=80% fully-allocated, >100% overloaded
+- Person summary email returns null (people table has no email column, field kept for future)
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-- PDF export: chart-to-image serialization pipeline needs prototyping (Phase 15)
-- Nivo heat map performance at 200+ people x 18 months (3,600 cells) -- benchmark in Phase 12
-- driver.js SSR integration with Next.js App Router -- client-only dynamic import needed (Phase 16)
+- SVG snapshot for chart-to-PDF needs prototyping (Phase 31)
+- dnd-kit CSS Grid integration needs spike during Phase 23
 
 ## Session Continuity
 
-Last session: 2026-03-28T14:07:59.238Z
-Stopped at: Completed 17-02-PLAN.md
-Resume file: None
+Last session: 2026-04-01
+Stopped at: Completed 23-03-PLAN.md (Person 360 Card overlay + provider + endpoint)
+Resume file: .planning/phases/23-dashboard-framework/23-03-SUMMARY.md
 
 ---
 
-_Last updated: 2026-03-28_
+_Last updated: 2026-04-01_
