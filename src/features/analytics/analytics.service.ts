@@ -5,10 +5,14 @@ import { generateMonthRange } from '@/lib/date-utils';
 import { ValidationError } from '@/lib/errors';
 
 import type {
+  AvailabilitySearchResponse,
+  AvailabilityTimelineResponse,
+  BenchReportResponse,
   CapacityAlert,
   CapacityDistributionResponse,
   CapacityForecastResponse,
   CapacityStatusLabel,
+  ConflictsResponse,
   DashboardKPIs,
   DepartmentGroup,
   DepartmentUtilization,
@@ -1250,6 +1254,838 @@ export async function getDisciplineDemand(
     summary: {
       combinedPeakDeficit: Math.abs(combinedPeakDeficit),
       fteHiringNeed,
+    },
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+// --- v4.0 Group B: Person-Level Utilization endpoints (Phase 24) ---
+
+/**
+ * Availability Timeline (V2): per-person per-month allocation with project breakdown.
+ *
+ * Returns people grouped by department. Each person-month includes total allocated,
+ * available hours, utilization percent, and per-project breakdown with color coding.
+ */
+export async function getAvailabilityTimeline(
+  orgId: string,
+  monthFrom: string,
+  monthTo: string,
+  filters?: { departmentId?: string; disciplineId?: string; availableOnly?: boolean },
+): Promise<AvailabilityTimelineResponse> {
+  const fromDate = `${monthFrom}-01`;
+  const toDate = `${monthTo}-01`;
+
+  const deptFilter = filters?.departmentId
+    ? sql` AND p.department_id = ${filters.departmentId}::uuid`
+    : sql``;
+  const discFilter = filters?.disciplineId
+    ? sql` AND p.discipline_id = ${filters.disciplineId}::uuid`
+    : sql``;
+
+  const rows = await db.execute<{
+    person_id: string;
+    first_name: string;
+    last_name: string;
+    target_hours: number;
+    department_id: string;
+    department_name: string;
+    discipline_abbreviation: string | null;
+    month: string;
+    project_id: string | null;
+    project_name: string | null;
+    hours: number;
+  }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${fromDate}::date, ${toDate}::date, '1 month'::interval) AS d
+    ),
+    active_people AS (
+      SELECT
+        p.id AS person_id,
+        p.first_name,
+        p.last_name,
+        p.target_hours_per_month AS target_hours,
+        p.department_id,
+        d.name AS department_name,
+        disc.abbreviation AS discipline_abbreviation
+      FROM people p
+      INNER JOIN departments d ON d.id = p.department_id
+      LEFT JOIN disciplines disc ON disc.id = p.discipline_id
+      WHERE p.organization_id = ${orgId}::uuid
+        AND p.archived_at IS NULL
+        ${deptFilter}
+        ${discFilter}
+    )
+    SELECT
+      ap.person_id,
+      ap.first_name,
+      ap.last_name,
+      ap.target_hours,
+      ap.department_id,
+      ap.department_name,
+      ap.discipline_abbreviation,
+      ms.month,
+      a.project_id,
+      pr.name AS project_name,
+      COALESCE(a.hours, 0)::int AS hours
+    FROM active_people ap
+    CROSS JOIN month_series ms
+    LEFT JOIN allocations a
+      ON a.person_id = ap.person_id
+      AND to_char(a.month, 'YYYY-MM') = ms.month
+      AND a.organization_id = ${orgId}::uuid
+    LEFT JOIN projects pr ON pr.id = a.project_id
+    ORDER BY ap.department_name, ap.last_name, ap.first_name, ms.month
+  `);
+
+  // Build consistent project-to-color mapping
+  const projectColorMap = new Map<string, string>();
+  let colorIndex = 0;
+
+  // Group by department -> person -> month -> projects
+  const deptMap = new Map<
+    string,
+    {
+      departmentId: string;
+      departmentName: string;
+      people: Map<
+        string,
+        {
+          personId: string;
+          firstName: string;
+          lastName: string;
+          disciplineAbbreviation: string;
+          targetHoursPerMonth: number;
+          months: Map<
+            string,
+            {
+              projects: { projectId: string; projectName: string; hours: number; color: string }[];
+            }
+          >;
+        }
+      >;
+    }
+  >();
+
+  for (const row of rows.rows) {
+    // Ensure department exists
+    let dept = deptMap.get(row.department_id);
+    if (!dept) {
+      dept = {
+        departmentId: row.department_id,
+        departmentName: row.department_name,
+        people: new Map(),
+      };
+      deptMap.set(row.department_id, dept);
+    }
+
+    // Ensure person exists
+    let person = dept.people.get(row.person_id);
+    if (!person) {
+      person = {
+        personId: row.person_id,
+        firstName: row.first_name,
+        lastName: row.last_name,
+        disciplineAbbreviation: row.discipline_abbreviation ?? '',
+        targetHoursPerMonth: row.target_hours,
+        months: new Map(),
+      };
+      dept.people.set(row.person_id, person);
+    }
+
+    // Ensure month exists
+    let monthData = person.months.get(row.month);
+    if (!monthData) {
+      monthData = { projects: [] };
+      person.months.set(row.month, monthData);
+    }
+
+    // Add project if present and has hours
+    if (row.project_id && row.hours > 0) {
+      // Assign consistent color
+      if (!projectColorMap.has(row.project_id)) {
+        projectColorMap.set(row.project_id, CHART_PALETTE[colorIndex % CHART_PALETTE.length]);
+        colorIndex++;
+      }
+      monthData.projects.push({
+        projectId: row.project_id,
+        projectName: row.project_name ?? 'Unknown',
+        hours: row.hours,
+        color: projectColorMap.get(row.project_id)!,
+      });
+    }
+  }
+
+  // Transform to response format
+  const count = monthCount(monthFrom, monthTo);
+  const monthsList = generateMonthRange(monthFrom, count);
+
+  let totalAvailableHours = 0;
+  const peopleWithAvailabilitySet = new Set<string>();
+
+  const departments: AvailabilityTimelineResponse['departments'] = [];
+
+  for (const dept of deptMap.values()) {
+    const people: AvailabilityTimelineResponse['departments'][0]['people'] = [];
+
+    for (const person of dept.people.values()) {
+      let hasAnyAvailability = false;
+      const monthsRecord: Record<
+        string,
+        {
+          totalAllocated: number;
+          available: number;
+          utilizationPercent: number;
+          projects: { projectId: string; projectName: string; hours: number; color: string }[];
+        }
+      > = {};
+
+      for (const m of monthsList) {
+        const monthData = person.months.get(m);
+        const projects = monthData?.projects ?? [];
+        const totalAllocated = projects.reduce((sum, p) => sum + p.hours, 0);
+        const available = Math.max(0, person.targetHoursPerMonth - totalAllocated);
+        const utilizationPercent =
+          person.targetHoursPerMonth > 0
+            ? Math.round((totalAllocated / person.targetHoursPerMonth) * 1000) / 10
+            : 0;
+
+        monthsRecord[m] = { totalAllocated, available, utilizationPercent, projects };
+        totalAvailableHours += available;
+        if (available > 0) hasAnyAvailability = true;
+      }
+
+      // Apply availableOnly filter
+      if (filters?.availableOnly && !hasAnyAvailability) continue;
+
+      if (hasAnyAvailability) peopleWithAvailabilitySet.add(person.personId);
+
+      people.push({
+        personId: person.personId,
+        firstName: person.firstName,
+        lastName: person.lastName,
+        disciplineAbbreviation: person.disciplineAbbreviation,
+        targetHoursPerMonth: person.targetHoursPerMonth,
+        months: monthsRecord,
+      });
+    }
+
+    if (people.length > 0) {
+      departments.push({
+        departmentId: dept.departmentId,
+        departmentName: dept.departmentName,
+        people,
+      });
+    }
+  }
+
+  return {
+    departments,
+    months: monthsList,
+    summary: {
+      totalAvailableHours,
+      peopleWithAvailability: peopleWithAvailabilitySet.size,
+    },
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+/**
+ * Availability Search (V3): ranked list of available people with filtering and sorting.
+ *
+ * Returns people sorted by available hours (desc), utilization (asc), or name (asc).
+ * Supports filtering by discipline, department, and minimum available hours.
+ */
+export async function getAvailabilitySearch(
+  orgId: string,
+  monthFrom: string,
+  monthTo: string,
+  filters?: {
+    disciplineId?: string;
+    departmentId?: string;
+    minHours?: number;
+    sort?: 'available' | 'utilization' | 'name';
+  },
+): Promise<AvailabilitySearchResponse> {
+  const fromDate = `${monthFrom}-01`;
+  const toDate = `${monthTo}-01`;
+
+  const deptFilter = filters?.departmentId
+    ? sql` AND p.department_id = ${filters.departmentId}::uuid`
+    : sql``;
+  const discFilter = filters?.disciplineId
+    ? sql` AND p.discipline_id = ${filters.disciplineId}::uuid`
+    : sql``;
+
+  const rows = await db.execute<{
+    person_id: string;
+    first_name: string;
+    last_name: string;
+    target_hours: number;
+    discipline_abbreviation: string | null;
+    discipline_name: string | null;
+    department_name: string;
+    month: string;
+    total_hours: number;
+  }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${fromDate}::date, ${toDate}::date, '1 month'::interval) AS d
+    ),
+    active_people AS (
+      SELECT
+        p.id AS person_id,
+        p.first_name,
+        p.last_name,
+        p.target_hours_per_month AS target_hours,
+        disc.abbreviation AS discipline_abbreviation,
+        disc.name AS discipline_name,
+        d.name AS department_name
+      FROM people p
+      INNER JOIN departments d ON d.id = p.department_id
+      LEFT JOIN disciplines disc ON disc.id = p.discipline_id
+      WHERE p.organization_id = ${orgId}::uuid
+        AND p.archived_at IS NULL
+        ${deptFilter}
+        ${discFilter}
+    )
+    SELECT
+      ap.person_id,
+      ap.first_name,
+      ap.last_name,
+      ap.target_hours,
+      ap.discipline_abbreviation,
+      ap.discipline_name,
+      ap.department_name,
+      ms.month,
+      COALESCE(SUM(a.hours), 0)::int AS total_hours
+    FROM active_people ap
+    CROSS JOIN month_series ms
+    LEFT JOIN allocations a
+      ON a.person_id = ap.person_id
+      AND to_char(a.month, 'YYYY-MM') = ms.month
+      AND a.organization_id = ${orgId}::uuid
+    GROUP BY
+      ap.person_id, ap.first_name, ap.last_name, ap.target_hours,
+      ap.discipline_abbreviation, ap.discipline_name, ap.department_name, ms.month
+    ORDER BY ap.department_name, ap.last_name, ap.first_name, ms.month
+  `);
+
+  // Group by person -> months
+  const personMap = new Map<
+    string,
+    {
+      personId: string;
+      firstName: string;
+      lastName: string;
+      disciplineAbbreviation: string;
+      disciplineName: string;
+      departmentName: string;
+      targetHoursPerMonth: number;
+      months: Record<string, { allocated: number; available: number; utilizationPercent: number }>;
+      totalAvailable: number;
+      totalUtilization: number;
+      monthCount: number;
+    }
+  >();
+
+  for (const row of rows.rows) {
+    let person = personMap.get(row.person_id);
+    if (!person) {
+      person = {
+        personId: row.person_id,
+        firstName: row.first_name,
+        lastName: row.last_name,
+        disciplineAbbreviation: row.discipline_abbreviation ?? '',
+        disciplineName: row.discipline_name ?? '',
+        departmentName: row.department_name,
+        targetHoursPerMonth: row.target_hours,
+        months: {},
+        totalAvailable: 0,
+        totalUtilization: 0,
+        monthCount: 0,
+      };
+      personMap.set(row.person_id, person);
+    }
+
+    const allocated = Number(row.total_hours);
+    const available = Math.max(0, person.targetHoursPerMonth - allocated);
+    const utilizationPercent =
+      person.targetHoursPerMonth > 0
+        ? Math.round((allocated / person.targetHoursPerMonth) * 1000) / 10
+        : 0;
+
+    person.months[row.month] = { allocated, available, utilizationPercent };
+    person.totalAvailable += available;
+    person.totalUtilization += utilizationPercent;
+    person.monthCount++;
+  }
+
+  // Build results array with optional minHours filter
+  let results = Array.from(personMap.values()).map((p) => ({
+    personId: p.personId,
+    firstName: p.firstName,
+    lastName: p.lastName,
+    disciplineAbbreviation: p.disciplineAbbreviation,
+    disciplineName: p.disciplineName,
+    departmentName: p.departmentName,
+    targetHoursPerMonth: p.targetHoursPerMonth,
+    months: p.months,
+    totalAvailable: p.totalAvailable,
+    avgUtilization:
+      p.monthCount > 0 ? Math.round((p.totalUtilization / p.monthCount) * 10) / 10 : 0,
+  }));
+
+  // Apply minHours filter
+  if (filters?.minHours !== undefined) {
+    results = results.filter((r) => r.totalAvailable >= filters.minHours!);
+  }
+
+  // Sort results
+  const sort = filters?.sort ?? 'available';
+  if (sort === 'available') {
+    results.sort((a, b) => b.totalAvailable - a.totalAvailable);
+  } else if (sort === 'utilization') {
+    results.sort((a, b) => a.avgUtilization - b.avgUtilization);
+  } else {
+    results.sort(
+      (a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName),
+    );
+  }
+
+  return {
+    results,
+    total: results.length,
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+/**
+ * Bench Report (V8): people below utilization threshold with FTE equivalents.
+ *
+ * Uses a single query with two period CTEs (current and previous) to compute
+ * bench capacity and trend comparison. Benched = utilization < threshold%.
+ */
+export async function getBenchReport(
+  orgId: string,
+  monthFrom: string,
+  monthTo: string,
+  threshold = 80,
+): Promise<BenchReportResponse> {
+  const fromDate = `${monthFrom}-01`;
+  const toDate = `${monthTo}-01`;
+  const count = monthCount(monthFrom, monthTo);
+
+  // Compute previous period: same length, ending just before fromDate
+  const [y1, m1] = monthFrom.split('-').map(Number);
+  const prevEnd = new Date(y1, m1 - 2, 1); // month before fromDate (0-indexed)
+  const prevStart = new Date(prevEnd.getFullYear(), prevEnd.getMonth() - count + 1, 1);
+  const prevFromDate = `${prevStart.getFullYear()}-${String(prevStart.getMonth() + 1).padStart(2, '0')}-01`;
+  const prevToDate = `${prevEnd.getFullYear()}-${String(prevEnd.getMonth() + 1).padStart(2, '0')}-01`;
+
+  const thresholdDecimal = threshold / 100;
+
+  const rows = await db.execute<{
+    person_id: string;
+    first_name: string;
+    last_name: string;
+    target_hours: number;
+    department_id: string;
+    department_name: string;
+    discipline_id: string | null;
+    discipline_name: string | null;
+    discipline_abbreviation: string | null;
+    total_allocated: number;
+    total_target: number;
+    prev_allocated: number;
+    prev_target: number;
+  }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${fromDate}::date, ${toDate}::date, '1 month'::interval) AS d
+    ),
+    prev_month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${prevFromDate}::date, ${prevToDate}::date, '1 month'::interval) AS d
+    ),
+    active_people AS (
+      SELECT
+        p.id AS person_id,
+        p.first_name,
+        p.last_name,
+        p.target_hours_per_month AS target_hours,
+        p.department_id,
+        d.name AS department_name,
+        p.discipline_id,
+        disc.name AS discipline_name,
+        disc.abbreviation AS discipline_abbreviation
+      FROM people p
+      INNER JOIN departments d ON d.id = p.department_id
+      LEFT JOIN disciplines disc ON disc.id = p.discipline_id
+      WHERE p.organization_id = ${orgId}::uuid
+        AND p.archived_at IS NULL
+    ),
+    current_util AS (
+      SELECT
+        ap.person_id,
+        COALESCE(SUM(a.hours), 0)::int AS total_allocated,
+        (COUNT(DISTINCT ms.month) * ap.target_hours)::int AS total_target
+      FROM active_people ap
+      CROSS JOIN month_series ms
+      LEFT JOIN allocations a
+        ON a.person_id = ap.person_id
+        AND to_char(a.month, 'YYYY-MM') = ms.month
+        AND a.organization_id = ${orgId}::uuid
+      GROUP BY ap.person_id, ap.target_hours
+    ),
+    prev_util AS (
+      SELECT
+        ap.person_id,
+        COALESCE(SUM(a.hours), 0)::int AS prev_allocated,
+        (COUNT(DISTINCT pms.month) * ap.target_hours)::int AS prev_target
+      FROM active_people ap
+      CROSS JOIN prev_month_series pms
+      LEFT JOIN allocations a
+        ON a.person_id = ap.person_id
+        AND to_char(a.month, 'YYYY-MM') = pms.month
+        AND a.organization_id = ${orgId}::uuid
+      GROUP BY ap.person_id, ap.target_hours
+    )
+    SELECT
+      ap.person_id,
+      ap.first_name,
+      ap.last_name,
+      ap.target_hours,
+      ap.department_id,
+      ap.department_name,
+      ap.discipline_id,
+      ap.discipline_name,
+      ap.discipline_abbreviation,
+      cu.total_allocated,
+      cu.total_target,
+      COALESCE(pu.prev_allocated, 0) AS prev_allocated,
+      COALESCE(pu.prev_target, 0) AS prev_target
+    FROM active_people ap
+    INNER JOIN current_util cu ON cu.person_id = ap.person_id
+    LEFT JOIN prev_util pu ON pu.person_id = ap.person_id
+    ORDER BY ap.last_name, ap.first_name
+  `);
+
+  // Filter to benched people (utilization < threshold)
+  const benched = rows.rows.filter((row) => {
+    const target = Number(row.total_target);
+    if (target === 0) return true; // No target = benched
+    return Number(row.total_allocated) / target < thresholdDecimal;
+  });
+
+  // Compute totals
+  let totalBenchHours = 0;
+  let totalTargetSum = 0;
+  let previousBenchHours = 0;
+
+  const deptAgg = new Map<
+    string,
+    { id: string; name: string; hours: number; fte: number; count: number }
+  >();
+  const discAgg = new Map<
+    string,
+    { id: string; name: string; hours: number; fte: number; count: number }
+  >();
+
+  const topList: BenchReportResponse['topAvailable'] = [];
+
+  for (const row of benched) {
+    const target = Number(row.total_target);
+    const allocated = Number(row.total_allocated);
+    const benchHours = Math.max(0, target - allocated);
+    totalBenchHours += benchHours;
+    totalTargetSum += target;
+
+    // Previous period bench hours
+    const prevTarget = Number(row.prev_target);
+    const prevAllocated = Number(row.prev_allocated);
+    if (prevTarget > 0 && prevAllocated / prevTarget < thresholdDecimal) {
+      previousBenchHours += Math.max(0, prevTarget - prevAllocated);
+    }
+
+    // Department aggregation
+    const deptKey = row.department_id;
+    const dept = deptAgg.get(deptKey) ?? {
+      id: deptKey,
+      name: row.department_name,
+      hours: 0,
+      fte: 0,
+      count: 0,
+    };
+    dept.hours += benchHours;
+    dept.count++;
+    deptAgg.set(deptKey, dept);
+
+    // Discipline aggregation
+    if (row.discipline_id) {
+      const discKey = row.discipline_id;
+      const disc = discAgg.get(discKey) ?? {
+        id: discKey,
+        name: row.discipline_name ?? '',
+        hours: 0,
+        fte: 0,
+        count: 0,
+      };
+      disc.hours += benchHours;
+      disc.count++;
+      discAgg.set(discKey, disc);
+    }
+
+    // Build top available entry
+    const utilizationPercent = target > 0 ? Math.round((allocated / target) * 1000) / 10 : 0;
+    const freePerMonth = count > 0 ? Math.round(benchHours / count) : 0;
+    topList.push({
+      personId: row.person_id,
+      firstName: row.first_name,
+      lastName: row.last_name,
+      disciplineAbbreviation: row.discipline_abbreviation ?? '',
+      departmentName: row.department_name,
+      utilizationPercent,
+      freeHoursPerMonth: freePerMonth,
+    });
+  }
+
+  // Compute FTE: totalBenchHours / (monthCount * avg target per month)
+  const avgTargetPerMonth = benched.length > 0 ? totalTargetSum / (benched.length * count) : 160;
+  const fteEquivalent =
+    avgTargetPerMonth > 0
+      ? Math.round((totalBenchHours / (count * avgTargetPerMonth)) * 10) / 10
+      : 0;
+
+  // Department FTE
+  const byDepartment = Array.from(deptAgg.values()).map((d) => ({
+    departmentId: d.id,
+    departmentName: d.name,
+    benchHours: d.hours,
+    fteEquivalent:
+      avgTargetPerMonth > 0 ? Math.round((d.hours / (count * avgTargetPerMonth)) * 10) / 10 : 0,
+    peopleCount: d.count,
+  }));
+
+  // Discipline FTE
+  const byDiscipline = Array.from(discAgg.values()).map((d) => ({
+    disciplineId: d.id,
+    disciplineName: d.name,
+    benchHours: d.hours,
+    fteEquivalent:
+      avgTargetPerMonth > 0 ? Math.round((d.hours / (count * avgTargetPerMonth)) * 10) / 10 : 0,
+    peopleCount: d.count,
+  }));
+
+  // Top 10 sorted by freeHoursPerMonth DESC
+  topList.sort((a, b) => b.freeHoursPerMonth - a.freeHoursPerMonth);
+  const topAvailable = topList.slice(0, 10);
+
+  // Trend vs previous
+  const changePercent =
+    previousBenchHours > 0
+      ? Math.round(((totalBenchHours - previousBenchHours) / previousBenchHours) * 1000) / 10
+      : 0;
+  const direction: 'up' | 'down' | 'stable' =
+    changePercent > 2 ? 'up' : changePercent < -2 ? 'down' : 'stable';
+
+  // Insight
+  let insight: string | undefined;
+  if (changePercent > 10 && byDepartment.length > 0) {
+    const topDept = byDepartment.sort((a, b) => b.benchHours - a.benchHours)[0];
+    insight = `Bench capacity increased by ${Math.round(changePercent)}% — consider redistributing ${topDept.departmentName} resources`;
+  }
+
+  return {
+    summary: {
+      totalBenchHours,
+      fteEquivalent,
+      peopleCount: benched.length,
+      trendVsPrevious: {
+        previousBenchHours,
+        changePercent,
+        direction,
+      },
+    },
+    byDepartment,
+    byDiscipline,
+    topAvailable,
+    insight,
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+/**
+ * Conflicts (V9): over-allocated people with per-project breakdown.
+ *
+ * Finds people allocated > 100% of their target hours per month.
+ * Includes resolution suggestions (reduce largest allocation by the overBy amount).
+ */
+export async function getConflicts(
+  orgId: string,
+  month?: string,
+  months = 1,
+): Promise<ConflictsResponse> {
+  // Default to current month
+  const startMonth = month ?? new Date().toISOString().slice(0, 7);
+  // Compute end month
+  const [startY, startM] = startMonth.split('-').map(Number);
+  const endDate = new Date(startY, startM - 1 + months - 1, 1);
+  const endMonth = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}`;
+
+  const fromDate = `${startMonth}-01`;
+  const toDate = `${endMonth}-01`;
+
+  const rows = await db.execute<{
+    person_id: string;
+    first_name: string;
+    last_name: string;
+    target_hours: number;
+    department_name: string;
+    discipline_abbreviation: string | null;
+    month: string;
+    project_id: string | null;
+    project_name: string | null;
+    project_hours: number;
+    month_total: number;
+  }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${fromDate}::date, ${toDate}::date, '1 month'::interval) AS d
+    ),
+    active_people AS (
+      SELECT
+        p.id AS person_id,
+        p.first_name,
+        p.last_name,
+        p.target_hours_per_month AS target_hours,
+        d.name AS department_name,
+        disc.abbreviation AS discipline_abbreviation
+      FROM people p
+      INNER JOIN departments d ON d.id = p.department_id
+      LEFT JOIN disciplines disc ON disc.id = p.discipline_id
+      WHERE p.organization_id = ${orgId}::uuid
+        AND p.archived_at IS NULL
+    )
+    SELECT
+      ap.person_id,
+      ap.first_name,
+      ap.last_name,
+      ap.target_hours,
+      ap.department_name,
+      ap.discipline_abbreviation,
+      ms.month,
+      a.project_id,
+      pr.name AS project_name,
+      COALESCE(a.hours, 0)::int AS project_hours,
+      SUM(COALESCE(a.hours, 0))::int OVER (PARTITION BY ap.person_id, ms.month) AS month_total
+    FROM active_people ap
+    CROSS JOIN month_series ms
+    LEFT JOIN allocations a
+      ON a.person_id = ap.person_id
+      AND to_char(a.month, 'YYYY-MM') = ms.month
+      AND a.organization_id = ${orgId}::uuid
+    LEFT JOIN projects pr ON pr.id = a.project_id
+    ORDER BY ap.last_name, ap.first_name, ms.month
+  `);
+
+  // Filter to conflicted people (month_total > target) and group
+  const conflictMap = new Map<
+    string,
+    {
+      personId: string;
+      firstName: string;
+      lastName: string;
+      disciplineAbbreviation: string;
+      departmentName: string;
+      targetHoursPerMonth: number;
+      months: Record<
+        string,
+        {
+          totalAllocated: number;
+          overBy: number;
+          projects: { projectId: string; projectName: string; hours: number }[];
+          suggestedResolution?: {
+            projectId: string;
+            projectName: string;
+            reduceBy: number;
+            newHours: number;
+          };
+        }
+      >;
+    }
+  >();
+
+  for (const row of rows.rows) {
+    const monthTotal = Number(row.month_total);
+    const target = Number(row.target_hours);
+    if (target <= 0 || monthTotal <= target) continue; // Not over-allocated
+
+    const key = row.person_id;
+    let person = conflictMap.get(key);
+    if (!person) {
+      person = {
+        personId: row.person_id,
+        firstName: row.first_name,
+        lastName: row.last_name,
+        disciplineAbbreviation: row.discipline_abbreviation ?? '',
+        departmentName: row.department_name,
+        targetHoursPerMonth: target,
+        months: {},
+      };
+      conflictMap.set(key, person);
+    }
+
+    if (!person.months[row.month]) {
+      person.months[row.month] = {
+        totalAllocated: monthTotal,
+        overBy: monthTotal - target,
+        projects: [],
+      };
+    }
+
+    // Add project if present and has hours
+    if (row.project_id && row.project_hours > 0) {
+      const monthData = person.months[row.month];
+      // Avoid duplicates (window function can produce multiple rows per project)
+      if (!monthData.projects.some((p) => p.projectId === row.project_id)) {
+        monthData.projects.push({
+          projectId: row.project_id,
+          projectName: row.project_name ?? 'Unknown',
+          hours: row.project_hours,
+        });
+      }
+    }
+  }
+
+  // Add suggested resolutions
+  for (const person of conflictMap.values()) {
+    for (const monthData of Object.values(person.months)) {
+      if (monthData.projects.length > 0) {
+        // Sort by hours DESC, suggest reducing the largest
+        const sorted = [...monthData.projects].sort((a, b) => b.hours - a.hours);
+        const largest = sorted[0];
+        const newHours = largest.hours - monthData.overBy;
+        if (newHours >= 0) {
+          monthData.suggestedResolution = {
+            projectId: largest.projectId,
+            projectName: largest.projectName,
+            reduceBy: monthData.overBy,
+            newHours,
+          };
+        }
+      }
+    }
+  }
+
+  const conflicts = Array.from(conflictMap.values());
+
+  return {
+    conflicts,
+    summary: {
+      totalConflicts: conflicts.length,
+      resolvedThisMonth: 0, // No resolution tracking yet
     },
     generatedAt: new Date().toISOString(),
   };
