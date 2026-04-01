@@ -20,9 +20,13 @@ import type {
   DisciplineBreakdown,
   HeatMapPerson,
   HeatMapResponse,
+  PeriodComparisonResponse,
+  PersonDetailResponse,
   PersonSummaryResponse,
+  ProgramRollupResponse,
   ProjectStaffingPerson,
   ProjectStaffingResponse,
+  UtilizationTrendsResponse,
 } from './analytics.types';
 
 const MAX_MONTH_RANGE = 36;
@@ -2087,6 +2091,901 @@ export async function getConflicts(
       totalConflicts: conflicts.length,
       resolvedThisMonth: 0, // No resolution tracking yet
     },
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+// --- v4.0 Group C+D: Trends, Entity, and Comparison endpoints (Phase 24) ---
+
+/**
+ * Compute a YYYY-MM string offset by N months from a given YYYY-MM string.
+ */
+function offsetMonth(yyyyMm: string, offset: number): string {
+  const [y, m] = yyyyMm.split('-').map(Number);
+  const d = new Date(y, m - 1 + offset, 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+}
+
+/**
+ * Utilization Trends (V4): 6-month entity utilization history with direction signals.
+ *
+ * Fixed 6-month window ending at current month. Groups by department or person.
+ * Returns per-entity monthly utilization %, change direction, and overload flag.
+ */
+export async function getUtilizationTrends(
+  orgId: string,
+  groupBy: 'department' | 'person',
+  limit = 10,
+): Promise<UtilizationTrendsResponse> {
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const sixMonthsAgo = offsetMonth(currentMonth, -5); // 6 months inclusive
+  const fromDate = `${sixMonthsAgo}-01`;
+  const toDate = `${currentMonth}-01`;
+
+  if (groupBy === 'department') {
+    const rows = await db.execute<{
+      department_id: string;
+      department_name: string;
+      month: string;
+      headcount: number;
+      utilization_percent: number;
+    }>(sql`
+      WITH month_series AS (
+        SELECT to_char(d, 'YYYY-MM') AS month
+        FROM generate_series(${fromDate}::date, ${toDate}::date, '1 month'::interval) AS d
+      ),
+      active_people AS (
+        SELECT p.id, p.department_id, d.name AS department_name, p.target_hours_per_month AS target_hours
+        FROM people p
+        INNER JOIN departments d ON d.id = p.department_id
+        WHERE p.organization_id = ${orgId}::uuid AND p.archived_at IS NULL
+      )
+      SELECT
+        ap.department_id,
+        ap.department_name,
+        ms.month,
+        COUNT(DISTINCT ap.id)::int AS headcount,
+        CASE
+          WHEN SUM(ap.target_hours) = 0 THEN 0
+          ELSE ROUND(COALESCE(SUM(a.hours), 0)::numeric / SUM(ap.target_hours)::numeric * 100, 1)
+        END AS utilization_percent
+      FROM active_people ap
+      CROSS JOIN month_series ms
+      LEFT JOIN allocations a
+        ON a.person_id = ap.id
+        AND to_char(a.month, 'YYYY-MM') = ms.month
+        AND a.organization_id = ${orgId}::uuid
+      GROUP BY ap.department_id, ap.department_name, ms.month
+      ORDER BY ap.department_name, ms.month
+    `);
+
+    // Group by department
+    const deptMap = new Map<
+      string,
+      { id: string; name: string; headcount: number; months: Record<string, number> }
+    >();
+    for (const row of rows.rows) {
+      let dept = deptMap.get(row.department_id);
+      if (!dept) {
+        dept = { id: row.department_id, name: row.department_name, headcount: 0, months: {} };
+        deptMap.set(row.department_id, dept);
+      }
+      dept.months[row.month] = Number(row.utilization_percent);
+      dept.headcount = Math.max(dept.headcount, row.headcount);
+    }
+
+    const entities = Array.from(deptMap.values()).map((dept) => {
+      const currentUtil = dept.months[currentMonth] ?? 0;
+      const oldUtil = dept.months[sixMonthsAgo] ?? 0;
+      const change = Math.round((currentUtil - oldUtil) * 10) / 10;
+      return {
+        id: dept.id,
+        name: dept.name,
+        type: 'department' as const,
+        headcount: dept.headcount,
+        months: dept.months,
+        currentUtilization: currentUtil,
+        changePercent: change,
+        direction:
+          change > 2 ? ('up' as const) : change < -2 ? ('down' as const) : ('stable' as const),
+        isOverloaded: currentUtil > 100,
+      };
+    });
+
+    return { entities, generatedAt: new Date().toISOString() };
+  }
+
+  // groupBy === 'person'
+  const rows = await db.execute<{
+    person_id: string;
+    person_name: string;
+    month: string;
+    utilization_percent: number;
+    avg_util: number;
+  }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${fromDate}::date, ${toDate}::date, '1 month'::interval) AS d
+    ),
+    active_people AS (
+      SELECT p.id, (p.first_name || ' ' || p.last_name) AS person_name, p.target_hours_per_month AS target_hours
+      FROM people p
+      WHERE p.organization_id = ${orgId}::uuid AND p.archived_at IS NULL
+    ),
+    person_month AS (
+      SELECT
+        ap.id AS person_id,
+        ap.person_name,
+        ms.month,
+        CASE
+          WHEN ap.target_hours = 0 THEN 0
+          ELSE ROUND(COALESCE(SUM(a.hours), 0)::numeric / ap.target_hours::numeric * 100, 1)
+        END AS utilization_percent
+      FROM active_people ap
+      CROSS JOIN month_series ms
+      LEFT JOIN allocations a
+        ON a.person_id = ap.id
+        AND to_char(a.month, 'YYYY-MM') = ms.month
+        AND a.organization_id = ${orgId}::uuid
+      GROUP BY ap.id, ap.person_name, ap.target_hours, ms.month
+    ),
+    ranked AS (
+      SELECT *,
+        AVG(utilization_percent) OVER (PARTITION BY person_id) AS avg_util
+      FROM person_month
+    )
+    SELECT person_id, person_name, month, utilization_percent::float, avg_util::float
+    FROM ranked
+    WHERE person_id IN (
+      SELECT DISTINCT person_id FROM ranked ORDER BY avg_util DESC LIMIT ${limit}
+    )
+    ORDER BY avg_util DESC, person_name, month
+  `);
+
+  const personMap = new Map<string, { id: string; name: string; months: Record<string, number> }>();
+  for (const row of rows.rows) {
+    let person = personMap.get(row.person_id);
+    if (!person) {
+      person = { id: row.person_id, name: row.person_name, months: {} };
+      personMap.set(row.person_id, person);
+    }
+    person.months[row.month] = Number(row.utilization_percent);
+  }
+
+  const entities = Array.from(personMap.values()).map((p) => {
+    const currentUtil = p.months[currentMonth] ?? 0;
+    const oldUtil = p.months[sixMonthsAgo] ?? 0;
+    const change = Math.round((currentUtil - oldUtil) * 10) / 10;
+    return {
+      id: p.id,
+      name: p.name,
+      type: 'person' as const,
+      months: p.months,
+      currentUtilization: currentUtil,
+      changePercent: change,
+      direction:
+        change > 2 ? ('up' as const) : change < -2 ? ('down' as const) : ('stable' as const),
+      isOverloaded: currentUtil > 100,
+    };
+  });
+
+  return { entities, generatedAt: new Date().toISOString() };
+}
+
+/**
+ * Person Detail (V7): full 360-degree data for a single person.
+ *
+ * Returns current month breakdown with per-project hours, 6-month utilization trend,
+ * and 3-month forward availability forecast.
+ *
+ * @param orgId - Organization UUID
+ * @param personId - Person UUID
+ */
+export async function getPersonDetail(
+  orgId: string,
+  personId: string,
+): Promise<PersonDetailResponse> {
+  const currentMonth = new Date().toISOString().slice(0, 7);
+  const sixMonthsAgo = offsetMonth(currentMonth, -5);
+  const fromDate = `${sixMonthsAgo}-01`;
+  const toDate = `${currentMonth}-01`;
+
+  // Query 1: Person info
+  const personResult = await db.execute<{
+    first_name: string;
+    last_name: string;
+    target_hours: number;
+    discipline_abbreviation: string;
+    discipline_name: string;
+    department_name: string;
+  }>(sql`
+    SELECT
+      p.first_name,
+      p.last_name,
+      p.target_hours_per_month AS target_hours,
+      COALESCE(disc.abbreviation, '') AS discipline_abbreviation,
+      COALESCE(disc.name, '') AS discipline_name,
+      d.name AS department_name
+    FROM people p
+    INNER JOIN departments d ON d.id = p.department_id
+    LEFT JOIN disciplines disc ON disc.id = p.discipline_id
+    WHERE p.id = ${personId}::uuid
+      AND p.organization_id = ${orgId}::uuid
+      AND p.archived_at IS NULL
+    LIMIT 1
+  `);
+
+  const person = personResult.rows[0];
+  if (!person) {
+    throw new ValidationError('Person not found or archived');
+  }
+
+  const target = person.target_hours;
+
+  // Query 2: Per-month allocations with project breakdown for last 6 months
+  const allocRows = await db.execute<{
+    month: string;
+    project_id: string | null;
+    project_name: string | null;
+    hours: number;
+  }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${fromDate}::date, ${toDate}::date, '1 month'::interval) AS d
+    )
+    SELECT
+      ms.month,
+      a.project_id,
+      pr.name AS project_name,
+      COALESCE(a.hours, 0)::int AS hours
+    FROM month_series ms
+    LEFT JOIN allocations a
+      ON a.person_id = ${personId}::uuid
+      AND to_char(a.month, 'YYYY-MM') = ms.month
+      AND a.organization_id = ${orgId}::uuid
+    LEFT JOIN projects pr ON pr.id = a.project_id
+    ORDER BY ms.month, hours DESC
+  `);
+
+  // Query 3: Upcoming availability (next 3 months)
+  const nextMonths = [
+    offsetMonth(currentMonth, 1),
+    offsetMonth(currentMonth, 2),
+    offsetMonth(currentMonth, 3),
+  ];
+  const futureFrom = `${nextMonths[0]}-01`;
+  const futureTo = `${nextMonths[2]}-01`;
+
+  const futureRows = await db.execute<{
+    month: string;
+    total_allocated: number;
+  }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${futureFrom}::date, ${futureTo}::date, '1 month'::interval) AS d
+    )
+    SELECT
+      ms.month,
+      COALESCE(SUM(a.hours), 0)::int AS total_allocated
+    FROM month_series ms
+    LEFT JOIN allocations a
+      ON a.person_id = ${personId}::uuid
+      AND to_char(a.month, 'YYYY-MM') = ms.month
+      AND a.organization_id = ${orgId}::uuid
+    GROUP BY ms.month
+    ORDER BY ms.month
+  `);
+
+  // Build trend: per-month utilization
+  const trendMonths: Record<string, number> = {};
+  const monthProjectMap = new Map<
+    string,
+    { projectId: string; projectName: string; hours: number }[]
+  >();
+
+  for (const row of allocRows.rows) {
+    const m = row.month;
+    if (!monthProjectMap.has(m)) monthProjectMap.set(m, []);
+    if (row.project_id && row.hours > 0) {
+      monthProjectMap.get(m)!.push({
+        projectId: row.project_id,
+        projectName: row.project_name ?? 'Unknown',
+        hours: row.hours,
+      });
+    }
+  }
+
+  // Compute per-month utilization
+  for (const [m, projects] of monthProjectMap) {
+    const totalHours = projects.reduce((sum, p) => sum + p.hours, 0);
+    trendMonths[m] = target > 0 ? Math.round((totalHours / target) * 1000) / 10 : 0;
+  }
+
+  // Ensure all months in range are present
+  const allMonths = generateMonthRange(sixMonthsAgo, 6);
+  for (const m of allMonths) {
+    if (!(m in trendMonths)) trendMonths[m] = 0;
+  }
+
+  // Current month data
+  const currentProjects = monthProjectMap.get(currentMonth) ?? [];
+  const totalAllocated = currentProjects.reduce((sum, p) => sum + p.hours, 0);
+  const utilizationPercent = target > 0 ? Math.round((totalAllocated / target) * 1000) / 10 : 0;
+  const available = Math.max(0, target - totalAllocated);
+
+  let status: 'healthy' | 'warning' | 'overloaded' | 'empty';
+  if (totalAllocated === 0) status = 'empty';
+  else if (utilizationPercent > 100) status = 'overloaded';
+  else if (utilizationPercent > 85) status = 'warning';
+  else status = 'healthy';
+
+  // Trend direction
+  const currentUtil = trendMonths[currentMonth] ?? 0;
+  const oldUtil = trendMonths[sixMonthsAgo] ?? 0;
+  const changePercent = Math.round((currentUtil - oldUtil) * 10) / 10;
+
+  // Upcoming availability
+  const upcomingAvailability = futureRows.rows.map((row) => ({
+    month: row.month,
+    available: Math.max(0, target - Number(row.total_allocated)),
+  }));
+
+  // Fill in months not in query result
+  for (const m of nextMonths) {
+    if (!upcomingAvailability.some((ua) => ua.month === m)) {
+      upcomingAvailability.push({ month: m, available: target });
+    }
+  }
+  upcomingAvailability.sort((a, b) => a.month.localeCompare(b.month));
+
+  return {
+    personId,
+    firstName: person.first_name,
+    lastName: person.last_name,
+    disciplineAbbreviation: person.discipline_abbreviation,
+    disciplineName: person.discipline_name,
+    departmentName: person.department_name,
+    targetHoursPerMonth: target,
+    currentMonth: {
+      month: currentMonth,
+      totalAllocated,
+      utilizationPercent,
+      status,
+      projects: currentProjects.map((p, i) => ({
+        projectId: p.projectId,
+        projectName: p.projectName,
+        hours: p.hours,
+        percentOfTarget: target > 0 ? Math.round((p.hours / target) * 1000) / 10 : 0,
+        color: CHART_PALETTE[i % CHART_PALETTE.length],
+      })),
+      available,
+    },
+    trend: {
+      months: trendMonths,
+      changePercent,
+      direction: changePercent > 2 ? 'up' : changePercent < -2 ? 'down' : 'stable',
+    },
+    upcomingAvailability,
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+/**
+ * Program Rollup (V10): program-level aggregated capacity view.
+ *
+ * Computes staffing completeness, discipline coverage, monthly load,
+ * and per-project summary for a specific program or all programs.
+ */
+export async function getProgramRollup(
+  orgId: string,
+  monthFrom: string,
+  monthTo: string,
+  programId?: string,
+): Promise<ProgramRollupResponse> {
+  const fromDate = `${monthFrom}-01`;
+  const toDate = `${monthTo}-01`;
+
+  // Program info (if specific program)
+  let program: ProgramRollupResponse['program'] = null;
+  if (programId) {
+    const pgResult = await db.execute<{
+      id: string;
+      name: string;
+      project_count: number;
+    }>(sql`
+      SELECT pg.id, pg.name, COUNT(DISTINCT pr.id)::int AS project_count
+      FROM programs pg
+      LEFT JOIN projects pr ON pr.program_id = pg.id
+        AND pr.organization_id = ${orgId}::uuid
+        AND pr.archived_at IS NULL
+      WHERE pg.id = ${programId}::uuid
+        AND pg.organization_id = ${orgId}::uuid
+      GROUP BY pg.id, pg.name
+    `);
+
+    if (pgResult.rows[0]) {
+      program = {
+        programId: pgResult.rows[0].id,
+        programName: pgResult.rows[0].name,
+        projectCount: pgResult.rows[0].project_count,
+        totalPeople: 0, // Computed below
+        peakMonthlyHours: 0, // Computed below
+      };
+    }
+  }
+
+  // Project filter for program scope
+  const programFilter = programId ? sql` AND pr.program_id = ${programId}::uuid` : sql``;
+
+  // Monthly load + per-project data
+  const rows = await db.execute<{
+    project_id: string;
+    project_name: string;
+    project_status: string;
+    month: string;
+    people_count: number;
+    total_hours: number;
+  }>(sql`
+    WITH program_projects AS (
+      SELECT pr.id, pr.name, pr.status
+      FROM projects pr
+      WHERE pr.organization_id = ${orgId}::uuid
+        AND pr.archived_at IS NULL
+        ${programFilter}
+    ),
+    month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${fromDate}::date, ${toDate}::date, '1 month'::interval) AS d
+    )
+    SELECT
+      pp.id AS project_id,
+      pp.name AS project_name,
+      pp.status AS project_status,
+      ms.month,
+      COUNT(DISTINCT a.person_id)::int AS people_count,
+      COALESCE(SUM(a.hours), 0)::int AS total_hours
+    FROM program_projects pp
+    CROSS JOIN month_series ms
+    LEFT JOIN allocations a
+      ON a.project_id = pp.id
+      AND to_char(a.month, 'YYYY-MM') = ms.month
+      AND a.organization_id = ${orgId}::uuid
+    GROUP BY pp.id, pp.name, pp.status, ms.month
+    ORDER BY pp.name, ms.month
+  `);
+
+  // Build monthly load and per-project summary
+  const monthlyLoad: Record<string, number> = {};
+  const projectMap = new Map<
+    string,
+    { name: string; status: string; totalPeople: number; totalHours: number; monthCount: number }
+  >();
+  for (const row of rows.rows) {
+    const hours = Number(row.total_hours);
+    monthlyLoad[row.month] = (monthlyLoad[row.month] ?? 0) + hours;
+
+    let proj = projectMap.get(row.project_id);
+    if (!proj) {
+      proj = {
+        name: row.project_name,
+        status: row.project_status,
+        totalPeople: 0,
+        totalHours: 0,
+        monthCount: 0,
+      };
+      projectMap.set(row.project_id, proj);
+    }
+    proj.totalPeople += row.people_count;
+    proj.totalHours += hours;
+    proj.monthCount++;
+  }
+
+  // Get distinct people allocated to program projects
+  const peopleResult = await db.execute<{ person_id: string }>(sql`
+    SELECT DISTINCT a.person_id
+    FROM allocations a
+    INNER JOIN projects pr ON pr.id = a.project_id
+    WHERE a.organization_id = ${orgId}::uuid
+      AND pr.organization_id = ${orgId}::uuid
+      AND pr.archived_at IS NULL
+      ${programFilter}
+      AND to_char(a.month, 'YYYY-MM') >= ${monthFrom}
+      AND to_char(a.month, 'YYYY-MM') <= ${monthTo}
+  `);
+  const totalPeople = peopleResult.rows.length;
+  const peakMonthlyHours =
+    Object.values(monthlyLoad).length > 0 ? Math.max(...Object.values(monthlyLoad)) : 0;
+
+  if (program) {
+    program.totalPeople = totalPeople;
+    program.peakMonthlyHours = peakMonthlyHours;
+  }
+
+  // Discipline coverage
+  const discRows = await db.execute<{
+    discipline_id: string;
+    discipline_name: string;
+    abbreviation: string;
+    people_count: number;
+    total_allocated: number;
+    avg_target: number;
+  }>(sql`
+    WITH program_people AS (
+      SELECT DISTINCT a.person_id
+      FROM allocations a
+      INNER JOIN projects pr ON pr.id = a.project_id
+      WHERE a.organization_id = ${orgId}::uuid
+        AND pr.organization_id = ${orgId}::uuid
+        AND pr.archived_at IS NULL
+        ${programFilter}
+        AND to_char(a.month, 'YYYY-MM') >= ${monthFrom}
+        AND to_char(a.month, 'YYYY-MM') <= ${monthTo}
+    ),
+    org_disciplines AS (
+      SELECT DISTINCT disc.id, disc.name, disc.abbreviation
+      FROM disciplines disc
+      INNER JOIN people p ON p.discipline_id = disc.id
+      WHERE p.organization_id = ${orgId}::uuid AND p.archived_at IS NULL
+    )
+    SELECT
+      od.id AS discipline_id,
+      od.name AS discipline_name,
+      od.abbreviation,
+      COUNT(DISTINCT pp.person_id)::int AS people_count,
+      COALESCE(SUM(a.hours), 0)::int AS total_allocated,
+      COALESCE(AVG(p.target_hours_per_month), 160)::int AS avg_target
+    FROM org_disciplines od
+    LEFT JOIN people p ON p.discipline_id = od.id
+      AND p.organization_id = ${orgId}::uuid
+      AND p.archived_at IS NULL
+    LEFT JOIN program_people pp ON pp.person_id = p.id
+    LEFT JOIN allocations a ON a.person_id = p.id
+      AND a.organization_id = ${orgId}::uuid
+      AND to_char(a.month, 'YYYY-MM') >= ${monthFrom}
+      AND to_char(a.month, 'YYYY-MM') <= ${monthTo}
+    GROUP BY od.id, od.name, od.abbreviation
+    ORDER BY od.name
+  `);
+
+  const mCount = monthCount(monthFrom, monthTo);
+  const disciplineCoverage = discRows.rows.map((row) => {
+    const avgTarget = Number(row.avg_target) || 160;
+    const expectedHoursPerPeriod = avgTarget * mCount;
+    const coveragePercent =
+      expectedHoursPerPeriod > 0
+        ? Math.min(
+            100,
+            Math.round((Number(row.total_allocated) / expectedHoursPerPeriod) * 1000) / 10,
+          )
+        : 0;
+    const gapFte = coveragePercent < 80 ? Math.round((1 - coveragePercent / 100) * 10) / 10 : 0;
+
+    return {
+      disciplineId: row.discipline_id,
+      disciplineName: row.discipline_name,
+      abbreviation: row.abbreviation,
+      coveragePercent,
+      peopleCount: row.people_count,
+      gapFte,
+    };
+  });
+
+  const coveredCount = disciplineCoverage.filter((d) => d.coveragePercent >= 80).length;
+  const staffingCompleteness =
+    disciplineCoverage.length > 0
+      ? Math.round((coveredCount / disciplineCoverage.length) * 1000) / 10
+      : 100;
+
+  const projects = Array.from(projectMap.entries()).map(([projectId, p]) => ({
+    projectId,
+    projectName: p.name,
+    peopleCount: p.monthCount > 0 ? Math.round(p.totalPeople / p.monthCount) : 0,
+    monthlyHours: p.monthCount > 0 ? Math.round(p.totalHours / p.monthCount) : 0,
+    status: p.status as 'active' | 'planned' | 'archived',
+  }));
+
+  // Gap alert
+  const criticalGaps = disciplineCoverage.filter((d) => d.coveragePercent < 50);
+  const gapAlert =
+    criticalGaps.length > 0
+      ? `Critical gap in ${criticalGaps[0].disciplineName} — ${criticalGaps[0].gapFte} FTE needed`
+      : undefined;
+
+  return {
+    program,
+    staffingCompleteness,
+    disciplineCoverage,
+    monthlyLoad,
+    projects,
+    gapAlert,
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+/**
+ * Generate a human-readable period label from YYYY-MM date range.
+ * e.g., "2026-01" to "2026-03" -> "Jan-Mar 2026"
+ */
+function periodLabel(from: string, to: string): string {
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
+  const [y1, m1] = from.split('-').map(Number);
+  const [y2, m2] = to.split('-').map(Number);
+  if (y1 === y2 && m2 - m1 === 2) {
+    const q = Math.floor((m1 - 1) / 3) + 1;
+    if ((m1 - 1) % 3 === 0) return `Q${q} ${y1}`;
+  }
+  if (y1 === y2) return `${months[m1 - 1]}-${months[m2 - 1]} ${y1}`;
+  return `${months[m1 - 1]} ${y1}-${months[m2 - 1]} ${y2}`;
+}
+
+/**
+ * Period Comparison (V11): two-period delta analysis with department breakdown.
+ *
+ * Computes 5 comparison metrics, per-department utilization deltas,
+ * and auto-generated notable changes for significant shifts.
+ */
+export async function getPeriodComparison(
+  orgId: string,
+  fromA: string,
+  toA: string,
+  fromB: string,
+  toB: string,
+): Promise<PeriodComparisonResponse> {
+  const fromDateA = `${fromA}-01`;
+  const toDateA = `${toA}-01`;
+  const fromDateB = `${fromB}-01`;
+  const toDateB = `${toB}-01`;
+
+  // Single query with conditional aggregation for both periods
+  const rows = await db.execute<{
+    department_id: string;
+    department_name: string;
+    target_a: number;
+    allocated_a: number;
+    people_a: number;
+    target_b: number;
+    allocated_b: number;
+    people_b: number;
+  }>(sql`
+    WITH active_people AS (
+      SELECT p.id, p.department_id, d.name AS department_name, p.target_hours_per_month AS target_hours
+      FROM people p
+      INNER JOIN departments d ON d.id = p.department_id
+      WHERE p.organization_id = ${orgId}::uuid AND p.archived_at IS NULL
+    ),
+    month_series_a AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${fromDateA}::date, ${toDateA}::date, '1 month'::interval) AS d
+    ),
+    month_series_b AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${fromDateB}::date, ${toDateB}::date, '1 month'::interval) AS d
+    ),
+    period_a AS (
+      SELECT
+        ap.department_id,
+        ap.department_name,
+        SUM(ap.target_hours)::numeric AS total_target,
+        COALESCE(SUM(a.hours), 0)::numeric AS total_allocated,
+        COUNT(DISTINCT ap.id)::int AS people_count
+      FROM active_people ap
+      CROSS JOIN month_series_a ms
+      LEFT JOIN allocations a
+        ON a.person_id = ap.id
+        AND to_char(a.month, 'YYYY-MM') = ms.month
+        AND a.organization_id = ${orgId}::uuid
+      GROUP BY ap.department_id, ap.department_name
+    ),
+    period_b AS (
+      SELECT
+        ap.department_id,
+        ap.department_name,
+        SUM(ap.target_hours)::numeric AS total_target,
+        COALESCE(SUM(a.hours), 0)::numeric AS total_allocated,
+        COUNT(DISTINCT ap.id)::int AS people_count
+      FROM active_people ap
+      CROSS JOIN month_series_b ms
+      LEFT JOIN allocations a
+        ON a.person_id = ap.id
+        AND to_char(a.month, 'YYYY-MM') = ms.month
+        AND a.organization_id = ${orgId}::uuid
+      GROUP BY ap.department_id, ap.department_name
+    )
+    SELECT
+      COALESCE(pa.department_id, pb.department_id) AS department_id,
+      COALESCE(pa.department_name, pb.department_name) AS department_name,
+      COALESCE(pa.total_target, 0)::float AS target_a,
+      COALESCE(pa.total_allocated, 0)::float AS allocated_a,
+      COALESCE(pa.people_count, 0) AS people_a,
+      COALESCE(pb.total_target, 0)::float AS target_b,
+      COALESCE(pb.total_allocated, 0)::float AS allocated_b,
+      COALESCE(pb.people_count, 0) AS people_b
+    FROM period_a pa
+    FULL OUTER JOIN period_b pb ON pa.department_id = pb.department_id
+    ORDER BY COALESCE(pa.department_name, pb.department_name)
+  `);
+
+  // Aggregate totals
+  let totalTargetA = 0,
+    totalAllocatedA = 0,
+    totalPeopleA = 0;
+  let totalTargetB = 0,
+    totalAllocatedB = 0,
+    totalPeopleB = 0;
+
+  const departments: PeriodComparisonResponse['departments'] = [];
+
+  for (const row of rows.rows) {
+    const tA = Number(row.target_a);
+    const aA = Number(row.allocated_a);
+    const tB = Number(row.target_b);
+    const aB = Number(row.allocated_b);
+
+    totalTargetA += tA;
+    totalAllocatedA += aA;
+    totalPeopleA = Math.max(totalPeopleA, Number(row.people_a));
+    totalTargetB += tB;
+    totalAllocatedB += aB;
+    totalPeopleB = Math.max(totalPeopleB, Number(row.people_b));
+
+    const utilA = tA > 0 ? Math.round((aA / tA) * 1000) / 10 : 0;
+    const utilB = tB > 0 ? Math.round((aB / tB) * 1000) / 10 : 0;
+    const delta = Math.round((utilB - utilA) * 10) / 10;
+
+    let note: string | undefined;
+    if (utilA <= 100 && utilB > 100) note = 'Crossed 100% threshold';
+    else if (utilA > 100 && utilB <= 100) note = 'Dropped below 100% threshold';
+
+    departments.push({
+      departmentId: row.department_id,
+      departmentName: row.department_name,
+      utilizationA: utilA,
+      utilizationB: utilB,
+      delta,
+      note,
+    });
+  }
+
+  // Count overloaded people per period (need separate query for per-person data)
+  const overloadRows = await db.execute<{
+    overloaded_a: number;
+    overloaded_b: number;
+    bench_hours_a: number;
+    bench_hours_b: number;
+    headcount_a: number;
+    headcount_b: number;
+  }>(sql`
+    WITH active_people AS (
+      SELECT p.id, p.target_hours_per_month AS target_hours
+      FROM people p
+      WHERE p.organization_id = ${orgId}::uuid AND p.archived_at IS NULL
+    ),
+    month_series_a AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${fromDateA}::date, ${toDateA}::date, '1 month'::interval) AS d
+    ),
+    month_series_b AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${fromDateB}::date, ${toDateB}::date, '1 month'::interval) AS d
+    ),
+    person_a AS (
+      SELECT
+        ap.id,
+        SUM(ap.target_hours)::numeric AS total_target,
+        COALESCE(SUM(a.hours), 0)::numeric AS total_allocated
+      FROM active_people ap
+      CROSS JOIN month_series_a ms
+      LEFT JOIN allocations a
+        ON a.person_id = ap.id
+        AND to_char(a.month, 'YYYY-MM') = ms.month
+        AND a.organization_id = ${orgId}::uuid
+      GROUP BY ap.id
+    ),
+    person_b AS (
+      SELECT
+        ap.id,
+        SUM(ap.target_hours)::numeric AS total_target,
+        COALESCE(SUM(a.hours), 0)::numeric AS total_allocated
+      FROM active_people ap
+      CROSS JOIN month_series_b ms
+      LEFT JOIN allocations a
+        ON a.person_id = ap.id
+        AND to_char(a.month, 'YYYY-MM') = ms.month
+        AND a.organization_id = ${orgId}::uuid
+      GROUP BY ap.id
+    )
+    SELECT
+      (SELECT COUNT(*)::int FROM person_a WHERE total_target > 0 AND total_allocated / total_target > 1.0) AS overloaded_a,
+      (SELECT COUNT(*)::int FROM person_b WHERE total_target > 0 AND total_allocated / total_target > 1.0) AS overloaded_b,
+      (SELECT COALESCE(SUM(GREATEST(total_target - total_allocated, 0)), 0)::int FROM person_a WHERE total_target > 0 AND total_allocated / total_target < 0.8) AS bench_hours_a,
+      (SELECT COALESCE(SUM(GREATEST(total_target - total_allocated, 0)), 0)::int FROM person_b WHERE total_target > 0 AND total_allocated / total_target < 0.8) AS bench_hours_b,
+      (SELECT COUNT(DISTINCT id)::int FROM person_a) AS headcount_a,
+      (SELECT COUNT(DISTINCT id)::int FROM person_b) AS headcount_b
+  `);
+
+  const overload = overloadRows.rows[0];
+
+  // Compute metrics
+  const utilA = totalTargetA > 0 ? Math.round((totalAllocatedA / totalTargetA) * 1000) / 10 : 0;
+  const utilB = totalTargetB > 0 ? Math.round((totalAllocatedB / totalTargetB) * 1000) / 10 : 0;
+
+  function computeSignal(
+    name: string,
+    valA: number,
+    valB: number,
+  ): 'improving' | 'worsening' | 'neutral' {
+    const delta = valB - valA;
+    const pct = valA !== 0 ? Math.abs(delta / valA) * 100 : Math.abs(delta);
+    if (pct < 2) return 'neutral';
+    if (name === 'Average Utilization') {
+      // Closer to 85% is improving
+      const distA = Math.abs(valA - 85);
+      const distB = Math.abs(valB - 85);
+      return distB < distA ? 'improving' : 'worsening';
+    }
+    if (name === 'Overloaded People' || name === 'Bench Hours') {
+      return delta < 0 ? 'improving' : 'worsening';
+    }
+    return 'neutral';
+  }
+
+  function metricRow(name: string, valA: number, valB: number) {
+    const delta = Math.round((valB - valA) * 10) / 10;
+    const deltaPercent = valA !== 0 ? Math.round((delta / valA) * 1000) / 10 : 0;
+    return {
+      name,
+      valueA: valA,
+      valueB: valB,
+      delta,
+      deltaPercent,
+      signal: computeSignal(name, valA, valB),
+    };
+  }
+
+  const metrics = [
+    metricRow('Average Utilization', utilA, utilB),
+    metricRow('Headcount', overload?.headcount_a ?? 0, overload?.headcount_b ?? 0),
+    metricRow('Total Allocated Hours', Math.round(totalAllocatedA), Math.round(totalAllocatedB)),
+    metricRow('Overloaded People', overload?.overloaded_a ?? 0, overload?.overloaded_b ?? 0),
+    metricRow('Bench Hours', overload?.bench_hours_a ?? 0, overload?.bench_hours_b ?? 0),
+  ];
+
+  // Notable changes: departments with > 10% delta
+  const notableChanges: string[] = [];
+  for (const dept of departments) {
+    if (Math.abs(dept.delta) > 10) {
+      const dir = dept.delta > 0 ? 'increased' : 'decreased';
+      notableChanges.push(
+        `${dept.departmentName} utilization ${dir} by ${Math.abs(dept.delta).toFixed(1)}%`,
+      );
+    }
+  }
+  for (const m of metrics) {
+    if (Math.abs(m.deltaPercent) > 10 && m.name !== 'Average Utilization') {
+      const dir = m.delta > 0 ? 'increased' : 'decreased';
+      notableChanges.push(`${m.name} ${dir} by ${Math.abs(m.deltaPercent).toFixed(1)}%`);
+    }
+  }
+
+  return {
+    periodA: { from: fromA, to: toA, label: periodLabel(fromA, toA) },
+    periodB: { from: fromB, to: toB, label: periodLabel(fromB, toB) },
+    metrics,
+    departments,
+    notableChanges,
     generatedAt: new Date().toISOString(),
   };
 }

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { getPersonSummary } from '@/features/analytics/analytics.service';
+import { getPersonDetail, getPersonSummary } from '@/features/analytics/analytics.service';
 import { getTenantId } from '@/lib/auth';
 import { handleApiError } from '@/lib/api-utils';
 
@@ -16,6 +16,15 @@ export async function GET(request: NextRequest) {
         { error: 'ERR_VALIDATION', message: 'Missing required parameter: personId' },
         { status: 400 },
       );
+    }
+
+    // If detail=true, return full V7 PersonDetailResponse (360 card)
+    // Otherwise return basic PersonSummaryResponse for backward compatibility
+    const detail = params.get('detail') === 'true';
+
+    if (detail) {
+      const result = await getPersonDetail(orgId, personId);
+      return NextResponse.json(result);
     }
 
     const result = await getPersonSummary(orgId, personId);
