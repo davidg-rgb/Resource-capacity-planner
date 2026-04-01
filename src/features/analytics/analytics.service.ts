@@ -6,10 +6,13 @@ import { ValidationError } from '@/lib/errors';
 
 import type {
   CapacityAlert,
+  CapacityDistributionResponse,
+  CapacityForecastResponse,
   CapacityStatusLabel,
   DashboardKPIs,
   DepartmentGroup,
   DepartmentUtilization,
+  DisciplineDemandResponse,
   DisciplineBreakdown,
   HeatMapPerson,
   HeatMapResponse,
@@ -765,5 +768,489 @@ export async function getPersonSummary(
     capacityStatus,
     activeAllocations,
     totalFteEquivalent,
+  };
+}
+
+// --- v4.0 Group A: Supply vs Demand endpoints (Phase 24) ---
+
+const CHART_PALETTE = [
+  '#3b82f6',
+  '#10b981',
+  '#f59e0b',
+  '#ef4444',
+  '#8b5cf6',
+  '#ec4899',
+  '#06b6d4',
+  '#84cc16',
+  '#f97316',
+  '#6366f1',
+];
+
+/**
+ * Capacity Forecast (V1): supply vs demand per month with gap classification.
+ *
+ * Supply = sum of target_hours_per_month for all active people (per month).
+ * Demand = sum of allocation hours (per month).
+ * Gap = supply - demand (negative means deficit).
+ */
+export async function getCapacityForecast(
+  orgId: string,
+  monthFrom: string,
+  monthTo: string,
+  filters?: { projectId?: string; departmentId?: string },
+): Promise<CapacityForecastResponse> {
+  const fromDate = `${monthFrom}-01`;
+  const toDate = `${monthTo}-01`;
+
+  const deptFilter = filters?.departmentId
+    ? sql` AND p.department_id = ${filters.departmentId}::uuid`
+    : sql``;
+
+  const projectFilter = filters?.projectId
+    ? sql` AND a.project_id = ${filters.projectId}::uuid`
+    : sql``;
+
+  const rows = await db.execute<{
+    month: string;
+    supply: number;
+    demand: number;
+  }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${fromDate}::date, ${toDate}::date, '1 month'::interval) AS d
+    ),
+    active_people AS (
+      SELECT p.id, p.target_hours_per_month AS target_hours
+      FROM people p
+      WHERE p.organization_id = ${orgId}::uuid
+        AND p.archived_at IS NULL
+        ${deptFilter}
+    ),
+    supply AS (
+      SELECT ms.month, SUM(ap.target_hours)::int AS total
+      FROM active_people ap
+      CROSS JOIN month_series ms
+      GROUP BY ms.month
+    ),
+    demand AS (
+      SELECT to_char(a.month, 'YYYY-MM') AS month, SUM(a.hours)::int AS total
+      FROM allocations a
+      INNER JOIN active_people ap ON ap.id = a.person_id
+      WHERE a.organization_id = ${orgId}::uuid
+        AND to_char(a.month, 'YYYY-MM') >= ${monthFrom}
+        AND to_char(a.month, 'YYYY-MM') <= ${monthTo}
+        ${projectFilter}
+      GROUP BY to_char(a.month, 'YYYY-MM')
+    )
+    SELECT
+      ms.month,
+      COALESCE(s.total, 0) AS supply,
+      COALESCE(d.total, 0) AS demand
+    FROM month_series ms
+    LEFT JOIN supply s ON s.month = ms.month
+    LEFT JOIN demand d ON d.month = ms.month
+    ORDER BY ms.month
+  `);
+
+  const months: string[] = [];
+  const supply: Record<string, number> = {};
+  const demand: Record<string, number> = {};
+  const gap: Record<string, number> = {};
+  let surplusMonths = 0;
+  let balancedMonths = 0;
+  let deficitMonths = 0;
+
+  for (const row of rows.rows) {
+    const m = row.month;
+    const s = Number(row.supply);
+    const d = Number(row.demand);
+    const g = s - d;
+
+    months.push(m);
+    supply[m] = s;
+    demand[m] = d;
+    gap[m] = g;
+
+    // Classify: surplus if gap > 5% of supply, deficit if gap < -5% of supply
+    if (s === 0) {
+      balancedMonths++;
+    } else if (g > s * 0.05) {
+      surplusMonths++;
+    } else if (g < -(s * 0.05)) {
+      deficitMonths++;
+    } else {
+      balancedMonths++;
+    }
+  }
+
+  return {
+    months,
+    supply,
+    demand,
+    gap,
+    summary: { surplusMonths, balancedMonths, deficitMonths },
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+/**
+ * Capacity Distribution (V5): stacked hours breakdown by grouping dimension.
+ *
+ * Groups allocation hours by project, department, or discipline per month.
+ * Returns top N groups with an "other" bucket for the remainder.
+ * Also returns supply per month for overlay reference.
+ */
+export async function getCapacityDistribution(
+  orgId: string,
+  monthFrom: string,
+  monthTo: string,
+  groupBy: 'project' | 'department' | 'discipline',
+  limit = 8,
+): Promise<CapacityDistributionResponse> {
+  const fromDate = `${monthFrom}-01`;
+  const toDate = `${monthTo}-01`;
+
+  // Build dynamic grouping dimension
+  let groupJoin: ReturnType<typeof sql>;
+  let groupId: ReturnType<typeof sql>;
+  let groupName: ReturnType<typeof sql>;
+
+  if (groupBy === 'project') {
+    groupJoin = sql`INNER JOIN projects pr ON pr.id = a.project_id AND pr.organization_id = ${orgId}::uuid`;
+    groupId = sql`pr.id`;
+    groupName = sql`pr.name`;
+  } else if (groupBy === 'department') {
+    groupJoin = sql`INNER JOIN departments dept ON dept.id = ap.department_id`;
+    groupId = sql`dept.id`;
+    groupName = sql`dept.name`;
+  } else {
+    groupJoin = sql`INNER JOIN disciplines disc ON disc.id = ap.discipline_id`;
+    groupId = sql`disc.id`;
+    groupName = sql`disc.name`;
+  }
+
+  const rows = await db.execute<{
+    group_id: string;
+    group_name: string;
+    month: string;
+    hours: number;
+  }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${fromDate}::date, ${toDate}::date, '1 month'::interval) AS d
+    ),
+    active_people AS (
+      SELECT p.id, p.department_id, p.discipline_id, p.target_hours_per_month AS target_hours
+      FROM people p
+      WHERE p.organization_id = ${orgId}::uuid
+        AND p.archived_at IS NULL
+    )
+    SELECT
+      ${groupId} AS group_id,
+      ${groupName} AS group_name,
+      to_char(a.month, 'YYYY-MM') AS month,
+      SUM(a.hours)::int AS hours
+    FROM allocations a
+    INNER JOIN active_people ap ON ap.id = a.person_id
+    ${groupJoin}
+    WHERE a.organization_id = ${orgId}::uuid
+      AND to_char(a.month, 'YYYY-MM') >= ${monthFrom}
+      AND to_char(a.month, 'YYYY-MM') <= ${monthTo}
+    GROUP BY ${groupId}, ${groupName}, to_char(a.month, 'YYYY-MM')
+    ORDER BY ${groupId}, to_char(a.month, 'YYYY-MM')
+  `);
+
+  // Supply query (same pattern as capacity-forecast)
+  const supplyRows = await db.execute<{
+    month: string;
+    total: number;
+  }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${fromDate}::date, ${toDate}::date, '1 month'::interval) AS d
+    ),
+    active_people AS (
+      SELECT p.target_hours_per_month AS target_hours
+      FROM people p
+      WHERE p.organization_id = ${orgId}::uuid
+        AND p.archived_at IS NULL
+    )
+    SELECT ms.month, SUM(ap.target_hours)::int AS total
+    FROM active_people ap
+    CROSS JOIN month_series ms
+    GROUP BY ms.month
+    ORDER BY ms.month
+  `);
+
+  // Build month list and supply record
+  const count = monthCount(monthFrom, monthTo);
+  const monthsList = generateMonthRange(monthFrom, count);
+  const supplyRecord: Record<string, number> = {};
+  for (const row of supplyRows.rows) {
+    supplyRecord[row.month] = Number(row.total);
+  }
+
+  // Aggregate per group
+  const groupMap = new Map<
+    string,
+    { id: string; name: string; months: Record<string, number>; totalHours: number }
+  >();
+
+  let grandTotal = 0;
+
+  for (const row of rows.rows) {
+    const hours = Number(row.hours);
+    let group = groupMap.get(row.group_id);
+    if (!group) {
+      group = { id: row.group_id, name: row.group_name, months: {}, totalHours: 0 };
+      groupMap.set(row.group_id, group);
+    }
+    group.months[row.month] = (group.months[row.month] ?? 0) + hours;
+    group.totalHours += hours;
+    grandTotal += hours;
+  }
+
+  // Sort by totalHours DESC, take top N
+  const sorted = Array.from(groupMap.values()).sort((a, b) => b.totalHours - a.totalHours);
+  const topGroups = sorted.slice(0, limit);
+  const remainingGroups = sorted.slice(limit);
+
+  // Build response groups with colors and percentages
+  const groups = topGroups.map((g, i) => ({
+    id: g.id,
+    name: g.name,
+    color: CHART_PALETTE[i % CHART_PALETTE.length],
+    months: g.months,
+    totalHours: g.totalHours,
+    percentOfTotal: grandTotal > 0 ? Math.round((g.totalHours / grandTotal) * 1000) / 10 : 0,
+  }));
+
+  // Build "other" bucket if needed
+  let other: CapacityDistributionResponse['other'];
+  if (remainingGroups.length > 0) {
+    const otherMonths: Record<string, number> = {};
+    let otherTotal = 0;
+    for (const g of remainingGroups) {
+      for (const [m, h] of Object.entries(g.months)) {
+        otherMonths[m] = (otherMonths[m] ?? 0) + h;
+      }
+      otherTotal += g.totalHours;
+    }
+    other = {
+      months: otherMonths,
+      totalHours: otherTotal,
+      percentOfTotal: grandTotal > 0 ? Math.round((otherTotal / grandTotal) * 1000) / 10 : 0,
+    };
+  }
+
+  // Generate insight if largest group dominates
+  let insight: string | undefined;
+  if (topGroups.length > 0 && grandTotal > 0) {
+    const pct = Math.round((topGroups[0].totalHours / grandTotal) * 100);
+    if (pct > 50) {
+      insight = `${topGroups[0].name} accounts for ${pct}% of allocated hours`;
+    }
+  }
+
+  return {
+    groups,
+    other,
+    supply: supplyRecord,
+    months: monthsList,
+    insight,
+    generatedAt: new Date().toISOString(),
+  };
+}
+
+/**
+ * Discipline Demand (V12): per-discipline supply vs demand per month.
+ *
+ * For each discipline, computes monthly supply (people count * target_hours)
+ * and demand (sum of allocation hours for people with that discipline).
+ * Detects sustained deficits (3+ consecutive deficit months).
+ */
+export async function getDisciplineDemand(
+  orgId: string,
+  monthFrom: string,
+  monthTo: string,
+  filters?: { departmentId?: string },
+): Promise<DisciplineDemandResponse> {
+  const fromDate = `${monthFrom}-01`;
+  const toDate = `${monthTo}-01`;
+
+  const deptFilter = filters?.departmentId
+    ? sql` AND p.department_id = ${filters.departmentId}::uuid`
+    : sql``;
+
+  const rows = await db.execute<{
+    discipline_id: string;
+    discipline_name: string;
+    abbreviation: string;
+    month: string;
+    supply: number;
+    demand: number;
+  }>(sql`
+    WITH month_series AS (
+      SELECT to_char(d, 'YYYY-MM') AS month
+      FROM generate_series(${fromDate}::date, ${toDate}::date, '1 month'::interval) AS d
+    ),
+    active_people AS (
+      SELECT p.id, p.discipline_id, p.target_hours_per_month AS target_hours
+      FROM people p
+      WHERE p.organization_id = ${orgId}::uuid
+        AND p.archived_at IS NULL
+        AND p.discipline_id IS NOT NULL
+        ${deptFilter}
+    ),
+    org_disciplines AS (
+      SELECT DISTINCT disc.id AS discipline_id, disc.name AS discipline_name, disc.abbreviation
+      FROM disciplines disc
+      INNER JOIN active_people ap ON ap.discipline_id = disc.id
+    ),
+    grid AS (
+      SELECT od.discipline_id, od.discipline_name, od.abbreviation, ms.month
+      FROM org_disciplines od
+      CROSS JOIN month_series ms
+    ),
+    supply AS (
+      SELECT
+        g.discipline_id,
+        g.month,
+        COUNT(ap.id)::int * COALESCE(MAX(ap.target_hours), 0) AS total
+      FROM grid g
+      LEFT JOIN active_people ap ON ap.discipline_id = g.discipline_id
+      GROUP BY g.discipline_id, g.month
+    ),
+    demand AS (
+      SELECT
+        ap.discipline_id,
+        to_char(a.month, 'YYYY-MM') AS month,
+        SUM(a.hours)::int AS total
+      FROM allocations a
+      INNER JOIN active_people ap ON ap.id = a.person_id
+      WHERE a.organization_id = ${orgId}::uuid
+        AND to_char(a.month, 'YYYY-MM') >= ${monthFrom}
+        AND to_char(a.month, 'YYYY-MM') <= ${monthTo}
+      GROUP BY ap.discipline_id, to_char(a.month, 'YYYY-MM')
+    )
+    SELECT
+      g.discipline_id,
+      g.discipline_name,
+      g.abbreviation,
+      g.month,
+      COALESCE(s.total, 0) AS supply,
+      COALESCE(d.total, 0) AS demand
+    FROM grid g
+    LEFT JOIN supply s ON s.discipline_id = g.discipline_id AND s.month = g.month
+    LEFT JOIN demand d ON d.discipline_id = g.discipline_id AND d.month = g.month
+    ORDER BY g.discipline_name, g.month
+  `);
+
+  // Group rows by discipline
+  const disciplineMap = new Map<
+    string,
+    {
+      disciplineId: string;
+      disciplineName: string;
+      abbreviation: string;
+      months: Record<
+        string,
+        {
+          demand: number;
+          supply: number;
+          gap: number;
+          status: 'surplus' | 'balanced' | 'tight' | 'deficit';
+        }
+      >;
+    }
+  >();
+
+  let avgTargetHours = 0;
+  let targetCount = 0;
+
+  for (const row of rows.rows) {
+    const s = Number(row.supply);
+    const d = Number(row.demand);
+    const g = s - d;
+
+    // Classify status based on gap relative to supply
+    let status: 'surplus' | 'balanced' | 'tight' | 'deficit';
+    if (s === 0) {
+      status = d > 0 ? 'deficit' : 'balanced';
+    } else {
+      const ratio = g / s;
+      if (ratio > 0.1) status = 'surplus';
+      else if (ratio >= -0.1) status = 'balanced';
+      else if (ratio >= -0.25) status = 'tight';
+      else status = 'deficit';
+    }
+
+    let disc = disciplineMap.get(row.discipline_id);
+    if (!disc) {
+      disc = {
+        disciplineId: row.discipline_id,
+        disciplineName: row.discipline_name,
+        abbreviation: row.abbreviation,
+        months: {},
+      };
+      disciplineMap.set(row.discipline_id, disc);
+    }
+    disc.months[row.month] = { demand: d, supply: s, gap: g, status };
+
+    if (s > 0) {
+      avgTargetHours += s;
+      targetCount++;
+    }
+  }
+
+  // Compute per-discipline peak deficit and sustained deficit
+  const avgTarget = targetCount > 0 ? avgTargetHours / targetCount : 160;
+
+  const disciplines = Array.from(disciplineMap.values()).map((disc) => {
+    let peakDeficit = 0;
+    let peakDeficitMonth = '';
+
+    // Sustained deficit detection: 3+ consecutive deficit months
+    const sortedMonths = Object.keys(disc.months).sort();
+    let consecutiveDeficit = 0;
+    let sustained = false;
+
+    for (const m of sortedMonths) {
+      const g = disc.months[m].gap;
+      if (g < peakDeficit) {
+        peakDeficit = g;
+        peakDeficitMonth = m;
+      }
+      if (g < 0) {
+        consecutiveDeficit++;
+        if (consecutiveDeficit >= 3) sustained = true;
+      } else {
+        consecutiveDeficit = 0;
+      }
+    }
+
+    return {
+      disciplineId: disc.disciplineId,
+      disciplineName: disc.disciplineName,
+      abbreviation: disc.abbreviation,
+      months: disc.months,
+      peakDeficit,
+      peakDeficitMonth: peakDeficitMonth || sortedMonths[0] || monthFrom,
+      sustainedDeficit: sustained,
+    };
+  });
+
+  // Summary: combined peak deficit and FTE hiring need
+  const combinedPeakDeficit = disciplines.reduce((sum, d) => sum + Math.min(d.peakDeficit, 0), 0);
+  const fteHiringNeed =
+    avgTarget > 0 ? Math.round((Math.abs(combinedPeakDeficit) / avgTarget) * 10) / 10 : 0;
+
+  return {
+    disciplines,
+    summary: {
+      combinedPeakDeficit: Math.abs(combinedPeakDeficit),
+      fteHiringNeed,
+    },
+    generatedAt: new Date().toISOString(),
   };
 }
