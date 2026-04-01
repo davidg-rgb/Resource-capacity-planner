@@ -92,3 +92,29 @@ export interface ProjectStaffingResponse {
   months: string[]; // ordered YYYY-MM array
   generatedAt: string;
 }
+
+// --- Person Summary types (Phase 23 - Person 360 Card) ---
+
+export type CapacityStatusLabel = 'available' | 'fully-allocated' | 'overloaded';
+
+export interface PersonAllocation {
+  projectId: string;
+  projectName: string;
+  role: string | null;
+  percentage: number;
+  startDate: string;
+  endDate: string;
+}
+
+export interface PersonSummaryResponse {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string | null;
+  department: { id: string; name: string } | null;
+  disciplines: { id: string; name: string }[];
+  utilizationPercent: number;
+  capacityStatus: CapacityStatusLabel;
+  activeAllocations: PersonAllocation[];
+  totalFteEquivalent: number;
+}

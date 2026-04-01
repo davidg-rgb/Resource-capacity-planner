@@ -6,12 +6,14 @@ import { ValidationError } from '@/lib/errors';
 
 import type {
   CapacityAlert,
+  CapacityStatusLabel,
   DashboardKPIs,
   DepartmentGroup,
   DepartmentUtilization,
   DisciplineBreakdown,
   HeatMapPerson,
   HeatMapResponse,
+  PersonSummaryResponse,
   ProjectStaffingPerson,
   ProjectStaffingResponse,
 } from './analytics.types';
@@ -642,5 +644,126 @@ export async function getProjectStaffing(
     people: Array.from(personMap.values()),
     months,
     generatedAt: new Date().toISOString(),
+  };
+}
+
+/**
+ * Fetch person 360 summary: basic info, current utilization, active allocations.
+ *
+ * Single-query approach: fetches person + department + discipline in one query,
+ * then a second query for active allocations with project names.
+ * Utilization is computed from current month allocations vs target hours.
+ *
+ * @param orgId - Organization UUID (tenant scope)
+ * @param personId - Person UUID
+ */
+export async function getPersonSummary(
+  orgId: string,
+  personId: string,
+): Promise<PersonSummaryResponse | null> {
+  // Query 1: Person basic info with department and discipline
+  const personResult = await db.execute<{
+    id: string;
+    first_name: string;
+    last_name: string;
+    target_hours: number;
+    department_id: string;
+    department_name: string;
+    discipline_id: string;
+    discipline_name: string;
+  }>(sql`
+    SELECT
+      p.id,
+      p.first_name,
+      p.last_name,
+      p.target_hours_per_month AS target_hours,
+      d.id AS department_id,
+      d.name AS department_name,
+      disc.id AS discipline_id,
+      disc.name AS discipline_name
+    FROM people p
+    INNER JOIN departments d ON d.id = p.department_id
+    INNER JOIN disciplines disc ON disc.id = p.discipline_id
+    WHERE p.id = ${personId}::uuid
+      AND p.organization_id = ${orgId}::uuid
+      AND p.archived_at IS NULL
+    LIMIT 1
+  `);
+
+  const person = personResult.rows[0];
+  if (!person) return null;
+
+  // Query 2: Active allocations (current and future months) with project names
+  const now = new Date();
+  const currentMonthDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+
+  const allocResult = await db.execute<{
+    project_id: string;
+    project_name: string;
+    total_hours: number;
+    min_month: string;
+    max_month: string;
+  }>(sql`
+    SELECT
+      a.project_id,
+      pr.name AS project_name,
+      SUM(a.hours)::int AS total_hours,
+      MIN(to_char(a.month, 'YYYY-MM-DD')) AS min_month,
+      MAX(to_char(a.month, 'YYYY-MM-DD')) AS max_month
+    FROM allocations a
+    INNER JOIN projects pr ON pr.id = a.project_id
+    WHERE a.person_id = ${personId}::uuid
+      AND a.organization_id = ${orgId}::uuid
+      AND a.month >= ${currentMonthDate}::date
+    GROUP BY a.project_id, pr.name
+    ORDER BY total_hours DESC
+  `);
+
+  // Query 3: Current month total hours for utilization calculation
+  const utilResult = await db.execute<{ current_hours: number }>(sql`
+    SELECT COALESCE(SUM(hours), 0)::int AS current_hours
+    FROM allocations
+    WHERE person_id = ${personId}::uuid
+      AND organization_id = ${orgId}::uuid
+      AND month = ${currentMonthDate}::date
+  `);
+
+  const currentHours = utilResult.rows[0]?.current_hours ?? 0;
+  const targetHours = person.target_hours;
+  const utilizationPercent =
+    targetHours > 0 ? Math.round((currentHours / targetHours) * 100 * 10) / 10 : 0;
+
+  // Determine capacity status
+  let capacityStatus: CapacityStatusLabel = 'available';
+  if (utilizationPercent > 100) {
+    capacityStatus = 'overloaded';
+  } else if (utilizationPercent >= 80) {
+    capacityStatus = 'fully-allocated';
+  }
+
+  // Map allocations to response format
+  const activeAllocations = allocResult.rows.map((row) => ({
+    projectId: row.project_id,
+    projectName: row.project_name,
+    role: null, // No role column on allocations table
+    percentage: targetHours > 0 ? Math.round((row.total_hours / targetHours) * 100 * 10) / 10 : 0,
+    startDate: row.min_month,
+    endDate: row.max_month,
+  }));
+
+  const totalFteEquivalent =
+    targetHours > 0 ? Math.round((currentHours / targetHours) * 100) / 100 : 0;
+
+  return {
+    id: person.id,
+    firstName: person.first_name,
+    lastName: person.last_name,
+    email: null, // People table does not have an email column
+    department: { id: person.department_id, name: person.department_name },
+    disciplines: [{ id: person.discipline_id, name: person.discipline_name }],
+    utilizationPercent,
+    capacityStatus,
+    activeAllocations,
+    totalFteEquivalent,
   };
 }

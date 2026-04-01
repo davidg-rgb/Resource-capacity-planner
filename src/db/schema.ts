@@ -355,6 +355,40 @@ export const systemAnnouncements = pgTable(
   ],
 );
 
+// n) Dashboard Layouts — tenant-scoped, user-customizable widget layouts
+// clerk_user_id uses sentinel '__tenant_default__' instead of NULL for tenant
+// defaults, because PostgreSQL does not enforce uniqueness on NULL values in
+// standard unique indexes. When querying for tenant defaults, filter by
+// clerk_user_id = '__tenant_default__'.
+export const dashboardLayouts = pgTable(
+  'dashboard_layouts',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organizations.id),
+    clerkUserId: text('clerk_user_id').notNull().default('__tenant_default__'),
+    dashboardId: text('dashboard_id').notNull(), // 'manager' | 'project-leader'
+    deviceClass: text('device_class').notNull().default('desktop'),
+    layout: jsonb('layout').notNull(), // WidgetPlacement[]
+    version: integer('version').notNull().default(1),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [
+    unique('uq_dashboard_layout_user').on(
+      t.organizationId,
+      t.clerkUserId,
+      t.dashboardId,
+      t.deviceClass,
+    ),
+    index('dashboard_layouts_org_user_idx').on(t.organizationId, t.clerkUserId),
+  ],
+);
+
 // ---------------------------------------------------------------------------
 // Relations
 // ---------------------------------------------------------------------------
@@ -369,6 +403,7 @@ export const organizationsRelations = relations(organizations, ({ many }) => ({
   featureFlags: many(featureFlags),
   importSessions: many(importSessions),
   impersonationSessions: many(impersonationSessions),
+  dashboardLayouts: many(dashboardLayouts),
 }));
 
 export const departmentsRelations = relations(departments, ({ one, many }) => ({
@@ -494,5 +529,12 @@ export const systemAnnouncementsRelations = relations(systemAnnouncements, ({ on
   createdByAdmin: one(platformAdmins, {
     fields: [systemAnnouncements.createdByAdminId],
     references: [platformAdmins.id],
+  }),
+}));
+
+export const dashboardLayoutsRelations = relations(dashboardLayouts, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [dashboardLayouts.organizationId],
+    references: [organizations.id],
   }),
 }));
