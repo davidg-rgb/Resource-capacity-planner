@@ -1,7 +1,7 @@
 'use client';
 
-import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { createContext, useCallback, useContext, useMemo } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { getCurrentMonth, generateMonthRange } from '@/lib/date-utils';
 
 // ---------------------------------------------------------------------------
@@ -37,9 +37,11 @@ function getDefaultRange(): TimeRange {
 
 export function TimeRangeProvider({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
-  // Derive range from URL search params — recalculated on every param change
-  const urlRange = useMemo(() => {
+  // Derive range directly from URL search params — always in sync
+  const range = useMemo(() => {
     const fromParam = searchParams.get('from');
     const toParam = searchParams.get('to');
     if (fromParam && toParam) {
@@ -48,26 +50,16 @@ export function TimeRangeProvider({ children }: { children: React.ReactNode }) {
     return getDefaultRange();
   }, [searchParams]);
 
-  // Track the URL-derived key so we can detect external navigation
-  const urlKey = `${urlRange.from}|${urlRange.to}`;
-  const prevUrlKeyRef = useRef(urlKey);
-
-  const [rangeOverride, setRangeOverride] = useState<TimeRange | null>(null);
-
-  // If URL params changed externally, clear any programmatic override
-  // This runs synchronously during render (no useEffect needed)
-  if (prevUrlKeyRef.current !== urlKey) {
-    prevUrlKeyRef.current = urlKey;
-    if (rangeOverride !== null) {
-      setRangeOverride(null);
-    }
-  }
-
-  const range = rangeOverride ?? urlRange;
-
-  const setTimeRange = useCallback((newRange: TimeRange) => {
-    setRangeOverride(newRange);
-  }, []);
+  // Update range by pushing new search params into the URL
+  const setTimeRange = useCallback(
+    (newRange: TimeRange) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('from', newRange.from);
+      params.set('to', newRange.to);
+      router.replace(`${pathname}?${params.toString()}`);
+    },
+    [searchParams, router, pathname],
+  );
 
   const value = useMemo(
     () => ({ from: range.from, to: range.to, setTimeRange }),
