@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Dashboard Visualizations & Customization
 status: executing phase 23
-stopped_at: Completed 23-02-PLAN.md (Layout Engine + Edit Mode + API)
-last_updated: "2026-04-01T15:00:00.000Z"
+stopped_at: Completed 23-04-PLAN.md (Widget Wrappers + Dashboard Refactor)
+last_updated: "2026-04-01T12:58:00Z"
 last_activity: 2026-04-01
 progress:
   total_phases: 10
   completed_phases: 0
   total_plans: 0
-  completed_plans: 5
-  percent: 25
+  completed_plans: 7
+  percent: 35
 ---
 
 # Nordic Capacity -- Project State
@@ -29,11 +29,11 @@ Roadmap: .planning/ROADMAP-V4.md
 ## Current Position
 
 Phase: 23 (executing)
-Plan: 23-02 complete, next 23-03
-Status: Layout engine + edit mode + API + 4-tier resolution complete
+Plan: 23-04 complete, next 23-05 (if exists) or Phase 25
+Status: All 7 widgets wrapped in registry, dashboard uses layout engine
 Last activity: 2026-04-01
 
-Progress: [▓▓▓▓▓░░░░░] 25% (v4.0)
+Progress: [▓▓▓▓▓▓▓░░░] 35% (v4.0)
 
 ## Phase Status
 
@@ -70,6 +70,7 @@ Progress: [▓▓▓▓▓░░░░░] 25% (v4.0)
 ### Decisions
 
 Key architectural decisions for v4.0:
+- Widget IDs in wrappers match default-layouts.ts exactly (e.g., 'utilization-heat-map')
 - Widget Registry Pattern: central registry, adding widget = create component + register
 - Persona-based defaults: Line Manager + Project Leader get different layouts
 - Layout persistence: DB-backed JSONB, 4-tier resolution (personal → device clone → tenant → built-in)
@@ -96,8 +97,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Completed 23-02-PLAN.md (Layout Engine + Edit Mode + API + 4-tier Resolution)
-Resume file: .planning/phases/23-dashboard-framework/23-02-SUMMARY.md
+Stopped at: Completed 23-04-PLAN.md (Widget Wrappers + Dashboard Refactor)
+Resume file: .planning/phases/23-dashboard-framework/23-04-SUMMARY.md
 
 ---
 
