@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { Gauge, Loader2 } from 'lucide-react';
 
 import { CapacityGauges, type GaugeData } from '@/components/charts/capacity-gauges';
@@ -16,6 +17,7 @@ import type { WidgetProps } from '../widget-registry.types';
 const CapacityGaugesContent = React.memo(function CapacityGaugesContent({
   timeRange,
 }: WidgetProps) {
+  const t = useTranslations('widgets.gauges');
   const { data, isLoading, error } = useUtilizationTrends(
     'department',
     undefined,
@@ -26,7 +28,7 @@ const CapacityGaugesContent = React.memo(function CapacityGaugesContent({
   if (error) {
     return (
       <div className="text-destructive flex items-center justify-center py-10 text-sm">
-        Failed to load department capacity data
+        {t('error')}
       </div>
     );
   }
@@ -40,11 +42,7 @@ const CapacityGaugesContent = React.memo(function CapacityGaugesContent({
   }
 
   if (data.entities.length === 0) {
-    return (
-      <div className="text-on-surface-variant py-10 text-center text-sm">
-        No department data available
-      </div>
-    );
+    return <div className="text-on-surface-variant py-10 text-center text-sm">{t('empty')}</div>;
   }
 
   // Map utilization trends entities to gauge data
@@ -59,7 +57,7 @@ const CapacityGaugesContent = React.memo(function CapacityGaugesContent({
 
   return (
     <div>
-      <h4 className="font-headline mb-4 text-sm font-semibold">Department Health</h4>
+      <h4 className="font-headline mb-4 text-sm font-semibold">{t('title')}</h4>
       <CapacityGauges departments={departments} showTrend />
     </div>
   );

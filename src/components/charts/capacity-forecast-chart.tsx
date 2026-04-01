@@ -109,7 +109,7 @@ function ForecastTooltip({
 
   return (
     <div
-      className="rounded-md border bg-white px-3 py-2 shadow-md"
+      className="bg-surface-container-lowest rounded-md border px-3 py-2 shadow-md"
       style={{ fontFamily: CHART_FONT.family, fontSize: CHART_FONT.size }}
     >
       <p className="mb-1 font-semibold">{point.label}</p>

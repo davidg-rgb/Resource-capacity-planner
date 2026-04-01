@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { TrendingUp, Loader2 } from 'lucide-react';
 
 import { UtilizationSparklines } from '@/components/charts/utilization-sparklines';
@@ -16,6 +17,7 @@ import type { WidgetProps } from '../widget-registry.types';
 const UtilizationSparklinesContent = React.memo(function UtilizationSparklinesContent({
   timeRange,
 }: WidgetProps) {
+  const t = useTranslations('widgets.sparklines');
   const [viewMode, setViewMode] = useState<'department' | 'person'>('department');
   const limit = viewMode === 'person' ? 10 : undefined;
   const { data, isLoading, error } = useUtilizationTrends(
@@ -28,7 +30,7 @@ const UtilizationSparklinesContent = React.memo(function UtilizationSparklinesCo
   if (error) {
     return (
       <div className="text-destructive flex items-center justify-center py-10 text-sm">
-        Failed to load utilization trends
+        {t('error')}
       </div>
     );
   }
@@ -42,16 +44,12 @@ const UtilizationSparklinesContent = React.memo(function UtilizationSparklinesCo
   }
 
   if (data.entities.length === 0) {
-    return (
-      <div className="text-on-surface-variant py-10 text-center text-sm">
-        No utilization trend data available
-      </div>
-    );
+    return <div className="text-on-surface-variant py-10 text-center text-sm">{t('empty')}</div>;
   }
 
   return (
     <div>
-      <h4 className="font-headline mb-4 text-sm font-semibold">Utilization Trends</h4>
+      <h4 className="font-headline mb-4 text-sm font-semibold">{t('title')}</h4>
       <UtilizationSparklines
         entities={data.entities}
         viewMode={viewMode}

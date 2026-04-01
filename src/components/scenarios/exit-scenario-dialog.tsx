@@ -23,7 +23,7 @@ export function ExitScenarioDialog({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
-      <div className="relative z-10 w-full max-w-sm rounded-lg bg-white p-6 shadow-xl">
+      <div className="bg-surface-container-lowest relative z-10 w-full max-w-sm rounded-lg p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-headline text-lg font-semibold text-slate-900">Avsluta scenario</h2>
           <button

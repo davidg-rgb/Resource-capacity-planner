@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useTranslations } from 'next-intl';
 import {
   Users,
   TrendingDown,
@@ -39,6 +40,7 @@ function InlineBar({ value, max }: { value: number; max: number }) {
 }
 
 const BenchReportContent = React.memo(function BenchReportContent({ timeRange }: WidgetProps) {
+  const t = useTranslations('widgets.benchReport');
   const { openPersonCard } = usePersonCard();
   const [showAllPeople, setShowAllPeople] = useState(false);
   const { data, isLoading, error } = useBenchReport(
@@ -48,7 +50,7 @@ const BenchReportContent = React.memo(function BenchReportContent({ timeRange }:
   );
 
   if (error) {
-    return <div className="text-sm text-red-600">Failed to load bench report</div>;
+    return <div className="text-sm text-red-600">{t('error')}</div>;
   }
 
   if (isLoading || !data) {
@@ -69,7 +71,7 @@ const BenchReportContent = React.memo(function BenchReportContent({ timeRange }:
   if (byDepartment.length === 0 && byDiscipline.length === 0) {
     return (
       <div className="bg-surface-container-low text-on-surface-variant rounded-sm p-6 text-sm">
-        No bench data found for the selected period.
+        {t('empty')}
       </div>
     );
   }
@@ -86,19 +88,21 @@ const BenchReportContent = React.memo(function BenchReportContent({ timeRange }:
           <div className="text-on-surface text-2xl font-bold tabular-nums">
             {summary.totalBenchHours.toLocaleString()}h
           </div>
-          <div className="text-outline text-xs font-medium">Bench Hours</div>
+          <div className="text-outline text-xs font-medium">{t('benchHours')}</div>
         </div>
         <div className="bg-surface-container-low rounded-sm p-4 text-center">
           <div className="text-on-surface text-2xl font-bold tabular-nums">
             {summary.fteEquivalent.toFixed(1)} FTE
           </div>
-          <div className="text-outline text-xs font-medium">Equivalent</div>
+          <div className="text-outline text-xs font-medium">{t('equivalent')}</div>
         </div>
         <div className="bg-surface-container-low rounded-sm p-4 text-center">
           <div className="text-on-surface text-2xl font-bold tabular-nums">
             {summary.peopleCount}
           </div>
-          <div className="text-outline text-xs font-medium">People below {THRESHOLD_DEFAULT}%</div>
+          <div className="text-outline text-xs font-medium">
+            {t('peopleBelowThreshold', { threshold: THRESHOLD_DEFAULT })}
+          </div>
         </div>
       </div>
 
@@ -107,8 +111,13 @@ const BenchReportContent = React.memo(function BenchReportContent({ timeRange }:
         <TrendArrow direction={summary.trendVsPrevious.direction} />
         <span>
           {summary.trendVsPrevious.direction === 'stable'
-            ? 'Stable vs previous period'
-            : `${Math.abs(summary.trendVsPrevious.changePercent)}% ${summary.trendVsPrevious.direction === 'down' ? 'decrease' : 'increase'} vs previous period (was ${summary.trendVsPrevious.previousBenchHours.toLocaleString()}h)`}
+            ? t('stableVsPrevious')
+            : t('changeVsPrevious', {
+                percent: Math.abs(summary.trendVsPrevious.changePercent),
+                direction:
+                  summary.trendVsPrevious.direction === 'down' ? t('decrease') : t('increase'),
+                hours: summary.trendVsPrevious.previousBenchHours.toLocaleString(),
+              })}
         </span>
       </div>
 
@@ -116,17 +125,17 @@ const BenchReportContent = React.memo(function BenchReportContent({ timeRange }:
       {byDepartment.length > 0 && (
         <div>
           <h4 className="text-on-surface-variant mb-2 text-[10px] font-bold tracking-widest uppercase">
-            By Department
+            {t('byDepartment')}
           </h4>
           <table className="w-full text-xs">
             <thead>
               <tr className="text-outline border-outline-variant/10 border-b text-[10px] font-bold tracking-wider uppercase">
                 <th scope="col" className="py-2 text-left">
-                  Department
+                  {t('byDepartment')}
                 </th>
                 <th scope="col" className="w-1/3 py-2" />
                 <th scope="col" className="py-2 text-right">
-                  Hours
+                  {t('benchHours')}
                 </th>
                 <th scope="col" className="py-2 text-right">
                   FTE
@@ -160,17 +169,17 @@ const BenchReportContent = React.memo(function BenchReportContent({ timeRange }:
       {byDiscipline.length > 0 && (
         <div>
           <h4 className="text-on-surface-variant mb-2 text-[10px] font-bold tracking-widest uppercase">
-            By Discipline
+            {t('byDiscipline')}
           </h4>
           <table className="w-full text-xs">
             <thead>
               <tr className="text-outline border-outline-variant/10 border-b text-[10px] font-bold tracking-wider uppercase">
                 <th scope="col" className="py-2 text-left">
-                  Discipline
+                  {t('byDiscipline')}
                 </th>
                 <th scope="col" className="w-1/3 py-2" />
                 <th scope="col" className="py-2 text-right">
-                  Hours
+                  {t('benchHours')}
                 </th>
                 <th scope="col" className="py-2 text-right">
                   FTE
@@ -204,7 +213,7 @@ const BenchReportContent = React.memo(function BenchReportContent({ timeRange }:
       {topAvailable.length > 0 && (
         <div>
           <h4 className="text-on-surface-variant mb-2 text-[10px] font-bold tracking-widest uppercase">
-            People with Most Available Capacity
+            {t('topAvailable')}
           </h4>
           <div className="divide-outline-variant/5 divide-y">
             {visiblePeople.map((person, idx) => (

@@ -12,8 +12,15 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
-import { arrayMove, SortableContext, rectSortingStrategy, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import {
+  arrayMove,
+  SortableContext,
+  rectSortingStrategy,
+  sortableKeyboardCoordinates,
+} from '@dnd-kit/sortable';
 import { FileDown, Loader2 } from 'lucide-react';
+
+import { useOrganization } from '@clerk/nextjs';
 
 import { useDashboardLayout, useSaveLayout } from './use-dashboard-layout';
 import { EditModeToggle, SortableWidget, WidgetDrawer } from './dashboard-edit-mode';
@@ -40,6 +47,7 @@ function DashboardGridInner({ dashboardId = 'manager' }: { dashboardId?: string 
   const { saveLayout } = useSaveLayout(dashboardId);
   const timeRange = useWidgetTimeRange();
   const { registerWidgetRef } = useCrossLinks();
+  const { organization } = useOrganization();
   const [isEditMode, setIsEditMode] = useState(false);
   const [widgets, setWidgets] = useState<WidgetPlacement[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -153,12 +161,12 @@ function DashboardGridInner({ dashboardId = 'manager' }: { dashboardId?: string 
         widgetId,
         widgetName,
         colSpan,
-        orgName: 'Nordic Capacity', // TODO: resolve from org context
+        orgName: organization?.name ?? 'Organisation',
         dashboardTitle: dashboardId === 'manager' ? 'Management Overview' : 'Dashboard',
         dateRange: timeRange,
       });
     },
-    [exportSingleWidget, dashboardId, timeRange],
+    [exportSingleWidget, dashboardId, timeRange, organization?.name],
   );
 
   // ------- Active drag overlay widget -------
@@ -215,7 +223,7 @@ function DashboardGridInner({ dashboardId = 'manager' }: { dashboardId?: string 
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         widgets={widgets}
-        orgName="Nordic Capacity"
+        orgName={organization?.name ?? 'Organisation'}
         dashboardTitle={dashboardId === 'manager' ? 'Management Overview' : 'Dashboard'}
         dateRange={timeRange}
       />

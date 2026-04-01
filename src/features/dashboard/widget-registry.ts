@@ -47,3 +47,10 @@ export function getWidgetsByDashboard(dashboardId: string): WidgetDefinition[] {
 export function getWidgetsByCategory(category: WidgetCategory): WidgetDefinition[] {
   return Array.from(widgetRegistry.values()).filter((def) => def.category === category);
 }
+
+/**
+ * Remove all registered widgets. For test isolation only.
+ */
+export function clearRegistry(): void {
+  widgetRegistry.clear();
+}

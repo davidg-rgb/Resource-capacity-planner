@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback, useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import { CalendarRange, ChevronDown, ChevronRight, Loader2 } from 'lucide-react';
 
 import { formatMonthHeader } from '@/lib/date-utils';
@@ -142,6 +143,7 @@ function TimelineCell({ monthData, targetHours, isCurrentMonth }: TimelineCellPr
 const AvailabilityTimelineContent = React.memo(function AvailabilityTimelineContent({
   timeRange,
 }: WidgetProps) {
+  const t = useTranslations('widgets.availabilityTimeline');
   const { openPersonCard } = usePersonCard();
   const [collapsedDepts, setCollapsedDepts] = useState<Set<string>>(new Set());
   const [showAvailableOnly, setShowAvailableOnly] = useState(false);
@@ -178,7 +180,7 @@ const AvailabilityTimelineContent = React.memo(function AvailabilityTimelineCont
   if (error) {
     return (
       <div className="text-destructive flex items-center justify-center py-10 text-sm">
-        Failed to load timeline data
+        {t('error')}
       </div>
     );
   }
@@ -192,18 +194,14 @@ const AvailabilityTimelineContent = React.memo(function AvailabilityTimelineCont
   }
 
   if (departments.length === 0) {
-    return (
-      <div className="text-on-surface-variant py-10 text-center text-sm">
-        No timeline data available
-      </div>
-    );
+    return <div className="text-on-surface-variant py-10 text-center text-sm">{t('empty')}</div>;
   }
 
   return (
     <div>
       {/* Header with filter toggle */}
       <div className="mb-3 flex items-center justify-between">
-        <h4 className="font-headline text-sm font-semibold">Resource Availability Timeline</h4>
+        <h4 className="font-headline text-sm font-semibold">{t('title')}</h4>
         <label className="text-on-surface-variant flex cursor-pointer items-center gap-1.5 text-[11px]">
           <input
             type="checkbox"
@@ -211,7 +209,7 @@ const AvailabilityTimelineContent = React.memo(function AvailabilityTimelineCont
             onChange={(e) => setShowAvailableOnly(e.target.checked)}
             className="accent-primary h-3 w-3"
           />
-          Show available only
+          {t('showAvailableOnly')}
         </label>
       </div>
 
@@ -225,7 +223,7 @@ const AvailabilityTimelineContent = React.memo(function AvailabilityTimelineCont
                   scope="col"
                   className="bg-surface-container-low sticky left-0 z-20 w-52 px-4 py-3"
                 >
-                  Person
+                  {t('person')}
                 </th>
                 {data.months.map((m) => (
                   <th
@@ -329,15 +327,15 @@ const AvailabilityTimelineContent = React.memo(function AvailabilityTimelineCont
               className="inline-block h-2.5 w-4 rounded-xs"
               style={{ backgroundColor: CHART_COLORS.primary }}
             />
-            Allocated
+            {t('allocated')}
           </span>
           <span className="flex items-center gap-1">
             <span className="border-outline-variant/30 bg-surface-container-low/40 inline-block h-2.5 w-4 rounded-xs border border-dashed" />
-            Available
+            {t('available')}
           </span>
           <span className="flex items-center gap-1">
             <span className="bg-error/20 inline-block h-2.5 w-4 rounded-xs" />
-            Overloaded
+            {t('overloaded')}
           </span>
         </div>
         {data.summary && (

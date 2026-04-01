@@ -15,10 +15,10 @@ const DEMO_DATA: DeptRow[] = [
 ];
 
 function getCellClasses(value: number): string {
-  if (value > 95) return 'bg-error text-white';
-  if (value >= 85) return 'bg-primary text-white';
-  if (value >= 70) return 'bg-primary/60 text-white';
-  if (value >= 60) return 'bg-primary/40 text-white';
+  if (value > 95) return 'bg-error text-on-error';
+  if (value >= 85) return 'bg-primary text-on-primary';
+  if (value >= 70) return 'bg-primary/60 text-on-primary';
+  if (value >= 60) return 'bg-primary/40 text-on-primary';
   return 'bg-surface-container-high text-outline-variant';
 }
 

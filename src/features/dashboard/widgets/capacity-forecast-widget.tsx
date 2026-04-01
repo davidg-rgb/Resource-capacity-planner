@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback } from 'react';
+import { useTranslations } from 'next-intl';
 import { TrendingUp, Loader2 } from 'lucide-react';
 
 import { CapacityForecastChart } from '@/components/charts/capacity-forecast-chart';
@@ -17,6 +18,7 @@ const CapacityForecastContent = React.memo(function CapacityForecastContent({
   timeRange,
   config,
 }: WidgetProps) {
+  const t = useTranslations('widgets.capacityForecast');
   const { data, isLoading, error } = useCapacityForecast(timeRange.from, timeRange.to, {
     projectId: config?.projectId as string | undefined,
     departmentId: config?.departmentId as string | undefined,
@@ -38,7 +40,7 @@ const CapacityForecastContent = React.memo(function CapacityForecastContent({
   if (error) {
     return (
       <div className="text-destructive flex items-center justify-center py-10 text-sm">
-        Failed to load capacity forecast
+        {t('error')}
       </div>
     );
   }
@@ -52,16 +54,12 @@ const CapacityForecastContent = React.memo(function CapacityForecastContent({
   }
 
   if (data.months.length === 0) {
-    return (
-      <div className="text-on-surface-variant py-10 text-center text-sm">
-        No forecast data available for the selected period
-      </div>
-    );
+    return <div className="text-on-surface-variant py-10 text-center text-sm">{t('empty')}</div>;
   }
 
   return (
     <div>
-      <h4 className="font-headline mb-4 text-sm font-semibold">Capacity Forecast</h4>
+      <h4 className="font-headline mb-4 text-sm font-semibold">{t('title')}</h4>
       <CapacityForecastChart
         months={data.months}
         supply={data.supply}

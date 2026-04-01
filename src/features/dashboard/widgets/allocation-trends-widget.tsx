@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { TrendingUp, Loader2 } from 'lucide-react';
 
 import { AllocationTrendsChart } from '@/components/project-view/allocation-trends-chart';
@@ -16,21 +17,20 @@ const AllocationTrendsContent = React.memo(function AllocationTrendsContent({
   timeRange,
   config,
 }: WidgetProps) {
+  const t = useTranslations('widgets.allocationTrends');
   const projectId = config?.projectId as string | undefined;
   const { data, isLoading, error } = useProjectStaffing(projectId, timeRange.from, timeRange.to);
 
   if (!projectId) {
     return (
-      <div className="text-on-surface-variant py-10 text-center text-sm">
-        Select a project to view allocation trends
-      </div>
+      <div className="text-on-surface-variant py-10 text-center text-sm">{t('selectProject')}</div>
     );
   }
 
   if (error) {
     return (
       <div className="text-destructive flex items-center justify-center py-10 text-sm">
-        Failed to load allocation trends
+        {t('error')}
       </div>
     );
   }
@@ -44,11 +44,7 @@ const AllocationTrendsContent = React.memo(function AllocationTrendsContent({
   }
 
   if (data.people.length === 0) {
-    return (
-      <div className="text-on-surface-variant py-10 text-center text-sm">
-        No staffing data for this project in the selected period
-      </div>
-    );
+    return <div className="text-on-surface-variant py-10 text-center text-sm">{t('empty')}</div>;
   }
 
   return <AllocationTrendsChart people={data.people} months={data.months} />;

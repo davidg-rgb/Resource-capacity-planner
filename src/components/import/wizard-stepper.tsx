@@ -30,7 +30,7 @@ export function WizardStepper({ currentStep, completedSteps }: WizardStepperProp
                 <div
                   className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors ${
                     isCompleted
-                      ? 'bg-on-secondary-container text-white'
+                      ? 'bg-on-secondary-container text-on-primary'
                       : isCurrent
                         ? 'bg-primary text-on-primary border-primary border-2'
                         : 'bg-surface-container-highest text-outline'

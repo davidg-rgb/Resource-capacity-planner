@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Dashboard Visualizations & Customization
-status: executing phase 31
-stopped_at: Completed 31-01-PLAN.md (PDF Export Enhancement)
-last_updated: "2026-04-01T13:22:00Z"
+status: complete
+stopped_at: All 10 phases shipped (23-32)
+last_updated: "2026-04-01T14:00:00Z"
 last_activity: 2026-04-01
 progress:
   total_phases: 10
-  completed_phases: 9
-  total_plans: 11
-  completed_plans: 12
-  percent: 90
+  completed_phases: 10
+  total_plans: 14
+  completed_plans: 14
+  percent: 100
 ---
 
 # Nordic Capacity -- Project State
@@ -24,22 +24,22 @@ UX Review: .planning/V13-SCENARIO-UX-REVIEW.md
 Roadmap: .planning/ROADMAP-V4.md
 
 **Core value:** Customizable dashboard with 13 visualizations that make the tool irreplaceable vs Excel
-**Current focus:** v4.0 build — Phase 31 (PDF Export Enhancement) complete, next Phase 32
+**Current focus:** v4.0 complete — all 10 phases shipped, ready for review + testing
 
 ## Current Position
 
-Phase: 31 (complete)
-Plan: 31-01 complete, next Phase 32
-Status: PDF export enhanced with multi-widget support, SVG snapshots, cover page
+Phase: All complete
+Plan: 14/14 plans executed
+Status: v4.0 milestone complete — 149 files changed, 21,705 insertions
 Last activity: 2026-04-01
 
-Progress: [▓▓▓▓▓▓▓▓▓░] 90% (v4.0)
+Progress: [▓▓▓▓▓▓▓▓▓▓] 100% (v4.0)
 
 ## Phase Status
 
 | Phase | Name | Status | Started | Completed |
 | ----- | ---- | ------ | ------- | --------- |
-| 23 | Dashboard Framework + V7 Person Card | In Progress | 2026-04-01 | - |
+| 23 | Dashboard Framework + V7 Person Card | Complete | 2026-04-01 | 2026-04-01 |
 | 24 | Full Data Layer (11 endpoints) | Complete | 2026-04-01 | 2026-04-01 |
 | 25 | Gauges + Sparklines (C1) | Complete | 2026-04-01 | 2026-04-01 |
 | 26 | Forecast + Stacked Area (C2a) | Complete | 2026-04-01 | 2026-04-01 |
@@ -48,7 +48,7 @@ Progress: [▓▓▓▓▓▓▓▓▓░] 90% (v4.0)
 | 29 | Timeline + Program + Comparison (C4) | Complete | 2026-04-01 | 2026-04-01 |
 | 30 | Integration & Wiring (D) | Complete | 2026-04-01 | 2026-04-01 |
 | 31 | PDF Export Enhancement (E) | Complete | 2026-04-01 | 2026-04-01 |
-| 32 | What-If Scenarios (F) | Pending | - | - |
+| 32 | What-If Scenarios (F) | Complete | 2026-04-01 | 2026-04-01 |
 
 ## Previous Milestones
 

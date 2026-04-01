@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useMemo, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { Search } from 'lucide-react';
 
 import { useAvailabilitySearch } from '@/hooks/use-availability';
@@ -38,6 +39,7 @@ function formatMonth(m: string): string {
 // ---------------------------------------------------------------------------
 
 function MiniBar({ allocated, target }: { allocated: number; target: number }) {
+  const t = useTranslations('widgets.availabilityFinder');
   const pct = target > 0 ? Math.min((allocated / target) * 100, 100) : 0;
   const available = Math.max(target - allocated, 0);
 
@@ -50,7 +52,7 @@ function MiniBar({ allocated, target }: { allocated: number; target: number }) {
         />
       </div>
       <span className="text-on-surface-variant w-16 text-right text-xs tabular-nums">
-        {available}h free
+        {t('hFree', { hours: available })}
       </span>
     </div>
   );
@@ -63,6 +65,7 @@ function MiniBar({ allocated, target }: { allocated: number; target: number }) {
 const AvailabilityFinderContent = React.memo(function AvailabilityFinderContent({
   timeRange,
 }: WidgetProps) {
+  const t = useTranslations('widgets.availabilityFinder');
   const { openPersonCard } = usePersonCard();
 
   // Filter state
@@ -125,7 +128,7 @@ const AvailabilityFinderContent = React.memo(function AvailabilityFinderContent(
 
   // Error state
   if (error) {
-    return <div className="text-sm text-red-600">Failed to load availability data</div>;
+    return <div className="text-sm text-red-600">{t('error')}</div>;
   }
 
   return (
@@ -133,13 +136,13 @@ const AvailabilityFinderContent = React.memo(function AvailabilityFinderContent(
       {/* Filter bar */}
       <div className="flex flex-wrap items-end gap-3">
         <div>
-          <label className="text-on-surface-variant mb-1 block text-xs">Discipline</label>
+          <label className="text-on-surface-variant mb-1 block text-xs">{t('discipline')}</label>
           <select
             value={disciplineId}
             onChange={(e) => setDisciplineId(e.target.value)}
             className="border-outline-variant bg-surface-container-lowest text-on-surface rounded-md border px-2 py-1.5 text-sm"
           >
-            <option value="">All</option>
+            <option value="">{t('any')}</option>
             {disciplines?.map((d) => (
               <option key={d.id} value={d.id}>
                 {d.abbreviation ?? d.name}
@@ -149,13 +152,13 @@ const AvailabilityFinderContent = React.memo(function AvailabilityFinderContent(
         </div>
 
         <div>
-          <label className="text-on-surface-variant mb-1 block text-xs">Department</label>
+          <label className="text-on-surface-variant mb-1 block text-xs">{t('department')}</label>
           <select
             value={departmentId}
             onChange={(e) => setDepartmentId(e.target.value)}
             className="border-outline-variant bg-surface-container-lowest text-on-surface rounded-md border px-2 py-1.5 text-sm"
           >
-            <option value="">All</option>
+            <option value="">{t('any')}</option>
             {departments?.map((d) => (
               <option key={d.id} value={d.id}>
                 {d.name}
@@ -165,13 +168,13 @@ const AvailabilityFinderContent = React.memo(function AvailabilityFinderContent(
         </div>
 
         <div>
-          <label className="text-on-surface-variant mb-1 block text-xs">Min available</label>
+          <label className="text-on-surface-variant mb-1 block text-xs">{t('minAvailable')}</label>
           <select
             value={minHours}
             onChange={(e) => setMinHours(Number(e.target.value))}
             className="border-outline-variant bg-surface-container-lowest text-on-surface rounded-md border px-2 py-1.5 text-sm"
           >
-            <option value={0}>Any</option>
+            <option value={0}>{t('any')}</option>
             <option value={40}>40h</option>
             <option value={80}>80h</option>
             <option value={120}>120h</option>
@@ -179,15 +182,15 @@ const AvailabilityFinderContent = React.memo(function AvailabilityFinderContent(
         </div>
 
         <div>
-          <label className="text-on-surface-variant mb-1 block text-xs">Sort by</label>
+          <label className="text-on-surface-variant mb-1 block text-xs">{t('sortBy')}</label>
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as SortOption)}
             className="border-outline-variant bg-surface-container-lowest text-on-surface rounded-md border px-2 py-1.5 text-sm"
           >
-            <option value="available">Most available</option>
-            <option value="utilization">Least utilized</option>
-            <option value="name">Name</option>
+            <option value="available">{t('mostAvailable')}</option>
+            <option value="utilization">{t('leastUtilized')}</option>
+            <option value="name">{t('name')}</option>
           </select>
         </div>
       </div>
@@ -204,16 +207,18 @@ const AvailabilityFinderContent = React.memo(function AvailabilityFinderContent(
       {/* Results header */}
       {data && !isLoading && (
         <p className="text-on-surface-variant text-sm">
-          Found <span className="text-on-surface font-medium">{data.total}</span> people
-          {minHours > 0 && ` with \u2265${minHours}h available`}
+          {t.rich('foundPeople', {
+            count: data.total,
+            bold: (chunks) => <span className="text-on-surface font-medium">{chunks}</span>,
+          })}
+          {minHours > 0 && ` ${t('withMinHours', { hours: minHours })}`}
         </p>
       )}
 
       {/* Empty state */}
       {data && data.results.length === 0 && !isLoading && (
         <div className="bg-surface-container-low text-on-surface-variant rounded-lg p-6 text-center text-sm">
-          No one matching your filters has availability in this period. Try widening the date range
-          or removing the discipline filter.
+          {t('emptyState')}
         </div>
       )}
 
@@ -261,9 +266,9 @@ const AvailabilityFinderContent = React.memo(function AvailabilityFinderContent(
 
                   {/* Total available */}
                   <p className="text-on-surface-variant mt-1 text-xs">
-                    Total available:{' '}
+                    {t('totalAvailable')}{' '}
                     <span className="text-on-surface font-medium">{person.totalAvailable}h</span>{' '}
-                    across {months.length} months
+                    {t('acrossMonths', { count: months.length })}
                   </p>
                 </div>
 
@@ -278,7 +283,7 @@ const AvailabilityFinderContent = React.memo(function AvailabilityFinderContent(
                   }
                   className="bg-primary text-on-primary shrink-0 rounded-md px-3 py-1.5 text-xs font-medium hover:opacity-90"
                 >
-                  Assign
+                  {t('assign')}
                 </button>
               </div>
             </div>

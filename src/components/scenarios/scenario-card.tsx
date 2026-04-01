@@ -52,7 +52,7 @@ export function ScenarioCard({ scenario, onDelete }: ScenarioCardProps) {
           {menuOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
-              <div className="absolute right-0 z-20 mt-1 w-36 rounded-md border bg-white py-1 shadow-lg">
+              <div className="bg-surface-container-lowest absolute right-0 z-20 mt-1 w-36 rounded-md border py-1 shadow-lg">
                 <button
                   type="button"
                   onClick={() => {

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { useTranslations } from 'next-intl';
 import { LayoutDashboard } from 'lucide-react';
 
 import { KPICard } from '@/components/charts/kpi-card';
@@ -13,10 +14,11 @@ import type { WidgetProps } from '../widget-registry.types';
 // ---------------------------------------------------------------------------
 
 const KPICardsContent = React.memo(function KPICardsContent({ timeRange }: WidgetProps) {
+  const t = useTranslations('widgets.kpiCards');
   const { data: kpis, isLoading, error } = useDashboardKPIs(timeRange.from, timeRange.to);
 
   if (error) {
-    return <div className="text-sm text-red-600">Failed to load KPI data</div>;
+    return <div className="text-sm text-red-600">{t('error')}</div>;
   }
 
   if (isLoading || !kpis) {
@@ -35,7 +37,7 @@ const KPICardsContent = React.memo(function KPICardsContent({ timeRange }: Widge
   if (kpis.totalPeople === 0) {
     return (
       <div className="bg-surface-container-low text-on-surface-variant rounded-sm p-6 text-sm">
-        No team members found. Add people to see capacity metrics.
+        {t('empty')}
       </div>
     );
   }
@@ -43,30 +45,30 @@ const KPICardsContent = React.memo(function KPICardsContent({ timeRange }: Widge
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
       <KPICard
-        title="Total Resources"
+        title={t('totalResources')}
         value={kpis.totalPeople}
-        badge="+4 New"
+        badge={t('newBadge')}
         variant="primary"
         href="/dashboard/team"
       />
       <KPICard
-        title="Avg Utilization"
+        title={t('avgUtilization')}
         value={`${kpis.utilizationPercent}%`}
-        subtitle="Optimal Range"
+        subtitle={t('optimalRange')}
         variant="primary"
         href="/dashboard/team"
       />
       <KPICard
-        title="Overloaded"
+        title={t('overloaded')}
         value={kpis.overloadedCount}
-        badge="High Priority"
+        badge={t('highPriority')}
         variant="error"
         href="/dashboard/team?status=over"
       />
       <KPICard
-        title="Unallocated"
+        title={t('unallocated')}
         value={kpis.underutilizedCount}
-        subtitle="Available Bench"
+        subtitle={t('availableBench')}
         variant="outline"
         href="/dashboard/team?status=under"
       />

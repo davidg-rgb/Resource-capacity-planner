@@ -6,7 +6,7 @@
  */
 export function GridFooter() {
   return (
-    <div className="border-outline-variant/15 flex items-center justify-between border-t bg-white px-8 py-4">
+    <div className="border-outline-variant/15 bg-surface-container-lowest flex items-center justify-between border-t px-8 py-4">
       {/* Status legend */}
       <div className="flex gap-4">
         <div className="flex items-center gap-2">
