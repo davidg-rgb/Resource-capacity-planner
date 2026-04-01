@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v4.0
 milestone_name: Dashboard Visualizations & Customization
 status: executing phase 24
-stopped_at: Completed 24-01-PLAN.md (Types + Supply vs Demand)
-last_updated: "2026-04-01T12:00:00.000Z"
+stopped_at: Completed 24-02-PLAN.md (Person-Level Utilization)
+last_updated: "2026-04-01T14:00:00.000Z"
 last_activity: 2026-04-01
 progress:
   total_phases: 10
   completed_phases: 0
   total_plans: 0
-  completed_plans: 2
-  percent: 10
+  completed_plans: 3
+  percent: 15
 ---
 
 # Nordic Capacity -- Project State
@@ -29,11 +29,11 @@ Roadmap: .planning/ROADMAP-V4.md
 ## Current Position
 
 Phase: 24 (executing)
-Plan: 24-01 complete, 24-02 next
-Status: Phase 24 in progress -- Group A endpoints shipped
+Plan: 24-02 complete, 24-03 next
+Status: Phase 24 in progress -- Group A + Group B endpoints shipped
 Last activity: 2026-04-01
 
-Progress: [▓▓░░░░░░░░] 10% (v4.0)
+Progress: [▓▓▓░░░░░░░] 15% (v4.0)
 
 ## Phase Status
 
@@ -96,8 +96,8 @@ None.
 ## Session Continuity
 
 Last session: 2026-04-01
-Stopped at: Completed 24-01-PLAN.md (Types + Supply vs Demand endpoints)
-Resume file: .planning/phases/24-data-layer/24-01-SUMMARY.md
+Stopped at: Completed 24-02-PLAN.md (Person-Level Utilization endpoints)
+Resume file: .planning/phases/24-data-layer/24-02-SUMMARY.md
 
 ---
 
