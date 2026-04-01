@@ -63,6 +63,14 @@ Phase 32 is fully independent (zero modifications to existing files).
 - R23-10: Global time range selector + per-widget override (clock icon in edit mode)
 - R23-11: Install @dnd-kit/core + @dnd-kit/sortable
 
+**Plans:** 4 plans
+
+Plans:
+- [ ] 23-01-PLAN.md — Types, widget registry, DB migration, dnd-kit install, time range context
+- [ ] 23-02-PLAN.md — Layout engine, edit mode UX, layout API (3 endpoints), 4-tier resolution
+- [ ] 23-03-PLAN.md — V7 Person 360 Card overlay, person summary endpoint + hook
+- [ ] 23-04-PLAN.md — Wrap 7 existing widgets in registry format, refactor dashboard page
+
 ### Phase 24 — Full Data Layer
 - R24-01: `GET /api/analytics/capacity-forecast` — demand vs supply lines with hiring trigger
 - R24-02: `GET /api/analytics/availability-timeline` — Gantt-style allocation blocks per person
