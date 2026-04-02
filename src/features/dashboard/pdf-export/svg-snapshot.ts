@@ -80,13 +80,53 @@ export async function svgToPngDataUri(
 // html2canvasCapture — fallback: screenshot the widget container as PNG
 // ---------------------------------------------------------------------------
 
+/**
+ * Inline all CSS custom properties as computed values on a cloned DOM tree.
+ * html2canvas cannot resolve var(--xxx) — it needs actual color/size values.
+ */
+function inlineCustomProperties(clonedDoc: Document) {
+  const elements = clonedDoc.querySelectorAll('*');
+  for (const el of elements) {
+    if (!(el instanceof HTMLElement)) continue;
+    const computed = getComputedStyle(el);
+
+    // Inline key visual properties that commonly use CSS custom properties
+    const props = [
+      'color',
+      'background-color',
+      'border-color',
+      'border-top-color',
+      'border-bottom-color',
+      'border-left-color',
+      'border-right-color',
+      'fill',
+      'stroke',
+      'box-shadow',
+      'outline-color',
+    ];
+
+    for (const prop of props) {
+      const value = computed.getPropertyValue(prop);
+      if (value && value !== 'rgba(0, 0, 0, 0)' && value !== 'transparent') {
+        el.style.setProperty(prop, value);
+      }
+    }
+
+    // Also ensure font is inlined
+    el.style.setProperty('font-family', computed.fontFamily);
+  }
+}
+
 async function html2canvasCapture(container: HTMLElement): Promise<string> {
   const canvas = await html2canvas(container, {
     backgroundColor: '#ffffff',
     scale: 2,
     logging: false,
     useCORS: true,
-    // Remove interactive elements from capture
+    onclone: (_doc, clonedEl) => {
+      // Inline CSS custom properties on the cloned element tree
+      inlineCustomProperties(clonedEl.ownerDocument);
+    },
     ignoreElements: (el) => {
       const tag = el.tagName?.toLowerCase();
       return tag === 'button' || tag === 'select' || el.getAttribute('role') === 'button';
