@@ -2,9 +2,12 @@
 
 import { usePathname } from 'next/navigation';
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export function Breadcrumbs() {
   const pathname = usePathname();
-  const segments = pathname.split('/').filter(Boolean);
+  // Filter out UUID segments (shown contextually by the page instead)
+  const segments = pathname.split('/').filter((s) => s && !UUID_RE.test(s));
 
   return (
     <nav

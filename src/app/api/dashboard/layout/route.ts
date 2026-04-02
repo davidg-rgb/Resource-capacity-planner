@@ -38,8 +38,19 @@ const putBodySchema = z.object({
 
 const TENANT_DEFAULT_USER = '__tenant_default__';
 
-/** Filter out widgets that no longer exist in the registry. */
+/**
+ * Filter out widgets that no longer exist in the registry.
+ * NOTE: Widget registration happens on the client via side-effect imports.
+ * On the server the registry may be empty, so we skip filtering when no
+ * widgets are registered to avoid stripping the entire layout.
+ */
 function filterValidWidgets(widgets: WidgetPlacement[]): WidgetPlacement[] {
+  // If registry is empty (server-side), pass through all widgets — the
+  // client will handle missing widgets gracefully at render time.
+  const sample = getWidget(widgets[0]?.widgetId);
+  if (widgets.length > 0 && sample === undefined && getWidget('kpi-cards') === undefined) {
+    return widgets;
+  }
   return widgets.filter((w) => getWidget(w.widgetId) !== undefined);
 }
 
