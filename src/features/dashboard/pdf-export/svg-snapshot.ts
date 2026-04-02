@@ -1,12 +1,12 @@
 /**
- * SVG Snapshot Utility for Recharts-based widgets.
+ * Widget Snapshot Utility for PDF export.
  *
- * Extracts the SVG element from a widget's DOM container and converts it
- * to a PNG data URI suitable for @react-pdf/renderer Image components.
- *
- * Recharts renders pure SVG, so we can grab it directly from the DOM
- * without Puppeteer or html2canvas.
+ * Two capture strategies:
+ * 1. Recharts SVG extraction → PNG (fast, crisp for chart widgets)
+ * 2. html2canvas fallback → PNG (captures any HTML widget: KPIs, tables, etc.)
  */
+
+import html2canvas from 'html2canvas';
 
 // ---------------------------------------------------------------------------
 // extractSvgFromWidget — finds the Recharts SVG inside a widget container
@@ -17,8 +17,13 @@ function extractSvgElement(container: HTMLElement): SVGSVGElement | null {
   const svg = container.querySelector<SVGSVGElement>('.recharts-wrapper > svg');
   if (svg) return svg;
 
-  // Fallback: find any top-level SVG
-  return container.querySelector<SVGSVGElement>('svg');
+  // Fallback: find any top-level SVG (but skip tiny icons)
+  const allSvgs = container.querySelectorAll<SVGSVGElement>('svg');
+  for (const s of allSvgs) {
+    const rect = s.getBoundingClientRect();
+    if (rect.width > 100 && rect.height > 50) return s;
+  }
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -30,15 +35,12 @@ export async function svgToPngDataUri(
   width = 800,
   height = 400,
 ): Promise<string> {
-  // Clone the SVG so we don't mutate the live DOM
   const clone = svgElement.cloneNode(true) as SVGSVGElement;
 
-  // Ensure explicit dimensions for the serialization
   clone.setAttribute('width', String(width));
   clone.setAttribute('height', String(height));
   clone.setAttribute('viewBox', `0 0 ${width} ${height}`);
 
-  // Inline computed styles so the PNG renders correctly
   inlineStyles(svgElement, clone);
 
   const serializer = new XMLSerializer();
@@ -50,7 +52,6 @@ export async function svgToPngDataUri(
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement('canvas');
-      // Use 2x resolution for crisp PDF rendering
       const scale = 2;
       canvas.width = width * scale;
       canvas.height = height * scale;
@@ -60,7 +61,6 @@ export async function svgToPngDataUri(
         reject(new Error('Failed to get 2d context'));
         return;
       }
-      // White background
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.scale(scale, scale);
@@ -77,23 +77,52 @@ export async function svgToPngDataUri(
 }
 
 // ---------------------------------------------------------------------------
+// html2canvasCapture — fallback: screenshot the widget container as PNG
+// ---------------------------------------------------------------------------
+
+async function html2canvasCapture(container: HTMLElement): Promise<string> {
+  const canvas = await html2canvas(container, {
+    backgroundColor: '#ffffff',
+    scale: 2,
+    logging: false,
+    useCORS: true,
+    // Remove interactive elements from capture
+    ignoreElements: (el) => {
+      const tag = el.tagName?.toLowerCase();
+      return tag === 'button' || tag === 'select' || el.getAttribute('role') === 'button';
+    },
+  });
+  return canvas.toDataURL('image/png');
+}
+
+// ---------------------------------------------------------------------------
 // captureWidgetSnapshot — high-level: widget container -> PNG data URI
+// Uses SVG extraction for Recharts, html2canvas fallback for everything else
 // ---------------------------------------------------------------------------
 
 export async function captureWidgetSnapshot(widgetId: string): Promise<string | null> {
-  // Widget containers are rendered with data-widget-id attribute
   const container = document.querySelector<HTMLElement>(`[data-widget-id="${widgetId}"]`);
   if (!container) return null;
 
+  // Strategy 1: Try Recharts SVG extraction (fast, crisp)
   const svg = extractSvgElement(container);
-  if (!svg) return null;
+  if (svg) {
+    try {
+      const rect = container.getBoundingClientRect();
+      const width = Math.round(rect.width) || 800;
+      const height = Math.round(rect.height) || 400;
+      return await svgToPngDataUri(svg, width, Math.min(height, 600));
+    } catch {
+      // Fall through to html2canvas
+    }
+  }
 
-  // Get the rendered dimensions from the container
-  const rect = container.getBoundingClientRect();
-  const width = Math.round(rect.width) || 800;
-  const height = Math.round(rect.height) || 400;
-
-  return svgToPngDataUri(svg, width, Math.min(height, 600));
+  // Strategy 2: html2canvas fallback (captures any HTML content)
+  try {
+    return await html2canvasCapture(container);
+  } catch {
+    return null;
+  }
 }
 
 // ---------------------------------------------------------------------------

@@ -33,7 +33,7 @@ export function EditModeToggle({
         'flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors',
         isEditMode
           ? 'border-primary bg-primary/10 text-primary ring-primary/30 ring-2'
-          : 'hover:bg-accent',
+          : 'border-outline-variant/30 hover:bg-surface-container-low hover:border-primary/30 text-on-surface',
       ].join(' ')}
     >
       {isEditMode ? (

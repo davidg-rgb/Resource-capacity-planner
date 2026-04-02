@@ -40,6 +40,7 @@
     "bcryptjs": "^3.0.3",
     "drizzle-orm": "^0.45.1",
     "flags": "^4.0.5",
+    "html2canvas": "^1.4.1",
     "jose": "^6.2.2",
     "lucide-react": "^1.7.0",
     "next": "16.2.1",

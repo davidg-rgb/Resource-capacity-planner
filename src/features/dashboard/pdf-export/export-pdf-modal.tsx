@@ -315,7 +315,7 @@ export function ExportPdfModal({
               type="button"
               onClick={onClose}
               disabled={isExporting}
-              className="hover:bg-accent rounded-md border px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
+              className="border-outline-variant/30 text-on-surface hover:bg-surface-container-low hover:border-primary/30 rounded-md border px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
             >
               Avbryt
             </button>
@@ -323,7 +323,7 @@ export function ExportPdfModal({
               type="button"
               onClick={handleExport}
               disabled={isExporting || selectedCount === 0}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
+              className="bg-primary text-on-primary hover:bg-primary-dim flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
             >
               <FileDown className="h-4 w-4" />
               Exportera PDF
