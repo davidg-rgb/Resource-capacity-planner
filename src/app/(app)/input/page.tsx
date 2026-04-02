@@ -8,16 +8,16 @@ export default function InputPage() {
   const { data: people, isLoading } = usePeople();
 
   if (isLoading) {
-    return <div className="text-on-surface-variant p-6">Loading...</div>;
+    return <div className="text-on-surface-variant p-6">Laddar...</div>;
   }
 
   return (
     <div className="space-y-4">
       <h1 className="font-headline text-on-surface text-2xl font-semibold tracking-tight">
-        Person Input
+        Personplanering
       </h1>
       <p className="text-on-surface-variant text-sm">
-        Select a person to view and edit their allocation grid.
+        Valj en person for att visa och redigera allokeringen.
       </p>
       <ul className="space-y-1">
         {people?.map((p) => (

@@ -49,7 +49,7 @@ export default function ScenariosListPage() {
         <button
           type="button"
           onClick={() => setShowCreate(true)}
-          className="inline-flex items-center gap-1.5 rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-amber-600"
+          className="inline-flex items-center gap-1.5 rounded-md bg-amber-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-amber-700"
         >
           <Plus className="h-4 w-4" />
           Skapa nytt scenario
@@ -61,23 +61,23 @@ export default function ScenariosListPage() {
           {Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
-              className="border-outline-variant/30 h-36 animate-pulse rounded-lg border bg-slate-50"
+              className="border-outline-variant/30 bg-surface-container-low h-36 animate-pulse rounded-lg border"
             />
           ))}
         </div>
       )}
 
       {!isLoading && scenarios && scenarios.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-200 py-16">
-          <FlaskConical className="mb-3 h-12 w-12 text-slate-300" />
-          <p className="mb-1 text-sm font-medium text-slate-600">Inga scenarier annu</p>
-          <p className="mb-4 text-xs text-slate-400">
+        <div className="border-outline-variant/30 flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-16">
+          <FlaskConical className="text-outline-variant mb-3 h-12 w-12" />
+          <p className="text-on-surface-variant mb-1 text-sm font-medium">Inga scenarier annu</p>
+          <p className="text-outline mb-4 text-xs">
             Skapa ditt forsta scenario for att utforska alternativa planeringar.
           </p>
           <button
             type="button"
             onClick={() => setShowCreate(true)}
-            className="inline-flex items-center gap-1.5 rounded-md bg-amber-500 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-600"
+            className="inline-flex items-center gap-1.5 rounded-md bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700"
           >
             <Plus className="h-3.5 w-3.5" />
             Skapa nytt scenario

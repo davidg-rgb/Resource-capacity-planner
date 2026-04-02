@@ -257,7 +257,7 @@ export const SortableWidget = memo(function SortableWidget({
       {/* Widget content */}
       <div
         className={[
-          'bg-card rounded-lg border',
+          'bg-surface-container-lowest border-outline-variant/30 rounded-lg border p-5',
           isEditMode ? 'ring-dashed ring-muted-foreground/30 ring-1' : '',
         ]
           .filter(Boolean)

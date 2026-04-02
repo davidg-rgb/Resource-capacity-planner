@@ -130,7 +130,7 @@ export function TopNav() {
                 className={`font-headline text-sm tracking-tight transition-colors ${
                   isActive
                     ? 'border-primary text-primary border-b-2 pb-1 font-bold'
-                    : 'hover:text-primary text-slate-500'
+                    : 'hover:text-primary text-on-surface-variant'
                 }`}
               >
                 {t(item.labelKey)}

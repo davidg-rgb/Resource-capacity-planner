@@ -49,10 +49,10 @@ export default function ProjectDetailPage() {
               </div>
             )}
             <h1 className="font-headline text-on-surface text-4xl font-extrabold tracking-tight">
-              {data?.projectName ?? 'Project Staffing'}
+              {data?.projectName ?? 'Projektbemanning'}
             </h1>
             <p className="text-on-surface-variant mt-2 max-w-2xl text-sm">
-              Allocated people and hours per month
+              Allokerade personer och timmar per manad
             </p>
           </div>
 
@@ -61,29 +61,29 @@ export default function ProjectDetailPage() {
               {/* Total Hours card */}
               <div className="bg-surface-container-lowest min-w-[160px] rounded-sm p-5 shadow-[0_4px_20px_-4px_rgba(42,52,55,0.06)]">
                 <p className="text-outline mb-1 text-[10px] font-bold tracking-wider uppercase">
-                  Total Hours
+                  Totala Timmar
                 </p>
                 <p className="font-tabular text-on-surface text-2xl font-bold">
                   {totalHours.toLocaleString()}{' '}
-                  <span className="text-outline text-sm font-medium">hrs</span>
+                  <span className="text-outline text-sm font-medium">tim</span>
                 </p>
               </div>
 
               {/* Assigned card */}
               <div className="bg-surface-container-lowest min-w-[160px] rounded-sm p-5 shadow-[0_4px_20px_-4px_rgba(42,52,55,0.06)]">
                 <p className="text-outline mb-1 text-[10px] font-bold tracking-wider uppercase">
-                  Assigned
+                  Tilldelade
                 </p>
                 <p className="font-tabular text-on-surface text-2xl font-bold">
                   {data.people.length}{' '}
-                  <span className="text-outline text-sm font-medium">people</span>
+                  <span className="text-outline text-sm font-medium">personer</span>
                 </p>
               </div>
 
               {/* Disciplines card */}
               <div className="bg-surface-container-lowest min-w-[160px] rounded-sm p-5 shadow-[0_4px_20px_-4px_rgba(42,52,55,0.06)]">
                 <p className="text-outline mb-1 text-[10px] font-bold tracking-wider uppercase">
-                  Disciplines
+                  Discipliner
                 </p>
                 <div className="mt-1 flex gap-1">
                   {uniqueDisciplines.map((d) => {
@@ -117,7 +117,7 @@ export default function ProjectDetailPage() {
 
       {error && (
         <div className="bg-error-container text-on-error-container mt-4 rounded-md p-3 text-sm">
-          Failed to load project staffing: {error.message}
+          Kunde inte ladda projektbemanning: {error.message}
         </div>
       )}
 
@@ -130,7 +130,7 @@ export default function ProjectDetailPage() {
                 <thead>
                   <tr className="bg-surface-container-low">
                     <th className="text-outline bg-surface-container-low sticky left-0 z-10 w-64 border-r border-[#a9b4b7]/10 px-6 py-4 text-[11px] font-bold tracking-wider uppercase">
-                      Team Member
+                      Teammedlem
                     </th>
                     {data.months.map((m) => (
                       <th
@@ -141,7 +141,7 @@ export default function ProjectDetailPage() {
                       </th>
                     ))}
                     <th className="text-outline bg-primary/5 px-6 py-4 text-right text-[11px] font-bold tracking-wider uppercase">
-                      Total
+                      Totalt
                     </th>
                   </tr>
                 </thead>
@@ -165,7 +165,7 @@ export default function ProjectDetailPage() {
 
       <div className="mt-6">
         <Link href="/projects" className="text-primary text-sm hover:underline">
-          Back to Projects
+          Tillbaka till projekt
         </Link>
       </div>
     </>

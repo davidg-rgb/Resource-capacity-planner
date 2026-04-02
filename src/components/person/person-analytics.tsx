@@ -12,7 +12,7 @@ export function PersonAnalytics() {
       <div className="bg-surface-container-lowest border-outline-variant/10 flex flex-col justify-between rounded-sm border p-6 shadow-sm md:col-span-4">
         <div>
           <h4 className="text-outline mb-4 text-xs font-bold tracking-widest uppercase">
-            Total Allocation Trend
+            Allokeringstrend
           </h4>
           <div className="flex h-24 w-full items-end gap-2 px-2">
             <div className="bg-primary/20 h-[60%] w-full" />
@@ -25,15 +25,15 @@ export function PersonAnalytics() {
           </div>
         </div>
         <div className="mt-4 flex items-center justify-between">
-          <span className="text-outline text-xs font-medium">Q1-Q2 Forecast</span>
-          <span className="text-error text-sm font-bold">+12% Peak</span>
+          <span className="text-outline text-xs font-medium">Prognos</span>
+          <span className="text-error text-sm font-bold">+12% Topp</span>
         </div>
       </div>
 
       {/* Card 2: Project Distribution (5/12 cols) */}
       <div className="bg-surface-container-lowest border-outline-variant/10 rounded-sm border p-6 shadow-sm md:col-span-5">
         <h4 className="text-outline mb-4 text-xs font-bold tracking-widest uppercase">
-          Project Distribution
+          Projektfordelning
         </h4>
         <div className="space-y-3">
           <div className="flex items-center gap-4">
@@ -65,17 +65,17 @@ export function PersonAnalytics() {
         <div>
           <span className="material-symbols-outlined mb-2">lightbulb</span>
           <h4 className="text-xs font-bold tracking-widest uppercase opacity-80">
-            Capacity Insight
+            Kapacitetsinsikt
           </h4>
           <p className="mt-2 text-sm leading-relaxed font-medium">
-            May 2026 exceeds target by 30h due to overlap in Atlas &amp; Nova milestones.
+            Maj 2026 overskrider malet med 30h pa grund av overlapp i Atlas &amp; Nova.
           </p>
         </div>
         <button
           type="button"
           className="mt-4 text-left text-[11px] font-bold tracking-widest uppercase underline underline-offset-4"
         >
-          Adjust Allocation
+          Justera allokering
         </button>
       </div>
     </div>

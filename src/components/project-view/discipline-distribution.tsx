@@ -38,7 +38,7 @@ export function DisciplineDistribution({ people, months }: DisciplineDistributio
   return (
     <div className="bg-surface-container-low rounded-sm p-6">
       <h3 className="text-on-surface font-headline mb-4 text-lg font-semibold">
-        Discipline Distribution
+        Disciplinfordelning
       </h3>
       <div className="space-y-4">
         {sorted.map(([discipline, hours]) => {

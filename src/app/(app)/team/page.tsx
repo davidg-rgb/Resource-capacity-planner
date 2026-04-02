@@ -186,7 +186,7 @@ export default function TeamPage() {
                 }}
                 className="border-outline-variant bg-surface text-on-surface placeholder:text-on-surface-variant focus:border-primary mt-1 block w-full rounded-sm border px-3 py-2 text-sm focus:outline-none"
               />
-              {errors.firstName && <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>}
+              {errors.firstName && <p className="text-error mt-1 text-sm">{errors.firstName}</p>}
             </label>
 
             <label className="block">
@@ -206,7 +206,7 @@ export default function TeamPage() {
                 }}
                 className="border-outline-variant bg-surface text-on-surface placeholder:text-on-surface-variant focus:border-primary mt-1 block w-full rounded-sm border px-3 py-2 text-sm focus:outline-none"
               />
-              {errors.lastName && <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>}
+              {errors.lastName && <p className="text-error mt-1 text-sm">{errors.lastName}</p>}
             </label>
 
             <label className="block">

@@ -168,7 +168,7 @@ const SparklineRow = React.memo(function SparklineRow({ entity }: { entity: Spar
           {getDirectionArrow(entity.direction)} {entity.changePercent > 0 ? '+' : ''}
           {entity.changePercent}%
           {entity.isOverloaded && (
-            <AlertTriangle className="ml-1 inline h-3.5 w-3.5 text-[var(--md-sys-color-error)]" />
+            <AlertTriangle className="ml-1 inline h-3.5 w-3.5 text-[var(--color-error)]" />
           )}
         </span>
       </td>
@@ -205,7 +205,7 @@ export const UtilizationSparklines = React.memo(function UtilizationSparklines({
               name="sparkline-view"
               checked={viewMode === 'department'}
               onChange={() => onViewModeChange('department')}
-              className="accent-[var(--md-sys-color-primary)]"
+              className="accent-[var(--color-primary)]"
             />
             <span className="text-on-surface">Departments</span>
           </label>
@@ -215,7 +215,7 @@ export const UtilizationSparklines = React.memo(function UtilizationSparklines({
               name="sparkline-view"
               checked={viewMode === 'person'}
               onChange={() => onViewModeChange('person')}
-              className="accent-[var(--md-sys-color-primary)]"
+              className="accent-[var(--color-primary)]"
             />
             <span className="text-on-surface">People (top 10)</span>
           </label>
@@ -225,7 +225,7 @@ export const UtilizationSparklines = React.memo(function UtilizationSparklines({
       {/* Table */}
       <table className="w-full">
         <thead>
-          <tr className="text-on-surface-variant border-b border-[var(--md-sys-color-outline-variant)] text-xs">
+          <tr className="text-on-surface-variant border-b border-[var(--color-outline-variant)] text-xs">
             <th scope="col" className="pr-4 pb-2 text-left font-medium">
               {viewMode === 'department' ? 'Department' : 'Person'}
             </th>
@@ -240,7 +240,7 @@ export const UtilizationSparklines = React.memo(function UtilizationSparklines({
             </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-[var(--md-sys-color-outline-variant)]/30">
+        <tbody className="divide-y divide-[var(--color-outline-variant)]/30">
           {entities.map((entity) => (
             <SparklineRow key={entity.id} entity={entity} />
           ))}
@@ -249,8 +249,8 @@ export const UtilizationSparklines = React.memo(function UtilizationSparklines({
 
       {/* Legend */}
       <div className="text-on-surface-variant mt-3 text-xs">
-        <AlertTriangle className="mr-1 inline h-3 w-3 text-[var(--md-sys-color-error)]" /> =
-        currently overloaded (&gt;100%) &middot; Trend period: last 6 months vs current month
+        <AlertTriangle className="mr-1 inline h-3 w-3 text-[var(--color-error)]" /> = currently
+        overloaded (&gt;100%) &middot; Trend period: last 6 months vs current month
       </div>
     </div>
   );

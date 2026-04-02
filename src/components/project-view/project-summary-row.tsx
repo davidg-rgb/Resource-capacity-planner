@@ -17,7 +17,7 @@ export function ProjectSummaryRow({ people, months }: ProjectSummaryRowProps) {
   return (
     <tr className="bg-surface-container-high border-outline-variant/10 border-t-2 font-bold">
       <td className="bg-surface-container-high text-on-surface sticky left-0 z-10 border-r border-[#a9b4b7]/10 px-6 py-4 text-xs tracking-widest uppercase">
-        Monthly Project Total
+        Projekt Manadlig Summa
       </td>
       {months.map((month, i) => (
         <td key={month} className="font-tabular px-6 py-4 text-right text-sm">

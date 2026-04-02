@@ -11,10 +11,10 @@ export default function DataPage() {
         <div className="flex items-end justify-between">
           <div>
             <h1 className="font-headline text-on-surface text-3xl font-bold tracking-tight">
-              Resource Data Export
+              Resursdata och export
             </h1>
             <p className="text-on-surface-variant font-body mt-1 text-sm">
-              Review and filter detailed allocation data for engineering programs.
+              Granska och filtrera detaljerad allokeringsdata.
             </p>
           </div>
         </div>
@@ -24,7 +24,7 @@ export default function DataPage() {
       <Suspense
         fallback={
           <div className="text-on-surface-variant py-12 text-center text-sm">
-            Loading allocations...
+            Laddar allokeringar...
           </div>
         }
       >

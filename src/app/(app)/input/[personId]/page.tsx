@@ -29,11 +29,11 @@ export default function PersonInputPage({ params }: { params: Promise<{ personId
   );
 
   if (allocLoading || personLoading) {
-    return <div className="text-on-surface-variant p-6">Loading allocations...</div>;
+    return <div className="text-on-surface-variant p-6">Laddar allokeringar...</div>;
   }
 
   if (!person) {
-    return <div className="text-error p-6">Person not found</div>;
+    return <div className="text-error p-6">Person hittades inte</div>;
   }
 
   const handleAddProject = () => {
@@ -86,14 +86,14 @@ export default function PersonInputPage({ params }: { params: Promise<{ personId
 
       {showProjectSelector && projects && (
         <div className="border-outline-variant bg-surface rounded-sm border p-4">
-          <p className="text-on-surface mb-2 text-sm font-medium">Select a project to add:</p>
+          <p className="text-on-surface mb-2 text-sm font-medium">Valj projekt att lagga till:</p>
           <select
             className="border-outline-variant bg-surface text-on-surface w-full rounded border p-2 text-sm"
             onChange={(e) => handleProjectSelected(e.target.value)}
             defaultValue=""
           >
             <option value="" disabled>
-              Choose project...
+              Valj projekt...
             </option>
             {projects
               .filter(

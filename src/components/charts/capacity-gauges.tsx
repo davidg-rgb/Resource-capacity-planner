@@ -87,7 +87,7 @@ const SingleGauge = React.memo(function SingleGauge({
   return (
     <button
       type="button"
-      className="bg-surface-container-lowest hover:bg-surface-container-low flex cursor-pointer flex-col items-center rounded-lg border border-transparent p-4 transition-colors hover:border-[var(--md-sys-color-outline-variant)]"
+      className="bg-surface-container-lowest hover:bg-surface-container-low flex cursor-pointer flex-col items-center rounded-lg border border-transparent p-4 transition-colors hover:border-[var(--color-outline-variant)]"
       onClick={() => router.push(`/dashboard/team?dept=${dept.id}`)}
       aria-label={`${dept.name}: ${dept.utilizationPercent}% utilization`}
     >
@@ -132,7 +132,7 @@ const SingleGauge = React.memo(function SingleGauge({
           {dept.name}
         </span>
         {dept.utilizationPercent > 100 && (
-          <AlertTriangle className="h-3.5 w-3.5 text-[var(--md-sys-color-error)]" />
+          <AlertTriangle className="h-3.5 w-3.5 text-[var(--color-error)]" />
         )}
       </div>
 

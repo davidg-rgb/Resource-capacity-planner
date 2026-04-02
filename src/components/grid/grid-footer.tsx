@@ -12,19 +12,19 @@ export function GridFooter() {
         <div className="flex items-center gap-2">
           <span className="bg-on-secondary-container h-2 w-2 rounded-full" />
           <span className="text-outline text-[11px] font-medium tracking-wider uppercase">
-            On Track
+            Pa spar
           </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="bg-outline-variant h-2 w-2 rounded-full" />
           <span className="text-outline text-[11px] font-medium tracking-wider uppercase">
-            Warning
+            Varning
           </span>
         </div>
         <div className="flex items-center gap-2">
           <span className="bg-error h-2 w-2 rounded-full" />
           <span className="text-outline text-[11px] font-medium tracking-wider uppercase">
-            Over Capacity
+            Overbelagd
           </span>
         </div>
       </div>
@@ -35,13 +35,13 @@ export function GridFooter() {
           type="button"
           className="text-primary hover:bg-surface-container-low rounded-sm px-5 py-2 text-xs font-bold tracking-widest uppercase transition-colors"
         >
-          Discard Changes
+          Angra andringar
         </button>
         <button
           type="button"
           className="bg-primary text-on-primary rounded-sm px-8 py-2 text-xs font-bold tracking-widest uppercase transition-opacity hover:opacity-90"
         >
-          Save Worksheet
+          Spara
         </button>
       </div>
     </div>

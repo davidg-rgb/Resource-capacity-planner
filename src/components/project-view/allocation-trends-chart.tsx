@@ -37,7 +37,7 @@ export function AllocationTrendsChart({ people, months }: AllocationTrendsChartP
   return (
     <div className="bg-surface-container-low rounded-sm p-6">
       <h3 className="text-on-surface font-headline mb-4 text-lg font-semibold">
-        Allocation Trends
+        Allokeringstrender
       </h3>
       <div className="flex h-48 items-end gap-3 px-2">
         {monthTotals.map((total, i) => {

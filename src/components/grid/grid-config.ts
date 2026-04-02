@@ -77,7 +77,7 @@ export function transformToGridRows(
 export function buildColumnDefs(months: string[], currentMonth: string): ColDef[] {
   const projectCol: ColDef = {
     field: 'projectName',
-    headerName: 'Project',
+    headerName: 'Projekt',
     pinned: 'left' as const,
     width: 256,
     editable: false,
@@ -140,7 +140,7 @@ export function computePinnedRows(
   targetHours: number,
 ): GridRow[] {
   const summaRow: GridRow = { projectId: '__summa__', projectName: 'SUMMA' };
-  const targetRow: GridRow = { projectId: '__target__', projectName: 'Target' };
+  const targetRow: GridRow = { projectId: '__target__', projectName: 'Mall' };
   const statusRow: GridRow = { projectId: '__status__', projectName: 'Status' };
 
   for (const month of months) {
@@ -159,5 +159,5 @@ export function computePinnedRows(
 
 /** Create the "Add project..." placeholder row displayed at the bottom of data rows. */
 export function createAddProjectRow(): GridRow {
-  return { projectId: '__add__', projectName: 'Add project...', isAddRow: true };
+  return { projectId: '__add__', projectName: 'Lagg till projekt...', isAddRow: true };
 }

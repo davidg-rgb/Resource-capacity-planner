@@ -273,7 +273,7 @@ function DashboardGridInner({ dashboardId = 'manager' }: { dashboardId?: string 
         <DragOverlay dropAnimation={null}>
           {activeWidget && ActiveWidgetComponent ? (
             <div
-              className="bg-card rounded-lg border opacity-80 shadow-lg"
+              className="bg-surface-container-lowest border-outline-variant/30 rounded-lg border p-5 opacity-80 shadow-lg"
               style={{ width: `${(activeWidget.colSpan / 12) * 100}%`, maxWidth: '100%' }}
             >
               <ActiveWidgetComponent timeRange={timeRange} isEditMode={false} />

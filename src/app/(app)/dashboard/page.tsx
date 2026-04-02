@@ -1,5 +1,4 @@
 import { Suspense } from 'react';
-import Link from 'next/link';
 
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { DashboardContent } from './dashboard-content';
@@ -39,19 +38,6 @@ export default function DashboardPage() {
       >
         <DashboardContent />
       </Suspense>
-
-      {/* Team Overview link card */}
-      <div className="mt-6">
-        <Link
-          href="/dashboard/team"
-          className="border-outline-variant/30 hover:bg-surface-variant block rounded-lg border p-4 transition-colors"
-        >
-          <h2 className="text-on-surface font-semibold">Team Overview</h2>
-          <p className="text-on-surface-variant mt-1 text-sm">
-            Capacity heat map across all team members
-          </p>
-        </Link>
-      </div>
     </>
   );
 }
