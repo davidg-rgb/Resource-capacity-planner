@@ -1,6 +1,16 @@
 import type { ColDef } from 'ag-grid-community';
+import type { CustomCellRendererProps } from 'ag-grid-react';
 
 import type { FlatTableRow } from '@/features/allocations/allocation.types';
+
+function DisciplineCellRenderer(params: CustomCellRendererProps) {
+  if (!params.value) return null;
+  return (
+    <span className="bg-secondary-container text-on-secondary-fixed rounded-full px-2 py-0.5 text-[10px] font-bold uppercase">
+      {params.value}
+    </span>
+  );
+}
 
 export const flatTableColumnDefs: ColDef<FlatTableRow>[] = [
   {
@@ -16,14 +26,7 @@ export const flatTableColumnDefs: ColDef<FlatTableRow>[] = [
     headerName: 'Discipline',
     sortable: true,
     width: 110,
-    cellRenderer: (params: { value: string }) => {
-      if (!params.value) return '';
-      const escaped = params.value
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-      return `<span class="bg-secondary-container text-on-secondary-fixed rounded-full px-2 py-0.5 text-[10px] font-bold uppercase">${escaped}</span>`;
-    },
+    cellRenderer: DisciplineCellRenderer,
   },
   {
     field: 'departmentName',
