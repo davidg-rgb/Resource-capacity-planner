@@ -80,20 +80,20 @@ export function ImpactBar({ impact, isLoading }: ImpactBarProps) {
   return (
     <div className="rounded-md border border-amber-200 bg-amber-50/50 px-4 py-3">
       <p className="mb-2 text-xs font-semibold tracking-wider text-amber-700 uppercase">
-        Paverkan vs verklighet
+        Påverkan vs verklighet
       </p>
       <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
         <DeltaDisplay
           actual={impact.actualUtilization}
           scenario={impact.scenarioUtilization}
-          label="Belaggning"
+          label="Beläggning"
           suffix="%"
         />
         <span className="hidden text-amber-300 sm:inline">|</span>
         <DeltaDisplay
           actual={impact.actualOverloaded}
           scenario={impact.scenarioOverloaded}
-          label="Overbelagda"
+          label="Överbelagda"
           inverse
         />
         {impact.newConflicts > 0 && (

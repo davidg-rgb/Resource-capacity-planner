@@ -57,7 +57,7 @@ export function PromoteModal({
       <div className="bg-surface-container-lowest relative z-10 w-full max-w-lg rounded-lg p-6 shadow-xl">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="font-headline text-lg font-semibold text-slate-900">
-            {step === 'select' ? 'Tillampa andringar pa verklig planering' : 'Granska andringar'}
+            {step === 'select' ? 'Tillämpa ändringar på verklig planering' : 'Granska ändringar'}
           </h2>
           <button
             type="button"
@@ -72,7 +72,7 @@ export function PromoteModal({
 
         {step === 'select' && (
           <>
-            <p className="mb-3 text-sm text-slate-600">Valj vilka andringar som ska tilampas:</p>
+            <p className="mb-3 text-sm text-slate-600">Välj vilka ändringar som ska tillämpas:</p>
             <div className="max-h-64 space-y-1 overflow-y-auto">
               {promotable.map((alloc) => (
                 <label
@@ -118,7 +118,7 @@ export function PromoteModal({
             </div>
 
             <p className="mt-3 text-xs text-slate-500">
-              {selected.size} av {promotable.length} andringar valda
+              {selected.size} av {promotable.length} ändringar valda
             </p>
 
             <div className="mt-4 flex justify-end gap-3">
@@ -144,7 +144,7 @@ export function PromoteModal({
         {step === 'review' && (
           <>
             <p className="mb-3 text-sm text-slate-600">
-              Dessa andringar kommer att goras i verklig planering:
+              Dessa ändringar kommer att göras i verklig planering:
             </p>
 
             <div className="mb-4 max-h-48 overflow-y-auto rounded-md border border-slate-200">
@@ -158,7 +158,7 @@ export function PromoteModal({
                       Projekt
                     </th>
                     <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">
-                      Manad
+                      Månad
                     </th>
                     <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">
                       Timmar
@@ -192,7 +192,7 @@ export function PromoteModal({
                 className="mt-0.5 accent-amber-500"
               />
               <span className="text-sm text-slate-700">
-                Jag forstar att detta andrar verklig planering
+                Jag förstår att detta ändrar verklig planering
               </span>
             </label>
 
@@ -214,7 +214,7 @@ export function PromoteModal({
                 className="inline-flex items-center gap-1.5 rounded-md bg-amber-500 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-50"
               >
                 <Check className="h-4 w-4" />
-                {isPromoting ? 'Tillampar...' : 'Tillampa nu'}
+                {isPromoting ? 'Tillämpar...' : 'Tillämpa nu'}
               </button>
             </div>
           </>

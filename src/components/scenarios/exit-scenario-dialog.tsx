@@ -37,7 +37,7 @@ export function ExitScenarioDialog({
 
         <hr className="mb-4 border-slate-200" />
 
-        <p className="mb-6 text-sm text-slate-600">Du har osparade andringar.</p>
+        <p className="mb-6 text-sm text-slate-600">Du har osparade ändringar.</p>
 
         <div className="flex flex-col gap-2">
           <button
@@ -52,14 +52,14 @@ export function ExitScenarioDialog({
             onClick={onDiscardAndExit}
             className="w-full rounded-md border border-slate-300 px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"
           >
-            Kassera andringar
+            Kassera ändringar
           </button>
           <button
             type="button"
             onClick={onClose}
             className="w-full rounded-md px-4 py-2 text-sm text-slate-500 hover:bg-slate-50"
           >
-            Fortsatt redigera
+            Fortsätt redigera
           </button>
         </div>
       </div>

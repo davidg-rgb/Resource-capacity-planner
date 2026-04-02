@@ -24,7 +24,7 @@ export function ProjectCell(props: ProjectCellProps) {
         onClick={() => props.onAddProject?.()}
         className="text-on-surface-variant hover:text-primary w-full text-left italic"
       >
-        Lagg till projekt...
+        Lägg till projekt...
       </button>
     );
   }

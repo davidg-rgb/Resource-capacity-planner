@@ -64,12 +64,12 @@ export default function ScenarioEditorPage({ params }: { params: Promise<{ id: s
         confirmation: true,
       });
       setShowPromoteModal(false);
-      toast.success(`${result.promoted} andringar tillampade pa verklig planering.`, {
+      toast.success(`${result.promoted} ändringar tillämpade på verklig planering.`, {
         action: {
-          label: 'Angra',
+          label: 'Ångra',
           onClick: () => {
             // Undo would require a separate endpoint — for now just notify
-            toast.info('Angra-funktionen ar inte tillganglig annu.');
+            toast.info('Ångra-funktionen är inte tillgänglig ännu.');
           },
         },
         duration: 30_000,
@@ -104,8 +104,8 @@ export default function ScenarioEditorPage({ params }: { params: Promise<{ id: s
       id: a.id,
       personName: a.personFirstName
         ? `${a.personFirstName} ${a.personLastName}`
-        : (a.tempEntityId ?? 'Okand'),
-      projectName: a.projectName ?? a.tempProjectName ?? 'Okant projekt',
+        : (a.tempEntityId ?? 'Okänd'),
+      projectName: a.projectName ?? a.tempProjectName ?? 'Okänt projekt',
       month: a.month,
       hours: a.hours,
       isNew: a.isNew,
@@ -144,10 +144,10 @@ export default function ScenarioEditorPage({ params }: { params: Promise<{ id: s
               className="inline-flex items-center gap-1.5 rounded-md bg-amber-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Shield className="h-4 w-4" />
-              Tillampa pa verklig planering
+              Tillämpa på verklig planering
             </button>
             <span className="text-xs text-slate-500">
-              {promotableAllocations.filter((a) => !a.isPromoted).length} andringar att tillampa
+              {promotableAllocations.filter((a) => !a.isPromoted).length} ändringar att tillämpa
             </span>
           </div>
         )}
@@ -168,7 +168,7 @@ export default function ScenarioEditorPage({ params }: { params: Promise<{ id: s
                   <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">
                     Projekt
                   </th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Manad</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Månad</th>
                   <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">
                     Timmar
                   </th>
@@ -224,7 +224,7 @@ export default function ScenarioEditorPage({ params }: { params: Promise<{ id: s
                       <td className="px-3 py-2 text-center">
                         {isPromoted ? (
                           <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-medium text-emerald-700">
-                            Tillampad
+                            Tillämpad
                           </span>
                         ) : alloc.isNew ? (
                           <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-700">
@@ -232,7 +232,7 @@ export default function ScenarioEditorPage({ params }: { params: Promise<{ id: s
                           </span>
                         ) : alloc.isModified ? (
                           <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700">
-                            Andrad
+                            Ändrad
                           </span>
                         ) : alloc.isRemoved ? (
                           <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-medium text-red-700">

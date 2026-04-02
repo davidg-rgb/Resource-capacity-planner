@@ -56,11 +56,11 @@ export default function ScenarioComparePage({ params }: { params: Promise<{ id: 
         </Link>
 
         <h1 className="font-headline text-on-surface mb-1 text-xl font-semibold">
-          Jamfor: &ldquo;{scenario.name}&rdquo; vs verklighet
+          Jämför: &ldquo;{scenario.name}&rdquo; vs verklighet
         </h1>
         <p className="text-on-surface-variant mb-6 text-sm">
-          {from} till {to} — Verklig data ar skrivskyddad (vanster), scenario ar redigerbart
-          (hoger).
+          {from} till {to} — Verklig data är skrivskyddad (vänster), scenario är redigerbart
+          (höger).
         </p>
 
         <ComparisonView comparison={comparison} isLoading={comparisonLoading} />

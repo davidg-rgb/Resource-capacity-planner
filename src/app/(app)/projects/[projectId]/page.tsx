@@ -52,7 +52,7 @@ export default function ProjectDetailPage() {
               {data?.projectName ?? 'Projektbemanning'}
             </h1>
             <p className="text-on-surface-variant mt-2 max-w-2xl text-sm">
-              Allokerade personer och timmar per manad
+              Allokerade personer och timmar per månad
             </p>
           </div>
 

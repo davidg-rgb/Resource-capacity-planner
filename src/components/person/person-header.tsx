@@ -83,7 +83,7 @@ export function PersonHeader({
         disabled={!hasPrev || navigating}
         onClick={() => navigate('prev')}
         className="hover:bg-surface-container-low text-outline flex h-8 w-8 items-center justify-center rounded-sm p-1 transition-colors disabled:cursor-not-allowed disabled:opacity-30"
-        aria-label="Foregaende person"
+        aria-label="Föregående person"
       >
         <span className="material-symbols-outlined">chevron_left</span>
       </button>
@@ -108,11 +108,11 @@ export function PersonHeader({
         </div>
         <div className="text-right">
           <span className="text-outline block text-[10px] font-semibold tracking-widest uppercase">
-            Manadsmall
+            Månadsmål
           </span>
           <span className="font-headline text-primary text-xl font-bold">
             {targetHours}
-            <span className="text-outline ml-1 text-sm font-medium">tim/manad</span>
+            <span className="text-outline ml-1 text-sm font-medium">tim/månad</span>
           </span>
         </div>
       </div>
@@ -122,7 +122,7 @@ export function PersonHeader({
         disabled={!hasNext || navigating}
         onClick={() => navigate('next')}
         className="hover:bg-surface-container-low text-outline flex h-8 w-8 items-center justify-center rounded-sm p-1 transition-colors disabled:cursor-not-allowed disabled:opacity-30"
-        aria-label="Nasta person"
+        aria-label="Nästa person"
       >
         <span className="material-symbols-outlined">chevron_right</span>
       </button>

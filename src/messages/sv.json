@@ -72,10 +72,10 @@
     "kpiDashboard": "KPI-dashboarden"
   },
   "import": {
-    "readyToImport": "Redo att importera {count} bokningar",
-    "transactionNote": "Detta skapar eller uppdaterar bokningar i en enda transaktion.",
+    "readyToImport": "Redo att importera {count} bökningar",
+    "transactionNote": "Detta skapar eller uppdaterar bökningar i en enda transaktion.",
     "importButton": "Importera",
-    "importing": "Importerar bokningar...",
+    "importing": "Importerar bökningar...",
     "doNotClose": "Stäng inte denna sida.",
     "success": "Import genomförd",
     "rowsImported": "{count} rader importerade",
@@ -117,13 +117,13 @@
   "widgets": {
     "common": {
       "error": "Kunde inte ladda data",
-      "retry": "Forsok igen",
+      "retry": "Försök igen",
       "cancel": "Avbryt",
       "save": "Spara",
       "saving": "Sparar...",
       "loading": "Laddar...",
-      "noData": "Ingen data tillganglig",
-      "dismiss": "Avfarda",
+      "noData": "Ingen data tillgänglig",
+      "dismiss": "Avfärda",
       "apply": "Tillämpa",
       "showMore": "Visa fler",
       "showLess": "Visa färre",
@@ -153,135 +153,135 @@
     "capacityForecast": {
       "title": "Kapacitetsprognos",
       "error": "Kunde inte ladda kapacitetsprognos",
-      "empty": "Ingen prognosdata tillganglig for vald period"
+      "empty": "Ingen prognosdata tillgänglig för vald period"
     },
     "gauges": {
-      "title": "Avdelningshalsa",
+      "title": "Avdelningshälsa",
       "error": "Kunde inte ladda avdelningskapacitetsdata",
-      "empty": "Ingen avdelningsdata tillganglig"
+      "empty": "Ingen avdelningsdata tillgänglig"
     },
     "sparklines": {
-      "title": "Belaggningstrender",
-      "error": "Kunde inte ladda belaggningstrender",
-      "empty": "Ingen belaggningstrenddata tillganglig"
+      "title": "Beläggningstrender",
+      "error": "Kunde inte ladda beläggningstrender",
+      "empty": "Ingen beläggningstrenddata tillgänglig"
     },
     "kpiCards": {
       "error": "Kunde inte ladda KPI-data",
-      "empty": "Inga teammedlemmar hittades. Lagg till personer for att se kapacitetsmatetal.",
+      "empty": "Inga teammedlemmar hittades. Lägg till personer för att se kapacitetsmätetal.",
       "totalResources": "Totala resurser",
       "newBadge": "+4 Nya",
-      "avgUtilization": "Genomsnittlig belaggning",
+      "avgUtilization": "Genomsnittlig beläggning",
       "optimalRange": "Optimalt intervall",
-      "overloaded": "Overbelastade",
-      "highPriority": "Hog prioritet",
+      "overloaded": "Överbelastade",
+      "highPriority": "Hög prioritet",
       "unallocated": "Oallokerade",
-      "availableBench": "Tillganglig bank"
+      "availableBench": "Tillgänglig bank"
     },
     "allocationTrends": {
-      "selectProject": "Valj ett projekt for att visa allokeringstrender",
+      "selectProject": "Välj ett projekt för att visa allokeringstrender",
       "error": "Kunde inte ladda allokeringstrender",
-      "empty": "Ingen bemanningsdata for detta projekt i vald period"
+      "empty": "Ingen bemanningsdata för detta projekt i vald period"
     },
     "availabilityFinder": {
-      "error": "Kunde inte ladda tillganglighetsdata",
+      "error": "Kunde inte ladda tillgänglighetsdata",
       "discipline": "Disciplin",
       "department": "Avdelning",
-      "minAvailable": "Minst tillganglig",
+      "minAvailable": "Minst tillgänglig",
       "any": "Alla",
       "sortBy": "Sortera efter",
-      "mostAvailable": "Mest tillganglig",
-      "leastUtilized": "Lagst belaggning",
+      "mostAvailable": "Mest tillgänglig",
+      "leastUtilized": "Lägst beläggning",
       "name": "Namn",
       "foundPeople": "Hittade <bold>{count}</bold> personer",
-      "withMinHours": "med \u2265{hours}h tillgangligt",
-      "emptyState": "Ingen som matchar dina filter har tillganglighet i denna period. Prova att utoka datumintervallet eller ta bort disciplinfiltret.",
-      "totalAvailable": "Totalt tillgangligt:",
-      "acrossMonths": "over {count} månader",
+      "withMinHours": "med \u2265{hours}h tillgängligt",
+      "emptyState": "Ingen som matchar dina filter har tillgänglighet i denna period. Prova att utöka datumintervallet eller ta bort disciplinfiltret.",
+      "totalAvailable": "Totalt tillgängligt:",
+      "acrossMonths": "över {count} månader",
       "assign": "Tilldela",
       "hFree": "{hours}h ledigt"
     },
     "availabilityTimeline": {
-      "title": "Resurstillganglighet tidslinje",
+      "title": "Resurstillgänglighet tidslinje",
       "error": "Kunde inte ladda tidslinjedata",
-      "empty": "Ingen tidslinjedata tillganglig",
-      "showAvailableOnly": "Visa endast tillgangliga",
+      "empty": "Ingen tidslinjedata tillgänglig",
+      "showAvailableOnly": "Visa endast tillgängliga",
       "person": "Person",
       "allocated": "Allokerad",
-      "available": "Tillganglig",
-      "overloaded": "Overbelastad"
+      "available": "Tillgänglig",
+      "overloaded": "Överbelastad"
     },
     "benchReport": {
       "error": "Kunde inte ladda bankrapport",
-      "empty": "Ingen bankdata hittades for vald period.",
+      "empty": "Ingen bankdata hittades för vald period.",
       "benchHours": "Banktimmar",
       "equivalent": "Ekvivalent",
       "peopleBelowThreshold": "Personer under {threshold}%",
-      "stableVsPrevious": "Stabilt mot foregående period",
-      "changeVsPrevious": "{percent}% {direction} mot foregående period (var {hours}h)",
+      "stableVsPrevious": "Stabilt mot föregående period",
+      "changeVsPrevious": "{percent}% {direction} mot föregående period (var {hours}h)",
       "decrease": "minskning",
-      "increase": "okning",
+      "increase": "ökning",
       "byDepartment": "Per avdelning",
       "byDiscipline": "Per disciplin",
-      "topAvailable": "Personer med mest tillganglig kapacitet",
+      "topAvailable": "Personer med mest tillgänglig kapacitet",
       "showAll": "Visa alla ({count})",
-      "showLess": "Visa farre",
+      "showLess": "Visa färre",
       "utilLabel": "{percent}% bel",
       "freePerMonth": "{hours}h/mån ledigt"
     },
     "capacityDistribution": {
-      "title": "Kapacitetsfordelning",
-      "error": "Kunde inte ladda kapacitetsfordelning",
-      "empty": "Ingen fordelningsdata tillganglig for vald period",
+      "title": "Kapacitetsfördelning",
+      "error": "Kunde inte ladda kapacitetsfördelning",
+      "empty": "Ingen fördelningsdata tillgänglig för vald period",
       "project": "Projekt",
       "department": "Avdelning",
       "discipline": "Disciplin"
     },
     "departmentBar": {
-      "title": "Avdelningsbelaggning",
+      "title": "Avdelningsbeläggning",
       "error": "Kunde inte ladda avdelningsdata",
-      "empty": "Ingen avdelningsdata tillganglig"
+      "empty": "Ingen avdelningsdata tillgänglig"
     },
     "disciplineChart": {
-      "title": "Disciplinfordelning",
+      "title": "Disciplinfördelning",
       "error": "Kunde inte ladda disciplindata",
-      "empty": "Ingen disciplindata tillganglig"
+      "empty": "Ingen disciplindata tillgänglig"
     },
     "disciplineDemand": {
       "error": "Kunde inte ladda disciplinbehovsdata",
-      "empty": "Ingen disciplinbehovsdata hittades for vald period.",
-      "surplus": "Overskott",
+      "empty": "Ingen disciplinbehovsdata hittades för vald period.",
+      "surplus": "Överskott",
       "balanced": "Balanserad",
-      "tight": "Anstrangd",
+      "tight": "Ansträngd",
       "deficit": "Underskott",
       "hire": "Rekrytera",
       "sustainedDeficitTitle": "Ihållande underskott: 3+ månader i rad",
       "combinedPeakDeficit": "Kombinerat toppunderskott:",
       "fteHiringNeed": "= {fte} FTE rekryteringsbehov",
-      "sustainedDeficit": "{name}: ihållande underskott (3+ månader) — overvag rekrytering"
+      "sustainedDeficit": "{name}: ihållande underskott (3+ månader) — överväg rekrytering"
     },
     "disciplineDistribution": {
-      "selectProject": "Valj ett projekt for att visa disciplinfordelning",
-      "error": "Kunde inte ladda disciplinfordelning",
-      "empty": "Ingen bemanningsdata for detta projekt i vald period"
+      "selectProject": "Välj ett projekt för att visa disciplinfördelning",
+      "error": "Kunde inte ladda disciplinfördelning",
+      "empty": "Ingen bemanningsdata för detta projekt i vald period"
     },
     "periodComparison": {
-      "title": "Periodjamforelse",
-      "error": "Kunde inte ladda jamforelsedata",
+      "title": "Periodjämförelse",
+      "error": "Kunde inte ladda jämförelsedata",
       "monthVsMonth": "Månad mot månad",
       "quarterVsQuarter": "Kvartal mot kvartal",
       "keyMetrics": "Nyckeltal",
-      "departmentShifts": "Avdelningsforandringar",
-      "notableChanges": "Anmarkningsvarda forandringar"
+      "departmentShifts": "Avdelningsförändringar",
+      "notableChanges": "Anmärkningsvärda förändringar"
     },
     "programRollup": {
-      "title": "Programoversikt",
+      "title": "Programöversikt",
       "error": "Kunde inte ladda programdata",
       "allPrograms": "Alla program",
       "projects": "Projekt",
       "peakLoad": "Toppbelastning",
       "staffingCompleteness": "Bemanningsgrad",
-      "basedOnAllocation": "Baserat på allokering mot mål over alla projekt",
-      "disciplineCoverage": "Disciplintackning",
+      "basedOnAllocation": "Baserat på allokering mot mål över alla projekt",
+      "disciplineCoverage": "Disciplintäckning",
       "monthlyLoad": "Månadsbelastning",
       "peak": "Topp",
       "projectsInProgram": "Projekt i programmet",
@@ -295,30 +295,30 @@
       "error": "Kunde inte ladda konfliktdata",
       "show": "Visa:",
       "currentMonth": "Innevarande månad",
-      "next3Months": "Nasta 3 månader",
-      "peopleOverallocated": "{count} {count, plural, one {person} other {personer}} overallokerad over konkurrerande projekt",
-      "emptyState": "Inga resurskonflikter upptackta. Alla allokeringar ar inom måltimmar.",
-      "overBy": "Over med: {hours}h",
-      "suggested": "Forslag: Minska {project} med {reduceBy}h (till {newHours}h)",
-      "applySuggestion": "Tillämpa forslag",
-      "redistributeManually": "Omfordela manuellt",
+      "next3Months": "Nästa 3 månader",
+      "peopleOverallocated": "{count} {count, plural, one {person} other {personer}} överallokerad över konkurrerande projekt",
+      "emptyState": "Inga resurskonflikter upptäckta. Alla allokeringar är inom måltimmar.",
+      "overBy": "Över med: {hours}h",
+      "suggested": "Förslag: Minska {project} med {reduceBy}h (till {newHours}h)",
+      "applySuggestion": "Tillämpa förslag",
+      "redistributeManually": "Omfördela manuellt",
       "showMoreConflicts": "Visa {count} fler {count, plural, one {konflikt} other {konflikter}}",
-      "hideAcknowledged": "Dolj",
+      "hideAcknowledged": "Dölj",
       "showAcknowledged": "Visa",
-      "acknowledgedConflicts": "{count} bekraftade {count, plural, one {konflikt} other {konflikter}}",
-      "resolvedThisMonth": "{resolved} konflikter losta denna månad, {pending} ventande",
-      "redistributeTitle": "Omfordela timmar: {name}",
+      "acknowledgedConflicts": "{count} bekräftade {count, plural, one {konflikt} other {konflikter}}",
+      "resolvedThisMonth": "{resolved} konflikter lösta denna månad, {pending} väntande",
+      "redistributeTitle": "Omfördela timmar: {name}",
       "targetLabel": "Mål: {hours}h",
-      "totalExceedsTarget": "Totalt overskrider mål. Minska timmar for att spara.",
+      "totalExceedsTarget": "Totalt överskrider mål. Minska timmar för att spara.",
       "failedPrefix": "Misslyckades: {message}",
       "saveAllocation": "Spara allokering",
       "targetHours": "{hours}h mål"
     },
     "quickAssign": {
       "title": "Tilldela {name}",
-      "subtitle": "Skapa allokering for ett projekt",
+      "subtitle": "Skapa allokering för ett projekt",
       "project": "Projekt",
-      "selectProject": "Valj projekt...",
+      "selectProject": "Välj projekt...",
       "from": "Från",
       "to": "Till",
       "hoursPerMonth": "Timmar per månad",
@@ -329,26 +329,26 @@
       "done": "Klar",
       "edit": "Redigera",
       "removeWidget": "Ta bort widget",
-      "sizeLabel": "Storlek: {size} (klicka for att andra)",
+      "sizeLabel": "Storlek: {size} (klicka för att ändra)",
       "widgetOptions": "Widgetalternativ",
       "exportAsPdf": "Exportera som PDF",
       "added": "Tillagd",
-      "availableWidgets": "Tillgangliga widgets",
-      "searchWidgets": "Sok widgets...",
+      "availableWidgets": "Tillgängliga widgets",
+      "searchWidgets": "Sök widgets...",
       "noMatch": "Inga widgets matchar \"{query}\"",
-      "addWidget": "Lagg till widget",
+      "addWidget": "Lägg till widget",
       "exportPdf": "Exportera PDF",
-      "categoryHealthCapacity": "Halsa & Kapacitet",
+      "categoryHealthCapacity": "Hälsa & Kapacitet",
       "categoryTimelinesPlanning": "Tidslinjer & Planering",
-      "categoryBreakdowns": "Fordelningar",
-      "categoryAlertsActions": "Notiser & Atgarder"
+      "categoryBreakdowns": "Fördelningar",
+      "categoryAlertsActions": "Notiser & Åtgärder"
     },
     "layoutEngine": {
       "loadError": "Kunde inte ladda dashboard-layout"
     },
     "gaugesChart": {
       "people": "personer",
-      "empty": "Ingen avdelningsdata tillganglig"
+      "empty": "Ingen avdelningsdata tillgänglig"
     },
     "sparklinesChart": {
       "view": "Visa:",
@@ -356,12 +356,12 @@
       "peopleTop10": "Personer (topp 10)",
       "department": "Avdelning",
       "person": "Person",
-      "sixMonthTrend": "6-manaders trend",
+      "sixMonthTrend": "6-månaders trend",
       "current": "Nuvarande",
       "direction": "Riktning",
-      "empty": "Ingen belaggningstrenddata tillganglig",
-      "legendOverloaded": "for narvarande overbelastad (>100%)",
-      "legendTrendPeriod": "Trendperiod: senaste 6 manaderna mot aktuell manad"
+      "empty": "Ingen beläggningstrenddata tillgänglig",
+      "legendOverloaded": "för närvarande överbelastad (>100%)",
+      "legendTrendPeriod": "Trendperiod: senaste 6 månaderna mot aktuell månad"
     }
   },
   "pdfExport": {

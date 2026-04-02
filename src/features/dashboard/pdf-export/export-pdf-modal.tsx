@@ -216,7 +216,7 @@ export function ExportPdfModal({
           {/* Select all / clear all */}
           <div className="mb-3 flex items-center justify-between">
             <span className="text-muted-foreground text-sm">
-              Valj innehall ({selectedCount}/{totalCount})
+              Välj innehåll ({selectedCount}/{totalCount})
             </span>
             <div className="flex gap-3 text-xs">
               <button type="button" onClick={selectAll} className="text-primary hover:underline">
@@ -283,7 +283,7 @@ export function ExportPdfModal({
                   onChange={() => setOrientation('portrait')}
                   className="accent-primary"
                 />
-                Staende
+                Stående
               </label>
             </div>
           </div>
@@ -296,7 +296,7 @@ export function ExportPdfModal({
               onChange={(e) => setIncludeCoverPage(e.target.checked)}
               className="accent-primary h-4 w-4 rounded"
             />
-            Inkludera forsattsblad
+            Inkludera försättsblad
           </label>
         </div>
 

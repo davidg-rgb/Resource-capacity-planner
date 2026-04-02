@@ -106,7 +106,7 @@ export function ComparisonView({ comparison, isLoading }: ComparisonViewProps) {
   }
 
   if (!comparison || comparison.rows.length === 0) {
-    return <p className="py-8 text-center text-sm text-slate-500">Inga andringar att visa.</p>;
+    return <p className="py-8 text-center text-sm text-slate-500">Inga ändringar att visa.</p>;
   }
 
   const { summary } = comparison;
@@ -142,11 +142,11 @@ export function ComparisonView({ comparison, isLoading }: ComparisonViewProps) {
               <th className="px-3 py-1" />
               <th className="px-3 py-1" />
               <th className="border-l border-slate-200 px-3 py-1 text-right">Timmar</th>
-              <th className="px-3 py-1 text-right">Belaggn.</th>
+              <th className="px-3 py-1 text-right">Beläggn.</th>
               <th className="border-l border-amber-200 bg-amber-50/30 px-3 py-1 text-right">
                 Timmar
               </th>
-              <th className="bg-amber-50/30 px-3 py-1 text-right">Belaggn.</th>
+              <th className="bg-amber-50/30 px-3 py-1 text-right">Beläggn.</th>
               <th className="border-l border-slate-200 px-3 py-1 text-right" />
             </tr>
           </thead>

@@ -27,7 +27,7 @@ export default function ScenariosListPage() {
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Ar du saker pa att du vill ta bort detta scenario?')) {
+    if (window.confirm('Är du säker på att du vill ta bort detta scenario?')) {
       deleteMutation.mutate(id);
     }
   };
@@ -43,7 +43,7 @@ export default function ScenariosListPage() {
             Scenarier
           </h1>
           <p className="text-on-surface-variant font-body mt-1 text-sm">
-            Skapa och utforska hypotetiska personalplaneringar utan att paverka verklig data.
+            Skapa och utforska hypotetiska personalplaneringar utan att påverka verklig data.
           </p>
         </div>
         <button
@@ -70,9 +70,9 @@ export default function ScenariosListPage() {
       {!isLoading && scenarios && scenarios.length === 0 && (
         <div className="border-outline-variant/30 flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-16">
           <FlaskConical className="text-outline-variant mb-3 h-12 w-12" />
-          <p className="text-on-surface-variant mb-1 text-sm font-medium">Inga scenarier annu</p>
+          <p className="text-on-surface-variant mb-1 text-sm font-medium">Inga scenarier ännu</p>
           <p className="text-outline mb-4 text-xs">
-            Skapa ditt forsta scenario for att utforska alternativa planeringar.
+            Skapa ditt första scenario för att utforska alternativa planeringar.
           </p>
           <button
             type="button"

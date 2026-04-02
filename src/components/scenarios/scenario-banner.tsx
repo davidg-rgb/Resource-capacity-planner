@@ -49,7 +49,7 @@ export function ScenarioBanner({
             <p className="text-sm font-semibold text-amber-900">
               SCENARIO: &ldquo;{scenario.name}&rdquo;
             </p>
-            <p className="text-xs text-amber-700">Andringar har paverkar INTE verklig data.</p>
+            <p className="text-xs text-amber-700">Ändringar här påverkar INTE verklig data.</p>
           </div>
         </div>
 
@@ -60,7 +60,7 @@ export function ScenarioBanner({
             className="inline-flex items-center gap-1.5 rounded-md bg-amber-200/60 px-3 py-1.5 text-xs font-medium text-amber-900 transition-colors hover:bg-amber-200"
           >
             <GitCompare className="h-3.5 w-3.5" />
-            Jamfor med verklighet
+            Jämför med verklighet
           </Link>
           {onSave && (
             <button

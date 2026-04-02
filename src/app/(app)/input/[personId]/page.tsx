@@ -86,14 +86,14 @@ export default function PersonInputPage({ params }: { params: Promise<{ personId
 
       {showProjectSelector && projects && (
         <div className="border-outline-variant bg-surface rounded-sm border p-4">
-          <p className="text-on-surface mb-2 text-sm font-medium">Valj projekt att lagga till:</p>
+          <p className="text-on-surface mb-2 text-sm font-medium">Välj projekt att lägga till:</p>
           <select
             className="border-outline-variant bg-surface text-on-surface w-full rounded border p-2 text-sm"
             onChange={(e) => handleProjectSelected(e.target.value)}
             defaultValue=""
           >
             <option value="" disabled>
-              Valj projekt...
+              Välj projekt...
             </option>
             {projects
               .filter(

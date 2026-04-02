@@ -33,7 +33,7 @@ export function PersonAnalytics() {
       {/* Card 2: Project Distribution (5/12 cols) */}
       <div className="bg-surface-container-lowest border-outline-variant/10 rounded-sm border p-6 shadow-sm md:col-span-5">
         <h4 className="text-outline mb-4 text-xs font-bold tracking-widest uppercase">
-          Projektfordelning
+          Projektfördelning
         </h4>
         <div className="space-y-3">
           <div className="flex items-center gap-4">
@@ -68,7 +68,7 @@ export function PersonAnalytics() {
             Kapacitetsinsikt
           </h4>
           <p className="mt-2 text-sm leading-relaxed font-medium">
-            Maj 2026 overskrider malet med 30h pa grund av overlapp i Atlas &amp; Nova.
+            Maj 2026 överskrider målet med 30h på grund av överlapp i Atlas &amp; Nova.
           </p>
         </div>
         <button

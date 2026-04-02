@@ -159,5 +159,5 @@ export function computePinnedRows(
 
 /** Create the "Add project..." placeholder row displayed at the bottom of data rows. */
 export function createAddProjectRow(): GridRow {
-  return { projectId: '__add__', projectName: 'Lagg till projekt...', isAddRow: true };
+  return { projectId: '__add__', projectName: 'Lägg till projekt...', isAddRow: true };
 }

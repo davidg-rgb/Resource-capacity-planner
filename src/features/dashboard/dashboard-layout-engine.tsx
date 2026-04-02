@@ -212,7 +212,7 @@ function DashboardGridInner({ dashboardId = 'manager' }: { dashboardId?: string 
             onClick={() => setIsDrawerOpen((o) => !o)}
             className="hover:bg-accent rounded-md border px-3 py-1.5 text-sm font-medium transition-colors"
           >
-            Lagg till widget
+            Lägg till widget
           </button>
         )}
         <EditModeToggle isEditMode={isEditMode} onToggle={() => setIsEditMode((v) => !v)} />

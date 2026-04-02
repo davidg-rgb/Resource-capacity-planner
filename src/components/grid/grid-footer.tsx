@@ -12,7 +12,7 @@ export function GridFooter() {
         <div className="flex items-center gap-2">
           <span className="bg-on-secondary-container h-2 w-2 rounded-full" />
           <span className="text-outline text-[11px] font-medium tracking-wider uppercase">
-            Pa spar
+            På spår
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -24,7 +24,7 @@ export function GridFooter() {
         <div className="flex items-center gap-2">
           <span className="bg-error h-2 w-2 rounded-full" />
           <span className="text-outline text-[11px] font-medium tracking-wider uppercase">
-            Overbelagd
+            Överbelagd
           </span>
         </div>
       </div>
@@ -35,7 +35,7 @@ export function GridFooter() {
           type="button"
           className="text-primary hover:bg-surface-container-low rounded-sm px-5 py-2 text-xs font-bold tracking-widest uppercase transition-colors"
         >
-          Angra andringar
+          Ångra ändringar
         </button>
         <button
           type="button"

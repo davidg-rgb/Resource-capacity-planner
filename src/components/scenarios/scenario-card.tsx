@@ -95,7 +95,7 @@ export function ScenarioCard({ scenario, onDelete }: ScenarioCardProps) {
       <div className="flex items-center gap-4 text-[11px] text-slate-500">
         <span className="flex items-center gap-1">
           <FileEdit className="h-3 w-3" />
-          {scenario.modifiedCount} andringar
+          {scenario.modifiedCount} ändringar
         </span>
         <span className="flex items-center gap-1">
           <Clock className="h-3 w-3" />

@@ -70,7 +70,7 @@ export function CreateScenarioModal({
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Lagg till Scania Fas 2"
+              placeholder="Lägg till Scania Fas 2"
               className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-amber-500 focus:ring-1 focus:ring-amber-500 focus:outline-none"
               maxLength={200}
               autoFocus
@@ -78,7 +78,7 @@ export function CreateScenarioModal({
           </div>
 
           <div className="mb-4">
-            <p className="mb-2 text-sm font-medium text-slate-700">Baserat pa:</p>
+            <p className="mb-2 text-sm font-medium text-slate-700">Baserat på:</p>
             <label className="mb-2 flex items-center gap-2 text-sm text-slate-600">
               <input
                 type="radio"
@@ -107,7 +107,7 @@ export function CreateScenarioModal({
                 onChange={(e) => setBaseScenarioId(e.target.value)}
                 className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
               >
-                <option value="">Valj scenario...</option>
+                <option value="">Välj scenario...</option>
                 {existingScenarios.map((s) => (
                   <option key={s.id} value={s.id}>
                     {s.name}
@@ -118,8 +118,8 @@ export function CreateScenarioModal({
           </div>
 
           <p className="mb-4 text-xs text-slate-500">
-            Andringar du gor har paverkar inte verklig data. Du kan jamfora, spara, eller kassera
-            nar som helst.
+            Ändringar du gör här påverkar inte verklig data. Du kan jämföra, spara, eller kassera
+            när som helst.
           </p>
 
           <div className="flex justify-end gap-3">

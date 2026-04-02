@@ -17,7 +17,7 @@ export default function InputPage() {
         Personplanering
       </h1>
       <p className="text-on-surface-variant text-sm">
-        Valj en person for att visa och redigera allokeringen.
+        Välj en person för att visa och redigera allokeringen.
       </p>
       <ul className="space-y-1">
         {people?.map((p) => (
