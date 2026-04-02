@@ -38,21 +38,32 @@ function formatMonth(m: string): string {
 // Mini utilization bar
 // ---------------------------------------------------------------------------
 
-function MiniBar({ allocated, target }: { allocated: number; target: number }) {
-  const t = useTranslations('widgets.availabilityFinder');
+function MiniBar({
+  allocated,
+  target,
+  month,
+}: {
+  allocated: number;
+  target: number;
+  month: string;
+}) {
   const pct = target > 0 ? Math.min((allocated / target) * 100, 100) : 0;
   const available = Math.max(target - allocated, 0);
+  const isFullyBooked = available === 0;
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="bg-surface-container h-3 w-full max-w-[140px] overflow-hidden rounded-full">
+    <div className="flex flex-col items-center gap-1">
+      <span className="text-on-surface-variant text-[10px] uppercase">{month}</span>
+      <div className="bg-surface-container relative h-8 w-full min-w-[60px] overflow-hidden rounded">
         <div
-          className="bg-primary h-full rounded-full transition-all"
+          className={`h-full rounded transition-all ${isFullyBooked ? 'bg-outline-variant' : 'bg-primary'}`}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className="text-on-surface-variant w-16 text-right text-xs tabular-nums">
-        {t('hFree', { hours: available })}
+      <span
+        className={`text-xs font-medium tabular-nums ${isFullyBooked ? 'text-outline-variant' : 'text-on-surface'}`}
+      >
+        {available}h
       </span>
     </div>
   );
@@ -224,67 +235,70 @@ const AvailabilityFinderContent = React.memo(function AvailabilityFinderContent(
 
       {/* Results list */}
       {data && data.results.length > 0 && (
-        <div className="divide-outline-variant divide-y">
+        <div className="space-y-2">
           {data.results.map((person, index) => (
-            <div key={person.personId} className="py-3 first:pt-0 last:pb-0">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  {/* Person header */}
-                  <div className="flex items-center gap-2">
-                    <span className="text-on-surface-variant text-xs font-medium">
-                      {index + 1}.
-                    </span>
+            <div
+              key={person.personId}
+              className="border-outline-variant/20 bg-surface-container-lowest hover:bg-surface-container-low rounded-lg border p-4 transition-colors"
+            >
+              {/* Top row: person info + total + assign */}
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="text-outline text-xs font-medium tabular-nums">{index + 1}</span>
+                  <div>
                     <button
                       onClick={() => handlePersonClick(person.personId)}
-                      className="text-primary text-sm font-medium hover:underline"
+                      className="text-primary text-sm font-semibold hover:underline"
                     >
                       {person.firstName} {person.lastName}
                     </button>
-                    <span className="text-on-surface-variant text-xs">
+                    <span className="text-on-surface-variant ml-2 text-xs">
                       {person.disciplineAbbreviation} · {person.departmentName}
                     </span>
                   </div>
-
-                  {/* Per-month bars */}
-                  <div className="mt-2 space-y-1">
-                    {months.map((m) => {
-                      const monthData = person.months[m];
-                      if (!monthData) return null;
-                      return (
-                        <div key={m} className="flex items-center gap-2">
-                          <span className="text-on-surface-variant w-10 text-xs">
-                            {formatMonth(m)}:
-                          </span>
-                          <MiniBar
-                            allocated={monthData.allocated}
-                            target={person.targetHoursPerMonth}
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Total available */}
-                  <p className="text-on-surface-variant mt-1 text-xs">
-                    {t('totalAvailable')}{' '}
-                    <span className="text-on-surface font-medium">{person.totalAvailable}h</span>{' '}
-                    {t('acrossMonths', { count: months.length })}
-                  </p>
                 </div>
 
-                {/* Assign button */}
-                <button
-                  onClick={() =>
-                    handleAssign({
-                      personId: person.personId,
-                      firstName: person.firstName,
-                      lastName: person.lastName,
-                    })
-                  }
-                  className="bg-primary text-on-primary shrink-0 rounded-md px-3 py-1.5 text-xs font-medium hover:opacity-90"
-                >
-                  {t('assign')}
-                </button>
+                <div className="flex shrink-0 items-center gap-4">
+                  <div className="text-right">
+                    <span className="text-on-surface text-lg font-bold tabular-nums">
+                      {person.totalAvailable}h
+                    </span>
+                    <span className="text-on-surface-variant ml-1 text-xs">
+                      {t('acrossMonths', { count: months.length })}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() =>
+                      handleAssign({
+                        personId: person.personId,
+                        firstName: person.firstName,
+                        lastName: person.lastName,
+                      })
+                    }
+                    className="bg-primary text-on-primary rounded-md px-4 py-2 text-xs font-medium hover:opacity-90"
+                  >
+                    {t('assign')}
+                  </button>
+                </div>
+              </div>
+
+              {/* Bottom row: month bars spread horizontally */}
+              <div
+                className="mt-3 grid gap-2"
+                style={{ gridTemplateColumns: `repeat(${months.length}, 1fr)` }}
+              >
+                {months.map((m) => {
+                  const monthData = person.months[m];
+                  if (!monthData) return null;
+                  return (
+                    <MiniBar
+                      key={m}
+                      month={formatMonth(m)}
+                      allocated={monthData.allocated}
+                      target={person.targetHoursPerMonth}
+                    />
+                  );
+                })}
               </div>
             </div>
           ))}
