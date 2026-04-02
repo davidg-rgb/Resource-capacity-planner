@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { NextIntlClientProvider } from 'next-intl';
 import { Toaster } from 'sonner';
 
 import { AppShell } from '@/components/layout/app-shell';
@@ -25,17 +26,19 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <QueryProvider>
-      <FlagProvider flags={flags}>
-        <PersonCardProvider>
-          <ImpersonationBanner />
-          <AnnouncementBanner />
-          <FlagGuard>
-            <AppShell>{children}</AppShell>
-          </FlagGuard>
-          <Toaster position="top-right" richColors closeButton />
-        </PersonCardProvider>
-      </FlagProvider>
-    </QueryProvider>
+    <NextIntlClientProvider>
+      <QueryProvider>
+        <FlagProvider flags={flags}>
+          <PersonCardProvider>
+            <ImpersonationBanner />
+            <AnnouncementBanner />
+            <FlagGuard>
+              <AppShell>{children}</AppShell>
+            </FlagGuard>
+            <Toaster position="top-right" richColors closeButton />
+          </PersonCardProvider>
+        </FlagProvider>
+      </QueryProvider>
+    </NextIntlClientProvider>
   );
 }
