@@ -63,7 +63,7 @@
 - [x] **Phase 34: Foundations — Personas, i18n catalog, historic-edit helper** — Role switcher context, empty SV/EN key catalog, server-now month helper
  (completed 2026-04-07)
 - [x] **Phase 35: Foundations — Universal change_log infrastructure** — `change_log` table + `recordChange` + eslint rule + codegen manifest + runtime invariant test (completed 2026-04-07)
-- [ ] **Phase 36: Data model — v5.0 schema migrations** — Four new tables and the only existing-table mutation (`projects.lead_pm_person_id`)
+- [x] **Phase 36: Data model — v5.0 schema migrations** — Four new tables and the only existing-table mutation (`projects.lead_pm_person_id`) (completed 2026-04-07)
 - [ ] **Phase 37: Actuals layer — services, distribution, plan-vs-actual cell** — Day-grain actuals with largest-remainder distribution and the reusable comparison cell
 - [ ] **Phase 38: Excel import pipeline** — SheetJS parsers, two-stage parse→preview→commit, idempotency, rollback, supersession, template
 - [ ] **Phase 39: Proposal / approval workflow** — Allocation proposals state machine, routing, approve/reject/resubmit lifecycle
@@ -246,7 +246,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 33. Foundations — ISO calendar | v5.0 | 1/1 | Complete    | 2026-04-07 |
 | 34. Foundations — Personas + i18n + helper | v5.0 | 1/1 | Complete    | 2026-04-07 |
 | 35. Foundations — change_log infrastructure | v5.0 | 1/1 | Complete    | 2026-04-07 |
-| 36. v5.0 schema migrations | v5.0 | 0/1 | Not started | - |
+| 36. v5.0 schema migrations | v5.0 | 1/1 | Complete   | 2026-04-07 |
 | 37. Actuals layer | v5.0 | 0/0 | Not started | - |
 | 38. Excel import pipeline | v5.0 | 0/0 | Not started | - |
 | 39. Proposal / approval workflow | v5.0 | 0/0 | Not started | - |

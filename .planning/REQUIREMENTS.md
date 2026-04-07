@@ -21,7 +21,7 @@ Architecture frozen — each requirement traces to architecture sections and the
 
 ### Actuals Layer (ACT)
 
-- [ ] **ACT-01**: `actual_entries` table — columns `(id, organization_id, person_id, project_id, date, hours numeric(5,2), source enum('import'|'manual'), import_batch_id nullable, created_at, updated_at)`, unique index on `(organization_id, person_id, project_id, date)`
+- [x] **ACT-01**: `actual_entries` table — columns `(id, organization_id, person_id, project_id, date, hours numeric(5,2), source enum('import'|'manual'), import_batch_id nullable, created_at, updated_at)`, unique index on `(organization_id, person_id, project_id, date)`
 - [ ] **ACT-02**: `actuals.service.upsertActuals(input, { grain: 'day'|'week'|'month' })` — distributes week/month input across working days via largest-remainder algorithm (ADR-010), stores daily rows, writes change_log
 - [ ] **ACT-03**: Plan-vs-actual cell component renders planned, actual, and delta with color coding (green under, red over, neutral on plan); reused in PM timeline, Line Mgr group view, Staff schedule, R&D portfolio
 - [ ] **ACT-04**: Drill-down drawer shows daily plan vs actual breakdown for a person-project-period, callable from any timeline cell
@@ -29,7 +29,7 @@ Architecture frozen — each requirement traces to architecture sections and the
 
 ### Excel Import Pipeline (IMP)
 
-- [ ] **IMP-01**: `import_batches` table — `(id, organization_id, uploaded_by, filename, row_count, state enum('parsing'|'preview'|'committed'|'rolled_back'|'superseded'), override_manual bool, reversal_payload jsonb, created_at, committed_at, rolled_back_at)`
+- [x] **IMP-01**: `import_batches` table — `(id, organization_id, uploaded_by, filename, row_count, state enum('parsing'|'preview'|'committed'|'rolled_back'|'superseded'), override_manual bool, reversal_payload jsonb, created_at, committed_at, rolled_back_at)`
 - [ ] **IMP-02**: SheetJS-based parser accepts two layouts (row-per-entry canonical: `person_name, project_name, date, hours`; pivoted: dates across / projects down); US `WEEKNUM()` headers raise ValidationError code `ERR_US_WEEK_HEADERS`
 - [ ] **IMP-03**: Two-stage import flow — (a) parse → preview with row diff counts (new / updated / warnings), (b) explicit commit writes actuals + change_log
 - [ ] **IMP-04**: Idempotent re-import on unique key `(org, person, project, date)`; override checkbox "Skriv över manuella ändringar" unchecked by default; manual edits preserved unless override is checked
@@ -39,8 +39,8 @@ Architecture frozen — each requirement traces to architecture sections and the
 
 ### Proposal / Approval Workflow (PROP)
 
-- [ ] **PROP-01**: `allocation_proposals` table — `(id, organization_id, proposer_id, target_person_id, target_project_id, target_department_id, period_start, period_end, proposed_hours numeric(5,2), note, state enum('proposed'|'approved'|'rejected'|'withdrawn'|'superseded'), rejection_reason, decided_by, decided_at, created_at, updated_at)`
-- [ ] **PROP-02**: `projects.lead_pm_person_id` column added (only v4.0 schema mutation); determines which PM owns a project's planning
+- [x] **PROP-01**: `allocation_proposals` table — `(id, organization_id, proposer_id, target_person_id, target_project_id, target_department_id, period_start, period_end, proposed_hours numeric(5,2), note, state enum('proposed'|'approved'|'rejected'|'withdrawn'|'superseded'), rejection_reason, decided_by, decided_at, created_at, updated_at)`
+- [x] **PROP-02**: `projects.lead_pm_person_id` column added (only v4.0 schema mutation); determines which PM owns a project's planning
 - [ ] **PROP-03**: PM inline cell edit on an out-of-department person triggers proposal mode (dashed border, Pending badge) instead of auto-save; explicit "Submit wish" button required (ADR-008b)
 - [ ] **PROP-04**: Line Manager approval queue lists pending proposals for their department with impact preview ("Sara's June utilization 40% → 90%") and Approve / Reject actions; rejection requires a reason
 - [ ] **PROP-05**: Approved proposals write through to `allocations`, mark proposal `approved`, record change_log; rejected proposals persist with reason and can be edited + resubmitted by proposer
