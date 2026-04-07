@@ -59,7 +59,7 @@
 
 ### v5.0 Plan vs Actual + Approval Workflow
 
-- [ ] **Phase 33: Foundations — ISO calendar + Swedish holidays** — Centralized ISO 8601 / 53-week math and Swedish holiday helpers
+- [x] **Phase 33: Foundations — ISO calendar + Swedish holidays** — Centralized ISO 8601 / 53-week math and Swedish holiday helpers (completed 2026-04-07)
 - [ ] **Phase 34: Foundations — Personas, i18n catalog, historic-edit helper** — Role switcher context, empty SV/EN key catalog, server-now month helper
 - [ ] **Phase 35: Foundations — Universal change_log infrastructure** — `change_log` table + `recordChange` + eslint rule + codegen manifest + runtime invariant test
 - [ ] **Phase 36: Data model — v5.0 schema migrations** — Four new tables and the only existing-table mutation (`projects.lead_pm_person_id`)
@@ -240,7 +240,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 18-21 | v3.0 | 4/4 | Complete | 2026-03-30 |
 | 22 | v3.0 | 0/? | Deferred (stretch) | - |
 | 23-32 | v4.0 | -/- | Complete | 2026-04-01 |
-| 33. Foundations — ISO calendar | v5.0 | 0/0 | Not started | - |
+| 33. Foundations — ISO calendar | v5.0 | 1/1 | Complete   | 2026-04-07 |
 | 34. Foundations — Personas + i18n + helper | v5.0 | 0/0 | Not started | - |
 | 35. Foundations — change_log infrastructure | v5.0 | 0/0 | Not started | - |
 | 36. v5.0 schema migrations | v5.0 | 0/0 | Not started | - |
