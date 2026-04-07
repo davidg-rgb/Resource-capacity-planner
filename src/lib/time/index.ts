@@ -18,6 +18,7 @@ export {
   isISO53WeekYear,
   workingDaysInRange,
   countWorkingDays,
+  isHistoricPeriod,
 } from './iso-calendar';
 
 export { isSwedishHoliday, getSwedishHolidays } from './swedish-holidays';

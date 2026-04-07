@@ -18,6 +18,8 @@
  * Do not conflate the two.
  */
 
+import { ValidationError } from '@/lib/errors';
+
 import { isSwedishHoliday } from './swedish-holidays';
 
 const MS_PER_DAY = 86400000;
@@ -88,4 +90,29 @@ export function workingDaysInRange(start: Date, end: Date): Date[] {
 /** Count of working days in the inclusive range. */
 export function countWorkingDays(start: Date, end: Date): number {
   return workingDaysInRange(start, end).length;
+}
+
+const MONTH_KEY_RE = /^\d{4}-(0[1-9]|1[0-2])$/;
+
+/**
+ * Returns true iff `monthKey` is strictly before `nowMonthKey`.
+ *
+ * Both arguments MUST be `YYYY-MM` strings (validated). Lexical compare is
+ * correct because YYYY-MM is fixed-width and zero-padded.
+ *
+ * The current month is NOT historic — only months strictly before the clock
+ * month. Per ARCHITECTURE §6.3, `nowMonthKey` MUST come from
+ * `getServerNowMonthKey(tx)`, never from Node `new Date()` (avoids midnight
+ * CET drift between Node and the database clock).
+ *
+ * @throws ValidationError(code='INVALID_DATE') on malformed inputs.
+ */
+export function isHistoricPeriod(monthKey: string, nowMonthKey: string): boolean {
+  if (!MONTH_KEY_RE.test(monthKey)) {
+    throw new ValidationError(`Invalid monthKey: ${monthKey}`, 'INVALID_DATE');
+  }
+  if (!MONTH_KEY_RE.test(nowMonthKey)) {
+    throw new ValidationError(`Invalid nowMonthKey: ${nowMonthKey}`, 'INVALID_DATE');
+  }
+  return monthKey < nowMonthKey;
 }

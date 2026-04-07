@@ -6,7 +6,9 @@ import {
   isISO53WeekYear,
   workingDaysInRange,
   countWorkingDays,
+  isHistoricPeriod,
 } from '../iso-calendar';
+import { ValidationError } from '@/lib/errors';
 
 const utc = (y: number, m: number, d: number) => new Date(Date.UTC(y, m, d));
 
@@ -44,6 +46,30 @@ describe('iso-calendar', () => {
     const dayStrs = days.map((d) => d.toISOString().slice(0, 10));
     expect(dayStrs).not.toContain('2026-04-03');
     expect(dayStrs).not.toContain('2026-04-06');
+  });
+
+  it('TC-PS-005: isHistoricPeriod returns true when monthKey < nowMonthKey', () => {
+    expect(isHistoricPeriod('2026-03', '2026-04')).toBe(true);
+    expect(isHistoricPeriod('2025-12', '2026-01')).toBe(true);
+    // Current month is NOT historic
+    expect(isHistoricPeriod('2026-04', '2026-04')).toBe(false);
+    // Future month is NOT historic
+    expect(isHistoricPeriod('2026-05', '2026-04')).toBe(false);
+  });
+
+  it('TC-PS-006: isHistoricPeriod throws ValidationError INVALID_DATE for malformed inputs', () => {
+    const bad = ['2026-3', '2026/03', '26-03', '', 'not-a-date', '2026-13', '2026-00'];
+    for (const v of bad) {
+      let err: unknown;
+      try {
+        isHistoricPeriod(v, '2026-04');
+      } catch (e) {
+        err = e;
+      }
+      expect(err, `expected throw on monthKey="${v}"`).toBeInstanceOf(ValidationError);
+      expect((err as ValidationError).code).toBe('INVALID_DATE');
+    }
+    expect(() => isHistoricPeriod('2026-03', 'bogus')).toThrow(ValidationError);
   });
 
   it('countWorkingDays edge cases: same-day Tuesday=1, Saturday=0, Good Friday=0', () => {
