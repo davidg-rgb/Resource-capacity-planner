@@ -18,9 +18,23 @@ export class AppError extends Error {
   }
 }
 
+export const ERR_HOLIDAY_YEAR_OUT_OF_RANGE = 'ERR_HOLIDAY_YEAR_OUT_OF_RANGE';
+
 export class ValidationError extends AppError {
-  constructor(message: string, details?: { fields: Array<{ field: string; message: string }> }) {
-    super(message, 'ERR_VALIDATION', 400, details as Record<string, unknown>);
+  constructor(
+    message: string,
+    detailsOrCode?: { fields: Array<{ field: string; message: string }> } | string,
+    maybeDetails?: Record<string, unknown>,
+  ) {
+    // Two call shapes supported:
+    //   new ValidationError(message, { fields: [...] })             — legacy
+    //   new ValidationError(message, 'ERR_CUSTOM_CODE', details?)   — custom error code
+    const isCodeForm = typeof detailsOrCode === 'string';
+    const code = isCodeForm ? (detailsOrCode as string) : 'ERR_VALIDATION';
+    const details = isCodeForm
+      ? maybeDetails
+      : (detailsOrCode as Record<string, unknown> | undefined);
+    super(message, code, 400, details);
   }
 }
 
