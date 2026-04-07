@@ -59,7 +59,7 @@ async function readError(res: Response): Promise<WizardError> {
   return { code, message };
 }
 
-class WizardHttpError extends Error {
+export class WizardHttpError extends Error {
   constructor(public readonly wizardError: WizardError) {
     super(wizardError.message);
   }
