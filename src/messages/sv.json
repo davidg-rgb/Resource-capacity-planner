@@ -543,6 +543,85 @@
         "saved": "Sparat",
         "failed": "Kunde inte spara"
       }
+    },
+    "import": {
+      "step": {
+        "upload": "Ladda upp",
+        "preview": "Förhandsgranska",
+        "unmatched": "Omatchade namn",
+        "confirm": "Bekräfta",
+        "result": "Resultat"
+      },
+      "upload": {
+        "title": "Importera utfall",
+        "dropHint": "Dra och släpp en .xlsx-fil här, eller klicka för att välja",
+        "dropActive": "Släpp filen för att ladda upp",
+        "templateLink": "Ladda ner mall (.xlsx)",
+        "fileTypeError": "Endast .xlsx-filer stöds.",
+        "parseError": {
+          "usWeek": "Filen verkar använda amerikansk veckonumrering. Konvertera till ISO-veckor och försök igen.",
+          "unknownLayout": "Filens layout känns inte igen. Använd mallen som referens.",
+          "generic": "Filen kunde inte tolkas. Kontrollera innehållet och försök igen."
+        }
+      },
+      "preview": {
+        "title": "Förhandsgranska importen",
+        "newCount": "Nya rader",
+        "updatedCount": "Uppdaterade rader",
+        "warningCount": "Varningar",
+        "skippedManual": "{count} rader hoppades över (manuellt redigerade)",
+        "skippedPriorBatch": "{count} rader hoppades över (tidigare import)",
+        "overrideManualLabel": "Skriv över manuella ändringar",
+        "overrideManualHint": "Tillåter importen att ersätta värden som har redigerats manuellt.",
+        "overridePriorBatchLabel": "Skriv över tidigare import",
+        "overridePriorBatchHint": "Det finns en aktiv tidigare import. Markera för att ersätta den.",
+        "nextButton": "Nästa",
+        "backButton": "Tillbaka",
+        "warningsHeader": "Varningar",
+        "rowsHeader": "Rader",
+        "colPerson": "Person",
+        "colProject": "Projekt",
+        "colDate": "Datum",
+        "colHours": "Timmar",
+        "colStatus": "Status",
+        "showMore": "Visa fler"
+      },
+      "unmatched": {
+        "title": "Lös omatchade namn",
+        "personHeader": "Personer",
+        "projectHeader": "Projekt",
+        "suggestionLabel": "Förslag",
+        "accept": "Acceptera",
+        "pickManual": "Välj manuellt",
+        "markAsNew": "Markera som ny",
+        "markAsNewDisabled": "Att skapa nya poster vid import är inte tillgängligt än.",
+        "confidence": "Säkerhet: {pct}%",
+        "nextButton": "Nästa",
+        "backButton": "Tillbaka",
+        "chooseOption": "Välj…"
+      },
+      "confirm": {
+        "title": "Bekräfta import",
+        "summary": "{newCount} nya och {updatedCount} uppdaterade rader kommer att skrivas.",
+        "commitButton": "Genomför import",
+        "committing": "Importerar…",
+        "backButton": "Tillbaka"
+      },
+      "result": {
+        "successTitle": "Importen klar",
+        "successSummary": "{rowsInserted} rader skapade, {rowsUpdated} uppdaterade.",
+        "rollbackButton": "Ångra import",
+        "rollbackConfirm": "Är du säker på att du vill ångra denna import?",
+        "rollbackSuccess": "Importen har återställts.",
+        "rollbackExpired": "Tidsfönstret för återställning har gått ut.",
+        "rollbackWindow": "Återställning möjlig i {hours} h till.",
+        "importAnother": "Importera en till"
+      },
+      "error": {
+        "priorBatchActive": "Det finns en aktiv tidigare import. Markera \"Skriv över tidigare import\" för att fortsätta.",
+        "unresolvedNames": "Alla omatchade namn måste lösas innan importen kan genomföras.",
+        "generic": "Något gick fel. Försök igen."
+      }
     }
   }
 }

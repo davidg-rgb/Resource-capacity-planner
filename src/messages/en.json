@@ -478,6 +478,85 @@
         "saved": "Saved",
         "failed": "Save failed"
       }
+    },
+    "import": {
+      "step": {
+        "upload": "Upload",
+        "preview": "Preview",
+        "unmatched": "Unmatched names",
+        "confirm": "Confirm",
+        "result": "Result"
+      },
+      "upload": {
+        "title": "Import actuals",
+        "dropHint": "Drag and drop a .xlsx file here, or click to choose",
+        "dropActive": "Drop the file to upload",
+        "templateLink": "Download template (.xlsx)",
+        "fileTypeError": "Only .xlsx files are supported.",
+        "parseError": {
+          "usWeek": "The file appears to use US week numbering. Convert to ISO weeks and try again.",
+          "unknownLayout": "The file layout is not recognized. Use the template as a reference.",
+          "generic": "The file could not be parsed. Check its contents and try again."
+        }
+      },
+      "preview": {
+        "title": "Preview import",
+        "newCount": "New rows",
+        "updatedCount": "Updated rows",
+        "warningCount": "Warnings",
+        "skippedManual": "{count} rows skipped (manually edited)",
+        "skippedPriorBatch": "{count} rows skipped (prior import)",
+        "overrideManualLabel": "Overwrite manual edits",
+        "overrideManualHint": "Allows the import to replace values that have been edited manually.",
+        "overridePriorBatchLabel": "Override prior import",
+        "overridePriorBatchHint": "There is an active prior import. Check to replace it.",
+        "nextButton": "Next",
+        "backButton": "Back",
+        "warningsHeader": "Warnings",
+        "rowsHeader": "Rows",
+        "colPerson": "Person",
+        "colProject": "Project",
+        "colDate": "Date",
+        "colHours": "Hours",
+        "colStatus": "Status",
+        "showMore": "Show more"
+      },
+      "unmatched": {
+        "title": "Resolve unmatched names",
+        "personHeader": "People",
+        "projectHeader": "Projects",
+        "suggestionLabel": "Suggestion",
+        "accept": "Accept",
+        "pickManual": "Pick manually",
+        "markAsNew": "Mark as new",
+        "markAsNewDisabled": "Creating new records at import is not available yet.",
+        "confidence": "Confidence: {pct}%",
+        "nextButton": "Next",
+        "backButton": "Back",
+        "chooseOption": "Choose…"
+      },
+      "confirm": {
+        "title": "Confirm import",
+        "summary": "{newCount} new and {updatedCount} updated rows will be written.",
+        "commitButton": "Commit import",
+        "committing": "Importing…",
+        "backButton": "Back"
+      },
+      "result": {
+        "successTitle": "Import complete",
+        "successSummary": "{rowsInserted} rows created, {rowsUpdated} updated.",
+        "rollbackButton": "Roll back import",
+        "rollbackConfirm": "Are you sure you want to roll back this import?",
+        "rollbackSuccess": "The import has been rolled back.",
+        "rollbackExpired": "The rollback window has expired.",
+        "rollbackWindow": "Rollback available for {hours} more hours.",
+        "importAnother": "Import another"
+      },
+      "error": {
+        "priorBatchActive": "There is an active prior import. Check \"Override prior import\" to continue.",
+        "unresolvedNames": "All unmatched names must be resolved before committing.",
+        "generic": "Something went wrong. Try again."
+      }
     }
   }
 }
