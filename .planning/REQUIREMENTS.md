@@ -1,148 +1,118 @@
-# Requirements: Nordic Capacity v2.0
+# v5.0 Requirements — Plan vs Actual + Approval Workflow
 
-**Defined:** 2026-03-28
-**Core Value:** Real-time visibility into team capacity, project staffing, and resource utilization -- transforming the product from a data-entry tool into a capacity planning tool.
+**Milestone:** v5.0
+**Date:** 2026-04-07
+**Source of truth:** `.planning/v5.0-ARCHITECTURE.md` (§14 roadmap, §15 testable contract), `.planning/v5.0-USER-JOURNEYS.md`, `.planning/v5.0-FEEDBACK.md`
 
-## v2.0 Requirements
+Architecture frozen — each requirement traces to architecture sections and the §15 testable assertions (TC-* IDs) that verify it. Previous milestone (v4.0) requirements archived in `.planning/v2.0-REQUIREMENTS.md` / MILESTONES.md history.
 
-### Infrastructure
+---
 
-- [x] **INFRA-01**: Feature flag service loads all org flags once per request and exposes typed `FeatureFlags` interface
-- [x] **INFRA-02**: Platform admin can toggle feature flags per tenant from tenant detail page
-- [x] **INFRA-03**: Feature-flagged routes/nav items are hidden when flag is disabled for the org
-- [x] **INFRA-04**: Toast notification system (Sonner) available app-wide for alerts and feedback
+## v5.0 Requirements
 
-### Team Overview
+### Foundations (FOUND-V5)
 
-- [x] **TEAM-01**: User can view a heat map of all people x months with cells color-coded by utilization (green 80-100%, yellow 50-79%, red >100%, grey <50%)
-- [x] **TEAM-02**: Heat map rows are grouped by department with collapsible sections
-- [x] **TEAM-03**: User can filter the heat map by department, discipline, or date range
-- [x] **TEAM-04**: User can click a person name in the heat map to navigate to their Person Input Form
-- [x] **TEAM-05**: Heat map scrolls horizontally across the 12-18 month planning horizon
+- [ ] **FOUND-V5-01**: `lib/time/iso-calendar.ts` provides ISO 8601 week math (Monday start, `getISOWeek`, `getISOWeekYear`, `getISOWeeksInYear`) and 53-week year detection; no other module may import `date-fns` week APIs or rely on native `Date` locale defaults — verified by TC-CAL-*
+- [ ] **FOUND-V5-02**: Swedish holidays for 2026–2030 hardcoded (New Year, Epiphany, Good Friday, Easter Monday, May 1, Ascension, National Day, Midsummer Eve, Christmas Eve, Christmas, Boxing Day, New Year's Eve); `isSwedishHoliday(date)` and `workingDaysInRange(start, end)` helpers exposed
+- [ ] **FOUND-V5-03**: Role switcher header component with 5 roles (PM, Line Mgr, Staff, R&D Mgr, Admin) backed by a React context; selection persists in localStorage; no server enforcement (ADR-004)
+- [ ] **FOUND-V5-04**: Universal `change_log` table + `recordChange()` service used by every mutating service; enforcement via (a) eslint rule `no-direct-mutation-without-change-log`, (b) `scripts/generate-mutations-manifest.ts` codegen, (c) runtime test TC-CL-005
+- [ ] **FOUND-V5-05**: i18n key catalog for v5.0 strings (SV primary, EN fallback) seeded under `messages/sv/v5/*` and `messages/en/v5/*` before UI phases begin
+- [ ] **FOUND-V5-06**: `getServerNowMonthKey(tx)` per-request cached helper for historic-edit checks (ADR-009)
 
-### Project View
+### Actuals Layer (ACT)
 
-- [x] **PROJ-01**: User can select a project and see all people allocated to it with hours per month
-- [x] **PROJ-02**: Project View shows a summary row with total hours per month across all people
-- [x] **PROJ-03**: User can click a person name in Project View to navigate to their Person Input Form
-- [x] **PROJ-04**: Project View shows months with no allocations as visually distinct (understaffed indicator)
+- [ ] **ACT-01**: `actual_entries` table — columns `(id, organization_id, person_id, project_id, date, hours numeric(5,2), source enum('import'|'manual'), import_batch_id nullable, created_at, updated_at)`, unique index on `(organization_id, person_id, project_id, date)`
+- [ ] **ACT-02**: `actuals.service.upsertActuals(input, { grain: 'day'|'week'|'month' })` — distributes week/month input across working days via largest-remainder algorithm (ADR-010), stores daily rows, writes change_log
+- [ ] **ACT-03**: Plan-vs-actual cell component renders planned, actual, and delta with color coding (green under, red over, neutral on plan); reused in PM timeline, Line Mgr group view, Staff schedule, R&D portfolio
+- [ ] **ACT-04**: Drill-down drawer shows daily plan vs actual breakdown for a person-project-period, callable from any timeline cell
+- [ ] **ACT-05**: Monthly aggregation of day-grain actuals matches input totals within ±0.01h (largest-remainder preserves sums) — verified by TC-AC-*
 
-### Dashboard
+### Excel Import Pipeline (IMP)
 
-- [x] **DASH-01**: User can view KPI cards: overall utilization %, total headcount, overloaded count, underutilized count
-- [x] **DASH-02**: User can view departmental utilization as a bar chart
-- [x] **DASH-03**: User can select a time range for dashboard metrics (next 3, 6, or 12 months)
-- [x] **DASH-04**: User can click a KPI card to drill down to the underlying people list
+- [ ] **IMP-01**: `import_batches` table — `(id, organization_id, uploaded_by, filename, row_count, state enum('parsing'|'preview'|'committed'|'rolled_back'|'superseded'), override_manual bool, reversal_payload jsonb, created_at, committed_at, rolled_back_at)`
+- [ ] **IMP-02**: SheetJS-based parser accepts two layouts (row-per-entry canonical: `person_name, project_name, date, hours`; pivoted: dates across / projects down); US `WEEKNUM()` headers raise ValidationError code `ERR_US_WEEK_HEADERS`
+- [ ] **IMP-03**: Two-stage import flow — (a) parse → preview with row diff counts (new / updated / warnings), (b) explicit commit writes actuals + change_log
+- [ ] **IMP-04**: Idempotent re-import on unique key `(org, person, project, date)`; override checkbox "Skriv över manuella ändringar" unchecked by default; manual edits preserved unless override is checked
+- [ ] **IMP-05**: Rollback endpoint `POST /api/v5/imports/{id}/rollback` restores pre-batch state via `reversal_payload`; supersession tracking prevents reversal corruption on a second import over the same rows
+- [ ] **IMP-06**: Downloadable Excel template (`template_row_per_entry.xlsx`) linked from import wizard
+- [ ] **IMP-07**: Import preview shows unmatched person/project names with fuzzy suggestions before commit
 
-### Alerts
+### Proposal / Approval Workflow (PROP)
 
-- [x] **ALRT-01**: User can view a list of overloaded (>100%) and underutilized (<50%) people for the current period
-- [x] **ALRT-02**: Alert badge in top nav shows count of active capacity alerts
-- [x] **ALRT-03**: Each alert links to the affected person's input form
-- [x] **ALRT-04**: Alerts are computed on demand from current allocation data (no separate storage)
+- [ ] **PROP-01**: `allocation_proposals` table — `(id, organization_id, proposer_id, target_person_id, target_project_id, target_department_id, period_start, period_end, proposed_hours numeric(5,2), note, state enum('proposed'|'approved'|'rejected'|'withdrawn'|'superseded'), rejection_reason, decided_by, decided_at, created_at, updated_at)`
+- [ ] **PROP-02**: `projects.lead_pm_person_id` column added (only v4.0 schema mutation); determines which PM owns a project's planning
+- [ ] **PROP-03**: PM inline cell edit on an out-of-department person triggers proposal mode (dashed border, Pending badge) instead of auto-save; explicit "Submit wish" button required (ADR-008b)
+- [ ] **PROP-04**: Line Manager approval queue lists pending proposals for their department with impact preview ("Sara's June utilization 40% → 90%") and Approve / Reject actions; rejection requires a reason
+- [ ] **PROP-05**: Approved proposals write through to `allocations`, mark proposal `approved`, record change_log; rejected proposals persist with reason and can be edited + resubmitted by proposer
+- [ ] **PROP-06**: PM "My Wishes" panel filterable by state (proposed/approved/rejected) with resubmit from rejected card
+- [ ] **PROP-07**: `target_department_id` stays in sync with `target_person.department_id` — if a person moves departments while a proposal is pending, re-route to the new department's line manager
+- [ ] **PROP-08**: Line Mgr direct edits within own department bypass the approval gate; still audited via change_log
 
-### Charts
+### Persona Views & Screens (UX-V5)
 
-- [x] **CHRT-01**: User can view discipline breakdown as bar/pie chart showing hours by discipline per month
-- [x] **CHRT-02**: Discipline chart respects the same time range as dashboard
-- [x] **CHRT-03**: Charts use Recharts with Nordic Precision design tokens (colors, fonts)
+- [ ] **UX-V5-01** (S1): Role switcher header globally available; switching role changes default landing + scope without page reload
+- [ ] **UX-V5-02** (S2, S3): PM Home + project timeline — overview card, horizontal month-column timeline with plan-vs-actual cells, inline edit with approval gate
+- [ ] **UX-V5-03** (S4): PM "My Wishes" panel (proposed / approved / rejected tabs, resubmit)
+- [ ] **UX-V5-04** (S5): Line Mgr Home capacity heatmap — rows = people, cols = months, thresholds: green 60–90%, red >100%, yellow <60%, grey absence
+- [ ] **UX-V5-05** (S6): Line Mgr group timeline with project breakdown, direct edit, change log visible
+- [ ] **UX-V5-06** (S7): Approval queue with impact preview, approve/reject; counter-proposal explicitly out of scope
+- [ ] **UX-V5-07** (S9): Staff "My Schedule" read-only (projects × months, plan-vs-actual split, month summary strip)
+- [ ] **UX-V5-08** (S10): R&D Manager portfolio grid — projects × months aggregate, project/group row toggle, drill-into-PM-view, long-horizon zoom (20–30 months forward) with 53-week handling
+- [ ] **UX-V5-09** (S11): Shared drill-down drawer component reused across personas
+- [ ] **UX-V5-10** (S12): Change log feed filterable by project/person/period/author with persona-scoped defaults
+- [ ] **UX-V5-11** (S13): Historic edit confirmation dialog on any edit to a period before `getServerNowMonthKey()`
+- [ ] **UX-V5-12**: Long-horizon timeline zoom levels (month/quarter/year) handle ISO 8601 and 53-week years correctly — week 53 gets its own column in 2026
 
-### PDF Export
+### Import Actuals Wizard (WIZ)
 
-- [x] **PDF-01**: User can export the Team Overview heat map as a PDF document
-- [x] **PDF-02**: PDF renders in landscape orientation with department grouping and color legend
-- [x] **PDF-03**: PDF includes org name, date range, and generation timestamp as header/footer
+- [ ] **WIZ-01** (S8): Import Actuals wizard accessible from Line Mgr + Admin menus — entry description, template download, drop zone, preview table, override checkbox, confirmation, rollback button (available 24h or until next import)
 
-### Onboarding
+### Admin Register Maintenance (ADM)
 
-- [x] **ONBR-01**: New tenant sees a multi-step onboarding wizard after org creation
-- [x] **ONBR-02**: Wizard guides through: add departments, add disciplines, create first person or import
-- [x] **ONBR-03**: Wizard offers pre-filled suggestions for engineering departments and disciplines
-- [x] **ONBR-04**: Existing tenants are marked as onboarded and skip the wizard
-- [x] **ONBR-05**: User can skip the wizard and access the app directly
+- [ ] **ADM-01** (S14): Admin register tables for People, Projects, Departments, Disciplines, Programs with list view (active default, archived toggle) + side-sheet create/edit form
+- [ ] **ADM-02**: Archive with dependent-row blocking — archiving a project with active allocations raises `ConflictError` code `DEPENDENT_ROWS_EXIST`; archived rows hidden from default views
+- [ ] **ADM-03**: Every register mutation writes `change_log` entries (`REGISTER_ROW_CREATED` / `REGISTER_ROW_UPDATED` / `REGISTER_ROW_DELETED`)
+- [ ] **ADM-04**: Admin landing view is the change_log feed (scoped to all entities)
 
-### Platform Operations
+### Historic Edit Guardrails (HIST)
 
-- [x] **PLOP-01**: Platform admin can view system health metrics (DB latency, error rates, active connections)
-- [x] **PLOP-02**: Platform admin can create announcements with title, body, severity, and date range
-- [x] **PLOP-03**: Tenant users see active announcements as a dismissible banner in the app
-- [x] **PLOP-04**: Critical announcements persist until expiry; info-level can be dismissed
-- [x] **PLOP-05**: Platform admin can bulk export all data for a tenant as JSON
-- [x] **PLOP-06**: Platform admin can purge all data for a tenant (GDPR deletion)
+- [ ] **HIST-01**: Any edit (direct or via proposal) targeting a period before the current month triggers a soft warning dialog; confirmation required; no hard lock even when actuals exist
 
-## v3.0 Requirements
+### API Contract (API-V5)
 
-Moved to [v3.0-REQUIREMENTS.md](v3.0-REQUIREMENTS.md) — 15 UX requirements focused on "Switch from Excel" milestone.
+- [ ] **API-V5-01**: All new endpoints live under `/api/v5/*` (proposals, actuals, imports, change-log, register) and return AppError hierarchy with consistent error codes
+- [ ] **API-V5-02**: Every mutating endpoint tenant-scoped via existing `withTenant()` ORM wrapper; no cross-tenant reads
 
-### Deferred Feature Requirements (v4.0+)
+### Testable Functional Contract (TEST-V5)
 
-- **VIS-01**: Editable Project View (edit hours directly from project perspective)
-- **VIS-02**: Dashboard trend lines (utilization over past vs future months)
-- **VIS-03**: Configurable alert thresholds per tenant
-- **PLAT-V3-01**: Email notifications for capacity alerts
-- **PLAT-V3-02**: Custom report builder
-- **PLAT-V3-03**: Tenant data migration between orgs
+- [ ] **TEST-V5-01**: ~280 assertions from ARCHITECTURE.md §15 (TC-CAL-*, TC-PS-*, TC-PR-*, TC-AC-*, TC-IMP-*, TC-API-*, TC-UI-*, TC-E2E-*, TC-NEG-*, TC-PERF-*, TC-REG-*, TC-PSN-*, TC-ZOOM-*, TC-CL-*) have corresponding automated tests that pass before launch — each phase's DoD points at its test IDs
+- [ ] **TEST-V5-02**: Deterministic UUID v5 seed data (ARCHITECTURE.md §16) produces identical fixtures across runs for integration tests
 
-## Out of Scope
+### Launch Gate (LAUNCH) — separate from v5.0 feature work
 
-| Feature | Reason |
-|---------|--------|
-| Real-time WebSocket sync | Low-contention data, optimistic updates sufficient |
-| AI resource recommendations | Target users know their team, visibility > automation |
-| Gantt chart / timeline view | Monthly granularity, heat map IS the timeline |
-| Billable tracking | Engineering orgs, not agencies |
-| Role-based capacity planning | Person-centric model is correct for target market |
-| Dark mode | No planning value, CSS vars ready for later |
-| SSO / SAML | Enterprise feature, deferred to v3.0+ |
+- [ ] **LAUNCH-01**: PDF export captures all dashboard widget types (html2canvas currently blank for non-SVG widgets) — swap to `html-to-image` or `modern-screenshot`; last attempt commit `9e19794`. Tracked as Phase 7.1 in ARCHITECTURE roadmap. **Must ship before v5.0 launch**
+
+---
+
+## Future Requirements (deferred)
+
+- **Counter-proposal flow** — line mgr counters a wish with an alternative value. Flagged nice-to-have in Journey 2B; deferred unless client pushes.
+- **Email / Slack notifications** — in-app only for v5.0
+- **Staff actuals self-entry** — staff read-only in v5.0; competes with time-tracking tools
+- **Hidden-row persistence / user filter prefs** — noted for v6.0
+- **Drag-reorder of project/people rows** — drag-to-copy hours IS in scope, reorder is not
+
+## Out of Scope (explicit exclusions)
+
+- **Real authentication for personas** — ADR-004 locked personas as UX shortcuts
+- **Task/activity sub-dimension under projects** — Q3 locked project-level grain
+- **Multi-entry-per-day preservation** — sums on import, lossy by design
+- **Mobile-first design** — desktop primary, mobile degrades gracefully
+- **Hard locks on historic edits** — Q6 locked; soft warning only
+- **Migrations touching existing tables** — only `projects.lead_pm_person_id` added; everything else additive
+
+---
 
 ## Traceability
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| INFRA-01 | Phase 11 | Complete |
-| INFRA-02 | Phase 11 | Complete |
-| INFRA-03 | Phase 11 | Complete |
-| INFRA-04 | Phase 11 | Complete |
-| TEAM-01 | Phase 12 | Complete |
-| TEAM-02 | Phase 12 | Complete |
-| TEAM-03 | Phase 12 | Complete |
-| TEAM-04 | Phase 12 | Complete |
-| TEAM-05 | Phase 12 | Complete |
-| PROJ-01 | Phase 14 | Complete |
-| PROJ-02 | Phase 14 | Complete |
-| PROJ-03 | Phase 14 | Complete |
-| PROJ-04 | Phase 14 | Complete |
-| DASH-01 | Phase 13 | Complete |
-| DASH-02 | Phase 13 | Complete |
-| DASH-03 | Phase 13 | Complete |
-| DASH-04 | Phase 13 | Complete |
-| ALRT-01 | Phase 14 | Complete |
-| ALRT-02 | Phase 14 | Complete |
-| ALRT-03 | Phase 14 | Complete |
-| ALRT-04 | Phase 14 | Complete |
-| CHRT-01 | Phase 13 | Complete |
-| CHRT-02 | Phase 13 | Complete |
-| CHRT-03 | Phase 13 | Complete |
-| PDF-01 | Phase 15 | Complete |
-| PDF-02 | Phase 15 | Complete |
-| PDF-03 | Phase 15 | Complete |
-| ONBR-01 | Phase 16 | Complete |
-| ONBR-02 | Phase 16 | Complete |
-| ONBR-03 | Phase 16 | Complete |
-| ONBR-04 | Phase 16 | Complete |
-| ONBR-05 | Phase 16 | Complete |
-| PLOP-01 | Phase 17 | Complete |
-| PLOP-02 | Phase 16 | Complete |
-| PLOP-03 | Phase 16 | Complete |
-| PLOP-04 | Phase 16 | Complete |
-| PLOP-05 | Phase 17 | Complete |
-| PLOP-06 | Phase 17 | Complete |
-
-**Coverage:**
-- v2.0 requirements: 38 total
-- Mapped to phases: 38
-- Unmapped: 0
-
----
-*Requirements defined: 2026-03-28*
-*Last updated: 2026-03-28 after roadmap creation*
+Filled by roadmapper — maps each REQ-ID to its phase.
