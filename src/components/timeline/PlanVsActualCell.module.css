@@ -1,0 +1,68 @@
+.cell {
+  --cell-bg: var(--md-sys-color-surface-container-low, #f3f3f3);
+  --cell-fg: var(--md-sys-color-on-surface, #1c1b1f);
+  --cell-border: var(--md-sys-color-outline-variant, #cac4d0);
+
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 84px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--cell-border);
+  background: var(--cell-bg);
+  color: var(--cell-fg);
+  font-variant-numeric: tabular-nums;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cell[data-state='no-actual'] {
+  --cell-bg: var(--md-sys-color-surface-container, #ececec);
+  --cell-fg: var(--md-sys-color-on-surface-variant, #49454f);
+}
+
+.cell[data-state='on-plan'] {
+  --cell-bg: #e6efff;
+  --cell-fg: #0b3d91;
+  --cell-border: #b3c7e6;
+}
+
+.cell[data-state='under'] {
+  --cell-bg: #e6f6ea;
+  --cell-fg: #0f5132;
+  --cell-border: #b7dfc1;
+}
+
+.cell[data-state='over'] {
+  --cell-bg: #fdecec;
+  --cell-fg: #842029;
+  --cell-border: #f1b7b7;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.label {
+  opacity: 0.75;
+}
+
+.value {
+  font-weight: 600;
+}
+
+.input {
+  width: 56px;
+  padding: 1px 4px;
+  border: 1px solid var(--cell-border);
+  border-radius: 2px;
+  background: white;
+  color: inherit;
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
