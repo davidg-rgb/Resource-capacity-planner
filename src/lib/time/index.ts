@@ -19,6 +19,9 @@ export {
   workingDaysInRange,
   countWorkingDays,
   isHistoricPeriod,
+  distribute,
+  workDaysInIsoWeek,
+  workDaysInMonth,
 } from './iso-calendar';
 
 export { isSwedishHoliday, getSwedishHolidays } from './swedish-holidays';

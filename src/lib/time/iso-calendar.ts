@@ -22,6 +22,104 @@ import { ValidationError } from '@/lib/errors';
 
 import { isSwedishHoliday } from './swedish-holidays';
 
+/**
+ * Largest-remainder distribution of `totalHours` across `dayCount` slots.
+ *
+ * Algorithm (ADR-010): work in integer cents to avoid float drift, give each
+ * slot the floor quota in cents, then distribute the remainder cents to the
+ * first `remainder` slots (+0.01 each). The returned array sums exactly to
+ * `round(totalHours * 100) / 100` at numeric(5,2) precision.
+ *
+ * Pure, deterministic, side-effect free.
+ *
+ * @throws ValidationError BAD_DAY_COUNT if dayCount <= 0
+ * @throws ValidationError BAD_HOURS if totalHours < 0
+ */
+export function distribute(totalHours: number, dayCount: number): number[] {
+  if (!Number.isFinite(dayCount) || dayCount <= 0 || !Number.isInteger(dayCount)) {
+    throw new ValidationError(
+      `distribute: dayCount must be a positive integer (got ${dayCount})`,
+      'BAD_DAY_COUNT',
+    );
+  }
+  if (!Number.isFinite(totalHours) || totalHours < 0) {
+    throw new ValidationError(
+      `distribute: totalHours must be >= 0 (got ${totalHours})`,
+      'BAD_HOURS',
+    );
+  }
+  const totalCents = Math.round(totalHours * 100);
+  const baseCents = Math.floor(totalCents / dayCount);
+  const remainder = totalCents - baseCents * dayCount;
+  const out: number[] = new Array(dayCount);
+  for (let i = 0; i < dayCount; i++) {
+    const cents = baseCents + (i < remainder ? 1 : 0);
+    out[i] = cents / 100;
+  }
+  return out;
+}
+
+/** Format a UTC Date as 'YYYY-MM-DD'. */
+function toIsoDateString(d: Date): string {
+  const y = d.getUTCFullYear();
+  const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(d.getUTCDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
+/**
+ * Returns the Monday (UTC) of the given ISO week-numbering year + week.
+ * Standard algorithm: Jan 4 always belongs to ISO week 1; back up to its
+ * Monday and add (week-1)*7 days.
+ */
+function isoWeekMonday(isoYear: number, isoWeek: number): Date {
+  const jan4 = new Date(Date.UTC(isoYear, 0, 4));
+  const jan4Dow = jan4.getUTCDay() || 7; // 1..7
+  const week1Monday = new Date(jan4.getTime() - (jan4Dow - 1) * MS_PER_DAY);
+  return new Date(week1Monday.getTime() + (isoWeek - 1) * 7 * MS_PER_DAY);
+}
+
+/**
+ * Returns ISO date strings (YYYY-MM-DD) for working days (Mon–Fri minus
+ * Swedish holidays) of the given ISO week. Handles 53-week years correctly:
+ * `workDaysInIsoWeek(2026, 53)` spans Dec 28–Jan 1 and excludes Jan 1 2027.
+ */
+export function workDaysInIsoWeek(isoYear: number, isoWeek: number): string[] {
+  if (!Number.isInteger(isoYear) || !Number.isInteger(isoWeek) || isoWeek < 1 || isoWeek > 53) {
+    throw new ValidationError(
+      `workDaysInIsoWeek: invalid isoYear/isoWeek (${isoYear}/${isoWeek})`,
+      'INVALID_DATE',
+    );
+  }
+  const monday = isoWeekMonday(isoYear, isoWeek);
+  const friday = new Date(monday.getTime() + 4 * MS_PER_DAY);
+  return workingDaysInRange(monday, friday).map(toIsoDateString);
+}
+
+/**
+ * Returns ISO date strings (YYYY-MM-DD) for working days (Mon–Fri minus
+ * Swedish holidays) of the given calendar month.
+ *
+ * @param year       Gregorian year (e.g. 2026)
+ * @param monthIndex Zero-based month (0 = January, 11 = December)
+ */
+export function workDaysInMonth(year: number, monthIndex: number): string[] {
+  if (
+    !Number.isInteger(year) ||
+    !Number.isInteger(monthIndex) ||
+    monthIndex < 0 ||
+    monthIndex > 11
+  ) {
+    throw new ValidationError(
+      `workDaysInMonth: invalid year/monthIndex (${year}/${monthIndex})`,
+      'INVALID_DATE',
+    );
+  }
+  const first = new Date(Date.UTC(year, monthIndex, 1));
+  const last = new Date(Date.UTC(year, monthIndex + 1, 0));
+  return workingDaysInRange(first, last).map(toIsoDateString);
+}
+
 const MS_PER_DAY = 86400000;
 
 /**
