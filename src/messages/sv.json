@@ -416,14 +416,28 @@
       "impactCurrent": "Nuvarande beläggning",
       "impactProjected": "Beläggning efter ändring"
     },
+    "cell": {
+      "planned": "Planerat",
+      "actual": "Utfall",
+      "delta": "Avvikelse",
+      "noActual": "—",
+      "overBy": "+{hours}h",
+      "underBy": "-{hours}h",
+      "onPlan": "På plan",
+      "hoursSuffix": "h"
+    },
     "drawer": {
-      "title": "Detaljer",
-      "empty": "Ingen data att visa.",
+      "title": "Plan vs utfall — {person}, {project}, {month}",
+      "empty": "Inga utfallsrader för denna period.",
       "loading": "Laddar…",
       "error": "Något gick fel. Försök igen.",
       "planColumn": "Plan",
       "actualColumn": "Utfall",
-      "dayColumn": "Dag"
+      "dayColumn": "Dag",
+      "dateColumn": "Datum",
+      "plannedColumn": "Planerat",
+      "deltaColumn": "Avvikelse",
+      "close": "Stäng"
     },
     "screens": {
       "pmHome": {

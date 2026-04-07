@@ -416,14 +416,28 @@
       "impactCurrent": "",
       "impactProjected": ""
     },
+    "cell": {
+      "planned": "Planned",
+      "actual": "Actual",
+      "delta": "Delta",
+      "noActual": "—",
+      "overBy": "+{hours}h",
+      "underBy": "-{hours}h",
+      "onPlan": "On plan",
+      "hoursSuffix": "h"
+    },
     "drawer": {
-      "title": "",
-      "empty": "",
-      "loading": "",
-      "error": "",
-      "planColumn": "",
-      "actualColumn": "",
-      "dayColumn": ""
+      "title": "Plan vs actual — {person}, {project}, {month}",
+      "empty": "No actual rows for this period.",
+      "loading": "Loading…",
+      "error": "Something went wrong. Try again.",
+      "planColumn": "Plan",
+      "actualColumn": "Actual",
+      "dayColumn": "Day",
+      "dateColumn": "Date",
+      "plannedColumn": "Planned",
+      "deltaColumn": "Delta",
+      "close": "Close"
     },
     "screens": {
       "pmHome": { "empty": "", "loading": "", "error": "", "retry": "" },

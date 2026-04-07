@@ -40,6 +40,16 @@ export const K = {
       impactCurrent: 'approval.impactCurrent',
       impactProjected: 'approval.impactProjected',
     },
+    cell: {
+      planned: 'cell.planned',
+      actual: 'cell.actual',
+      delta: 'cell.delta',
+      noActual: 'cell.noActual',
+      overBy: 'cell.overBy',
+      underBy: 'cell.underBy',
+      onPlan: 'cell.onPlan',
+      hoursSuffix: 'cell.hoursSuffix',
+    },
     drawer: {
       title: 'drawer.title',
       empty: 'drawer.empty',
@@ -48,6 +58,10 @@ export const K = {
       planColumn: 'drawer.planColumn',
       actualColumn: 'drawer.actualColumn',
       dayColumn: 'drawer.dayColumn',
+      dateColumn: 'drawer.dateColumn',
+      plannedColumn: 'drawer.plannedColumn',
+      deltaColumn: 'drawer.deltaColumn',
+      close: 'drawer.close',
     },
     screens: {
       pmHome: {
