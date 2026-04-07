@@ -14,10 +14,10 @@ Architecture frozen — each requirement traces to architecture sections and the
 
 - [x] **FOUND-V5-01**: `lib/time/iso-calendar.ts` provides ISO 8601 week math (Monday start, `getISOWeek`, `getISOWeekYear`, `getISOWeeksInYear`) and 53-week year detection; no other module may import `date-fns` week APIs or rely on native `Date` locale defaults — verified by TC-CAL-*
 - [x] **FOUND-V5-02**: Swedish holidays for 2026–2030 hardcoded (New Year, Epiphany, Good Friday, Easter Monday, May 1, Ascension, National Day, Midsummer Eve, Christmas Eve, Christmas, Boxing Day, New Year's Eve); `isSwedishHoliday(date)` and `workingDaysInRange(start, end)` helpers exposed
-- [ ] **FOUND-V5-03**: Role switcher header component with 5 roles (PM, Line Mgr, Staff, R&D Mgr, Admin) backed by a React context; selection persists in localStorage; no server enforcement (ADR-004)
+- [x] **FOUND-V5-03**: Role switcher header component with 5 roles (PM, Line Mgr, Staff, R&D Mgr, Admin) backed by a React context; selection persists in localStorage; no server enforcement (ADR-004)
 - [ ] **FOUND-V5-04**: Universal `change_log` table + `recordChange()` service used by every mutating service; enforcement via (a) eslint rule `no-direct-mutation-without-change-log`, (b) `scripts/generate-mutations-manifest.ts` codegen, (c) runtime test TC-CL-005
-- [ ] **FOUND-V5-05**: i18n key catalog for v5.0 strings (SV primary, EN fallback) seeded under `messages/sv/v5/*` and `messages/en/v5/*` before UI phases begin
-- [ ] **FOUND-V5-06**: `getServerNowMonthKey(tx)` per-request cached helper for historic-edit checks (ADR-009)
+- [x] **FOUND-V5-05**: i18n key catalog for v5.0 strings (SV primary, EN fallback) seeded under `messages/sv/v5/*` and `messages/en/v5/*` before UI phases begin
+- [x] **FOUND-V5-06**: `getServerNowMonthKey(tx)` per-request cached helper for historic-edit checks (ADR-009)
 
 ### Actuals Layer (ACT)
 

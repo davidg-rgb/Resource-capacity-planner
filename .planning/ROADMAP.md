@@ -60,7 +60,7 @@
 ### v5.0 Plan vs Actual + Approval Workflow
 
 - [x] **Phase 33: Foundations — ISO calendar + Swedish holidays** — Centralized ISO 8601 / 53-week math and Swedish holiday helpers (completed 2026-04-07)
-- [ ] **Phase 34: Foundations — Personas, i18n catalog, historic-edit helper** — Role switcher context, empty SV/EN key catalog, server-now month helper
+- [x] **Phase 34: Foundations — Personas, i18n catalog, historic-edit helper** — Role switcher context, empty SV/EN key catalog, server-now month helper (completed 2026-04-07)
 - [ ] **Phase 35: Foundations — Universal change_log infrastructure** — `change_log` table + `recordChange` + eslint rule + codegen manifest + runtime invariant test
 - [ ] **Phase 36: Data model — v5.0 schema migrations** — Four new tables and the only existing-table mutation (`projects.lead_pm_person_id`)
 - [ ] **Phase 37: Actuals layer — services, distribution, plan-vs-actual cell** — Day-grain actuals with largest-remainder distribution and the reusable comparison cell
@@ -96,8 +96,8 @@
   1. User can switch between PM, Line Mgr, Staff, R&D Mgr, Admin in the header; selection persists in localStorage and re-routes to that persona's landing page (**TC-PSN-001..006**)
   2. `src/messages/sv.json`, `src/messages/en.json`, and `src/messages/keys.ts` exist with empty values for every string referenced in §11.4, §6.13–§6.18, and §11.1; CI fails if any v5.0 component renders a hardcoded user-facing string
   3. `getServerNowMonthKey(tx)` is per-request cached and used by every historic-edit guard (consumed in TC-PS-005, TC-PS-006)
-**Plans:** 1 plan
-- [ ] 34-01-PLAN.md — Persona context + switcher, v5 i18n key catalog + eslint guard, getServerNowMonthKey + isHistoricPeriod
+**Plans:** 1/1 plans complete
+- [x] 34-01-PLAN.md — Persona context + switcher, v5 i18n key catalog + eslint guard, getServerNowMonthKey + isHistoricPeriod
 **UI hint**: yes
 
 ### Phase 35: Foundations — Universal change_log infrastructure
@@ -242,7 +242,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 22 | v3.0 | 0/? | Deferred (stretch) | - |
 | 23-32 | v4.0 | -/- | Complete | 2026-04-01 |
 | 33. Foundations — ISO calendar | v5.0 | 1/1 | Complete    | 2026-04-07 |
-| 34. Foundations — Personas + i18n + helper | v5.0 | 0/1 | Not started | - |
+| 34. Foundations — Personas + i18n + helper | v5.0 | 1/1 | Complete   | 2026-04-07 |
 | 35. Foundations — change_log infrastructure | v5.0 | 0/0 | Not started | - |
 | 36. v5.0 schema migrations | v5.0 | 0/0 | Not started | - |
 | 37. Actuals layer | v5.0 | 0/0 | Not started | - |
