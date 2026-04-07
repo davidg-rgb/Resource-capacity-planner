@@ -23,8 +23,8 @@ Architecture frozen — each requirement traces to architecture sections and the
 
 - [x] **ACT-01**: `actual_entries` table — columns `(id, organization_id, person_id, project_id, date, hours numeric(5,2), source enum('import'|'manual'), import_batch_id nullable, created_at, updated_at)`, unique index on `(organization_id, person_id, project_id, date)`
 - [x] **ACT-02**: `actuals.service.upsertActuals(input, { grain: 'day'|'week'|'month' })` — distributes week/month input across working days via largest-remainder algorithm (ADR-010), stores daily rows, writes change_log
-- [ ] **ACT-03**: Plan-vs-actual cell component renders planned, actual, and delta with color coding (green under, red over, neutral on plan); reused in PM timeline, Line Mgr group view, Staff schedule, R&D portfolio
-- [ ] **ACT-04**: Drill-down drawer shows daily plan vs actual breakdown for a person-project-period, callable from any timeline cell
+- [x] **ACT-03**: Plan-vs-actual cell component renders planned, actual, and delta with color coding (green under, red over, neutral on plan); reused in PM timeline, Line Mgr group view, Staff schedule, R&D portfolio
+- [x] **ACT-04**: Drill-down drawer shows daily plan vs actual breakdown for a person-project-period, callable from any timeline cell
 - [x] **ACT-05**: Monthly aggregation of day-grain actuals matches input totals within ±0.01h (largest-remainder preserves sums) — verified by TC-AC-*
 
 ### Excel Import Pipeline (IMP)
