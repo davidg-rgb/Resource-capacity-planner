@@ -54,6 +54,34 @@ export const scenarioVisibilityEnum = pgEnum('scenario_visibility', [
 
 export const tempEntityTypeEnum = pgEnum('temp_entity_type', ['person', 'project']);
 
+// v5.0 — FOUND-V5-04: universal change_log audit spine (ARCHITECTURE 6.6, 7.4)
+export const changeLogEntityEnum = pgEnum('change_log_entity', [
+  'allocation',
+  'proposal',
+  'actual_entry',
+  'person',
+  'project',
+  'department',
+  'discipline',
+  'import_batch',
+]);
+
+export const changeLogActionEnum = pgEnum('change_log_action', [
+  'ALLOCATION_EDITED',
+  'ALLOCATION_HISTORIC_EDITED',
+  'ALLOCATION_BULK_COPIED',
+  'PROPOSAL_SUBMITTED',
+  'PROPOSAL_APPROVED',
+  'PROPOSAL_REJECTED',
+  'PROPOSAL_WITHDRAWN',
+  'PROPOSAL_EDITED',
+  'ACTUALS_BATCH_COMMITTED',
+  'ACTUALS_BATCH_ROLLED_BACK',
+  'REGISTER_ROW_CREATED',
+  'REGISTER_ROW_UPDATED',
+  'REGISTER_ROW_DELETED',
+]);
+
 // ---------------------------------------------------------------------------
 // Tables
 // ---------------------------------------------------------------------------
@@ -485,6 +513,31 @@ export const scenarioTempEntities = pgTable(
   (t) => [
     index('scenario_temp_entities_scenario_idx').on(t.scenarioId),
     index('scenario_temp_entities_type_idx').on(t.scenarioId, t.entityType),
+  ],
+);
+
+// v5.0 — FOUND-V5-04: change_log (ARCHITECTURE 7.4)
+export const changeLog = pgTable(
+  'change_log',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organizations.id),
+    actorPersonaId: text('actor_persona_id').notNull(),
+    entity: changeLogEntityEnum('entity').notNull(),
+    entityId: uuid('entity_id').notNull(),
+    action: changeLogActionEnum('action').notNull(),
+    previousValue: jsonb('previous_value'),
+    newValue: jsonb('new_value'),
+    context: jsonb('context'),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => [
+    index('change_log_org_created_idx').on(t.organizationId, t.createdAt.desc()),
+    index('change_log_org_entity_idx').on(t.organizationId, t.entity, t.entityId),
+    index('change_log_org_action_created_idx').on(t.organizationId, t.action, t.createdAt.desc()),
+    index('change_log_actor_idx').on(t.actorPersonaId),
   ],
 );
 
