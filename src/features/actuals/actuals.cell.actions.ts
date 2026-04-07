@@ -100,8 +100,7 @@ export async function getDailyCellBreakdown(
       : workDays.map(() => 0);
 
   const plannedByDate = new Map<string, number>();
-  workDays.forEach((d, i) => {
-    const iso = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+  workDays.forEach((iso, i) => {
     plannedByDate.set(iso, plannedPerDay[i] ?? 0);
   });
 

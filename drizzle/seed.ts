@@ -172,6 +172,61 @@ async function seed() {
     .returning();
   console.log(`Created ${allocations.length} allocations...`);
 
+  // f2) v5.0 (Phase 37-02): seed actual_entries so the PlanVsActualDrawer
+  // has real data to render in the demo org. We pick (Anna, Atlas, 2026-04)
+  // and write ~15 manual day rows summing to roughly 80h (the planned value)
+  // ±non-trivial deltas. Hardcoded month for determinism.
+  // Wrapped in try/catch so the seed still succeeds against a v4.0-only DB
+  // (defensive — actual_entries was added in Phase 36).
+  try {
+    if (schema.actualEntries) {
+      const actualRows = [
+        { date: '2026-04-01', hours: '8.00' },
+        { date: '2026-04-02', hours: '7.50' },
+        { date: '2026-04-03', hours: '8.00' },
+        { date: '2026-04-06', hours: '6.00' },
+        { date: '2026-04-07', hours: '8.50' },
+        { date: '2026-04-08', hours: '8.00' },
+        { date: '2026-04-09', hours: '7.00' },
+        { date: '2026-04-10', hours: '5.50' },
+        { date: '2026-04-13', hours: '8.00' },
+        { date: '2026-04-14', hours: '8.00' },
+        { date: '2026-04-15', hours: '6.50' },
+        { date: '2026-04-16', hours: '7.00' },
+        { date: '2026-04-17', hours: '4.00' },
+        { date: '2026-04-20', hours: '8.00' },
+        { date: '2026-04-21', hours: '7.00' },
+      ];
+      const inserted = await db
+        .insert(schema.actualEntries)
+        .values(
+          actualRows.map((r) => ({
+            organizationId: orgId,
+            personId: anna.id,
+            projectId: atlas.id,
+            date: r.date,
+            hours: r.hours,
+            source: 'manual' as const,
+            importBatchId: null,
+          })),
+        )
+        .onConflictDoNothing({
+          target: [
+            schema.actualEntries.organizationId,
+            schema.actualEntries.personId,
+            schema.actualEntries.projectId,
+            schema.actualEntries.date,
+          ],
+        })
+        .returning();
+      console.log(
+        `Created ${inserted.length} actual_entries for Anna/Atlas in 2026-04 (v5.0 demo data)`,
+      );
+    }
+  } catch (err) {
+    console.warn('Skipped actual_entries seed (table may be missing):', err);
+  }
+
   // g) Create platform admin account (if env vars set)
   const platformEmail = process.env.PLATFORM_ADMIN_EMAIL;
   const platformPassword = process.env.PLATFORM_ADMIN_PASSWORD;

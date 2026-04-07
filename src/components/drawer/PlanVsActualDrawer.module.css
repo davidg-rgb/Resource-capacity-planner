@@ -1,0 +1,62 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 1000;
+}
+
+.panel {
+  width: min(560px, 100vw);
+  height: 100%;
+  background: var(--md-sys-color-surface, #fff);
+  color: var(--md-sys-color-on-surface, #1c1b1f);
+  padding: 16px;
+  overflow-y: auto;
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.18);
+  font-variant-numeric: tabular-nums;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.closeBtn {
+  border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
+  background: var(--md-sys-color-surface-container-low, #f3f3f3);
+  border-radius: 2px;
+  padding: 4px 10px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.status {
+  margin: 12px 0;
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th,
+.table td {
+  border-bottom: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
+  padding: 6px 8px;
+  text-align: right;
+}
+.table th:first-child,
+.table td:first-child {
+  text-align: left;
+}
