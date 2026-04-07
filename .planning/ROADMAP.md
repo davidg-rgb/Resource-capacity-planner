@@ -146,7 +146,11 @@
   3. `POST /api/v5/imports/{id}/rollback` restores pre-batch state via `reversal_payload` within 24h and refuses after (**TC-AC-012..017**, **TC-API-033..034**)
   4. A second import that touches the same rows correctly supersedes the previous batch and prevents reversal corruption (TC-AC-016)
   5. `template_row_per_entry.xlsx` is served as a static asset and matches parser expectations
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 38-01-PLAN.md — SheetJS parser (row-per-entry + pivoted) + name matcher + static xlsx template
+- [ ] 38-02-PLAN.md — Import service (parse/preview/commit/rollback/supersession) + migration 0006 + /api/v5/imports/* routes
+- [ ] 38-03-PLAN.md — Line Manager import wizard UI (WIZ-01) + i18n v5.import.* + rollback button
 **UI hint**: yes
 
 ### Phase 39: Proposal / approval workflow
