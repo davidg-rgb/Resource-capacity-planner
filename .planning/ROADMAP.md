@@ -240,7 +240,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 18-21 | v3.0 | 4/4 | Complete | 2026-03-30 |
 | 22 | v3.0 | 0/? | Deferred (stretch) | - |
 | 23-32 | v4.0 | -/- | Complete | 2026-04-01 |
-| 33. Foundations — ISO calendar | v5.0 | 1/1 | Complete   | 2026-04-07 |
+| 33. Foundations — ISO calendar | v5.0 | 1/1 | Complete    | 2026-04-07 |
 | 34. Foundations — Personas + i18n + helper | v5.0 | 0/0 | Not started | - |
 | 35. Foundations — change_log infrastructure | v5.0 | 0/0 | Not started | - |
 | 36. v5.0 schema migrations | v5.0 | 0/0 | Not started | - |
