@@ -394,6 +394,141 @@
         "rd": "FoU-chef",
         "admin": "Administratör"
       }
+    },
+    "timeline": {
+      "historic": {
+        "dialogTitle": "Historisk period",
+        "dialogBody": "Du redigerar historisk planering för {monthLabel}. Detta påverkar tidigare rapporter. Fortsätt?",
+        "confirm": "Fortsätt",
+        "cancel": "Avbryt"
+      },
+      "cell": {
+        "emDash": "—",
+        "pendingBadge": "Väntar",
+        "planActualSeparator": " / "
+      }
+    },
+    "approval": {
+      "approve": "Godkänn",
+      "reject": "Avslå",
+      "rejectReasonPlaceholder": "Ange en orsak…",
+      "counterPropose": "Motförslag",
+      "impactCurrent": "Nuvarande beläggning",
+      "impactProjected": "Beläggning efter ändring"
+    },
+    "drawer": {
+      "title": "Detaljer",
+      "empty": "Ingen data att visa.",
+      "loading": "Laddar…",
+      "error": "Något gick fel. Försök igen.",
+      "planColumn": "Plan",
+      "actualColumn": "Utfall",
+      "dayColumn": "Dag"
+    },
+    "screens": {
+      "pmHome": {
+        "empty": "Du har inga projekt tilldelade än. Kontakta din R&D-chef för att bli tilldelad ett projekt.",
+        "loading": "Laddar…",
+        "error": "Något gick fel. Försök igen.",
+        "retry": "Försök igen"
+      },
+      "pmTimeline": {
+        "empty": "Inga personer tilldelade till detta projekt än.",
+        "loading": "Laddar…",
+        "error": "Något gick fel. Försök igen.",
+        "retry": "Försök igen"
+      },
+      "myWishes": {
+        "empty": "Inga aktiva önskemål.",
+        "loading": "Laddar…",
+        "error": "Något gick fel. Försök igen.",
+        "retry": "Försök igen"
+      },
+      "lineMgrHeatmap": {
+        "empty": "Inga personer i din linjegrupp.",
+        "loading": "Laddar…",
+        "error": "Något gick fel. Försök igen.",
+        "retry": "Försök igen"
+      },
+      "lineMgrTimeline": {
+        "empty": "Inga personer att visa.",
+        "loading": "Laddar…",
+        "error": "Något gick fel. Försök igen.",
+        "retry": "Försök igen"
+      },
+      "approvalQueue": {
+        "empty": "Inga väntande önskemål.",
+        "loading": "Laddar…",
+        "error": "Något gick fel. Försök igen.",
+        "retry": "Försök igen"
+      },
+      "importWizard": {
+        "empty": "Ingen fil vald.",
+        "loading": "Bearbetar fil…",
+        "error": "Importen misslyckades. Kontrollera filen och försök igen.",
+        "retry": "Försök igen"
+      },
+      "staffSchedule": {
+        "empty": "Inga projekt planerade för dig än.",
+        "loading": "Laddar…",
+        "error": "Något gick fel. Försök igen.",
+        "retry": "Försök igen"
+      },
+      "rdPortfolio": {
+        "empty": "Inga aktiva projekt.",
+        "loading": "Laddar…",
+        "error": "Något gick fel. Försök igen.",
+        "retry": "Försök igen"
+      },
+      "drillDown": {
+        "empty": "Ingen daglig data för denna period.",
+        "loading": "Laddar…",
+        "error": "Något gick fel. Försök igen.",
+        "retry": "Försök igen"
+      },
+      "historicDialog": {
+        "title": "Historisk period",
+        "body": "Du redigerar historisk planering för {monthLabel}. Detta påverkar tidigare rapporter. Fortsätt?",
+        "confirm": "Fortsätt",
+        "cancel": "Avbryt"
+      },
+      "changeLogFeed": {
+        "empty": "Inga ändringar inom detta filter.",
+        "loading": "Laddar…",
+        "error": "Något gick fel. Försök igen.",
+        "retry": "Försök igen"
+      },
+      "adminRegisters": {
+        "empty": "Inga rader.",
+        "loading": "Laddar…",
+        "error": "Något gick fel. Försök igen.",
+        "retry": "Försök igen"
+      }
+    },
+    "errors": {
+      "HISTORIC_CONFIRM_REQUIRED": "Historisk period — bekräfta ändringen för att fortsätta.",
+      "REASON_REQUIRED": "Ange en orsak.",
+      "BAD_HOURS": "Ogiltigt timantal.",
+      "UNSUPPORTED_FORMAT": "Filformatet stöds inte. Använd .xlsx.",
+      "INVALID_DATE": "Ogiltigt datum.",
+      "US_WEEK_DETECTED": "Filen verkar använda amerikansk veckonumrering. Kontrollera och försök igen.",
+      "HOURS_NEGATIVE": "Timmar kan inte vara negativa.",
+      "ALLOCATION_NOT_FOUND": "Tilldelningen hittades inte.",
+      "PROPOSAL_NOT_FOUND": "Önskemålet hittades inte.",
+      "BATCH_NOT_FOUND": "Importomgången hittades inte.",
+      "SESSION_EXPIRED": "Sessionen har gått ut. Logga in igen.",
+      "PROPOSAL_NOT_ACTIVE": "Önskemålet är inte längre aktivt.",
+      "BATCH_ALREADY_ROLLED_BACK": "Importomgången har redan rullats tillbaka.",
+      "ROLLBACK_WINDOW_EXPIRED": "Tidsfönstret för återställning har gått ut.",
+      "SESSION_NOT_STAGED": "Sessionen är inte förberedd.",
+      "DUPLICATE_PROPOSAL": "Ett liknande önskemål finns redan."
+    },
+    "common": {
+      "toast": {
+        "retry": "Försök igen",
+        "saved": "Sparat",
+        "failed": "Kunde inte spara"
+      }
     }
   }
 }

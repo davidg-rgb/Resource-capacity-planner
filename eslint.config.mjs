@@ -48,6 +48,43 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  // FOUND-V5-05: v5 component/screen folders must not contain hardcoded
+  // user-facing text. Use useTranslations('v5.*') with a key from
+  // '@/messages/keys'. Escape hatch: add
+  // `// eslint-disable-next-line no-restricted-syntax -- @i18n-allow-literal <reason>`
+  // immediately above the line.
+  // This block is placed AFTER the broader src/** block so its rule overrides
+  // the getDay-only rule for the v5 file globs (later wins in flat config).
+  {
+    files: [
+      'src/app/pm/**/*.{ts,tsx}',
+      'src/app/line-manager/**/*.{ts,tsx}',
+      'src/app/staff/**/*.{ts,tsx}',
+      'src/app/rd/**/*.{ts,tsx}',
+      'src/app/admin/**/*.{ts,tsx}',
+      'src/components/timeline/**/*.{ts,tsx}',
+      'src/components/approval/**/*.{ts,tsx}',
+      'src/components/drawer/**/*.{ts,tsx}',
+      'src/components/dialogs/**/*.{ts,tsx}',
+      'src/components/persona/**/*.{ts,tsx}',
+    ],
+    ignores: ['**/__tests__/**'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: "CallExpression[callee.property.name='getDay']",
+          message:
+            "Do not use Date#getDay() for day-of-week decisions outside lib/time/. Use helpers from '@/lib/time'. (Sunday=0 trap; ISO weeks start Monday.)",
+        },
+        {
+          selector: 'JSXText[value=/[\\p{L}]/u]',
+          message:
+            "v5 components must not contain hardcoded user-facing text. Use useTranslations('v5.*') with a key from '@/messages/keys'. Escape hatch: // eslint-disable-next-line no-restricted-syntax -- @i18n-allow-literal <reason>",
+        },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;

@@ -394,6 +394,76 @@
         "rd": "R&D Manager",
         "admin": "Admin"
       }
+    },
+    "timeline": {
+      "historic": {
+        "dialogTitle": "",
+        "dialogBody": "",
+        "confirm": "",
+        "cancel": ""
+      },
+      "cell": {
+        "emDash": "",
+        "pendingBadge": "",
+        "planActualSeparator": ""
+      }
+    },
+    "approval": {
+      "approve": "",
+      "reject": "",
+      "rejectReasonPlaceholder": "",
+      "counterPropose": "",
+      "impactCurrent": "",
+      "impactProjected": ""
+    },
+    "drawer": {
+      "title": "",
+      "empty": "",
+      "loading": "",
+      "error": "",
+      "planColumn": "",
+      "actualColumn": "",
+      "dayColumn": ""
+    },
+    "screens": {
+      "pmHome": { "empty": "", "loading": "", "error": "", "retry": "" },
+      "pmTimeline": { "empty": "", "loading": "", "error": "", "retry": "" },
+      "myWishes": { "empty": "", "loading": "", "error": "", "retry": "" },
+      "lineMgrHeatmap": { "empty": "", "loading": "", "error": "", "retry": "" },
+      "lineMgrTimeline": { "empty": "", "loading": "", "error": "", "retry": "" },
+      "approvalQueue": { "empty": "", "loading": "", "error": "", "retry": "" },
+      "importWizard": { "empty": "", "loading": "", "error": "", "retry": "" },
+      "staffSchedule": { "empty": "", "loading": "", "error": "", "retry": "" },
+      "rdPortfolio": { "empty": "", "loading": "", "error": "", "retry": "" },
+      "drillDown": { "empty": "", "loading": "", "error": "", "retry": "" },
+      "historicDialog": { "title": "", "body": "", "confirm": "", "cancel": "" },
+      "changeLogFeed": { "empty": "", "loading": "", "error": "", "retry": "" },
+      "adminRegisters": { "empty": "", "loading": "", "error": "", "retry": "" }
+    },
+    "errors": {
+      "HISTORIC_CONFIRM_REQUIRED": "",
+      "REASON_REQUIRED": "",
+      "BAD_HOURS": "",
+      "UNSUPPORTED_FORMAT": "",
+      "INVALID_DATE": "",
+      "US_WEEK_DETECTED": "",
+      "HOURS_NEGATIVE": "",
+      "ALLOCATION_NOT_FOUND": "",
+      "PROPOSAL_NOT_FOUND": "",
+      "BATCH_NOT_FOUND": "",
+      "SESSION_EXPIRED": "",
+      "PROPOSAL_NOT_ACTIVE": "",
+      "BATCH_ALREADY_ROLLED_BACK": "",
+      "ROLLBACK_WINDOW_EXPIRED": "",
+      "SESSION_NOT_STAGED": "",
+      "DUPLICATE_PROPOSAL": ""
+    },
+    "common": {
+      "toast": {
+        "retry": "Retry",
+        "saved": "Saved",
+        "failed": "Save failed"
+      }
     }
   }
 }
