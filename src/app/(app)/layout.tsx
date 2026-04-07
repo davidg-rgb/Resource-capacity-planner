@@ -12,6 +12,7 @@ import { AnnouncementBanner } from '@/components/announcements/announcement-bann
 import { ImpersonationBanner } from '@/components/platform/impersonation-banner';
 import { PersonCardProvider } from '@/features/dashboard/person-card/person-card-provider';
 import { QueryProvider } from '@/components/providers/query-provider';
+import { PersonaProvider } from '@/features/personas/persona.context';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const orgId = await getTenantId();
@@ -29,14 +30,16 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <NextIntlClientProvider>
       <QueryProvider>
         <FlagProvider flags={flags}>
-          <PersonCardProvider>
-            <ImpersonationBanner />
-            <AnnouncementBanner />
-            <FlagGuard>
-              <AppShell>{children}</AppShell>
-            </FlagGuard>
-            <Toaster position="top-right" richColors closeButton />
-          </PersonCardProvider>
+          <PersonaProvider>
+            <PersonCardProvider>
+              <ImpersonationBanner />
+              <AnnouncementBanner />
+              <FlagGuard>
+                <AppShell>{children}</AppShell>
+              </FlagGuard>
+              <Toaster position="top-right" richColors closeButton />
+            </PersonCardProvider>
+          </PersonaProvider>
         </FlagProvider>
       </QueryProvider>
     </NextIntlClientProvider>

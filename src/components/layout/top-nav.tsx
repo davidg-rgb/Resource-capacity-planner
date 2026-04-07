@@ -25,6 +25,7 @@ import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { AlertBadge } from '@/components/alerts/alert-badge';
+import { PersonaSwitcher } from '@/components/persona/persona-switcher';
 import { useFlags } from '@/features/flags/flag.context';
 import type { FlagName } from '@/features/flags/flag.types';
 
@@ -168,6 +169,7 @@ export function TopNav() {
           >
             <Settings size={18} />
           </button>
+          <PersonaSwitcher />
           <UserButton />
         </div>
       </header>

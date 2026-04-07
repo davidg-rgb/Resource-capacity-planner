@@ -383,5 +383,17 @@
     "exportAsPdf": "Export as PDF",
     "widgetOptions": "Widget options",
     "exportingWidget": "Exporting widget..."
+  },
+  "v5": {
+    "persona": {
+      "label": "Role",
+      "kind": {
+        "pm": "Project Manager",
+        "line-manager": "Line Manager",
+        "staff": "Staff",
+        "rd": "R&D Manager",
+        "admin": "Admin"
+      }
+    }
   }
 }

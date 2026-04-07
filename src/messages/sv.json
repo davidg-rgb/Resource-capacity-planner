@@ -383,5 +383,17 @@
     "exportAsPdf": "Exportera som PDF",
     "widgetOptions": "Widgetalternativ",
     "exportingWidget": "Exporterar widget..."
+  },
+  "v5": {
+    "persona": {
+      "label": "Roll",
+      "kind": {
+        "pm": "Projektledare",
+        "line-manager": "Linjechef",
+        "staff": "Medarbetare",
+        "rd": "FoU-chef",
+        "admin": "Administratör"
+      }
+    }
   }
 }
