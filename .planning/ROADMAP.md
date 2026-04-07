@@ -60,7 +60,8 @@
 ### v5.0 Plan vs Actual + Approval Workflow
 
 - [x] **Phase 33: Foundations — ISO calendar + Swedish holidays** — Centralized ISO 8601 / 53-week math and Swedish holiday helpers (completed 2026-04-07)
-- [x] **Phase 34: Foundations — Personas, i18n catalog, historic-edit helper** — Role switcher context, empty SV/EN key catalog, server-now month helper (completed 2026-04-07)
+- [x] **Phase 34: Foundations — Personas, i18n catalog, historic-edit helper** — Role switcher context, empty SV/EN key catalog, server-now month helper
+ (completed 2026-04-07)
 - [ ] **Phase 35: Foundations — Universal change_log infrastructure** — `change_log` table + `recordChange` + eslint rule + codegen manifest + runtime invariant test
 - [ ] **Phase 36: Data model — v5.0 schema migrations** — Four new tables and the only existing-table mutation (`projects.lead_pm_person_id`)
 - [ ] **Phase 37: Actuals layer — services, distribution, plan-vs-actual cell** — Day-grain actuals with largest-remainder distribution and the reusable comparison cell
@@ -109,7 +110,8 @@
   2. Eslint rule `nordic/require-change-log` AST-walks `features/**/*.service.ts` and fails CI if any mutating function omits `recordChange` without an `@no-change-log` escape hatch
   3. `scripts/generate-mutations-manifest.ts` regenerates `tests/invariants/mutations.json` deterministically; CI fails when the committed manifest is stale
   4. Runtime invariant test calls every entry in the manifest and asserts ≥1 `recordChange` call (**TC-CL-005**)
-**Plans**: TBD
+**Plans:** 1/1 plans
+- [ ] 35-01-PLAN.md — change_log table + recordChange + nordic/require-change-log eslint rule + mutations manifest codegen + TC-CL-005 runtime invariant
 
 ### Phase 36: Data model — v5.0 schema migrations
 **Goal**: Land the four new tables (`allocation_proposals`, `actual_entries`, `import_batches`, `change_log`) plus the only existing-table mutation (`projects.lead_pm_person_id`) — strictly additive to the v4.0 schema.
@@ -243,7 +245,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 23-32 | v4.0 | -/- | Complete | 2026-04-01 |
 | 33. Foundations — ISO calendar | v5.0 | 1/1 | Complete    | 2026-04-07 |
 | 34. Foundations — Personas + i18n + helper | v5.0 | 1/1 | Complete    | 2026-04-07 |
-| 35. Foundations — change_log infrastructure | v5.0 | 0/0 | Not started | - |
+| 35. Foundations — change_log infrastructure | v5.0 | 0/1 | Not started | - |
 | 36. v5.0 schema migrations | v5.0 | 0/0 | Not started | - |
 | 37. Actuals layer | v5.0 | 0/0 | Not started | - |
 | 38. Excel import pipeline | v5.0 | 0/0 | Not started | - |
