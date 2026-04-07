@@ -65,7 +65,7 @@ Architecture frozen — each requirement traces to architecture sections and the
 
 ### Import Actuals Wizard (WIZ)
 
-- [ ] **WIZ-01** (S8): Import Actuals wizard accessible from Line Mgr + Admin menus — entry description, template download, drop zone, preview table, override checkbox, confirmation, rollback button (available 24h or until next import)
+- [x] **WIZ-01** (S8): Import Actuals wizard accessible from Line Mgr + Admin menus — entry description, template download, drop zone, preview table, override checkbox, confirmation, rollback button (available 24h or until next import)
 
 ### Admin Register Maintenance (ADM)
 
