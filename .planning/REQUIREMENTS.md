@@ -116,3 +116,57 @@ Architecture frozen — each requirement traces to architecture sections and the
 ## Traceability
 
 Filled by roadmapper — maps each REQ-ID to its phase.
+
+| REQ-ID | Phase |
+|--------|-------|
+| FOUND-V5-01 | Phase 33 |
+| FOUND-V5-02 | Phase 33 |
+| FOUND-V5-03 | Phase 34 |
+| FOUND-V5-05 | Phase 34 |
+| FOUND-V5-06 | Phase 34 |
+| FOUND-V5-04 | Phase 35 |
+| ACT-01 | Phase 36 |
+| IMP-01 | Phase 36 |
+| PROP-01 | Phase 36 |
+| PROP-02 | Phase 36 |
+| ACT-02 | Phase 37 |
+| ACT-03 | Phase 37 |
+| ACT-04 | Phase 37 |
+| ACT-05 | Phase 37 |
+| IMP-02 | Phase 38 |
+| IMP-03 | Phase 38 |
+| IMP-04 | Phase 38 |
+| IMP-05 | Phase 38 |
+| IMP-06 | Phase 38 |
+| IMP-07 | Phase 38 |
+| WIZ-01 | Phase 38 |
+| PROP-03 | Phase 39 |
+| PROP-04 | Phase 39 |
+| PROP-05 | Phase 39 |
+| PROP-06 | Phase 39 |
+| PROP-07 | Phase 39 |
+| PROP-08 | Phase 39 |
+| UX-V5-01 | Phase 40 |
+| UX-V5-02 | Phase 40 |
+| UX-V5-03 | Phase 40 |
+| UX-V5-11 | Phase 40 |
+| HIST-01 | Phase 40 |
+| UX-V5-04 | Phase 41 |
+| UX-V5-05 | Phase 41 |
+| UX-V5-06 | Phase 41 |
+| UX-V5-10 | Phase 41 |
+| UX-V5-07 | Phase 42 |
+| UX-V5-08 | Phase 42 |
+| UX-V5-09 | Phase 42 |
+| UX-V5-12 | Phase 42 |
+| ADM-01 | Phase 43 |
+| ADM-02 | Phase 43 |
+| ADM-03 | Phase 43 |
+| ADM-04 | Phase 43 |
+| API-V5-01 | Phase 44 |
+| API-V5-02 | Phase 44 |
+| TEST-V5-01 | Phase 44 |
+| TEST-V5-02 | Phase 44 |
+| LAUNCH-01 | Phase 45 |
+
+**Coverage:** 38/38 v5.0 requirements + 1 launch gate = 39/39 mapped (100%). No orphans, no duplicates.

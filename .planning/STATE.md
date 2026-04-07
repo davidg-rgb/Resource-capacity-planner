@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Plan vs Actual + Approval Workflow
-status: defining_requirements
-stopped_at: New milestone started — requirements + roadmap pending
+status: ready_to_plan
+stopped_at: Roadmap created — Phase 33 ready to plan
 last_updated: "2026-04-07T00:00:00Z"
 last_activity: 2026-04-07
 progress:
-  total_phases: 0
+  total_phases: 13
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -24,16 +24,35 @@ Planning artifacts (frozen):
 - .planning/v5.0-USER-JOURNEYS.md
 - .planning/v5.0-ARCHITECTURE.md
 - .planning/v5.0-HANDOFF.md
+- .planning/ROADMAP.md (v5.0 phases 33-45)
 
 **Core value:** Plan vs actual comparison + proposal/approval workflow + persona-scoped views — stop being a fancier Excel, start being a workflow tool.
-**Current focus:** v5.0 requirements + roadmap definition
+**Current focus:** v5.0 execution — Phase 33 (ISO calendar foundations)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: **Phase 33 — Foundations — ISO calendar + Swedish holidays**
 Plan: —
-Status: Defining requirements
-Last activity: 2026-04-07 — Milestone v5.0 started
+Status: **Not started**
+Last activity: 2026-04-07 — v5.0 roadmap created (13 phases, 38 reqs + 1 launch gate, 100% coverage)
+
+## v5.0 Phase Status
+
+| Phase | Name | Status |
+|-------|------|--------|
+| 33 | Foundations — ISO calendar + Swedish holidays | Not started |
+| 34 | Foundations — Personas, i18n catalog, historic-edit helper | Not started |
+| 35 | Foundations — Universal change_log infrastructure | Not started |
+| 36 | Data model — v5.0 schema migrations | Not started |
+| 37 | Actuals layer — services, distribution, plan-vs-actual cell | Not started |
+| 38 | Excel import pipeline | Not started |
+| 39 | Proposal / approval workflow | Not started |
+| 40 | Persona views Part 1 — PM | Not started |
+| 41 | Persona views Part 2 — Line Manager | Not started |
+| 42 | Persona views Part 3 — Staff, R&D, drill-down, zoom | Not started |
+| 43 | Admin register maintenance | Not started |
+| 44 | API hardening + test contract fill | Not started |
+| 45 | Launch gate — PDF export bug fix | Not started |
 
 ## Previous Milestones
 
@@ -51,7 +70,7 @@ Last activity: 2026-04-07 — Milestone v5.0 started
 - **ADR-004** Personas are UX shortcuts, not security boundaries. Role switcher in header, no real auth.
 - **Q2** Store actuals at day grain; accept input at day/week/month; default display monthly.
 - **Q3** Excel (.xlsx) primary format. Unique key `(org, person, project, date)`. Override checkbox unchecked by default.
-- **Q4** Hybrid: PM→line mgr approval for wishes, universal change_log for all edits. States: draft/proposed/approved/rejected.
+- **Q4** Hybrid: PM→line mgr approval for wishes, universal change_log for all edits. States: proposed/approved/rejected/withdrawn/superseded.
 - **Q5** Staff read-only "My Schedule" only.
 - **Q6** Historic edits allowed with soft warning, no hard locks, no mandatory reasons.
 - **ISO 8601** + 53-week year first-class. 2026 is a 53-week year. Swedish holidays 2026–2030 hardcoded in `lib/time/iso-calendar.ts`.
@@ -65,12 +84,12 @@ None.
 
 ### Blockers/Concerns
 
-- **PDF export bug (launch gate, not planning-blocker):** html2canvas still blank for non-SVG widgets. Phase 7.1 in architecture roadmap. Last attempt commit `9e19794`. Next try: swap to `html-to-image` or `modern-screenshot`.
+- **PDF export bug (launch gate, scheduled as Phase 45):** html2canvas still blank for non-SVG widgets. Last attempt commit `9e19794`. Next try: swap to `html-to-image` or `modern-screenshot`.
 
 ## Session Continuity
 
-Last session: 2026-04-07 (handoff + new-milestone kickoff)
-Stopped at: Requirements + roadmap pending
+Last session: 2026-04-07 (v5.0 roadmap created)
+Stopped at: Phase 33 ready to plan via `/gsd:plan-phase 33`
 
 ---
 
