@@ -1,10 +1,11 @@
-import { relations } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import {
   boolean,
   date,
   index,
   integer,
   jsonb,
+  numeric,
   pgEnum,
   pgTable,
   text,
@@ -12,6 +13,7 @@ import {
   unique,
   uuid,
   varchar,
+  type AnyPgColumn,
 } from 'drizzle-orm/pg-core';
 
 // ---------------------------------------------------------------------------
@@ -81,6 +83,17 @@ export const changeLogActionEnum = pgEnum('change_log_action', [
   'REGISTER_ROW_UPDATED',
   'REGISTER_ROW_DELETED',
 ]);
+
+// v5.0 — Phase 36: proposal + actual entry enums (ARCHITECTURE §7.1, §7.2)
+export const proposalStatusEnum = pgEnum('proposal_status', [
+  'proposed',
+  'approved',
+  'rejected',
+  'withdrawn',
+  'superseded',
+]);
+
+export const actualSourceEnum = pgEnum('actual_source', ['import', 'manual']);
 
 // ---------------------------------------------------------------------------
 // Tables
@@ -200,6 +213,8 @@ export const projects = pgTable(
     name: varchar('name', { length: 200 }).notNull(),
     programId: uuid('program_id').references(() => programs.id),
     status: projectStatusEnum('status').default('active').notNull(),
+    // v5.0 — PROP-02 / ARCHITECTURE §7.0: PM who owns planning for this project.
+    leadPmPersonId: uuid('lead_pm_person_id').references(() => people.id),
     archivedAt: timestamp('archived_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true })
@@ -211,6 +226,9 @@ export const projects = pgTable(
     index('projects_org_status_idx').on(t.organizationId, t.status),
     unique('projects_org_name_uniq').on(t.organizationId, t.name),
     index('projects_program_idx').on(t.programId),
+    index('projects_lead_pm_idx')
+      .on(t.organizationId, t.leadPmPersonId)
+      .where(sql`${t.leadPmPersonId} IS NOT NULL`),
   ],
 );
 
@@ -541,6 +559,129 @@ export const changeLog = pgTable(
   ],
 );
 
+// v5.0 — Phase 36: import_batches (ARCHITECTURE §7.3 / IMP-01)
+export const importBatches = pgTable(
+  'import_batches',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organizations.id),
+    importSessionId: uuid('import_session_id')
+      .notNull()
+      .references(() => importSessions.id),
+    fileName: text('file_name').notNull(),
+    committedBy: text('committed_by').notNull(),
+    committedAt: timestamp('committed_at', { withTimezone: true }).defaultNow().notNull(),
+    overrideManualEdits: boolean('override_manual_edits').notNull(),
+    rowsInserted: integer('rows_inserted').notNull(),
+    rowsUpdated: integer('rows_updated').notNull(),
+    rowsSkippedManual: integer('rows_skipped_manual').notNull(),
+    rowsSkippedPriorBatch: integer('rows_skipped_prior_batch').default(0).notNull(),
+    reversalPayload: jsonb('reversal_payload'),
+    rolledBackAt: timestamp('rolled_back_at', { withTimezone: true }),
+    rolledBackBy: text('rolled_back_by'),
+    supersededAt: timestamp('superseded_at', { withTimezone: true }),
+    supersededByBatchId: uuid('superseded_by_batch_id').references(
+      (): AnyPgColumn => importBatches.id,
+    ),
+  },
+  (t) => [
+    index('batches_org_committed_idx').on(t.organizationId, t.committedAt.desc()),
+    index('batches_org_rollback_idx')
+      .on(t.organizationId, t.rolledBackAt)
+      .where(sql`${t.rolledBackAt} IS NULL`),
+  ],
+);
+
+// v5.0 — Phase 36: actual_entries (ARCHITECTURE §7.2 / ACT-01)
+export const actualEntries = pgTable(
+  'actual_entries',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organizations.id),
+    personId: uuid('person_id')
+      .notNull()
+      .references(() => people.id),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id),
+    date: date('date', { mode: 'string' }).notNull(),
+    hours: numeric('hours', { precision: 5, scale: 2 }).notNull(),
+    source: actualSourceEnum('source').notNull(),
+    importBatchId: uuid('import_batch_id').references(() => importBatches.id),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [
+    unique('actuals_org_person_project_date_uniq').on(
+      t.organizationId,
+      t.personId,
+      t.projectId,
+      t.date,
+    ),
+    index('actuals_org_date_idx').on(t.organizationId, t.date),
+    index('actuals_org_person_date_idx').on(t.organizationId, t.personId, t.date),
+    index('actuals_org_project_date_idx').on(t.organizationId, t.projectId, t.date),
+    index('actuals_batch_idx').on(t.importBatchId),
+  ],
+);
+
+// v5.0 — Phase 36: allocation_proposals (ARCHITECTURE §7.1 / PROP-01)
+export const allocationProposals = pgTable(
+  'allocation_proposals',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organizations.id),
+    personId: uuid('person_id')
+      .notNull()
+      .references(() => people.id),
+    projectId: uuid('project_id')
+      .notNull()
+      .references(() => projects.id),
+    month: date('month', { mode: 'string' }).notNull(),
+    proposedHours: numeric('proposed_hours', { precision: 5, scale: 2 }).notNull(),
+    note: varchar('note', { length: 1000 }),
+    status: proposalStatusEnum('status').default('proposed').notNull(),
+    rejectionReason: varchar('rejection_reason', { length: 1000 }),
+    requestedBy: text('requested_by').notNull(),
+    decidedBy: text('decided_by'),
+    decidedAt: timestamp('decided_at', { withTimezone: true }),
+    parentProposalId: uuid('parent_proposal_id').references(
+      (): AnyPgColumn => allocationProposals.id,
+      { onDelete: 'restrict' },
+    ),
+    targetDepartmentId: uuid('target_department_id')
+      .notNull()
+      .references(() => departments.id),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .defaultNow()
+      .notNull()
+      .$onUpdate(() => new Date()),
+  },
+  (t) => [
+    index('proposals_org_status_idx').on(t.organizationId, t.status),
+    index('proposals_org_dept_status_idx').on(t.organizationId, t.targetDepartmentId, t.status),
+    index('proposals_org_person_status_idx').on(t.organizationId, t.personId, t.status),
+    index('proposals_org_person_project_month_idx').on(
+      t.organizationId,
+      t.personId,
+      t.projectId,
+      t.month,
+    ),
+    index('proposals_requester_idx').on(t.requestedBy),
+    index('proposals_parent_idx').on(t.parentProposalId),
+  ],
+);
+
 // ---------------------------------------------------------------------------
 // Relations
 // ---------------------------------------------------------------------------
@@ -557,6 +698,9 @@ export const organizationsRelations = relations(organizations, ({ many }) => ({
   impersonationSessions: many(impersonationSessions),
   dashboardLayouts: many(dashboardLayouts),
   scenarios: many(scenarios),
+  importBatches: many(importBatches),
+  actualEntries: many(actualEntries),
+  allocationProposals: many(allocationProposals),
 }));
 
 export const departmentsRelations = relations(departments, ({ one, many }) => ({
@@ -565,6 +709,7 @@ export const departmentsRelations = relations(departments, ({ one, many }) => ({
     references: [organizations.id],
   }),
   people: many(people),
+  allocationProposals: many(allocationProposals),
 }));
 
 export const disciplinesRelations = relations(disciplines, ({ one, many }) => ({
@@ -597,6 +742,8 @@ export const peopleRelations = relations(people, ({ one, many }) => ({
     references: [departments.id],
   }),
   allocations: many(allocations),
+  actualEntries: many(actualEntries),
+  allocationProposals: many(allocationProposals),
 }));
 
 export const projectsRelations = relations(projects, ({ one, many }) => ({
@@ -608,7 +755,13 @@ export const projectsRelations = relations(projects, ({ one, many }) => ({
     fields: [projects.programId],
     references: [programs.id],
   }),
+  leadPm: one(people, {
+    fields: [projects.leadPmPersonId],
+    references: [people.id],
+  }),
   allocations: many(allocations),
+  actualEntries: many(actualEntries),
+  allocationProposals: many(allocationProposals),
 }));
 
 export const allocationsRelations = relations(allocations, ({ one }) => ({
@@ -736,5 +889,66 @@ export const scenarioTempEntitiesRelations = relations(scenarioTempEntities, ({ 
   discipline: one(disciplines, {
     fields: [scenarioTempEntities.disciplineId],
     references: [disciplines.id],
+  }),
+}));
+
+// v5.0 — Phase 36 relations
+export const importBatchesRelations = relations(importBatches, ({ one, many }) => ({
+  organization: one(organizations, {
+    fields: [importBatches.organizationId],
+    references: [organizations.id],
+  }),
+  importSession: one(importSessions, {
+    fields: [importBatches.importSessionId],
+    references: [importSessions.id],
+  }),
+  supersededByBatch: one(importBatches, {
+    fields: [importBatches.supersededByBatchId],
+    references: [importBatches.id],
+    relationName: 'batch_supersession',
+  }),
+  actualEntries: many(actualEntries),
+}));
+
+export const actualEntriesRelations = relations(actualEntries, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [actualEntries.organizationId],
+    references: [organizations.id],
+  }),
+  person: one(people, {
+    fields: [actualEntries.personId],
+    references: [people.id],
+  }),
+  project: one(projects, {
+    fields: [actualEntries.projectId],
+    references: [projects.id],
+  }),
+  importBatch: one(importBatches, {
+    fields: [actualEntries.importBatchId],
+    references: [importBatches.id],
+  }),
+}));
+
+export const allocationProposalsRelations = relations(allocationProposals, ({ one }) => ({
+  organization: one(organizations, {
+    fields: [allocationProposals.organizationId],
+    references: [organizations.id],
+  }),
+  person: one(people, {
+    fields: [allocationProposals.personId],
+    references: [people.id],
+  }),
+  project: one(projects, {
+    fields: [allocationProposals.projectId],
+    references: [projects.id],
+  }),
+  targetDepartment: one(departments, {
+    fields: [allocationProposals.targetDepartmentId],
+    references: [departments.id],
+  }),
+  parentProposal: one(allocationProposals, {
+    fields: [allocationProposals.parentProposalId],
+    references: [allocationProposals.id],
+    relationName: 'proposal_chain',
   }),
 }));
