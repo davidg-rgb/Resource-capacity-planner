@@ -1,54 +1,39 @@
 ---
 gsd_state_version: 1.0
-milestone: v4.0
-milestone_name: Dashboard Visualizations & Customization
-status: complete
-stopped_at: All 10 phases shipped (23-32)
-last_updated: "2026-04-01T14:00:00Z"
-last_activity: 2026-04-01
+milestone: v5.0
+milestone_name: Plan vs Actual + Approval Workflow
+status: defining_requirements
+stopped_at: New milestone started — requirements + roadmap pending
+last_updated: "2026-04-07T00:00:00Z"
+last_activity: 2026-04-07
 progress:
-  total_phases: 10
-  completed_phases: 10
-  total_plans: 14
-  completed_plans: 14
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Nordic Capacity -- Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-28)
-Spec: .planning/DASHBOARD-VISUALIZATIONS-SPEC.md (v2.0)
-UX Review: .planning/V13-SCENARIO-UX-REVIEW.md
-Roadmap: .planning/ROADMAP-V4.md
+See: .planning/PROJECT.md (updated 2026-04-07)
+Planning artifacts (frozen):
+- .planning/v5.0-FEEDBACK.md
+- .planning/v5.0-USER-JOURNEYS.md
+- .planning/v5.0-ARCHITECTURE.md
+- .planning/v5.0-HANDOFF.md
 
-**Core value:** Customizable dashboard with 13 visualizations that make the tool irreplaceable vs Excel
-**Current focus:** v4.0 complete — all 10 phases shipped, ready for review + testing
+**Core value:** Plan vs actual comparison + proposal/approval workflow + persona-scoped views — stop being a fancier Excel, start being a workflow tool.
+**Current focus:** v5.0 requirements + roadmap definition
 
 ## Current Position
 
-Phase: All complete
-Plan: 14/14 plans executed
-Status: v4.0 milestone complete — 149 files changed, 21,705 insertions
-Last activity: 2026-04-01
-
-Progress: [▓▓▓▓▓▓▓▓▓▓] 100% (v4.0)
-
-## Phase Status
-
-| Phase | Name | Status | Started | Completed |
-| ----- | ---- | ------ | ------- | --------- |
-| 23 | Dashboard Framework + V7 Person Card | Complete | 2026-04-01 | 2026-04-01 |
-| 24 | Full Data Layer (11 endpoints) | Complete | 2026-04-01 | 2026-04-01 |
-| 25 | Gauges + Sparklines (C1) | Complete | 2026-04-01 | 2026-04-01 |
-| 26 | Forecast + Stacked Area (C2a) | Complete | 2026-04-01 | 2026-04-01 |
-| 27 | Bench + Discipline Demand (C2b) | Complete | 2026-04-01 | 2026-04-01 |
-| 28 | Availability Finder + Conflicts (C3) | Complete | 2026-04-01 | 2026-04-01 |
-| 29 | Timeline + Program + Comparison (C4) | Complete | 2026-04-01 | 2026-04-01 |
-| 30 | Integration & Wiring (D) | Complete | 2026-04-01 | 2026-04-01 |
-| 31 | PDF Export Enhancement (E) | Complete | 2026-04-01 | 2026-04-01 |
-| 32 | What-If Scenarios (F) | Complete | 2026-04-01 | 2026-04-01 |
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-07 — Milestone v5.0 started
 
 ## Previous Milestones
 
@@ -57,46 +42,22 @@ Progress: [▓▓▓▓▓▓▓▓▓▓] 100% (v4.0)
 | v1.0 Core Platform | 1-10 | Complete | 2026-03-27 |
 | v2.0 Visibility & Insights | 11-17 | Complete | 2026-03-28 |
 | v3.0 Switch from Excel | 18-22 | Complete | 2026-03-30 |
-
-## Performance Metrics
-
-**Velocity:**
-- v1.0: 26 plans across 10 phases
-- v2.0: 16 plans across 7 phases
-- v3.0: 5 plans across 5 phases (lighter UX-focused phases)
+| v4.0 Dashboard Visualizations | 23-32 | Complete | 2026-04-01 |
 
 ## Accumulated Context
 
-### Decisions
+### v5.0 Locked Decisions (from FEEDBACK.md Q1–Q6 + ARCHITECTURE.md ADRs)
 
-Key architectural decisions for v4.0:
-- Client-side PDF generation via pdf().toBlob() instead of server-side API route (SVG snapshots are DOM-dependent)
-- SVG-to-PNG via Canvas at 2x resolution for crisp PDF output
-- Dynamic import of @react-pdf/renderer for code splitting
-- Widget IDs in wrappers match default-layouts.ts exactly (e.g., 'utilization-heat-map')
-- Widget Registry Pattern: central registry, adding widget = create component + register
-- Persona-based defaults: Line Manager + Project Leader get different layouts
-- Layout persistence: DB-backed JSONB, 4-tier resolution (personal → device clone → tenant → built-in)
-- Scenario isolation: ~31 new files, 0 modifications, separate DB tables/API routes/cache keys
-- Person 360: global overlay (React portal), not a widget
-- New dependency: @dnd-kit/core + @dnd-kit/sortable
-- dnd-kit chosen over react-beautiful-dnd (lighter, more accessible, actively maintained)
-- Sentinel value '__tenant_default__' for clerk_user_id in dashboard_layouts (NULL uniqueness workaround)
-- Module-level Map singleton for widget registry (no class/context needed)
-- Default time range: 3 months from current month, URL param overridable
-- Person 360 capacity thresholds: <80% available, >=80% fully-allocated, >100% overloaded
-- Person summary email returns null (people table has no email column, field kept for future)
-- v4 PersonSummaryResponse renamed to PersonDetailResponse to avoid collision with Phase 23 type
-- Quick-assign modal is shared component, not embedded in widgets
-- Conflict dismiss state in localStorage (key: nordic-capacity-dismissed-conflicts)
-- Redistribute modal validates total <= target before save
-- V2 uses custom HTML table with allocation bars (same pattern as heat-map-table)
-- V10 staffing gauge: inline SVG donut, no external chart lib
-- V10 program selector via config.programId (no program list endpoint yet)
-- V11 defaults to quarter-over-quarter with preset buttons
-- Cross-linking uses event bus (subscribe/emit) pattern, not shared state (ESLint strict rules)
-- allocation-trends and discipline-distribution wrapped as dashboard widgets via useProjectStaffing
-- Mobile layouts: essential subset (7-8 widgets) at colSpan 12, users can customize via edit mode
+- **ADR-004** Personas are UX shortcuts, not security boundaries. Role switcher in header, no real auth.
+- **Q2** Store actuals at day grain; accept input at day/week/month; default display monthly.
+- **Q3** Excel (.xlsx) primary format. Unique key `(org, person, project, date)`. Override checkbox unchecked by default.
+- **Q4** Hybrid: PM→line mgr approval for wishes, universal change_log for all edits. States: draft/proposed/approved/rejected.
+- **Q5** Staff read-only "My Schedule" only.
+- **Q6** Historic edits allowed with soft warning, no hard locks, no mandatory reasons.
+- **ISO 8601** + 53-week year first-class. 2026 is a 53-week year. Swedish holidays 2026–2030 hardcoded in `lib/time/iso-calendar.ts`.
+- **Largest-remainder** distribution for week/month → daily expansion (ADR-010).
+- **Universal change_log** enforced via eslint + codegen + runtime test (TC-CL-005).
+- **Strictly additive** to v4.0 — only existing-table change is `projects.lead_pm_person_id`.
 
 ### Pending Todos
 
@@ -104,17 +65,13 @@ None.
 
 ### Blockers/Concerns
 
-- SVG snapshot for chart-to-PDF: resolved in Phase 31 (Canvas 2x approach)
-- dnd-kit CSS Grid integration: resolved with strategy={() => null} and inline translate3d
-- Recharts 3.x gap shading: range-type [min,max] tuples instead of baseLine prop (deprecated)
-- MAX_GROUPS=8 for stacked area chart (top 7 + Other bucket per spec)
+- **PDF export bug (launch gate, not planning-blocker):** html2canvas still blank for non-SVG widgets. Phase 7.1 in architecture roadmap. Last attempt commit `9e19794`. Next try: swap to `html-to-image` or `modern-screenshot`.
 
 ## Session Continuity
 
-Last session: 2026-04-01
-Stopped at: Completed 31-01-PLAN.md (PDF Export Enhancement)
-Resume file: .planning/phases/31-pdf-export-enhancement/31-01-SUMMARY.md
+Last session: 2026-04-07 (handoff + new-milestone kickoff)
+Stopped at: Requirements + roadmap pending
 
 ---
 
-_Last updated: 2026-04-01_
+_Last updated: 2026-04-07_

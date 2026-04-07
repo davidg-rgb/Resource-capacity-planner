@@ -144,24 +144,49 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [x] Platform audit log (F-036 / PLAT-08) — Phase 10
 - [x] Cross-tenant user management via Clerk SDK (F-037 / PLAT-09) — Phase 10
 
-## Shipped: v2.0 Visibility & Insights (2026-03-28)
+## Shipped
 
-All v2.0 features delivered. See [MILESTONES.md](MILESTONES.md) for details.
+- **v1.0 MVP** (2026-03-27) — Core platform, auth, tenancy, grid, import, platform admin
+- **v2.0 Visibility & Insights** (2026-03-28) — Heat map, dashboards, alerts, project view, PDF export
+- **v3.0 Switch from Excel** (2026-03-30) — UX polish to make the app self-explanatory
+- **v4.0 Dashboard Visualizations & Customization** (2026-04-01) — 13 widgets, custom dashboards, scenarios
 
-## Current Milestone: v3.0 — Switch from Excel
+See [MILESTONES.md](MILESTONES.md) for details.
 
-**Goal:** Make the app self-explanatory enough that a line manager can import their spreadsheet, see immediate value, and never go back to Excel. No new features — UX clarity, role-based experience, and removing friction.
+## Current Milestone: v5.0 — Plan vs Actual + Approval Workflow
 
-**Target outcomes:**
-- [ ] Heat map is the front door — users land on team load view, not a person list
-- [ ] Navigation labels tell users what each view does, in their language
-- [ ] Overloaded people are impossible to miss (sorted to top, summary banner)
-- [ ] Import flows directly into the "wow" moment (heat map with their data)
-- [ ] A line manager can use the app without someone explaining what each tab does
+**Goal:** Transform Nordic Capacity from a "fancier Excel" into a workflow tool by introducing a plan-vs-actual layer (day-grain actuals), a PM→line-manager proposal/approval flow, and persona-scoped views. Strictly additive to the v4.0 schema.
 
-See [v3.0-ROADMAP.md](v3.0-ROADMAP.md) and [v3.0-REQUIREMENTS.md](v3.0-REQUIREMENTS.md) for phase breakdown and requirements.
+**Target features:**
+- Plan vs Actual layer — `actual_entries` (day grain), flexible input (day/week/month), comparison UI everywhere
+- Excel import pipeline — SheetJS, idempotent on `(org,person,project,date)`, override checkbox, rollback + supersession
+- Proposal/approval workflow — PM wishes → line mgr approval with state machine and audit trail
+- Persona-scoped views — 5 personas (PM, Line Mgr, Staff, R&D Mgr, Admin), role switcher header, 14 screens
+- Admin register maintenance — self-service CRUD with archive / dependent-row blocking
+- ISO 8601 + 53-week year — first-class, Swedish holidays 2026–2030 hardcoded
+- Universal change_log — eslint rule + codegen + runtime test enforcement
+- Historic edit guardrails — soft warning before editing current-month
+- Launch gate (separate): PDF export bug fix (html2canvas → html-to-image / modern-screenshot)
 
-### Out of Scope
+**Planning artifacts (frozen, do not re-review):**
+- [.planning/v5.0-FEEDBACK.md](v5.0-FEEDBACK.md) — client raw notes + 6 resolved decisions (Q1–Q6)
+- [.planning/v5.0-USER-JOURNEYS.md](v5.0-USER-JOURNEYS.md) — 5 personas, 11 journeys, 14-screen inventory
+- [.planning/v5.0-ARCHITECTURE.md](v5.0-ARCHITECTURE.md) — 11 ADRs, 4 new tables, ~30 modules, ~280 testable assertions (§15), 7-stage roadmap (§14)
+- [.planning/v5.0-HANDOFF.md](v5.0-HANDOFF.md) — cross-session handoff brief
+
+### v5.0 Non-Goals (from USER-JOURNEYS.md)
+
+- No real authentication — role switcher only (ADR-004)
+- No task/activity sub-dimension under projects
+- No multi-entry-per-day preservation (sum on import)
+- No notifications outside the app (email, Slack)
+- No staff actuals entry — read-only for staff
+- No hard locks on historic edits
+- No counter-proposal flow (deferred unless client pushes)
+- No drag-reorder of projects/people (drag-to-copy hours IS in scope)
+- No mobile-first design — desktop primary
+
+### Global Out of Scope
 
 - Stripe billing integration — 1-2 orgs initially, manual billing sufficient
 - SSO / SAML (F-023) — Enterprise feature, no demand from current clients
@@ -210,4 +235,4 @@ This document evolves at phase transitions and milestone boundaries.
 
 ---
 
-_Last updated: 2026-03-30 — Scope revised, v3.0 milestone defined_
+_Last updated: 2026-04-07 — v5.0 milestone started (Plan vs Actual + Approval Workflow)_
