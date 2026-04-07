@@ -9,6 +9,8 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky",
@@ -72,6 +74,7 @@
     "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^2.1.9"
   }
 }
