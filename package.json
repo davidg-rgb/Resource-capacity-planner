@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "generate:import-template": "tsx scripts/generate-import-template.ts",
     "generate:mutations-manifest": "tsx scripts/generate-mutations-manifest.ts",
     "check:mutations-manifest": "tsx scripts/generate-mutations-manifest.ts && git diff --exit-code tests/invariants/mutations.json",
     "format": "prettier --write .",
