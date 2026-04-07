@@ -5,13 +5,11 @@ import { RuleTester } from 'eslint';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const rule = require('../../../../eslint-rules/require-change-log');
 
-// Wire RuleTester's describe/it into vitest.
-// @ts-expect-error — RuleTester exposes these as runtime hooks per eslint docs.
-RuleTester.describe = describe;
-// @ts-expect-error — see above.
-RuleTester.it = it;
-// @ts-expect-error — see above.
-RuleTester.itOnly = it.only;
+// Wire RuleTester's describe/it into vitest. RuleTester exposes these as
+// runtime hooks per eslint docs; the types don't surface them.
+(RuleTester as unknown as { describe: typeof describe }).describe = describe;
+(RuleTester as unknown as { it: typeof it }).it = it;
+(RuleTester as unknown as { itOnly: typeof it.only }).itOnly = it.only;
 
 const ruleTester = new RuleTester({
   languageOptions: { ecmaVersion: 2022, sourceType: 'module' },
