@@ -37,6 +37,9 @@ export const importStatusEnum = pgEnum('import_status', [
   'importing',
   'completed',
   'failed',
+  // v5.0 — Phase 38 / Plan 38-02: actuals import pipeline two-stage flow.
+  'staged',
+  'committed',
 ]);
 
 export const announcementSeverityEnum = pgEnum('announcement_severity', [

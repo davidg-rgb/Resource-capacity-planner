@@ -43,6 +43,13 @@
       "when": 1775575413153,
       "tag": "0005_motionless_blob",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1775580352132,
+      "tag": "0006_import_status_staged_committed",
+      "breakpoints": true
     }
   ]
 }
