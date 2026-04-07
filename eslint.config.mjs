@@ -17,7 +17,10 @@ const eslintConfig = defineConfig([
   // AND the INCLUDE constant in scripts/generate-mutations-manifest.ts. Keep
   // them in sync; drift between the eslint rule and the codegen is a footgun.
   {
-    files: ['src/features/change-log/**/*.service.ts'],
+    files: [
+      'src/features/change-log/**/*.service.ts',
+      'src/features/actuals/**/*.service.ts',
+    ],
     plugins: { nordic },
     rules: { 'nordic/require-change-log': 'error' },
   },
