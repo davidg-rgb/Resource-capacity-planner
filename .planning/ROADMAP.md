@@ -247,7 +247,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 34. Foundations — Personas + i18n + helper | v5.0 | 1/1 | Complete    | 2026-04-07 |
 | 35. Foundations — change_log infrastructure | v5.0 | 1/1 | Complete    | 2026-04-07 |
 | 36. v5.0 schema migrations | v5.0 | 1/1 | Complete    | 2026-04-07 |
-| 37. Actuals layer | v5.0 | 0/0 | Not started | - |
+| 37. Actuals layer | v5.0 | 0/2 | Not started | - |
 | 38. Excel import pipeline | v5.0 | 0/0 | Not started | - |
 | 39. Proposal / approval workflow | v5.0 | 0/0 | Not started | - |
 | 40. Persona views Part 1 — PM | v5.0 | 0/0 | Not started | - |
