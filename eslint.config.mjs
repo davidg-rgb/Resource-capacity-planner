@@ -1,11 +1,26 @@
 import { defineConfig, globalIgnores } from 'eslint/config';
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import nextTs from 'eslint-config-next/typescript';
+import nordic from './eslint-rules/index.js';
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
   globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
+  // eslint-rules/ is CommonJS; TS rules about require() do not apply there.
+  {
+    files: ['eslint-rules/**/*.js'],
+    rules: { '@typescript-eslint/no-require-imports': 'off' },
+  },
+  // FOUND-V5-04: universal change_log enforcement.
+  // Phase 35 include list — later v5 feature dirs MUST extend BOTH this list
+  // AND the INCLUDE constant in scripts/generate-mutations-manifest.ts. Keep
+  // them in sync; drift between the eslint rule and the codegen is a footgun.
+  {
+    files: ['src/features/change-log/**/*.service.ts'],
+    plugins: { nordic },
+    rules: { 'nordic/require-change-log': 'error' },
+  },
   {
     rules: {
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
