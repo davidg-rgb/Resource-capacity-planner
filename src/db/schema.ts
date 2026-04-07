@@ -82,6 +82,7 @@ export const changeLogActionEnum = pgEnum('change_log_action', [
   'REGISTER_ROW_CREATED',
   'REGISTER_ROW_UPDATED',
   'REGISTER_ROW_DELETED',
+  'ACTUAL_UPSERTED',
 ]);
 
 // v5.0 — Phase 36: proposal + actual entry enums (ARCHITECTURE §7.1, §7.2)
