@@ -30,12 +30,12 @@ Architecture frozen — each requirement traces to architecture sections and the
 ### Excel Import Pipeline (IMP)
 
 - [x] **IMP-01**: `import_batches` table — `(id, organization_id, uploaded_by, filename, row_count, state enum('parsing'|'preview'|'committed'|'rolled_back'|'superseded'), override_manual bool, reversal_payload jsonb, created_at, committed_at, rolled_back_at)`
-- [ ] **IMP-02**: SheetJS-based parser accepts two layouts (row-per-entry canonical: `person_name, project_name, date, hours`; pivoted: dates across / projects down); US `WEEKNUM()` headers raise ValidationError code `ERR_US_WEEK_HEADERS`
+- [x] **IMP-02**: SheetJS-based parser accepts two layouts (row-per-entry canonical: `person_name, project_name, date, hours`; pivoted: dates across / projects down); US `WEEKNUM()` headers raise ValidationError code `ERR_US_WEEK_HEADERS`
 - [ ] **IMP-03**: Two-stage import flow — (a) parse → preview with row diff counts (new / updated / warnings), (b) explicit commit writes actuals + change_log
 - [ ] **IMP-04**: Idempotent re-import on unique key `(org, person, project, date)`; override checkbox "Skriv över manuella ändringar" unchecked by default; manual edits preserved unless override is checked
 - [ ] **IMP-05**: Rollback endpoint `POST /api/v5/imports/{id}/rollback` restores pre-batch state via `reversal_payload`; supersession tracking prevents reversal corruption on a second import over the same rows
-- [ ] **IMP-06**: Downloadable Excel template (`template_row_per_entry.xlsx`) linked from import wizard
-- [ ] **IMP-07**: Import preview shows unmatched person/project names with fuzzy suggestions before commit
+- [x] **IMP-06**: Downloadable Excel template (`template_row_per_entry.xlsx`) linked from import wizard
+- [x] **IMP-07**: Import preview shows unmatched person/project names with fuzzy suggestions before commit
 
 ### Proposal / Approval Workflow (PROP)
 

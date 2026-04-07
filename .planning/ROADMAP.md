@@ -148,7 +148,7 @@
   5. `template_row_per_entry.xlsx` is served as a static asset and matches parser expectations
 **Plans**: 3 plans
 Plans:
-- [ ] 38-01-PLAN.md — SheetJS parser (row-per-entry + pivoted) + name matcher + static xlsx template
+- [x] 38-01-PLAN.md — SheetJS parser (row-per-entry + pivoted) + name matcher + static xlsx template
 - [ ] 38-02-PLAN.md — Import service (parse/preview/commit/rollback/supersession) + migration 0006 + /api/v5/imports/* routes
 - [ ] 38-03-PLAN.md — Line Manager import wizard UI (WIZ-01) + i18n v5.import.* + rollback button
 **UI hint**: yes
@@ -252,7 +252,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 35. Foundations — change_log infrastructure | v5.0 | 1/1 | Complete    | 2026-04-07 |
 | 36. v5.0 schema migrations | v5.0 | 1/1 | Complete    | 2026-04-07 |
 | 37. Actuals layer | v5.0 | 2/2 | Complete    | 2026-04-07 |
-| 38. Excel import pipeline | v5.0 | 0/0 | Not started | - |
+| 38. Excel import pipeline | v5.0 | 1/3 | In Progress|  |
 | 39. Proposal / approval workflow | v5.0 | 0/0 | Not started | - |
 | 40. Persona views Part 1 — PM | v5.0 | 0/0 | Not started | - |
 | 41. Persona views Part 2 — Line Manager | v5.0 | 0/0 | Not started | - |
