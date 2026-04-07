@@ -15,7 +15,7 @@ async function seed() {
   const existing = await db
     .select()
     .from(schema.organizations)
-    .where(eq(schema.organizations.clerkOrgId, 'org_demo_seed'))
+    .where(eq(schema.organizations.slug, 'demo-engineering'))
     .limit(1);
 
   if (existing.length > 0) {
@@ -112,13 +112,23 @@ async function seed() {
   const [atlas, beacon, compass, legacy] = await db
     .insert(schema.projects)
     .values([
-      { organizationId: orgId, name: 'Project Atlas', status: 'active' as const },
-      { organizationId: orgId, name: 'Project Beacon', status: 'active' as const },
+      {
+        organizationId: orgId,
+        name: 'Project Atlas',
+        status: 'active' as const,
+        leadPmPersonId: anna.id,
+      },
+      {
+        organizationId: orgId,
+        name: 'Project Beacon',
+        status: 'active' as const,
+        leadPmPersonId: anna.id,
+      },
       { organizationId: orgId, name: 'Project Compass', status: 'planned' as const },
       { organizationId: orgId, name: 'Legacy System Migration', status: 'active' as const },
     ])
     .returning();
-  console.log('Created 4 projects...');
+  console.log('Created 4 projects (Atlas + Beacon PM = Anna)...');
 
   // f) Create 12+ allocations across people/projects for Apr-Sep 2026
   const allocationData = [
