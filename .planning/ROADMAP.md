@@ -96,7 +96,8 @@
   1. User can switch between PM, Line Mgr, Staff, R&D Mgr, Admin in the header; selection persists in localStorage and re-routes to that persona's landing page (**TC-PSN-001..006**)
   2. `src/messages/sv.json`, `src/messages/en.json`, and `src/messages/keys.ts` exist with empty values for every string referenced in §11.4, §6.13–§6.18, and §11.1; CI fails if any v5.0 component renders a hardcoded user-facing string
   3. `getServerNowMonthKey(tx)` is per-request cached and used by every historic-edit guard (consumed in TC-PS-005, TC-PS-006)
-**Plans**: TBD
+**Plans:** 1 plan
+- [ ] 34-01-PLAN.md — Persona context + switcher, v5 i18n key catalog + eslint guard, getServerNowMonthKey + isHistoricPeriod
 **UI hint**: yes
 
 ### Phase 35: Foundations — Universal change_log infrastructure
@@ -241,7 +242,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 22 | v3.0 | 0/? | Deferred (stretch) | - |
 | 23-32 | v4.0 | -/- | Complete | 2026-04-01 |
 | 33. Foundations — ISO calendar | v5.0 | 1/1 | Complete    | 2026-04-07 |
-| 34. Foundations — Personas + i18n + helper | v5.0 | 0/0 | Not started | - |
+| 34. Foundations — Personas + i18n + helper | v5.0 | 0/1 | Not started | - |
 | 35. Foundations — change_log infrastructure | v5.0 | 0/0 | Not started | - |
 | 36. v5.0 schema migrations | v5.0 | 0/0 | Not started | - |
 | 37. Actuals layer | v5.0 | 0/0 | Not started | - |
