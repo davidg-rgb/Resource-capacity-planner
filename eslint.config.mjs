@@ -20,6 +20,7 @@ const eslintConfig = defineConfig([
     files: [
       'src/features/change-log/**/*.service.ts',
       'src/features/actuals/**/*.service.ts',
+      'src/features/import/**/*.service.ts',
     ],
     plugins: { nordic },
     rules: { 'nordic/require-change-log': 'error' },

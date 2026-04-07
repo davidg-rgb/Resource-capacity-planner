@@ -3,6 +3,14 @@
     {
       "file": "src/features/actuals/actuals.service.ts",
       "export": "upsertActuals"
+    },
+    {
+      "file": "src/features/import/actuals-import.service.ts",
+      "export": "commitActualsBatch"
+    },
+    {
+      "file": "src/features/import/actuals-import.service.ts",
+      "export": "rollbackBatch"
     }
   ]
 }

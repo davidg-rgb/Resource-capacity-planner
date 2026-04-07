@@ -17,7 +17,11 @@ import { globSync } from 'glob';
 const MUTATING_RE =
   /^(create|update|delete|edit|submit|approve|reject|commit|rollback|upsert|archive|withdraw|bulk[A-Z])/;
 
-const INCLUDE = ['src/features/change-log/**/*.service.ts', 'src/features/actuals/**/*.service.ts'];
+const INCLUDE = [
+  'src/features/change-log/**/*.service.ts',
+  'src/features/actuals/**/*.service.ts',
+  'src/features/import/**/*.service.ts',
+];
 
 const OUTPUT = 'tests/invariants/mutations.json';
 
