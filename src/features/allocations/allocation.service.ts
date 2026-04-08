@@ -4,7 +4,11 @@ import * as XLSX from 'xlsx';
 import { db } from '@/db';
 import * as schema from '@/db/schema';
 import { normalizeMonth } from '@/lib/date-utils';
+import { NotFoundError } from '@/lib/errors';
+import { getServerNowMonthKey } from '@/lib/server/get-server-now-month-key';
+import { recordChange } from '@/features/change-log/change-log.service';
 
+import { HistoricEditNotConfirmedError } from './allocation.errors';
 import type {
   AllocationUpsert,
   BatchUpsertResult,
@@ -190,6 +194,142 @@ export async function batchUpsertAllocations(
 ): Promise<BatchUpsertResult> {
   return db.transaction(async (tx) => {
     return _applyAllocationUpsertsInTx(tx, orgId, allocations);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// v5.0 — Phase 40 / Plan 40-01: patchAllocation (single-row edit gate)
+// ---------------------------------------------------------------------------
+
+/**
+ * Args for patchAllocation — a single-row update that honors the historic
+ * edit soft-warn contract (D-15 / ARCHITECTURE §616-627 / HIST-01).
+ */
+export interface PatchAllocationArgs {
+  orgId: string;
+  actorPersonId: string;
+  allocationId: string;
+  hours: number; // integer hours (column is integer); 0 allowed (not a delete here — still writes 0)
+  confirmHistoric?: boolean;
+}
+
+export interface PatchAllocationResult {
+  allocation: {
+    id: string;
+    personId: string;
+    projectId: string;
+    monthKey: string;
+    hours: number;
+  };
+  changeLogAction: 'ALLOCATION_EDITED' | 'ALLOCATION_HISTORIC_EDITED';
+}
+
+/**
+ * Patch a single allocation row.
+ *
+ * - Loads the row scoped to `orgId`. Throws NotFoundError if missing.
+ * - Computes the server now monthKey via getServerNowMonthKey(tx) inside the tx.
+ * - If `row.monthKey < nowMonthKey` and `confirmHistoric !== true`, throws
+ *   HistoricEditNotConfirmedError (HTTP 409). No mutation, no change_log write.
+ * - On historic confirmed path, writes change_log action='ALLOCATION_HISTORIC_EDITED'
+ *   with context.confirmedHistoric=true.
+ * - On non-historic path, writes action='ALLOCATION_EDITED' with context.via='direct'.
+ * - All work (load, update, recordChange) happens inside a single drizzle tx
+ *   per ADR-003 (every mutation writes change_log in the same tx).
+ */
+export async function patchAllocation(args: PatchAllocationArgs): Promise<PatchAllocationResult> {
+  return db.transaction(async (tx) => {
+    const [existing] = await tx
+      .select({
+        id: schema.allocations.id,
+        personId: schema.allocations.personId,
+        projectId: schema.allocations.projectId,
+        month: schema.allocations.month,
+        hours: schema.allocations.hours,
+      })
+      .from(schema.allocations)
+      .where(
+        and(
+          eq(schema.allocations.organizationId, args.orgId),
+          eq(schema.allocations.id, args.allocationId),
+        ),
+      )
+      .limit(1);
+
+    if (!existing) {
+      throw new NotFoundError('Allocation', args.allocationId);
+    }
+
+    const monthKey = normalizeMonth(existing.month);
+    const nowMonthKey = await getServerNowMonthKey(
+      tx as unknown as Parameters<typeof getServerNowMonthKey>[0],
+    );
+    const isHistoric = monthKey < nowMonthKey; // strict '<'; current month is NOT historic
+
+    if (isHistoric && args.confirmHistoric !== true) {
+      throw new HistoricEditNotConfirmedError(monthKey, nowMonthKey);
+    }
+
+    const previousHours = existing.hours;
+
+    const [updated] = await tx
+      .update(schema.allocations)
+      .set({ hours: args.hours, updatedAt: new Date() })
+      .where(
+        and(
+          eq(schema.allocations.organizationId, args.orgId),
+          eq(schema.allocations.id, args.allocationId),
+        ),
+      )
+      .returning({
+        id: schema.allocations.id,
+        personId: schema.allocations.personId,
+        projectId: schema.allocations.projectId,
+        month: schema.allocations.month,
+        hours: schema.allocations.hours,
+      });
+
+    const action: 'ALLOCATION_EDITED' | 'ALLOCATION_HISTORIC_EDITED' = isHistoric
+      ? 'ALLOCATION_HISTORIC_EDITED'
+      : 'ALLOCATION_EDITED';
+
+    await recordChange(
+      {
+        orgId: args.orgId,
+        actorPersonaId: args.actorPersonId,
+        entity: 'allocation',
+        entityId: updated.id,
+        action,
+        previousValue: { hours: previousHours },
+        newValue: { hours: updated.hours },
+        context: isHistoric
+          ? {
+              via: 'direct',
+              confirmedHistoric: true,
+              personId: updated.personId,
+              projectId: updated.projectId,
+              month: monthKey,
+            }
+          : {
+              via: 'direct',
+              personId: updated.personId,
+              projectId: updated.projectId,
+              month: monthKey,
+            },
+      },
+      tx as unknown as Parameters<typeof recordChange>[1],
+    );
+
+    return {
+      allocation: {
+        id: updated.id,
+        personId: updated.personId,
+        projectId: updated.projectId,
+        monthKey: normalizeMonth(updated.month),
+        hours: updated.hours,
+      },
+      changeLogAction: action,
+    };
   });
 }
 
