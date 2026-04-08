@@ -60,7 +60,7 @@ Architecture frozen — each requirement traces to architecture sections and the
 - [ ] **UX-V5-08** (S10): R&D Manager portfolio grid — projects × months aggregate, project/group row toggle, drill-into-PM-view, long-horizon zoom (20–30 months forward) with 53-week handling
 - [ ] **UX-V5-09** (S11): Shared drill-down drawer component reused across personas
 - [ ] **UX-V5-10** (S12): Change log feed filterable by project/person/period/author with persona-scoped defaults
-- [ ] **UX-V5-11** (S13): Historic edit confirmation dialog on any edit to a period before `getServerNowMonthKey()`
+- [x] **UX-V5-11** (S13): Historic edit confirmation dialog on any edit to a period before `getServerNowMonthKey()`
 - [ ] **UX-V5-12**: Long-horizon timeline zoom levels (month/quarter/year) handle ISO 8601 and 53-week years correctly — week 53 gets its own column in 2026
 
 ### Import Actuals Wizard (WIZ)
@@ -76,7 +76,7 @@ Architecture frozen — each requirement traces to architecture sections and the
 
 ### Historic Edit Guardrails (HIST)
 
-- [ ] **HIST-01**: Any edit (direct or via proposal) targeting a period before the current month triggers a soft warning dialog; confirmation required; no hard lock even when actuals exist
+- [x] **HIST-01**: Any edit (direct or via proposal) targeting a period before the current month triggers a soft warning dialog; confirmation required; no hard lock even when actuals exist
 
 ### API Contract (API-V5)
 
