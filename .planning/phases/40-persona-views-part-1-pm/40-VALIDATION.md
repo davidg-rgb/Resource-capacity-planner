@@ -40,14 +40,15 @@ Populated by the planner per-plan from the Validation Architecture table in `40-
 
 | Test Code | Type | Location | Covers |
 |-----------|------|----------|--------|
-| TC-API-004 | PGlite contract | `src/app/api/v5/planning/allocations/__tests__/patch.contract.test.ts` | confirmHistoric plumbing + ALLOCATION_HISTORIC_EDITED write |
+| TC-API-004 | PGlite contract | `src/features/allocations/__tests__/patch-allocation.contract.test.ts` | confirmHistoric plumbing + ALLOCATION_EDITED write + 409 rejection |
+| TC-PS-006 | PGlite contract | `src/features/allocations/__tests__/patch-allocation.contract.test.ts` (combined with TC-API-004) | ALLOCATION_HISTORIC_EDITED row content (context.confirmedHistoric, before/after hours) |
 | TC-PS-005 | vitest component | `src/components/dialogs/__tests__/historic-edit-dialog.test.tsx` | historic dialog confirm path |
-| TC-PS-006 | PGlite integration | `src/features/allocations/__tests__/historic-edit.integration.test.ts` | ALLOCATION_HISTORIC_EDITED row content |
 | TC-PR-001 | PGlite integration | reuse `src/features/proposals/__tests__/proposal.service.create.test.ts` + new UI round-trip test | wish submit round-trip |
 | TC-UI-001 | RTL | `src/app/(app)/pm/__tests__/pm-home.test.tsx` | PM Home overview card render |
-| TC-UI-002 | RTL | `src/app/(app)/pm/__tests__/pm-project-timeline.test.tsx` | PM project timeline grid render |
-| TC-UI debounce | RTL + fake timers | `src/components/timeline/__tests__/cell-edit-debounce.test.tsx` | 600ms debounce direct-edit path |
-| TC-PSN-003 | RTL | `src/features/personas/__tests__/persona-switch-landing.test.tsx` | PM persona lands on /pm after switch |
+| TC-UI-002 | RTL | `src/app/(app)/pm/projects/[projectId]/__tests__/pm-timeline.test.tsx` | PM project timeline grid render |
+| TC-UI debounce | RTL + fake timers | `src/components/timeline/__tests__/PlanVsActualCell.test.tsx` | 600ms debounce direct-edit path |
+| TC-PSN-003 | RTL | `src/features/personas/__tests__/persona.context.test.tsx` | PM persona lands on /pm after switch |
+| UX-V5-03 My Wishes | RTL | `src/app/(app)/pm/__tests__/pm-wishes.test.tsx` | /pm/wishes mounts MyWishesPanel with proposed/approved/rejected tabs + resubmit affordance on rejected cards |
 
 ---
 
@@ -57,8 +58,7 @@ Wave 0 (as recommended by 40-RESEARCH.md) MUST land before any UI work so UI tes
 
 - [ ] `src/app/api/v5/planning/allocations/[id]/route.ts` — `PATCH` handler (new)
 - [ ] `src/features/allocations/allocation.service.ts` — `patchAllocation({ id, hours, confirmHistoric })` branch that calls `getServerNowMonthKey`, evaluates `isHistoricPeriod`, rejects on `!confirmHistoric`, writes `ALLOCATION_HISTORIC_EDITED` when confirmed
-- [ ] `src/app/api/v5/planning/allocations/__tests__/patch.contract.test.ts` — PGlite contract test scaffold (TC-API-004)
-- [ ] `src/features/allocations/__tests__/historic-edit.integration.test.ts` — PGlite integration scaffold (TC-PS-006)
+- [ ] `src/features/allocations/__tests__/patch-allocation.contract.test.ts` — PGlite contract test covering TC-API-004 + TC-PS-006 combined (direct write path + historic row-content assertions in a single file)
 
 ---
 
@@ -75,7 +75,7 @@ Wave 0 (as recommended by 40-RESEARCH.md) MUST land before any UI work so UI tes
 
 - [ ] All tasks have `<automated>` verify or Wave 0 dependencies
 - [ ] Sampling continuity: no 3 consecutive tasks without automated verify
-- [ ] Wave 0 covers all MISSING references (TC-API-004, TC-PS-005, TC-PS-006)
+- [ ] Wave 0 covers all MISSING references (TC-API-004 + TC-PS-006 combined, TC-PS-005)
 - [ ] No watch-mode flags in commands
 - [ ] Feedback latency < 120s
 - [ ] `nyquist_compliant: true` set in frontmatter
