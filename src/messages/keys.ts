@@ -9,6 +9,12 @@
 
 export const K = {
   v5: {
+    historicEdit: {
+      title: 'historicEdit.title',
+      body: 'historicEdit.body',
+      cancel: 'historicEdit.cancel',
+      confirm: 'historicEdit.confirm',
+    },
     persona: {
       label: 'persona.label',
       kind: {

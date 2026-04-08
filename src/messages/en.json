@@ -385,6 +385,12 @@
     "exportingWidget": "Exporting widget..."
   },
   "v5": {
+    "historicEdit": {
+      "title": "Historic edit",
+      "body": "You are editing historic planning for {month}. This affects past reports. Continue?",
+      "cancel": "Cancel",
+      "confirm": "Continue"
+    },
     "pm": {
       "home": {
         "title": "My projects",

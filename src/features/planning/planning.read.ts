@@ -119,6 +119,9 @@ export async function getPmOverview(args: {
 export interface CellView {
   personId: string;
   monthKey: string;
+  /** v5.0 Phase 40 Plan 04: allocation row id for PATCH /api/v5/planning/allocations/[id].
+   * Null when no allocation row exists for this (person, month) cell. */
+  allocationId: string | null;
   plannedHours: number;
   actualHours: number | null;
   pendingProposal: { id: string; proposedHours: number; proposerId: string } | null;
@@ -153,6 +156,7 @@ export async function getPmTimeline(args: {
   // 3. Query allocations for this project in the date range.
   const allocRows = await db
     .select({
+      id: schema.allocations.id,
       personId: schema.allocations.personId,
       month: schema.allocations.month,
       hours: schema.allocations.hours,
@@ -189,11 +193,14 @@ export async function getPmTimeline(args: {
     departmentId: p.departmentId ?? null,
   }));
 
-  // 5. Index planned hours by `${personId}::${monthKey}`.
+  // 5. Index planned hours + allocation id by `${personId}::${monthKey}`.
   const plannedByKey = new Map<string, number>();
+  const allocIdByKey = new Map<string, string>();
   for (const row of allocRows) {
     const monthKey = normalizeMonth(row.month);
-    plannedByKey.set(`${row.personId}::${monthKey}`, Number(row.hours));
+    const key = `${row.personId}::${monthKey}`;
+    plannedByKey.set(key, Number(row.hours));
+    allocIdByKey.set(key, row.id);
   }
 
   // 6. Query pending proposals for this project in the date range.
@@ -244,6 +251,7 @@ export async function getPmTimeline(args: {
       cells.push({
         personId: person.id,
         monthKey,
+        allocationId: allocIdByKey.get(key) ?? null,
         plannedHours: plannedByKey.get(key) ?? 0,
         actualHours: actualsByKey.has(key) ? (actualsByKey.get(key) as number) : null,
         pendingProposal: pendingByKey.get(key) ?? null,

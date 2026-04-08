@@ -385,6 +385,12 @@
     "exportingWidget": "Exporterar widget..."
   },
   "v5": {
+    "historicEdit": {
+      "title": "Historisk redigering",
+      "body": "Du redigerar historisk planering för {month}. Detta påverkar tidigare rapporter. Fortsätt?",
+      "cancel": "Avbryt",
+      "confirm": "Fortsätt"
+    },
     "pm": {
       "home": {
         "title": "Mina projekt",
