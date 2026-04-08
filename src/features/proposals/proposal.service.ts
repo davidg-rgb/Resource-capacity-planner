@@ -7,18 +7,16 @@
 //
 // Approve / reject / resubmit arrive in Plans 39-03 and 39-04.
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- `ne` reserved for Plan 39-03 approve/reject
 import { and, desc, eq, inArray, ne } from 'drizzle-orm';
 
 import { db } from '@/db';
 import * as schema from '@/db/schema';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- reserved for Plan 39-03 approveProposal
+
 import { _applyAllocationUpsertsInTx } from '@/features/allocations/allocation.service';
 import { recordChange } from '@/features/change-log/change-log.service';
 import {
   ForbiddenError,
   NotFoundError,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- reserved for Plan 39-03 approveProposal
   ProposalNotActiveError,
   ValidationError,
 } from '@/lib/errors';
@@ -307,5 +305,249 @@ export async function resubmitProposal(input: ResubmitProposalInput): Promise<Pr
     );
 
     return toProposalDTO(row, person.departmentId);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Plan 39-03: approveProposal / rejectProposal
+// ---------------------------------------------------------------------------
+
+export interface ApproveProposalInput {
+  orgId: string;
+  proposalId: string;
+  callerUserId: string;
+  callerClaimedDepartmentId: string;
+  actorPersonaId: string;
+}
+
+export interface RejectProposalInput {
+  orgId: string;
+  proposalId: string;
+  callerUserId: string;
+  callerClaimedDepartmentId: string;
+  reason: string;
+  actorPersonaId: string;
+}
+
+/**
+ * PROP-05 / PROP-07: approve a proposed allocation proposal.
+ * Conditional UPDATE winner + supersede siblings + write-through + dual change_log.
+ */
+export async function approveProposal(input: ApproveProposalInput): Promise<ProposalDTO> {
+  return db.transaction(async (tx) => {
+    const [winner] = await tx
+      .update(schema.allocationProposals)
+      .set({
+        status: 'approved',
+        decidedBy: input.callerUserId,
+        decidedAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(schema.allocationProposals.organizationId, input.orgId),
+          eq(schema.allocationProposals.id, input.proposalId),
+          eq(schema.allocationProposals.status, 'proposed'),
+        ),
+      )
+      .returning();
+    if (!winner) {
+      throw new ProposalNotActiveError(
+        'Proposal is not in proposed state (concurrent approval or already decided)',
+      );
+    }
+
+    const [livePerson] = await tx
+      .select({ id: schema.people.id, departmentId: schema.people.departmentId })
+      .from(schema.people)
+      .where(
+        and(eq(schema.people.organizationId, input.orgId), eq(schema.people.id, winner.personId)),
+      )
+      .limit(1);
+    if (!livePerson) throw new NotFoundError('Person', winner.personId);
+    if (livePerson.departmentId !== input.callerClaimedDepartmentId) {
+      throw new ForbiddenError(
+        'Caller department does not match proposal target department (live person routing)',
+      );
+    }
+
+    const superseded = await tx
+      .update(schema.allocationProposals)
+      .set({ status: 'superseded', updatedAt: new Date() })
+      .where(
+        and(
+          eq(schema.allocationProposals.organizationId, input.orgId),
+          eq(schema.allocationProposals.personId, winner.personId),
+          eq(schema.allocationProposals.projectId, winner.projectId),
+          eq(schema.allocationProposals.month, winner.month),
+          eq(schema.allocationProposals.status, 'proposed'),
+          ne(schema.allocationProposals.id, winner.id),
+        ),
+      )
+      .returning({ id: schema.allocationProposals.id });
+
+    for (const s of superseded) {
+      await recordChange(
+        {
+          orgId: input.orgId,
+          actorPersonaId: input.actorPersonaId,
+          entity: 'proposal',
+          entityId: s.id,
+          action: 'PROPOSAL_WITHDRAWN',
+          previousValue: { status: 'proposed' },
+          newValue: { status: 'superseded' },
+          context: { reason: 'superseded_by', winnerId: winner.id },
+        },
+        tx as unknown as Parameters<typeof recordChange>[1],
+      );
+    }
+
+    const monthNormalized = normalizeMonth(winner.month);
+    const [priorAlloc] = await tx
+      .select({ id: schema.allocations.id, hours: schema.allocations.hours })
+      .from(schema.allocations)
+      .where(
+        and(
+          eq(schema.allocations.organizationId, input.orgId),
+          eq(schema.allocations.personId, winner.personId),
+          eq(schema.allocations.projectId, winner.projectId),
+          eq(schema.allocations.month, winner.month),
+        ),
+      )
+      .limit(1);
+
+    const proposedHoursInt = Math.round(Number(winner.proposedHours));
+    await _applyAllocationUpsertsInTx(tx, input.orgId, [
+      {
+        personId: winner.personId,
+        projectId: winner.projectId,
+        month: monthNormalized,
+        hours: proposedHoursInt,
+      },
+    ]);
+
+    const [newAlloc] = await tx
+      .select({ id: schema.allocations.id, hours: schema.allocations.hours })
+      .from(schema.allocations)
+      .where(
+        and(
+          eq(schema.allocations.organizationId, input.orgId),
+          eq(schema.allocations.personId, winner.personId),
+          eq(schema.allocations.projectId, winner.projectId),
+          eq(schema.allocations.month, winner.month),
+        ),
+      )
+      .limit(1);
+
+    await recordChange(
+      {
+        orgId: input.orgId,
+        actorPersonaId: input.actorPersonaId,
+        entity: 'proposal',
+        entityId: winner.id,
+        action: 'PROPOSAL_APPROVED',
+        previousValue: { status: 'proposed' },
+        newValue: {
+          status: 'approved',
+          decidedBy: winner.decidedBy,
+          decidedAt: winner.decidedAt ? winner.decidedAt.toISOString() : null,
+        },
+        context: {
+          proposalId: winner.id,
+          liveDepartmentId: livePerson.departmentId,
+          supersededSiblings: superseded.map((s) => s.id),
+        },
+      },
+      tx as unknown as Parameters<typeof recordChange>[1],
+    );
+
+    if (newAlloc) {
+      await recordChange(
+        {
+          orgId: input.orgId,
+          actorPersonaId: input.actorPersonaId,
+          entity: 'allocation',
+          entityId: newAlloc.id,
+          action: 'ALLOCATION_EDITED',
+          previousValue: priorAlloc ? { hours: Number(priorAlloc.hours) } : null,
+          newValue: { hours: Number(newAlloc.hours) },
+          context: {
+            via: 'proposal',
+            proposalId: winner.id,
+            personId: winner.personId,
+            projectId: winner.projectId,
+            month: monthNormalized,
+          },
+        },
+        tx as unknown as Parameters<typeof recordChange>[1],
+      );
+    }
+
+    return toProposalDTO(winner, livePerson.departmentId);
+  });
+}
+
+/**
+ * PROP-05: reject a proposed proposal. Requires non-empty reason <= 1000 chars.
+ */
+export async function rejectProposal(input: RejectProposalInput): Promise<ProposalDTO> {
+  if (!input.reason || input.reason.trim().length === 0) {
+    throw new ValidationError('Rejection reason is required', 'REASON_REQUIRED');
+  }
+  if (input.reason.length > 1000) {
+    throw new ValidationError('Rejection reason must be <= 1000 chars', 'REASON_TOO_LONG');
+  }
+
+  return db.transaction(async (tx) => {
+    const [winner] = await tx
+      .update(schema.allocationProposals)
+      .set({
+        status: 'rejected',
+        decidedBy: input.callerUserId,
+        decidedAt: new Date(),
+        rejectionReason: input.reason,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(schema.allocationProposals.organizationId, input.orgId),
+          eq(schema.allocationProposals.id, input.proposalId),
+          eq(schema.allocationProposals.status, 'proposed'),
+        ),
+      )
+      .returning();
+    if (!winner) {
+      throw new ProposalNotActiveError('Proposal is not in proposed state');
+    }
+
+    const [livePerson] = await tx
+      .select({ departmentId: schema.people.departmentId })
+      .from(schema.people)
+      .where(
+        and(eq(schema.people.organizationId, input.orgId), eq(schema.people.id, winner.personId)),
+      )
+      .limit(1);
+    if (!livePerson) throw new NotFoundError('Person', winner.personId);
+    if (livePerson.departmentId !== input.callerClaimedDepartmentId) {
+      throw new ForbiddenError(
+        'Caller department does not match proposal target department (live person routing)',
+      );
+    }
+
+    await recordChange(
+      {
+        orgId: input.orgId,
+        actorPersonaId: input.actorPersonaId,
+        entity: 'proposal',
+        entityId: winner.id,
+        action: 'PROPOSAL_REJECTED',
+        previousValue: { status: 'proposed' },
+        newValue: { status: 'rejected', rejectionReason: input.reason },
+        context: { proposalId: winner.id, liveDepartmentId: livePerson.departmentId },
+      },
+      tx as unknown as Parameters<typeof recordChange>[1],
+    );
+
+    return toProposalDTO(winner, livePerson.departmentId);
   });
 }
