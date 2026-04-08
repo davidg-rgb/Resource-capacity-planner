@@ -11,7 +11,7 @@ import { AgGridReact } from 'ag-grid-react';
 
 import type { CellView, PmTimelineView } from '@/features/planning/planning.read';
 import { PmTimelineCell } from './pm-timeline-cell';
-import { buildTimelineColumns } from './timeline-columns';
+import { buildTimelineColumns, type TimelineZoom } from './timeline-columns';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -26,6 +26,9 @@ export interface TimelineGridProps {
     hours: number;
     confirmHistoric?: boolean;
   }) => Promise<void>;
+  /** v5.0 Phase 42 Plan 42-03: month (default) | quarter | year. Re-renders columns
+   *  client-side by re-aggregating month-grain data from row state. */
+  zoom?: TimelineZoom;
 }
 
 interface TimelineRow {
@@ -59,9 +62,12 @@ function PmTimelineCellRenderer(params: ICellRendererParams<TimelineRow, CellVie
 }
 
 export function TimelineGrid(props: TimelineGridProps) {
-  const { view, currentMonth, onAllocationPatch } = props;
+  const { view, currentMonth, onAllocationPatch, zoom = 'month' } = props;
 
-  const columnDefs = useMemo(() => buildTimelineColumns(view.monthRange), [view.monthRange]);
+  const columnDefs = useMemo(
+    () => buildTimelineColumns(view.monthRange, zoom),
+    [view.monthRange, zoom],
+  );
 
   const rowData = useMemo<TimelineRow[]>(() => {
     // Index cells by `${personId}::${monthKey}` for O(1) pivot.

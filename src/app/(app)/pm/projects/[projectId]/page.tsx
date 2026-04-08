@@ -13,6 +13,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePersona } from '@/features/personas/persona.context';
 import { generateMonthRange, getCurrentMonth } from '@/lib/date-utils';
 import { TimelineGrid } from '@/components/timeline/timeline-grid';
+import { ZoomControls } from '@/components/timeline/zoom-controls';
+import { useZoom } from '@/components/timeline/useZoom';
 import type { PmTimelineView } from '@/features/planning/planning.read';
 
 function defaultMonthWindow(): { from: string; to: string } {
@@ -42,6 +44,7 @@ export default function PmProjectTimelinePage() {
   const tScreens = useTranslations('v5.screens.pmTimeline');
 
   const { from, to } = defaultMonthWindow();
+  const [zoom, setZoom] = useZoom();
   const enabled = !!projectId && persona.kind === 'pm';
   const queryClient = useQueryClient();
 
@@ -70,9 +73,19 @@ export default function PmProjectTimelinePage() {
 
   return (
     <div className="space-y-4 p-8">
-      <h1 className="font-headline text-2xl font-bold">{data.project.name}</h1>
-      <div className="text-on-surface-variant text-sm">{t('title')}</div>
-      <TimelineGrid view={data} currentMonth={getCurrentMonth()} onAllocationPatch={handlePatch} />
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-headline text-2xl font-bold">{data.project.name}</h1>
+          <div className="text-on-surface-variant text-sm">{t('title')}</div>
+        </div>
+        <ZoomControls value={zoom} onChange={setZoom} />
+      </div>
+      <TimelineGrid
+        view={data}
+        currentMonth={getCurrentMonth()}
+        onAllocationPatch={handlePatch}
+        zoom={zoom}
+      />
     </div>
   );
 }

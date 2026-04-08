@@ -37,6 +37,11 @@ export const K = {
         pendingBadge: 'timeline.cell.pendingBadge',
         planActualSeparator: 'timeline.cell.planActualSeparator',
       },
+      zoom: {
+        month: 'timeline.zoom.month',
+        quarter: 'timeline.zoom.quarter',
+        year: 'timeline.zoom.year',
+      },
     },
     approval: {
       approve: 'approval.approve',
@@ -251,6 +256,16 @@ export const K = {
         priorBatchActive: 'import.error.priorBatchActive',
         unresolvedNames: 'import.error.unresolvedNames',
         generic: 'import.error.generic',
+      },
+    },
+    staff: {
+      title: 'staff.title',
+      empty: 'staff.empty',
+      noPersonaHint: 'staff.noPersonaHint',
+      summaryStrip: {
+        planned: 'staff.summaryStrip.planned',
+        actual: 'staff.summaryStrip.actual',
+        utilization: 'staff.summaryStrip.utilization',
       },
     },
     lineManager: {

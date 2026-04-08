@@ -18,6 +18,8 @@ import { useTranslations } from 'next-intl';
 
 import { DesktopOnlyScreen } from '@/components/responsive/desktop-only-screen';
 import { LineManagerTimelineGrid } from '@/components/timeline/line-manager-timeline-grid';
+import { ZoomControls } from '@/components/timeline/zoom-controls';
+import { useZoom } from '@/components/timeline/useZoom';
 import { PersonaGate } from '@/features/personas/persona-route-guard';
 import { usePersona } from '@/features/personas/persona.context';
 import { generateMonthRange, getCurrentMonth } from '@/lib/date-utils';
@@ -67,6 +69,7 @@ function LineManagerTimelineInner() {
   const { persona } = usePersona();
   const t = useTranslations('v5.lineManager');
   const queryClient = useQueryClient();
+  const [zoom, setZoom] = useZoom();
 
   const departmentId = persona.kind === 'line-manager' ? persona.departmentId : '';
 
@@ -110,6 +113,7 @@ function LineManagerTimelineInner() {
     <div className="space-y-4 p-6">
       <div className="flex items-start justify-between gap-4">
         <h1 className="font-headline text-2xl font-bold">{title}</h1>
+        <ZoomControls value={zoom} onChange={setZoom} />
       </div>
       {!departmentId && (
         <div className="text-on-surface-variant p-4 text-sm">

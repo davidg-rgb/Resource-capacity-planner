@@ -391,6 +391,16 @@
       "cancel": "Cancel",
       "confirm": "Continue"
     },
+    "staff": {
+      "title": "My schedule",
+      "empty": "No approved allocations in this range.",
+      "noPersonaHint": "Switch to the Staff persona to view your schedule.",
+      "summaryStrip": {
+        "planned": "Planned",
+        "actual": "Actual",
+        "utilization": "Utilization"
+      }
+    },
     "lineManager": {
       "desktopOnlyMessage": "This view requires a screen at least 768px wide. Please open it on a desktop.",
       "home": {
@@ -473,6 +483,11 @@
         "emDash": "",
         "pendingBadge": "",
         "planActualSeparator": ""
+      },
+      "zoom": {
+        "month": "Month",
+        "quarter": "Quarter",
+        "year": "Year"
       }
     },
     "approval": {

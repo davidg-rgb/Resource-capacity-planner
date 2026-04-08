@@ -391,6 +391,16 @@
       "cancel": "Avbryt",
       "confirm": "Fortsätt"
     },
+    "staff": {
+      "title": "Mitt schema",
+      "empty": "Inga godkända allokeringar i perioden.",
+      "noPersonaHint": "Byt till personan Medarbetare för att se ditt schema.",
+      "summaryStrip": {
+        "planned": "Planerat",
+        "actual": "Utfall",
+        "utilization": "Beläggning"
+      }
+    },
     "lineManager": {
       "desktopOnlyMessage": "Den här vyn kräver en skärm på minst 768px. Öppna sidan på en dator.",
       "home": {
@@ -473,6 +483,11 @@
         "emDash": "—",
         "pendingBadge": "Väntar",
         "planActualSeparator": " / "
+      },
+      "zoom": {
+        "month": "Månad",
+        "quarter": "Kvartal",
+        "year": "År"
       }
     },
     "approval": {
