@@ -1,12 +1,30 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { render, screen, act } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import type { ReactNode } from 'react';
 
 import { PersonaProvider, usePersona } from '../persona.context';
 import { getLandingRoute } from '../persona.routes';
 import type { Persona } from '../persona.types';
+
+/**
+ * Plan 40-03 added `useQueryClient()` to PersonaProvider for D-20 persona-scoped
+ * query-key invalidation. All tests must therefore be wrapped in a
+ * QueryClientProvider (Rule 1 fix — pre-existing tests broke silently until
+ * Plan 40-05 Task 1b forced a rerun).
+ */
+function makeQc() {
+  return new QueryClient({
+    defaultOptions: { queries: { retry: false, gcTime: 0 } },
+  });
+}
+
+function Wrap({ qc, children }: { qc?: QueryClient; children: ReactNode }) {
+  return <QueryClientProvider client={qc ?? makeQc()}>{children}</QueryClientProvider>;
+}
 
 function Probe({ onReady }: { onReady?: (api: ReturnType<typeof usePersona>) => void }) {
   const api = usePersona();
@@ -26,9 +44,11 @@ describe('persona.context', () => {
 
   it('TC-PSN-001: defaults to admin when localStorage is empty', () => {
     render(
-      <PersonaProvider>
-        <Probe />
-      </PersonaProvider>,
+      <Wrap>
+        <PersonaProvider>
+          <Probe />
+        </PersonaProvider>
+      </Wrap>,
     );
     expect(screen.getByTestId('kind').textContent).toBe('admin');
   });
@@ -36,9 +56,11 @@ describe('persona.context', () => {
   it("TC-PSN-002: setPersona persists to localStorage under key 'nc:persona'", () => {
     let api: ReturnType<typeof usePersona> | undefined;
     render(
-      <PersonaProvider>
-        <Probe onReady={(a) => (api = a)} />
-      </PersonaProvider>,
+      <Wrap>
+        <PersonaProvider>
+          <Probe onReady={(a) => (api = a)} />
+        </PersonaProvider>
+      </Wrap>,
     );
     const next: Persona = { kind: 'pm', personId: 'p1', displayName: 'Anna' };
     act(() => {
@@ -48,13 +70,15 @@ describe('persona.context', () => {
     expect(stored).toEqual(next);
   });
 
-  it('TC-PSN-003: hydrates persona from localStorage on mount', () => {
+  it('hydrates persona from localStorage on mount', () => {
     const stored: Persona = { kind: 'line-manager', departmentId: 'd1', displayName: 'Bo' };
     window.localStorage.setItem('nc:persona', JSON.stringify(stored));
     render(
-      <PersonaProvider>
-        <Probe />
-      </PersonaProvider>,
+      <Wrap>
+        <PersonaProvider>
+          <Probe />
+        </PersonaProvider>
+      </Wrap>,
     );
     expect(screen.getByTestId('kind').textContent).toBe('line-manager');
     expect(screen.getByTestId('name').textContent).toBe('Bo');
@@ -75,7 +99,13 @@ describe('persona.context', () => {
     const orig = console.error;
     console.error = () => {};
     try {
-      expect(() => render(<Probe />)).toThrow(/usePersona must be used inside PersonaProvider/);
+      expect(() =>
+        render(
+          <Wrap>
+            <Probe />
+          </Wrap>,
+        ),
+      ).toThrow(/usePersona must be used inside PersonaProvider/);
     } finally {
       console.error = orig;
     }
@@ -84,11 +114,52 @@ describe('persona.context', () => {
   it('corrupt localStorage falls back to admin and clears the key', () => {
     window.localStorage.setItem('nc:persona', '{not json');
     render(
-      <PersonaProvider>
-        <Probe />
-      </PersonaProvider>,
+      <Wrap>
+        <PersonaProvider>
+          <Probe />
+        </PersonaProvider>
+      </Wrap>,
     );
     expect(screen.getByTestId('kind').textContent).toBe('admin');
     expect(window.localStorage.getItem('nc:persona')).toBeNull();
+  });
+
+  /**
+   * TC-PSN-003 (Plan 40-05 Wave 4): setPersona invalidates every persona-scoped
+   * query key (D-20 in Plan 40-03). Router.push on persona change is covered
+   * separately by persona-switcher.test.tsx TC-PSN-006.
+   */
+  it('TC-PSN-003: setPersona invalidates persona-scoped query keys (incl. pm-home)', () => {
+    const qc = makeQc();
+    const spy = vi.spyOn(qc, 'invalidateQueries');
+
+    let api: ReturnType<typeof usePersona> | undefined;
+    render(
+      <Wrap qc={qc}>
+        <PersonaProvider>
+          <Probe onReady={(a) => (api = a)} />
+        </PersonaProvider>
+      </Wrap>,
+    );
+
+    spy.mockClear();
+    act(() => {
+      api!.setPersona({
+        kind: 'pm',
+        personId: 'p-anna',
+        displayName: 'Anna',
+        homeDepartmentId: 'dept-A',
+      });
+    });
+
+    expect(spy).toHaveBeenCalled();
+    // pm-home must be one of the invalidated keys (Plan 40-03 D-20 allow-list).
+    const invalidatedKeys = spy.mock.calls
+      .map((call) => {
+        const arg = call[0] as { queryKey?: unknown[] } | undefined;
+        return Array.isArray(arg?.queryKey) ? arg.queryKey[0] : undefined;
+      })
+      .filter((k) => typeof k === 'string');
+    expect(invalidatedKeys).toContain('pm-home');
   });
 });
