@@ -50,9 +50,9 @@ Architecture frozen — each requirement traces to architecture sections and the
 
 ### Persona Views & Screens (UX-V5)
 
-- [ ] **UX-V5-01** (S1): Role switcher header globally available; switching role changes default landing + scope without page reload
+- [x] **UX-V5-01** (S1): Role switcher header globally available; switching role changes default landing + scope without page reload
 - [x] **UX-V5-02** (S2, S3): PM Home + project timeline — overview card, horizontal month-column timeline with plan-vs-actual cells, inline edit with approval gate
-- [ ] **UX-V5-03** (S4): PM "My Wishes" panel (proposed / approved / rejected tabs, resubmit)
+- [x] **UX-V5-03** (S4): PM "My Wishes" panel (proposed / approved / rejected tabs, resubmit)
 - [ ] **UX-V5-04** (S5): Line Mgr Home capacity heatmap — rows = people, cols = months, thresholds: green 60–90%, red >100%, yellow <60%, grey absence
 - [ ] **UX-V5-05** (S6): Line Mgr group timeline with project breakdown, direct edit, change log visible
 - [ ] **UX-V5-06** (S7): Approval queue with impact preview, approve/reject; counter-proposal explicitly out of scope
