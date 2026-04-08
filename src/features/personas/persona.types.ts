@@ -4,7 +4,7 @@
  */
 
 export type Persona =
-  | { kind: 'pm'; personId: string; displayName: string }
+  | { kind: 'pm'; personId: string; displayName: string; homeDepartmentId?: string }
   | { kind: 'line-manager'; departmentId: string; displayName: string }
   | { kind: 'staff'; personId: string; displayName: string }
   | { kind: 'rd'; displayName: string }
