@@ -69,6 +69,8 @@ export const changeLogEntityEnum = pgEnum('change_log_entity', [
   'department',
   'discipline',
   'import_batch',
+  // v5.0 — Phase 43 / Plan 43-01: admin register coverage (migration 0008).
+  'program',
 ]);
 
 export const changeLogActionEnum = pgEnum('change_log_action', [
@@ -134,9 +136,14 @@ export const departments = pgTable(
       .notNull()
       .references(() => organizations.id),
     name: varchar('name', { length: 100 }).notNull(),
+    // v5.0 — Phase 43 / Plan 43-01: soft-delete via archive (migration 0007).
+    archivedAt: timestamp('archived_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
-  (t) => [unique('departments_org_name_uniq').on(t.organizationId, t.name)],
+  (t) => [
+    unique('departments_org_name_uniq').on(t.organizationId, t.name),
+    index('departments_org_archived_idx').on(t.organizationId, t.archivedAt),
+  ],
 );
 
 // c) Disciplines — tenant-scoped
@@ -149,9 +156,14 @@ export const disciplines = pgTable(
       .references(() => organizations.id),
     name: varchar('name', { length: 50 }).notNull(),
     abbreviation: varchar('abbreviation', { length: 10 }).notNull(),
+    // v5.0 — Phase 43 / Plan 43-01: soft-delete via archive (migration 0007).
+    archivedAt: timestamp('archived_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
-  (t) => [unique('disciplines_org_abbr_uniq').on(t.organizationId, t.abbreviation)],
+  (t) => [
+    unique('disciplines_org_abbr_uniq').on(t.organizationId, t.abbreviation),
+    index('disciplines_org_archived_idx').on(t.organizationId, t.archivedAt),
+  ],
 );
 
 // d) Programs — tenant-scoped
@@ -164,13 +176,18 @@ export const programs = pgTable(
       .references(() => organizations.id),
     name: varchar('name', { length: 200 }).notNull(),
     description: varchar('description', { length: 500 }),
+    // v5.0 — Phase 43 / Plan 43-01: soft-delete via archive (migration 0007).
+    archivedAt: timestamp('archived_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true })
       .defaultNow()
       .notNull()
       .$onUpdate(() => new Date()),
   },
-  (t) => [unique('programs_org_name_uniq').on(t.organizationId, t.name)],
+  (t) => [
+    unique('programs_org_name_uniq').on(t.organizationId, t.name),
+    index('programs_org_archived_idx').on(t.organizationId, t.archivedAt),
+  ],
 );
 
 // e) People — tenant-scoped, refs departments + disciplines
@@ -228,6 +245,8 @@ export const projects = pgTable(
   },
   (t) => [
     index('projects_org_status_idx').on(t.organizationId, t.status),
+    // v5.0 — Phase 43 / Plan 43-01: index for admin register archive filter.
+    index('projects_org_archived_idx').on(t.organizationId, t.archivedAt),
     unique('projects_org_name_uniq').on(t.organizationId, t.name),
     index('projects_program_idx').on(t.programId),
     index('projects_lead_pm_idx')

@@ -50,6 +50,20 @@
       "when": 1775580352132,
       "tag": "0006_import_status_staged_committed",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1775944800000,
+      "tag": "0007_register_archive",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1775944800001,
+      "tag": "0008_change_log_entity_program",
+      "breakpoints": true
     }
   ]
 }
