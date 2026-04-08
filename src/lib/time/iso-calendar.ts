@@ -214,3 +214,88 @@ export function isHistoricPeriod(monthKey: string, nowMonthKey: string): boolean
   }
   return monthKey < nowMonthKey;
 }
+
+// ---------------------------------------------------------------------------
+// v5.0 — Phase 42 Wave 0: quarter / year range helpers for long-horizon zoom.
+//
+// Contract: month → quarter mapping is calendar-quarter (Jan-Mar = Q1, etc.),
+// but the YEAR portion uses the ISO-week-numbering year of the MAJORITY of the
+// month's working days. This handles the 2026 Dec ↔ 2027 Jan boundary where
+// week 53 of ISO-2026 spans Dec 28–31 2026: those days belong to ISO year
+// 2026, so December 2026's majority lives in ISO 2026 → '2026-Q4'.
+// ---------------------------------------------------------------------------
+
+function parseMonthKey(monthKey: string): { year: number; monthIndex: number } {
+  if (!MONTH_KEY_RE.test(monthKey)) {
+    throw new ValidationError(`Invalid monthKey: ${monthKey}`, 'INVALID_DATE');
+  }
+  const [y, m] = monthKey.split('-').map(Number);
+  return { year: y, monthIndex: m - 1 };
+}
+
+/**
+ * Returns the quarter key (e.g. '2026-Q4') for a given month key.
+ * Quarter is the calendar quarter (1-3=Q1, 4-6=Q2, 7-9=Q3, 10-12=Q4).
+ * Year is the ISO-week-numbering year of the majority of working days in the month.
+ */
+export function quarterKeyForMonth(monthKey: string): string {
+  const { year, monthIndex } = parseMonthKey(monthKey);
+  const quarter = Math.floor(monthIndex / 3) + 1;
+  // Compute ISO-year majority across the month's working days.
+  const workDays = workDaysInMonth(year, monthIndex);
+  const counts = new Map<number, number>();
+  for (const iso of workDays) {
+    const [yy, mm, dd] = iso.split('-').map(Number);
+    const isoYear = getISOWeekYear(new Date(Date.UTC(yy, mm - 1, dd)));
+    counts.set(isoYear, (counts.get(isoYear) ?? 0) + 1);
+  }
+  let majorityYear = year;
+  let bestCount = -1;
+  for (const [yr, n] of counts) {
+    if (n > bestCount) {
+      bestCount = n;
+      majorityYear = yr;
+    }
+  }
+  return `${majorityYear}-Q${quarter}`;
+}
+
+/**
+ * Returns the year key (e.g. '2026') for a given month key — ISO-year majority semantics.
+ */
+export function yearKeyForMonth(monthKey: string): string {
+  return quarterKeyForMonth(monthKey).slice(0, 4);
+}
+
+/**
+ * Enumerate the unique quarter buckets covering `monthRange`, in order.
+ * E.g. ['2026-01'..'2026-12'] → ['2026-Q1','2026-Q2','2026-Q3','2026-Q4'].
+ */
+export function rangeQuarters(monthRange: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const m of monthRange) {
+    const q = quarterKeyForMonth(m);
+    if (!seen.has(q)) {
+      seen.add(q);
+      out.push(q);
+    }
+  }
+  return out;
+}
+
+/**
+ * Enumerate the unique year buckets covering `monthRange`, in order.
+ */
+export function rangeYears(monthRange: string[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const m of monthRange) {
+    const y = yearKeyForMonth(m);
+    if (!seen.has(y)) {
+      seen.add(y);
+      out.push(y);
+    }
+  }
+  return out;
+}
