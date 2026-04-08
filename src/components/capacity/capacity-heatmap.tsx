@@ -2,9 +2,9 @@
 // Line Manager capacity heatmap. Rows = people, columns = months, sticky
 // header row and sticky first column. Dumb component — parent fetches.
 //
-// Deliberately does NOT import from @/features/analytics or
-// @/components/heat-map — those are v4 thresholds (>100 / <50) which do
-// not match v5 spec (under <60 / ok 60–100 / over >100 / absent).
+// Deliberately isolated from v4 analytics / heat-map modules — those use
+// v4 thresholds (>100 / <50) which do not match v5 spec (under <60 /
+// ok 60–100 / over >100 / absent).
 
 'use client';
 
