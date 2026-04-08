@@ -383,6 +383,32 @@ export const K = {
           projects: 'admin.register.dependentRowsExist.projects',
           leadPm: 'admin.register.dependentRowsExist.leadPm',
         },
+        forbidden: 'admin.register.forbidden',
+        form: {
+          person: {
+            firstName: 'admin.register.form.person.firstName',
+            lastName: 'admin.register.form.person.lastName',
+            discipline: 'admin.register.form.person.discipline',
+            department: 'admin.register.form.person.department',
+            targetHoursPerMonth: 'admin.register.form.person.targetHoursPerMonth',
+          },
+          project: {
+            name: 'admin.register.form.project.name',
+            program: 'admin.register.form.project.program',
+            status: 'admin.register.form.project.status',
+          },
+          department: {
+            name: 'admin.register.form.department.name',
+          },
+          discipline: {
+            name: 'admin.register.form.discipline.name',
+            abbreviation: 'admin.register.form.discipline.abbreviation',
+          },
+          program: {
+            name: 'admin.register.form.program.name',
+            description: 'admin.register.form.program.description',
+          },
+        },
       },
     },
     proposals: {

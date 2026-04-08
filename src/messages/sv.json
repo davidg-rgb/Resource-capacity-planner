@@ -758,6 +758,32 @@
           "people": "{count} personer",
           "projects": "{count} projekt",
           "leadPm": "{count} projekt där denna person är ansvarig PM"
+        },
+        "forbidden": "Du behöver administratörsbehörighet för att hantera register.",
+        "form": {
+          "person": {
+            "firstName": "Förnamn",
+            "lastName": "Efternamn",
+            "discipline": "Disciplin",
+            "department": "Avdelning",
+            "targetHoursPerMonth": "Måltimmar per månad"
+          },
+          "project": {
+            "name": "Namn",
+            "program": "Program",
+            "status": "Status"
+          },
+          "department": {
+            "name": "Namn"
+          },
+          "discipline": {
+            "name": "Namn",
+            "abbreviation": "Förkortning"
+          },
+          "program": {
+            "name": "Namn",
+            "description": "Beskrivning"
+          }
         }
       }
     },

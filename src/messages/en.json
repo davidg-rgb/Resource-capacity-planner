@@ -693,6 +693,32 @@
           "people": "{count} people",
           "projects": "{count} projects",
           "leadPm": "{count} projects where this person is lead PM"
+        },
+        "forbidden": "You need admin privileges to manage registers.",
+        "form": {
+          "person": {
+            "firstName": "First name",
+            "lastName": "Last name",
+            "discipline": "Discipline",
+            "department": "Department",
+            "targetHoursPerMonth": "Target hours per month"
+          },
+          "project": {
+            "name": "Name",
+            "program": "Program",
+            "status": "Status"
+          },
+          "department": {
+            "name": "Name"
+          },
+          "discipline": {
+            "name": "Name",
+            "abbreviation": "Abbreviation"
+          },
+          "program": {
+            "name": "Name",
+            "description": "Description"
+          }
         }
       }
     },
