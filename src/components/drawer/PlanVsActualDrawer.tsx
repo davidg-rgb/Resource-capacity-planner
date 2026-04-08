@@ -29,6 +29,15 @@ export type DailyBreakdownRow = {
   delta: number;
 };
 
+/** Phase 42 / Plan 42-04 (D-17): R&D project-person-breakdown row. */
+export type ProjectPersonRow = {
+  personId: string;
+  personName: string;
+  planned: number;
+  actual: number;
+  delta: number;
+};
+
 export interface PlanVsActualDrawerProps {
   orgId: string;
   /** Optional fetcher injection (tests). Defaults to the server action. */
@@ -36,6 +45,11 @@ export interface PlanVsActualDrawerProps {
     orgId: string,
     args: { personId: string; projectId: string; monthKey: string },
   ) => Promise<DailyBreakdownRow[]>;
+  /** Optional project-person-breakdown fetcher (mode='project-person-breakdown'). */
+  projectPersonFetcher?: (
+    orgId: string,
+    args: { projectId: string; monthKey: string },
+  ) => Promise<ProjectPersonRow[]>;
   /** Override context (e.g. controlled outside the provider). */
   contextOverride?: DrawerContext | null;
 }
@@ -54,17 +68,35 @@ async function defaultFetcher(
   }));
 }
 
+async function defaultProjectPersonFetcher(
+  orgId: string,
+  args: { projectId: string; monthKey: string },
+): Promise<ProjectPersonRow[]> {
+  const mod = await import('@/features/actuals/actuals.cell.actions');
+  const rows = await mod.getProjectPersonBreakdownAction(orgId, args);
+  return rows.map((r) => ({
+    personId: r.personId,
+    personName: r.personName,
+    planned: r.planned,
+    actual: r.actual,
+    delta: r.delta,
+  }));
+}
+
 function formatHours(value: number): string {
   return value.toFixed(2);
 }
 
 export function PlanVsActualDrawer(props: PlanVsActualDrawerProps) {
-  const { orgId, fetcher, contextOverride } = props;
+  const { orgId, fetcher, projectPersonFetcher, contextOverride } = props;
   const t = useTranslations('v5.drawer');
   const store = usePlanVsActualDrawer();
   const context = contextOverride !== undefined ? contextOverride : store.context;
   const isOpen = context !== null;
   const fetchFn = fetcher ?? defaultFetcher;
+  const projectPersonFn = projectPersonFetcher ?? defaultProjectPersonFetcher;
+  const isDaily = context?.mode === 'daily';
+  const isProjectPersonBreakdown = context?.mode === 'project-person-breakdown';
 
   const query = useQuery({
     queryKey: [
@@ -75,9 +107,7 @@ export function PlanVsActualDrawer(props: PlanVsActualDrawerProps) {
       context?.monthKey ?? '',
     ],
     queryFn: () => {
-      // Phase 42 D-17: 'project-person-breakdown' mode has personId=null and is
-      // handled by a separate fetcher (Wave 3). The 'daily' mode invariant is
-      // enforced here so existing PM/LM call sites keep their string contract.
+      // Phase 42 D-17: daily mode invariant — non-null personId required.
       if (context!.mode !== 'daily' || context!.personId === null) {
         throw new Error(
           `PlanVsActualDrawer: daily fetch requires mode='daily' with non-null personId (got mode='${context!.mode}')`,
@@ -89,7 +119,17 @@ export function PlanVsActualDrawer(props: PlanVsActualDrawerProps) {
         monthKey: context!.monthKey,
       });
     },
-    enabled: isOpen,
+    enabled: isOpen && isDaily,
+  });
+
+  const projectPersonQuery = useQuery({
+    queryKey: ['drawer-project-person', orgId, context?.projectId ?? '', context?.monthKey ?? ''],
+    queryFn: () =>
+      projectPersonFn(orgId, {
+        projectId: context!.projectId,
+        monthKey: context!.monthKey,
+      }),
+    enabled: isOpen && isProjectPersonBreakdown,
   });
 
   // Esc to close.
@@ -110,8 +150,11 @@ export function PlanVsActualDrawer(props: PlanVsActualDrawerProps) {
     month: context.monthLabel,
   });
 
-  const rows = query.data ?? [];
-  const showEmpty = !query.isLoading && !query.error && rows.length === 0;
+  const dailyRows = query.data ?? [];
+  const personRows = projectPersonQuery.data ?? [];
+  const activeQuery = isProjectPersonBreakdown ? projectPersonQuery : query;
+  const activeRowsLen = isProjectPersonBreakdown ? personRows.length : dailyRows.length;
+  const showEmpty = !activeQuery.isLoading && !activeQuery.error && activeRowsLen === 0;
 
   return (
     <div
@@ -135,15 +178,15 @@ export function PlanVsActualDrawer(props: PlanVsActualDrawerProps) {
           </button>
         </header>
 
-        {query.isLoading && <p className={styles.status}>{t('loading')}</p>}
-        {query.error && <p className={styles.status}>{t('error')}</p>}
+        {activeQuery.isLoading && <p className={styles.status}>{t('loading')}</p>}
+        {activeQuery.error && <p className={styles.status}>{t('error')}</p>}
         {showEmpty && (
           <p className={styles.status} data-testid="drawer-empty">
             {t('empty')}
           </p>
         )}
 
-        {rows.length > 0 && (
+        {isDaily && dailyRows.length > 0 && (
           <table className={styles.table} data-testid="drawer-table">
             <thead>
               <tr>
@@ -154,9 +197,32 @@ export function PlanVsActualDrawer(props: PlanVsActualDrawerProps) {
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => (
+              {dailyRows.map((r) => (
                 <tr key={r.date} data-testid="drawer-row">
                   <td>{r.date}</td>
+                  <td>{formatHours(r.planned)}</td>
+                  <td>{formatHours(r.actual)}</td>
+                  <td>{formatHours(r.delta)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+
+        {isProjectPersonBreakdown && personRows.length > 0 && (
+          <table className={styles.table} data-testid="drawer-project-person-table">
+            <thead>
+              <tr>
+                <th>{t('dateColumn')}</th>
+                <th>{t('plannedColumn')}</th>
+                <th>{t('actualColumn')}</th>
+                <th>{t('deltaColumn')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {personRows.map((r) => (
+                <tr key={r.personId} data-testid="drawer-person-row">
+                  <td>{r.personName}</td>
                   <td>{formatHours(r.planned)}</td>
                   <td>{formatHours(r.actual)}</td>
                   <td>{formatHours(r.delta)}</td>

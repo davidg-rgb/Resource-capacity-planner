@@ -133,7 +133,10 @@ describe('TC-API-001: GET /api/v5/planning/allocations?scope=staff', () => {
       person: { id: string; name: string };
       monthRange: string[];
       projects: Array<{ projectId: string; months: Record<string, { plannedHours: number }> }>;
-      summaryStrip: Record<string, { plannedHours: number; actualHours: number; utilizationPct: number }>;
+      summaryStrip: Record<
+        string,
+        { plannedHours: number; actualHours: number; utilizationPct: number }
+      >;
     };
 
     expect(body.person.id).toBe(SARA_ID);
@@ -147,6 +150,67 @@ describe('TC-API-001: GET /api/v5/planning/allocations?scope=staff', () => {
   it('400 when personId is missing for scope=staff', async () => {
     const res = await GET(
       req(`/api/v5/planning/allocations?scope=staff&startMonth=2026-06&endMonth=2026-07`) as never,
+    );
+    expect(res.status).toBe(400);
+  });
+});
+
+describe('TC-API-001: GET /api/v5/planning/allocations?scope=rd', () => {
+  it("returns getPortfolioGrid shape with default groupBy='project'", async () => {
+    await testDb.execute(sql`
+      INSERT INTO allocations (organization_id, person_id, project_id, month, hours)
+      VALUES (${ORG_ID}, ${SARA_ID}, ${PROJ_X}, '2026-06-01', 40)
+    `);
+
+    const res = await GET(
+      req(`/api/v5/planning/allocations?scope=rd&startMonth=2026-06&endMonth=2026-07`) as never,
+    );
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as {
+      groupBy: 'project' | 'department';
+      monthRange: string[];
+      rows: Array<{
+        id: string;
+        label: string;
+        meta: { kind: 'project' | 'department' };
+        months: Record<string, { plannedHours: number; actualHours: number }>;
+      }>;
+    };
+    expect(body.groupBy).toBe('project');
+    expect(body.monthRange).toEqual(['2026-06', '2026-07']);
+    expect(body.rows).toHaveLength(1);
+    expect(body.rows[0]!.id).toBe(PROJ_X);
+    expect(body.rows[0]!.meta.kind).toBe('project');
+    expect(body.rows[0]!.months['2026-06']!.plannedHours).toBe(40);
+  });
+
+  it("returns getPortfolioGrid with groupBy='department'", async () => {
+    await testDb.execute(sql`
+      INSERT INTO allocations (organization_id, person_id, project_id, month, hours)
+      VALUES (${ORG_ID}, ${SARA_ID}, ${PROJ_X}, '2026-06-01', 40)
+    `);
+
+    const res = await GET(
+      req(
+        `/api/v5/planning/allocations?scope=rd&groupBy=department&startMonth=2026-06&endMonth=2026-06`,
+      ) as never,
+    );
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as {
+      groupBy: 'project' | 'department';
+      rows: Array<{ id: string; meta: { kind: 'department' } }>;
+    };
+    expect(body.groupBy).toBe('department');
+    expect(body.rows).toHaveLength(1);
+    expect(body.rows[0]!.id).toBe(DEPT_A);
+    expect(body.rows[0]!.meta.kind).toBe('department');
+  });
+
+  it('400 when groupBy is invalid', async () => {
+    const res = await GET(
+      req(
+        `/api/v5/planning/allocations?scope=rd&groupBy=invalid&startMonth=2026-06&endMonth=2026-07`,
+      ) as never,
     );
     expect(res.status).toBe(400);
   });

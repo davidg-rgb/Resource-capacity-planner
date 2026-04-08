@@ -218,10 +218,7 @@ export async function getGroupTimeline(args: {
   // Index: personId → projectId → { name, months: Map<monthKey, hours>, ids: Map<monthKey, id> }
   const byPerson = new Map<
     string,
-    Map<
-      string,
-      { name: string; months: Map<string, number>; ids: Map<string, string> }
-    >
+    Map<string, { name: string; months: Map<string, number>; ids: Map<string, string> }>
   >();
   for (const row of allocRows) {
     let projects = byPerson.get(row.personId);
@@ -262,6 +259,286 @@ export async function getGroupTimeline(args: {
   });
 
   return { monthRange, persons };
+}
+
+// ---------------------------------------------------------------------------
+// R&D Portfolio grid (Phase 42 / Plan 42-04, D-04..D-08)
+// ---------------------------------------------------------------------------
+
+export interface PortfolioGridRow {
+  /** projectId or departmentId depending on groupBy */
+  id: string;
+  label: string;
+  meta: { kind: 'project' | 'department' };
+  /** monthKey -> { plannedHours, actualHours } */
+  months: Record<string, { plannedHours: number; actualHours: number }>;
+}
+
+export interface PortfolioGridResult {
+  groupBy: 'project' | 'department';
+  monthRange: string[];
+  rows: PortfolioGridRow[];
+}
+
+/**
+ * R&D portfolio aggregation across the entire org.
+ *
+ * - groupBy='project' → one row per project; planned = sum of approved
+ *   allocations on the project; actual = sum of actual_entries on the project.
+ * - groupBy='department' → one row per department; planned = sum of approved
+ *   allocations whose person belongs to the department; actual = sum of
+ *   actual_entries whose person belongs to the department.
+ *
+ * Approved-only invariant (D-05): pending allocation_proposals MUST NOT
+ * inflate planned totals.
+ */
+export async function getPortfolioGrid(args: {
+  orgId: string;
+  monthRange: { from: string; to: string };
+  groupBy: 'project' | 'department';
+}): Promise<PortfolioGridResult> {
+  const monthRange = expandMonthRange(args.monthRange.from, args.monthRange.to);
+  const dateRange = monthRangeToDateRange(args.monthRange);
+
+  // 1. Approved allocations in range, joined to projects + people (for dept).
+  const allocRows = await db
+    .select({
+      personId: schema.allocations.personId,
+      projectId: schema.allocations.projectId,
+      projectName: schema.projects.name,
+      departmentId: schema.people.departmentId,
+      month: schema.allocations.month,
+      hours: schema.allocations.hours,
+    })
+    .from(schema.allocations)
+    .innerJoin(schema.projects, eq(schema.projects.id, schema.allocations.projectId))
+    .innerJoin(schema.people, eq(schema.people.id, schema.allocations.personId))
+    .where(
+      and(
+        eq(schema.allocations.organizationId, args.orgId),
+        gte(schema.allocations.month, dateRange.from),
+        lte(schema.allocations.month, dateRange.to),
+      ),
+    );
+
+  // 2. Actuals aggregated per (person, project, monthKey) — we re-bin per
+  //    grouping below. Approved-only invariant doesn't apply to actuals; they
+  //    are independent observations.
+  const actualRows = await aggregateByMonth(args.orgId, { monthKeys: monthRange });
+
+  // 3. For groupBy='department' we need person -> department; for
+  //    groupBy='project' we need project -> name. Build from allocRows where
+  //    possible, but actuals may reference people/projects outside the
+  //    allocation set, so fetch supplemental rows.
+  const personIdsInActuals = Array.from(new Set(actualRows.map((r) => r.personId)));
+  const projectIdsInActuals = Array.from(new Set(actualRows.map((r) => r.projectId)));
+
+  const supplementalPeople = personIdsInActuals.length
+    ? await db
+        .select({ id: schema.people.id, departmentId: schema.people.departmentId })
+        .from(schema.people)
+        .where(
+          and(
+            eq(schema.people.organizationId, args.orgId),
+            inArray(schema.people.id, personIdsInActuals),
+          ),
+        )
+    : [];
+  const personDeptMap = new Map<string, string | null>();
+  for (const p of supplementalPeople) personDeptMap.set(p.id, p.departmentId);
+  for (const a of allocRows) personDeptMap.set(a.personId, a.departmentId);
+
+  const supplementalProjects = projectIdsInActuals.length
+    ? await db
+        .select({ id: schema.projects.id, name: schema.projects.name })
+        .from(schema.projects)
+        .where(
+          and(
+            eq(schema.projects.organizationId, args.orgId),
+            inArray(schema.projects.id, projectIdsInActuals),
+          ),
+        )
+    : [];
+  const projectNameMap = new Map<string, string>();
+  for (const p of supplementalProjects) projectNameMap.set(p.id, p.name);
+  for (const a of allocRows) projectNameMap.set(a.projectId, a.projectName);
+
+  // 4. Department names (only needed for groupBy='department').
+  let departmentNameMap = new Map<string, string>();
+  if (args.groupBy === 'department') {
+    const deptRows = await db
+      .select({ id: schema.departments.id, name: schema.departments.name })
+      .from(schema.departments)
+      .where(eq(schema.departments.organizationId, args.orgId));
+    departmentNameMap = new Map(deptRows.map((d) => [d.id, d.name]));
+  }
+
+  // 5. Aggregate planned + actual into rows.
+  type Bucket = {
+    label: string;
+    months: Map<string, { planned: number; actual: number }>;
+  };
+  const buckets = new Map<string, Bucket>();
+
+  function bucketFor(id: string, label: string): Bucket {
+    let b = buckets.get(id);
+    if (!b) {
+      b = { label, months: new Map() };
+      buckets.set(id, b);
+    }
+    return b;
+  }
+  function addPlanned(id: string, label: string, mk: string, hours: number) {
+    const b = bucketFor(id, label);
+    const cur = b.months.get(mk) ?? { planned: 0, actual: 0 };
+    cur.planned += hours;
+    b.months.set(mk, cur);
+  }
+  function addActual(id: string, label: string, mk: string, hours: number) {
+    const b = bucketFor(id, label);
+    const cur = b.months.get(mk) ?? { planned: 0, actual: 0 };
+    cur.actual += hours;
+    b.months.set(mk, cur);
+  }
+
+  for (const row of allocRows) {
+    const mk = normalizeMonth(row.month);
+    if (args.groupBy === 'project') {
+      addPlanned(row.projectId, row.projectName, mk, Number(row.hours));
+    } else {
+      const deptId = row.departmentId;
+      if (!deptId) continue;
+      addPlanned(deptId, departmentNameMap.get(deptId) ?? deptId, mk, Number(row.hours));
+    }
+  }
+  for (const row of actualRows) {
+    if (args.groupBy === 'project') {
+      addActual(
+        row.projectId,
+        projectNameMap.get(row.projectId) ?? row.projectId,
+        row.monthKey,
+        row.hours,
+      );
+    } else {
+      const deptId = personDeptMap.get(row.personId);
+      if (!deptId) continue;
+      addActual(deptId, departmentNameMap.get(deptId) ?? deptId, row.monthKey, row.hours);
+    }
+  }
+
+  // 6. Compose dense rows.
+  const rows: PortfolioGridRow[] = Array.from(buckets.entries())
+    .map(([id, bucket]) => {
+      const months: Record<string, { plannedHours: number; actualHours: number }> = {};
+      for (const mk of monthRange) {
+        const cell = bucket.months.get(mk);
+        months[mk] = {
+          plannedHours: cell?.planned ?? 0,
+          actualHours: cell?.actual ?? 0,
+        };
+      }
+      return {
+        id,
+        label: bucket.label,
+        meta: { kind: args.groupBy },
+        months,
+      };
+    })
+    .sort((a, b) => a.label.localeCompare(b.label));
+
+  return { groupBy: args.groupBy, monthRange, rows };
+}
+
+/**
+ * R&D drill: per-person breakdown for one project-month. Returns one row per
+ * person who has either an approved allocation OR actual entries on the
+ * project in that month.
+ */
+export interface ProjectPersonBreakdownRow {
+  personId: string;
+  personName: string;
+  plannedHours: number;
+  actualHours: number;
+  delta: number;
+}
+
+export async function getProjectPersonBreakdown(args: {
+  orgId: string;
+  projectId: string;
+  monthKey: string;
+}): Promise<ProjectPersonBreakdownRow[]> {
+  const monthFirstDay = `${args.monthKey}-01`;
+
+  const allocRows = await db
+    .select({
+      personId: schema.allocations.personId,
+      hours: schema.allocations.hours,
+      firstName: schema.people.firstName,
+      lastName: schema.people.lastName,
+    })
+    .from(schema.allocations)
+    .innerJoin(schema.people, eq(schema.people.id, schema.allocations.personId))
+    .where(
+      and(
+        eq(schema.allocations.organizationId, args.orgId),
+        eq(schema.allocations.projectId, args.projectId),
+        eq(schema.allocations.month, monthFirstDay),
+      ),
+    );
+
+  const actualRows = await aggregateByMonth(args.orgId, {
+    projectIds: [args.projectId],
+    monthKeys: [args.monthKey],
+  });
+
+  const merged = new Map<string, ProjectPersonBreakdownRow>();
+  for (const r of allocRows) {
+    const name = `${r.firstName} ${r.lastName}`.trim();
+    const cur = merged.get(r.personId) ?? {
+      personId: r.personId,
+      personName: name,
+      plannedHours: 0,
+      actualHours: 0,
+      delta: 0,
+    };
+    cur.plannedHours += Number(r.hours);
+    cur.personName = name;
+    merged.set(r.personId, cur);
+  }
+  // Names for actual-only people
+  const actualOnlyIds = actualRows.filter((r) => !merged.has(r.personId)).map((r) => r.personId);
+  const supplementalPeople = actualOnlyIds.length
+    ? await db
+        .select({
+          id: schema.people.id,
+          firstName: schema.people.firstName,
+          lastName: schema.people.lastName,
+        })
+        .from(schema.people)
+        .where(
+          and(
+            eq(schema.people.organizationId, args.orgId),
+            inArray(schema.people.id, actualOnlyIds),
+          ),
+        )
+    : [];
+  const nameMap = new Map(
+    supplementalPeople.map((p) => [p.id, `${p.firstName} ${p.lastName}`.trim()]),
+  );
+  for (const r of actualRows) {
+    const cur = merged.get(r.personId) ?? {
+      personId: r.personId,
+      personName: nameMap.get(r.personId) ?? r.personId,
+      plannedHours: 0,
+      actualHours: 0,
+      delta: 0,
+    };
+    cur.actualHours += r.hours;
+    merged.set(r.personId, cur);
+  }
+  return Array.from(merged.values())
+    .map((r) => ({ ...r, delta: Number((r.actualHours - r.plannedHours).toFixed(2)) }))
+    .sort((a, b) => a.personName.localeCompare(b.personName));
 }
 
 // ---------------------------------------------------------------------------

@@ -18,6 +18,7 @@ import { db } from '@/db';
 import { actualEntries, allocations } from '@/db/schema';
 
 import { getDailyRows as readDailyRows, type DailyRow } from './actuals.read';
+import { getProjectPersonBreakdown } from '@/features/planning/planning.read';
 
 export type CellData = {
   planned: number;
@@ -124,4 +125,35 @@ export async function getDailyCellBreakdown(
       source: actualEntry?.source ?? null,
     };
   });
+}
+
+/**
+ * v5.0 — Phase 42 / Plan 42-04 (D-17): server action returning per-person rows
+ * for one project-month. Used by PlanVsActualDrawer in mode='project-person-breakdown'
+ * (R&D drill).
+ */
+export type ProjectPersonBreakdownDTO = {
+  personId: string;
+  personName: string;
+  planned: number;
+  actual: number;
+  delta: number;
+};
+
+export async function getProjectPersonBreakdownAction(
+  orgId: string,
+  args: { projectId: string; monthKey: string },
+): Promise<ProjectPersonBreakdownDTO[]> {
+  const rows = await getProjectPersonBreakdown({
+    orgId,
+    projectId: args.projectId,
+    monthKey: args.monthKey,
+  });
+  return rows.map((r) => ({
+    personId: r.personId,
+    personName: r.personName,
+    planned: r.plannedHours,
+    actual: r.actualHours,
+    delta: r.delta,
+  }));
 }

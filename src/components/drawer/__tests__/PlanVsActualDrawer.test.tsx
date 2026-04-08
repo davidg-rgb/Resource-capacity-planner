@@ -10,7 +10,11 @@ import type { ReactNode } from 'react';
 
 import sv from '@/messages/sv.json';
 
-import { PlanVsActualDrawer, type DailyBreakdownRow } from '../PlanVsActualDrawer';
+import {
+  PlanVsActualDrawer,
+  type DailyBreakdownRow,
+  type ProjectPersonRow,
+} from '../PlanVsActualDrawer';
 import {
   PlanVsActualDrawerProvider,
   usePlanVsActualDrawer,
@@ -138,6 +142,51 @@ describe('PlanVsActualDrawer', () => {
     expect(screen.getByRole('dialog').getAttribute('aria-label')).toBe(
       'Plan vs utfall — Anna, Atlas, April 2026',
     );
+  });
+
+  it("mode='project-person-breakdown' renders person rows, NOT day rows", async () => {
+    const personRows: ProjectPersonRow[] = [
+      { personId: 'p1', personName: 'Anna', planned: 40, actual: 35, delta: -5 },
+      { personId: 'p2', personName: 'Bea', planned: 30, actual: 30, delta: 0 },
+    ];
+    const projectPersonFetcher = vi.fn().mockResolvedValue(personRows);
+    const dailyFetcher = vi.fn().mockResolvedValue([]);
+
+    const breakdownCtx: DrawerContext = {
+      personId: null,
+      projectId: 'pr1',
+      monthKey: '2026-06',
+      personName: '',
+      projectName: 'Atlas',
+      monthLabel: 'Juni 2026',
+      mode: 'project-person-breakdown',
+    };
+
+    const user = userEvent.setup();
+    render(
+      <Wrapper>
+        <Opener context={breakdownCtx} />
+        <PlanVsActualDrawer
+          orgId="org-1"
+          fetcher={dailyFetcher}
+          projectPersonFetcher={projectPersonFetcher}
+        />
+      </Wrapper>,
+    );
+
+    await user.click(screen.getByTestId('open-btn'));
+
+    await waitFor(() => expect(screen.getByTestId('drawer-project-person-table')).toBeTruthy());
+    expect(screen.getAllByTestId('drawer-person-row')).toHaveLength(2);
+    // Daily-row table must NOT render in this mode.
+    expect(screen.queryByTestId('drawer-table')).toBeNull();
+    expect(screen.queryByTestId('drawer-row')).toBeNull();
+    // The daily fetcher must NOT be called.
+    expect(dailyFetcher).not.toHaveBeenCalled();
+    expect(projectPersonFetcher).toHaveBeenCalledWith('org-1', {
+      projectId: 'pr1',
+      monthKey: '2026-06',
+    });
   });
 
   it('Esc key closes the drawer', async () => {

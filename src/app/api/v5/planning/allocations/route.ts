@@ -10,6 +10,7 @@ import { z } from 'zod';
 import {
   getGroupTimeline,
   getPmTimeline,
+  getPortfolioGrid,
   getStaffSchedule,
 } from '@/features/planning/planning.read';
 import { handleApiError } from '@/lib/api-utils';
@@ -38,13 +39,29 @@ const StaffQuery = z.object({
   endMonth: MONTH_KEY,
 });
 
-const Query = z.discriminatedUnion('scope', [PmQuery, LineManagerQuery, StaffQuery]);
+const RdQuery = z.object({
+  scope: z.literal('rd'),
+  groupBy: z.enum(['project', 'department']).optional().default('project'),
+  startMonth: MONTH_KEY,
+  endMonth: MONTH_KEY,
+});
+
+const Query = z.discriminatedUnion('scope', [PmQuery, LineManagerQuery, StaffQuery, RdQuery]);
 
 export async function GET(request: NextRequest) {
   try {
     const { orgId } = await requireRole('planner');
     const url = new URL(request.url);
     const parsed = Query.parse(Object.fromEntries(url.searchParams));
+
+    if (parsed.scope === 'rd') {
+      const result = await getPortfolioGrid({
+        orgId,
+        groupBy: parsed.groupBy,
+        monthRange: { from: parsed.startMonth, to: parsed.endMonth },
+      });
+      return NextResponse.json(result, { status: 200 });
+    }
 
     if (parsed.scope === 'staff') {
       const result = await getStaffSchedule({

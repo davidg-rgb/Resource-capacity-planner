@@ -43,3 +43,32 @@ describe('TC-PSN staff scope (persona gate for /staff)', () => {
     expect(assertPersonaOrRedirect(p, STAFF_ALLOWED)).toEqual({ allowed: false });
   });
 });
+
+const RD_ALLOWED = ['rd', 'admin'] as const;
+
+describe('TC-PSN-006 R&D portfolio scope (persona gate for /rd)', () => {
+  it('rd persona is allowed', () => {
+    const p: Persona = { kind: 'rd', displayName: 'R&D' };
+    expect(assertPersonaOrRedirect(p, RD_ALLOWED)).toEqual({ allowed: true });
+  });
+  it('admin persona is allowed', () => {
+    const p: Persona = { kind: 'admin', displayName: 'Admin' };
+    expect(assertPersonaOrRedirect(p, RD_ALLOWED)).toEqual({ allowed: true });
+  });
+  it('pm persona is forbidden', () => {
+    const p: Persona = { kind: 'pm', personId: 'p-2', displayName: 'PM' };
+    expect(assertPersonaOrRedirect(p, RD_ALLOWED)).toEqual({ allowed: false });
+  });
+  it('staff persona is forbidden', () => {
+    const p: Persona = { kind: 'staff', personId: 'p-1', displayName: 'Sara' };
+    expect(assertPersonaOrRedirect(p, RD_ALLOWED)).toEqual({ allowed: false });
+  });
+  it('line-manager persona is forbidden', () => {
+    const p: Persona = {
+      kind: 'line-manager',
+      departmentId: 'd-1',
+      displayName: 'LM',
+    };
+    expect(assertPersonaOrRedirect(p, RD_ALLOWED)).toEqual({ allowed: false });
+  });
+});
