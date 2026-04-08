@@ -205,11 +205,13 @@ function makeView(): GroupTimelineView {
             projectId: 'proj-1',
             projectName: 'Atlas',
             months: { '2026-06': 40, '2026-07': 60 },
+            allocationIds: { '2026-06': 'alloc-a1-p1-06', '2026-07': 'alloc-a1-p1-07' },
           },
           {
             projectId: 'proj-2',
             projectName: 'Beacon',
             months: { '2026-06': 20, '2026-07': 0 },
+            allocationIds: { '2026-06': 'alloc-a1-p2-06' },
           },
         ],
       },
@@ -221,6 +223,7 @@ function makeView(): GroupTimelineView {
             projectId: 'proj-3',
             projectName: 'Comet',
             months: { '2026-06': 80, '2026-07': 80 },
+            allocationIds: { '2026-06': 'alloc-a2-p3-06', '2026-07': 'alloc-a2-p3-07' },
           },
         ],
       },
@@ -294,6 +297,7 @@ describe('LineManagerTimelineGrid — flat-row master/detail (TC-PS-001..010)', 
     expect(onPatch).toHaveBeenCalledTimes(1);
     expect(onPatch).toHaveBeenCalledWith(
       expect.objectContaining({
+        allocationId: 'alloc-a1-p1-06',
         personId: 'p-alice',
         monthKey: '2026-06',
         hours: 90,

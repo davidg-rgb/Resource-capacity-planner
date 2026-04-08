@@ -142,6 +142,8 @@ export interface GroupTimelineProjectRow {
   projectId: string;
   projectName: string;
   months: Record<string, number>; // monthKey → hours
+  /** monthKey → allocation row id (v5.0 Phase 41-03: needed for LM direct-edit PATCH-by-id). */
+  allocationIds: Record<string, string>;
 }
 
 export interface GroupTimelinePersonRow {
@@ -189,6 +191,7 @@ export async function getGroupTimeline(args: {
   const personIds = peopleRows.map((p) => p.id);
   const allocRows = await db
     .select({
+      id: schema.allocations.id,
       personId: schema.allocations.personId,
       projectId: schema.allocations.projectId,
       projectName: schema.projects.name,
@@ -206,8 +209,14 @@ export async function getGroupTimeline(args: {
       ),
     );
 
-  // Index: personId → projectId → { name, months: Map<monthKey, hours> }
-  const byPerson = new Map<string, Map<string, { name: string; months: Map<string, number> }>>();
+  // Index: personId → projectId → { name, months: Map<monthKey, hours>, ids: Map<monthKey, id> }
+  const byPerson = new Map<
+    string,
+    Map<
+      string,
+      { name: string; months: Map<string, number>; ids: Map<string, string> }
+    >
+  >();
   for (const row of allocRows) {
     let projects = byPerson.get(row.personId);
     if (!projects) {
@@ -216,11 +225,13 @@ export async function getGroupTimeline(args: {
     }
     let entry = projects.get(row.projectId);
     if (!entry) {
-      entry = { name: row.projectName, months: new Map() };
+      entry = { name: row.projectName, months: new Map(), ids: new Map() };
       projects.set(row.projectId, entry);
     }
     const mk = normalizeMonth(row.month);
     entry.months.set(mk, (entry.months.get(mk) ?? 0) + Number(row.hours));
+    // Unique key is (org, person, project, month) — single row per month.
+    entry.ids.set(mk, row.id);
   }
 
   const persons: GroupTimelinePersonRow[] = peopleRows.map((p) => {
@@ -228,8 +239,13 @@ export async function getGroupTimeline(args: {
     const projectRows: GroupTimelineProjectRow[] = projects
       ? Array.from(projects.entries()).map(([projectId, entry]) => {
           const months: Record<string, number> = {};
-          for (const mk of monthRange) months[mk] = entry.months.get(mk) ?? 0;
-          return { projectId, projectName: entry.name, months };
+          const allocationIds: Record<string, string> = {};
+          for (const mk of monthRange) {
+            months[mk] = entry.months.get(mk) ?? 0;
+            const id = entry.ids.get(mk);
+            if (id) allocationIds[mk] = id;
+          }
+          return { projectId, projectName: entry.name, months, allocationIds };
         })
       : [];
     return {

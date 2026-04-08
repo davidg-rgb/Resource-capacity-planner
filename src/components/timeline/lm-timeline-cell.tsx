@@ -72,6 +72,7 @@ export interface LmTimelineCellProps {
   monthKey: string;
   currentMonth: string;
   onPatchAllocation: (args: {
+    allocationId: string;
     personId: string;
     projectId: string;
     monthKey: string;
@@ -80,7 +81,7 @@ export interface LmTimelineCellProps {
   }) => Promise<void>;
 }
 
-type PendingHistoric = { hours: number; projectId: string } | null;
+type PendingHistoric = { hours: number; projectId: string; allocationId: string } | null;
 
 export function LmTimelineCell(props: LmTimelineCellProps) {
   const { row, monthKey, currentMonth, onPatchAllocation } = props;
@@ -104,15 +105,25 @@ export function LmTimelineCell(props: LmTimelineCellProps) {
   // Person (parent) rows render the aggregate as an editable PlanVsActualCell.
   const personRow = row as LmPersonRow;
   const aggregate = personRow.monthTotals[monthKey] ?? 0;
-  const firstProject = personRow.projects[0];
-  // Use the first project's id as the edit target. If the person has no
-  // projects we fall back to a synthetic sentinel so the cell still renders
-  // (onCellEdit will be a no-op because there is nothing to patch).
-  const editProjectId = firstProject?.projectId ?? '';
+  // Choose the first project with a real allocationId for THIS month as the
+  // edit target. If none exists (person has projects but not this month) the
+  // cell is effectively read-only — editing a newly empty cell requires a
+  // create-allocation path that is out of scope for Phase 41-03.
+  const editTarget = personRow.projects
+    .map((p) => ({ projectId: p.projectId, allocationId: p.allocationIds[monthKey] }))
+    .find((t) => !!t.allocationId) ?? { projectId: '', allocationId: '' };
+  const editProjectId = editTarget.projectId;
+  const editAllocationId = editTarget.allocationId;
 
-  async function runDirectPatch(hours: number, confirmHistoric: boolean, projectId: string) {
-    if (!projectId) return;
+  async function runDirectPatch(
+    hours: number,
+    confirmHistoric: boolean,
+    projectId: string,
+    allocationId: string,
+  ) {
+    if (!projectId || !allocationId) return;
     await onPatchAllocation({
+      allocationId,
       personId: personRow.personId,
       projectId,
       monthKey,
@@ -122,7 +133,7 @@ export function LmTimelineCell(props: LmTimelineCellProps) {
   }
 
   async function handleEdit(nextHours: number) {
-    if (!editProjectId) return;
+    if (!editProjectId || !editAllocationId) return;
     const decision = resolveEditGate({
       persona,
       targetPerson: {
@@ -135,20 +146,28 @@ export function LmTimelineCell(props: LmTimelineCellProps) {
 
     if (decision === 'blocked') return;
     if (decision === 'direct') {
-      await runDirectPatch(nextHours, false, editProjectId);
+      await runDirectPatch(nextHours, false, editProjectId, editAllocationId);
       return;
     }
     if (decision === 'historic-warn-direct') {
-      setPendingHistoric({ hours: nextHours, projectId: editProjectId });
+      setPendingHistoric({
+        hours: nextHours,
+        projectId: editProjectId,
+        allocationId: editAllocationId,
+      });
       return;
     }
     // 'proposal' / 'historic-warn-proposal' should not occur for in-dept LM.
-    // LM viewing only their own department means every target is in-dept.
   }
 
   async function handleHistoricConfirm() {
     if (!pendingHistoric) return;
-    await runDirectPatch(pendingHistoric.hours, true, pendingHistoric.projectId);
+    await runDirectPatch(
+      pendingHistoric.hours,
+      true,
+      pendingHistoric.projectId,
+      pendingHistoric.allocationId,
+    );
     setPendingHistoric(null);
   }
 

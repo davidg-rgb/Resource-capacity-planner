@@ -60,7 +60,12 @@ export interface LmPersonRow {
   departmentId: string | null;
   /** monthKey → summed hours across all projects */
   monthTotals: Record<string, number>;
-  projects: Array<{ projectId: string; projectName: string; months: Record<string, number> }>;
+  projects: Array<{
+    projectId: string;
+    projectName: string;
+    months: Record<string, number>;
+    allocationIds: Record<string, string>;
+  }>;
 }
 
 export interface LmProjectRow {
@@ -69,6 +74,7 @@ export interface LmProjectRow {
   projectId: string;
   projectName: string;
   months: Record<string, number>;
+  allocationIds: Record<string, string>;
 }
 
 export type LmRow = LmPersonRow | LmProjectRow;
@@ -77,18 +83,21 @@ export type LmRow = LmPersonRow | LmProjectRow;
 // Props
 // ---------------------------------------------------------------------------
 
+export interface LmPatchArgs {
+  allocationId: string;
+  personId: string;
+  projectId: string;
+  monthKey: string;
+  hours: number;
+  confirmHistoric?: boolean;
+}
+
 export interface LineManagerTimelineGridProps {
   view: GroupTimelineView;
   departmentId: string | null;
   /** 'YYYY-MM' from getCurrentMonth() — used by LmTimelineCell for historic gating. */
   currentMonth: string;
-  onPatchAllocation: (args: {
-    personId: string;
-    projectId: string;
-    monthKey: string;
-    hours: number;
-    confirmHistoric?: boolean;
-  }) => Promise<void>;
+  onPatchAllocation: (args: LmPatchArgs) => Promise<void>;
 }
 
 interface LmGridContext {
@@ -168,6 +177,7 @@ export function buildLmRows(
           projectId: proj.projectId,
           projectName: proj.projectName,
           months: proj.months,
+          allocationIds: proj.allocationIds,
         });
       }
     }
