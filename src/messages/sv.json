@@ -392,7 +392,50 @@
       "confirm": "Fortsätt"
     },
     "lineManager": {
-      "desktopOnlyMessage": "Den här vyn kräver en skärm på minst 768px. Öppna sidan på en dator."
+      "desktopOnlyMessage": "Den här vyn kräver en skärm på minst 768px. Öppna sidan på en dator.",
+      "home": {
+        "title": "Linjechef – Översikt"
+      },
+      "heatmap": {
+        "legend": {
+          "ok": "OK 60–100%",
+          "under": "Underbelagd <60%",
+          "over": "Överbelagd >100%",
+          "absent": "Frånvaro"
+        },
+        "usingDefaultCapacity": "Använder standardkapacitet 160h"
+      },
+      "timeline": {
+        "title": "Gruppschema",
+        "expandProjects": "Visa projekt",
+        "collapseProjects": "Dölj projekt"
+      },
+      "wrongPersonaHint": {
+        "title": "Fel persona",
+        "description": "Den här sidan är bara tillgänglig för linjechefs-personan.",
+        "switchCta": "Byt persona"
+      }
+    },
+    "changeLog": {
+      "title": "Ändringslogg",
+      "columns": {
+        "time": "Tid",
+        "actor": "Utförd av",
+        "entity": "Typ",
+        "action": "Åtgärd",
+        "target": "Mål",
+        "summary": "Sammanfattning"
+      },
+      "filters": {
+        "project": "Projekt",
+        "person": "Person",
+        "period": "Period",
+        "actor": "Utförd av",
+        "advanced": "Avancerat",
+        "clearAll": "Rensa alla"
+      },
+      "loadMore": "Läs in fler",
+      "noResults": "Inga träffar"
     },
     "pm": {
       "home": {

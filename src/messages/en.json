@@ -392,7 +392,50 @@
       "confirm": "Continue"
     },
     "lineManager": {
-      "desktopOnlyMessage": "This view requires a screen at least 768px wide. Please open it on a desktop."
+      "desktopOnlyMessage": "This view requires a screen at least 768px wide. Please open it on a desktop.",
+      "home": {
+        "title": "Line Manager home"
+      },
+      "heatmap": {
+        "legend": {
+          "ok": "OK 60–100%",
+          "under": "Under-utilized <60%",
+          "over": "Over-utilized >100%",
+          "absent": "Absent"
+        },
+        "usingDefaultCapacity": "Using default capacity 160h"
+      },
+      "timeline": {
+        "title": "Group timeline",
+        "expandProjects": "Show projects",
+        "collapseProjects": "Hide projects"
+      },
+      "wrongPersonaHint": {
+        "title": "Wrong persona",
+        "description": "This page is only available to the Line Manager persona.",
+        "switchCta": "Switch persona"
+      }
+    },
+    "changeLog": {
+      "title": "Change log",
+      "columns": {
+        "time": "Time",
+        "actor": "Actor",
+        "entity": "Entity",
+        "action": "Action",
+        "target": "Target",
+        "summary": "Summary"
+      },
+      "filters": {
+        "project": "Project",
+        "person": "Person",
+        "period": "Period",
+        "actor": "Actor",
+        "advanced": "Advanced",
+        "clearAll": "Clear all"
+      },
+      "loadMore": "Load more",
+      "noResults": "No results"
     },
     "pm": {
       "home": {

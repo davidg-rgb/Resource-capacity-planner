@@ -255,6 +255,49 @@ export const K = {
     },
     lineManager: {
       desktopOnlyMessage: 'lineManager.desktopOnlyMessage',
+      home: {
+        title: 'lineManager.home.title',
+      },
+      heatmap: {
+        legend: {
+          ok: 'lineManager.heatmap.legend.ok',
+          under: 'lineManager.heatmap.legend.under',
+          over: 'lineManager.heatmap.legend.over',
+          absent: 'lineManager.heatmap.legend.absent',
+        },
+        usingDefaultCapacity: 'lineManager.heatmap.usingDefaultCapacity',
+      },
+      timeline: {
+        title: 'lineManager.timeline.title',
+        expandProjects: 'lineManager.timeline.expandProjects',
+        collapseProjects: 'lineManager.timeline.collapseProjects',
+      },
+      wrongPersonaHint: {
+        title: 'lineManager.wrongPersonaHint.title',
+        description: 'lineManager.wrongPersonaHint.description',
+        switchCta: 'lineManager.wrongPersonaHint.switchCta',
+      },
+    },
+    changeLog: {
+      title: 'changeLog.title',
+      columns: {
+        time: 'changeLog.columns.time',
+        actor: 'changeLog.columns.actor',
+        entity: 'changeLog.columns.entity',
+        action: 'changeLog.columns.action',
+        target: 'changeLog.columns.target',
+        summary: 'changeLog.columns.summary',
+      },
+      filters: {
+        project: 'changeLog.filters.project',
+        person: 'changeLog.filters.person',
+        period: 'changeLog.filters.period',
+        actor: 'changeLog.filters.actor',
+        advanced: 'changeLog.filters.advanced',
+        clearAll: 'changeLog.filters.clearAll',
+      },
+      loadMore: 'changeLog.loadMore',
+      noResults: 'changeLog.noResults',
     },
     pm: {
       home: {
