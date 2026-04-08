@@ -13,6 +13,10 @@ import { ImpersonationBanner } from '@/components/platform/impersonation-banner'
 import { PersonCardProvider } from '@/features/dashboard/person-card/person-card-provider';
 import { QueryProvider } from '@/components/providers/query-provider';
 import { PersonaProvider } from '@/features/personas/persona.context';
+// Phase 40 D-03/D-19: <PersonaSwitcher /> is mounted globally inside the
+// authenticated shell header (AppShell → TopNav). It is imported there,
+// not here, because layout.tsx is a server component and the switcher is
+// a client component. See src/components/layout/top-nav.tsx.
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const orgId = await getTenantId();
