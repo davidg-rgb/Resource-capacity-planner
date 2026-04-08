@@ -12,6 +12,9 @@ import type {
   ValueParserParams,
   ValueFormatterParams,
   CellRendererSelectorResult,
+  CellEditorSelectorResult,
+  ICellEditorParams,
+  ICellRendererParams,
 } from 'ag-grid-community';
 
 import { formatMonthHeader } from '@/lib/date-utils';
@@ -74,7 +77,13 @@ export function transformToGridRows(
  * Past months are non-editable with distinct styling (INPUT-12).
  * Status pinned row uses cellRendererSelector for color dots (INPUT-05).
  */
-export function buildColumnDefs(months: string[], currentMonth: string): ColDef[] {
+export function buildColumnDefs(
+  months: string[],
+  currentMonth: string,
+  options: { isOutOfDept?: boolean } = {},
+): ColDef[] {
+  const isOutOfDept = options.isOutOfDept ?? false;
+
   const projectCol: ColDef = {
     field: 'projectName',
     headerName: 'Projekt',
@@ -112,12 +121,28 @@ export function buildColumnDefs(months: string[], currentMonth: string): ColDef[
       if (params.value == null || params.value === '' || params.value === 0) return '';
       return String(params.value);
     },
-    cellRendererSelector: (params: {
-      node?: { isRowPinned: () => boolean } | null;
-      data?: GridRow;
-    }): CellRendererSelectorResult | undefined => {
+    cellRendererSelector: (params: ICellRendererParams): CellRendererSelectorResult | undefined => {
       if (params.node?.isRowPinned() && params.data?.projectId === '__status__') {
         return { component: 'statusCellRenderer' };
+      }
+      if (
+        isOutOfDept &&
+        !params.node?.isRowPinned() &&
+        !params.data?.isAddRow &&
+        month >= currentMonth
+      ) {
+        return { component: 'proposalCellRenderer' };
+      }
+      return undefined;
+    },
+    cellEditorSelector: (params: ICellEditorParams): CellEditorSelectorResult | undefined => {
+      if (
+        isOutOfDept &&
+        !params.node?.isRowPinned() &&
+        !params.data?.isAddRow &&
+        month >= currentMonth
+      ) {
+        return { component: 'proposalCellEditor', popup: true, popupPosition: 'under' };
       }
       return undefined;
     },

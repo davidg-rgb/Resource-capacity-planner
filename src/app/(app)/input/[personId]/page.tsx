@@ -75,6 +75,7 @@ export default function PersonInputPage({ params }: { params: Promise<{ personId
         allocations={allocations ?? []}
         targetHours={person.targetHoursPerMonth}
         personId={personId}
+        targetPerson={{ id: personId, departmentId: person.departmentId }}
         addedProjects={addedProjects}
         onCellChange={handleCellChange}
         onAddProject={handleAddProject}

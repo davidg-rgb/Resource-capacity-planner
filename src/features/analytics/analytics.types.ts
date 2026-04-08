@@ -240,6 +240,7 @@ export interface PersonDetailResponse {
   lastName: string;
   disciplineAbbreviation: string;
   disciplineName: string;
+  departmentId: string;
   departmentName: string;
   targetHoursPerMonth: number;
   currentMonth: {

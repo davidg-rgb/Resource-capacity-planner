@@ -38,6 +38,7 @@ export function usePersonDetail(personId: string | undefined) {
         lastName: string;
         targetHoursPerMonth: number;
         disciplineName: string;
+        departmentId: string;
         departmentName: string;
       };
     },

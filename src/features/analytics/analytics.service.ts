@@ -2297,6 +2297,7 @@ export async function getPersonDetail(
     target_hours: number;
     discipline_abbreviation: string;
     discipline_name: string;
+    department_id: string;
     department_name: string;
   }>(sql`
     SELECT
@@ -2305,6 +2306,7 @@ export async function getPersonDetail(
       p.target_hours_per_month AS target_hours,
       COALESCE(disc.abbreviation, '') AS discipline_abbreviation,
       COALESCE(disc.name, '') AS discipline_name,
+      d.id AS department_id,
       d.name AS department_name
     FROM people p
     INNER JOIN departments d ON d.id = p.department_id
@@ -2444,6 +2446,7 @@ export async function getPersonDetail(
     lastName: person.last_name,
     disciplineAbbreviation: person.discipline_abbreviation,
     disciplineName: person.discipline_name,
+    departmentId: person.department_id,
     departmentName: person.department_name,
     targetHoursPerMonth: target,
     currentMonth: {
