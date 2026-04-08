@@ -194,7 +194,7 @@ Plans:
   4. Change log feed is filterable by project / person / period / author with persona-scoped defaults (**TC-API-040..041**, **TC-CL-***)
 **Plans**: 5 plans
 Plans:
-- [ ] 41-01-PLAN.md — Wave 0 backend gap fill (capacity.read, change-log.read, impact % extension, line-manager scope branch, DesktopOnlyScreen, dept dropdown)
+- [x] 41-01-PLAN.md — Wave 0 backend gap fill (capacity.read, change-log.read, impact % extension, line-manager scope branch, DesktopOnlyScreen, dept dropdown)
 - [ ] 41-02-PLAN.md — Wave 1 LM Home capacity heatmap + persona route guard
 - [ ] 41-03-PLAN.md — Wave 2 group timeline (flat synthetic child rows override) + direct edit
 - [ ] 41-04-PLAN.md — Wave 3 approval queue impact wording + change log feed UI
@@ -266,7 +266,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 38. Excel import pipeline | v5.0 | 3/3 | Complete    | 2026-04-07 |
 | 39. Proposal / approval workflow | v5.0 | 8/10 | In Progress|  |
 | 40. Persona views Part 1 — PM | v5.0 | 5/5 | Complete   | 2026-04-08 |
-| 41. Persona views Part 2 — Line Manager | v5.0 | 0/0 | Not started | - |
+| 41. Persona views Part 2 — Line Manager | v5.0 | 1/5 | In Progress|  |
 | 42. Persona views Part 3 — Staff/R&D/zoom | v5.0 | 0/0 | Not started | - |
 | 43. Admin register maintenance | v5.0 | 0/0 | Not started | - |
 | 44. API hardening + test contract fill | v5.0 | 0/0 | Not started | - |
