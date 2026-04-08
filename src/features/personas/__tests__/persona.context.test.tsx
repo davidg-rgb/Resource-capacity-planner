@@ -91,7 +91,7 @@ describe('persona.context', () => {
     );
     expect(getLandingRoute({ kind: 'staff', personId: 'x', displayName: 'X' })).toBe('/staff');
     expect(getLandingRoute({ kind: 'rd', displayName: 'X' })).toBe('/rd');
-    expect(getLandingRoute({ kind: 'admin', displayName: 'X' })).toBe('/admin/change-log');
+    expect(getLandingRoute({ kind: 'admin', displayName: 'X' })).toBe('/admin');
   });
 
   it('usePersona throws outside provider', () => {

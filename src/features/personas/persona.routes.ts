@@ -23,6 +23,9 @@ export function getLandingRoute(p: Persona): string {
     case 'rd':
       return '/rd';
     case 'admin':
-      return '/admin/change-log';
+      // v5.0 — Phase 43 / Plan 43-04 (D-19): consolidated to /admin, which
+      // now hosts the global change_log feed. /admin/change-log still works
+      // via a redirect (src/app/(app)/admin/change-log/page.tsx).
+      return '/admin';
   }
 }
