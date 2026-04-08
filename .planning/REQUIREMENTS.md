@@ -56,7 +56,7 @@ Architecture frozen — each requirement traces to architecture sections and the
 - [x] **UX-V5-04** (S5): Line Mgr Home capacity heatmap — rows = people, cols = months, thresholds: green 60–90%, red >100%, yellow <60%, grey absence
 - [x] **UX-V5-05** (S6): Line Mgr group timeline with project breakdown, direct edit, change log visible
 - [x] **UX-V5-06** (S7): Approval queue with impact preview, approve/reject; counter-proposal explicitly out of scope
-- [ ] **UX-V5-07** (S9): Staff "My Schedule" read-only (projects × months, plan-vs-actual split, month summary strip)
+- [x] **UX-V5-07** (S9): Staff "My Schedule" read-only (projects × months, plan-vs-actual split, month summary strip)
 - [x] **UX-V5-08** (S10): R&D Manager portfolio grid — projects × months aggregate, project/group row toggle, drill-into-PM-view, long-horizon zoom (20–30 months forward) with 53-week handling
 - [x] **UX-V5-09** (S11): Shared drill-down drawer component reused across personas
 - [x] **UX-V5-10** (S12): Change log feed filterable by project/person/period/author with persona-scoped defaults

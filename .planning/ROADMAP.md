@@ -214,7 +214,7 @@ Plans:
 **Plans**: 4 plans
 Plans:
 - [x] 42-01-PLAN.md — Wave 0 foundation: iso-calendar quarter/year helpers, formatters, TimelineZoom + DrawerContext widening, TC-CAL-003/006 red tests
-- [ ] 42-02-PLAN.md — Wave 1 Staff My Schedule: getStaffSchedule, scope=staff API, /staff page, drawer wired daily mode, TC-E2E-3A
+- [x] 42-02-PLAN.md — Wave 1 Staff My Schedule: getStaffSchedule, scope=staff API, /staff page, drawer wired daily mode, TC-E2E-3A
 - [x] 42-03-PLAN.md — Wave 2 long-horizon zoom: buildTimelineColumns quarter/year, ZoomControls + useZoom, mounted on PM/LM/Staff, TC-ZOOM-*
 - [ ] 42-04-PLAN.md — Wave 3 R&D portfolio + drawer project-person-breakdown mode + TC-UI shared drawer (load-bearing for UX-V5-09), TC-E2E-4A
 **UI hint**: yes
@@ -273,7 +273,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 39. Proposal / approval workflow | v5.0 | 8/10 | In Progress|  |
 | 40. Persona views Part 1 — PM | v5.0 | 5/5 | Complete   | 2026-04-08 |
 | 41. Persona views Part 2 — Line Manager | v5.0 | 5/5 | Complete   | 2026-04-08 |
-| 42. Persona views Part 3 — Staff/R&D/zoom | v5.0 | 2/4 | In Progress|  |
+| 42. Persona views Part 3 — Staff/R&D/zoom | v5.0 | 3/4 | In Progress|  |
 | 43. Admin register maintenance | v5.0 | 0/0 | Not started | - |
 | 44. API hardening + test contract fill | v5.0 | 0/0 | Not started | - |
 | 45. Launch gate — PDF export bug fix | v5.0 | 0/0 | Not started | - |
