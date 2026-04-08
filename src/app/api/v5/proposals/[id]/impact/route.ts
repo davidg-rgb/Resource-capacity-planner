@@ -38,6 +38,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
       .select({
         firstName: schema.people.firstName,
         lastName: schema.people.lastName,
+        targetHoursPerMonth: schema.people.targetHoursPerMonth,
       })
       .from(schema.people)
       .where(and(eq(schema.people.organizationId, orgId), eq(schema.people.id, proposal.personId)))
@@ -77,10 +78,20 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     const proposedHours = Number(proposal.proposedHours);
     const personMonthPlannedAfter = personMonthPlannedBefore - existingForTriple + proposedHours;
 
+    // v5.0 Phase 41 / Plan 41-01: utilization percentages for the queue preview.
+    const targetHours =
+      person.targetHoursPerMonth == null ? 160 : Number(person.targetHoursPerMonth);
+    const currentUtilizationPct =
+      targetHours === 0 ? 0 : Math.round((personMonthPlannedBefore / targetHours) * 100);
+    const projectedUtilizationPct =
+      targetHours === 0 ? 0 : Math.round((personMonthPlannedAfter / targetHours) * 100);
+
     return NextResponse.json(
       {
         personMonthPlannedBefore,
         personMonthPlannedAfter,
+        currentUtilizationPct,
+        projectedUtilizationPct,
         proposedHours,
         personName: `${person.firstName} ${person.lastName}`,
         month: normalizeMonth(proposal.month),

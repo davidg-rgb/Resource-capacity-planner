@@ -124,6 +124,11 @@ export function useRejectProposal() {
 export interface ProposalImpactDTO {
   personMonthPlannedBefore: number;
   personMonthPlannedAfter: number;
+  /** v5.0 Phase 41 / Plan 41-01 — utilization percentages computed via capacity.read.
+   *  Rounded to nearest int. Source for the "40% → 90%" approval queue preview
+   *  string (REQUIREMENTS L45). */
+  currentUtilizationPct: number;
+  projectedUtilizationPct: number;
   proposedHours: number;
   personName: string;
   month: string;
