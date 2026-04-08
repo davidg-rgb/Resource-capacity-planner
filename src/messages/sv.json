@@ -706,7 +706,7 @@
         "loading": "Laddar…",
         "empty": "Inga väntande önskemål.",
         "loadFailed": "Kunde inte ladda: {error}",
-        "impactPhrase": "{name}s {monthName}-beläggning {before}h → {after}h"
+        "impactPhrase": "{name}s {month}-beläggning {current}% → {projected}%"
       },
       "wishes": {
         "emptyForTab": "Inga {tab} önskemål."

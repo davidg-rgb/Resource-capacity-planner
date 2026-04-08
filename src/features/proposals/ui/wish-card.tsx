@@ -11,8 +11,18 @@ import type { ProposalDTO } from '../proposal.types';
 
 interface WishCardProps {
   proposal: ProposalDTO;
-  /** Pre-formatted impact phrase, e.g. "Sara's June utilization 40h → 90h". */
+  /** Pre-formatted impact phrase, e.g. "Sara's June utilization 40% → 90%".
+   *  v5.0 Phase 41 / Plan 41-04 — UX-V5-06: rendered from
+   *  `ProposalImpactDTO.currentUtilizationPct` / `projectedUtilizationPct`
+   *  via the `v5.proposals.queue.impactPhrase` key. Counter-proposal button
+   *  is intentionally absent (REQUIREMENTS L99). */
   impactText?: string;
+  /** Phase 41 / Plan 41-04: show a skeleton while the impact query is
+   *  loading — parent passes the `useProposalImpact` loading flag. */
+  impactLoading?: boolean;
+  /** Phase 41 / Plan 41-04: hide the impact line entirely on error so the
+   *  approve/reject buttons stay usable (TC-PR-009). */
+  impactError?: boolean;
   onApprove?: () => void;
   onReject?: () => void;
   onResubmit?: () => void;
@@ -20,7 +30,16 @@ interface WishCardProps {
 }
 
 export function WishCard(props: WishCardProps) {
-  const { proposal, impactText, onApprove, onReject, onResubmit, disabled } = props;
+  const {
+    proposal,
+    impactText,
+    impactLoading,
+    impactError,
+    onApprove,
+    onReject,
+    onResubmit,
+    disabled,
+  } = props;
   const t = useTranslations('v5.proposals');
   return (
     <div
@@ -36,7 +55,13 @@ export function WishCard(props: WishCardProps) {
           <div className="text-muted-foreground text-xs">
             {t('card.status', { status: proposal.status })}
           </div>
-          {impactText && (
+          {impactLoading && !impactError && (
+            <div
+              className="bg-muted/40 mt-1 h-3 w-48 animate-pulse rounded"
+              data-testid="wish-card-impact-skeleton"
+            />
+          )}
+          {impactText && !impactError && !impactLoading && (
             <div className="mt-1 text-xs italic" data-testid="wish-card-impact">
               {impactText}
             </div>

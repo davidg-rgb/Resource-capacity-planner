@@ -83,15 +83,22 @@ interface QueueRowProps {
 }
 
 function QueueRow({ proposal, onApprove, onReject, disabled }: QueueRowProps) {
-  const { data: impact } = useProposalImpact(proposal.id);
+  const { data: impact, isLoading: impactLoading, error: impactError } = useProposalImpact(
+    proposal.id,
+  );
   const t = useTranslations('v5.proposals');
   const tMonths = useTranslations('v5.proposals.months');
+  // v5.0 Phase 41 / Plan 41-04 — UX-V5-06 impact preview wording update:
+  // Render literal utilization percentages (REQUIREMENTS L45):
+  //   "Sara's June utilization 40% → 90%"
+  // Uses currentUtilizationPct / projectedUtilizationPct from the Wave 0
+  // extended ProposalImpactDTO. Loading shows a skeleton, errors hide the line.
   const impactText = impact
     ? t('queue.impactPhrase', {
         name: impact.personName,
-        monthName: monthLabel(impact.month, tMonths),
-        before: impact.personMonthPlannedBefore,
-        after: impact.personMonthPlannedAfter,
+        month: monthLabel(impact.month, tMonths),
+        current: impact.currentUtilizationPct,
+        projected: impact.projectedUtilizationPct,
       })
     : undefined;
 
@@ -99,6 +106,8 @@ function QueueRow({ proposal, onApprove, onReject, disabled }: QueueRowProps) {
     <WishCard
       proposal={proposal}
       impactText={impactText}
+      impactLoading={impactLoading && !impact}
+      impactError={!!impactError && !impact}
       onApprove={onApprove}
       onReject={onReject}
       disabled={disabled}

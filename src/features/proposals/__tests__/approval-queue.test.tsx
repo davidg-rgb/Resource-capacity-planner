@@ -70,6 +70,8 @@ function installFetchMock(fetchMock: ReturnType<typeof vi.fn>) {
       return ok({
         personMonthPlannedBefore: 40,
         personMonthPlannedAfter: 90,
+        currentUtilizationPct: 40,
+        projectedUtilizationPct: 90,
         proposedHours: 90,
         personName: 'Sara',
         month: '2026-06',
@@ -79,6 +81,8 @@ function installFetchMock(fetchMock: ReturnType<typeof vi.fn>) {
       return ok({
         personMonthPlannedBefore: 20,
         personMonthPlannedAfter: 60,
+        currentUtilizationPct: 20,
+        projectedUtilizationPct: 60,
         proposedHours: 60,
         personName: 'Lars',
         month: '2026-06',

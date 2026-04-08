@@ -641,7 +641,7 @@
         "loading": "Loading…",
         "empty": "No pending wishes.",
         "loadFailed": "Failed to load: {error}",
-        "impactPhrase": "{name}'s {monthName} utilization {before}h → {after}h"
+        "impactPhrase": "{name}'s {month} utilization {current}% → {projected}%"
       },
       "wishes": {
         "emptyForTab": "No {tab} wishes."
