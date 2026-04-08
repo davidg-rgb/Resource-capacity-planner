@@ -325,6 +325,18 @@ export const K = {
       },
       loadMore: 'changeLog.loadMore',
       noResults: 'changeLog.noResults',
+      entityFilter: {
+        all: 'changeLog.entityFilter.all',
+        person: 'changeLog.entityFilter.person',
+        project: 'changeLog.entityFilter.project',
+        department: 'changeLog.entityFilter.department',
+        discipline: 'changeLog.entityFilter.discipline',
+        program: 'changeLog.entityFilter.program',
+        allocation: 'changeLog.entityFilter.allocation',
+        proposal: 'changeLog.entityFilter.proposal',
+        actual_entry: 'changeLog.entityFilter.actual_entry',
+        import_batch: 'changeLog.entityFilter.import_batch',
+      },
     },
     pm: {
       home: {
@@ -342,6 +354,9 @@ export const K = {
       },
     },
     admin: {
+      landing: {
+        title: 'admin.landing.title',
+      },
       register: {
         title: {
           person: 'admin.register.title.person',

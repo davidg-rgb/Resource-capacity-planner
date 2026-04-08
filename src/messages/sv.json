@@ -457,7 +457,19 @@
         "clearAll": "Rensa alla"
       },
       "loadMore": "Läs in fler",
-      "noResults": "Inga träffar"
+      "noResults": "Inga träffar",
+      "entityFilter": {
+        "all": "Alla",
+        "person": "Person",
+        "project": "Projekt",
+        "department": "Avdelning",
+        "discipline": "Disciplin",
+        "program": "Program",
+        "allocation": "Allokering",
+        "proposal": "Önskemål",
+        "actual_entry": "Utfall",
+        "import_batch": "Import"
+      }
     },
     "pm": {
       "home": {
@@ -718,6 +730,9 @@
       }
     },
     "admin": {
+      "landing": {
+        "title": "Ändringslogg"
+      },
       "register": {
         "title": {
           "person": "Personer",

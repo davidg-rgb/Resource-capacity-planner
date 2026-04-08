@@ -63,10 +63,7 @@ function filterToQueryString(filter: FeedFilter, cursor?: string | null): string
   return qs.toString();
 }
 
-function filterFromSearchParams(
-  params: URLSearchParams,
-  fallback: FeedFilter,
-): FeedFilter {
+function filterFromSearchParams(params: URLSearchParams, fallback: FeedFilter): FeedFilter {
   const parseList = (key: string) => {
     const raw = params.get(key);
     return raw ? raw.split(',').filter(Boolean) : undefined;
@@ -85,6 +82,10 @@ function filterFromSearchParams(
   };
 }
 
+// v5.0 — Phase 43 / Plan 43-04: entity dropdown driven by the Drizzle enum
+// so every register entity (including 'program' added by migration 0008)
+// is automatically exposed. This means future additions to the enum flow
+// through without touching this file.
 const ENTITY_OPTIONS: ChangeLogEntity[] = [
   'allocation',
   'proposal',
@@ -93,6 +94,7 @@ const ENTITY_OPTIONS: ChangeLogEntity[] = [
   'actual_entry',
   'department',
   'discipline',
+  'program',
   'import_batch',
 ];
 

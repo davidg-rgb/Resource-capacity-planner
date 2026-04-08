@@ -457,7 +457,19 @@
         "clearAll": "Clear all"
       },
       "loadMore": "Load more",
-      "noResults": "No results"
+      "noResults": "No results",
+      "entityFilter": {
+        "all": "All",
+        "person": "Person",
+        "project": "Project",
+        "department": "Department",
+        "discipline": "Discipline",
+        "program": "Program",
+        "allocation": "Allocation",
+        "proposal": "Proposal",
+        "actual_entry": "Actual",
+        "import_batch": "Import"
+      }
     },
     "pm": {
       "home": {
@@ -653,6 +665,9 @@
       }
     },
     "admin": {
+      "landing": {
+        "title": "Change log"
+      },
       "register": {
         "title": {
           "person": "People",
