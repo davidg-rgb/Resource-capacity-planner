@@ -253,6 +253,9 @@ export const K = {
         generic: 'import.error.generic',
       },
     },
+    lineManager: {
+      desktopOnlyMessage: 'lineManager.desktopOnlyMessage',
+    },
     pm: {
       home: {
         title: 'pm.home.title',

@@ -391,6 +391,9 @@
       "cancel": "Cancel",
       "confirm": "Continue"
     },
+    "lineManager": {
+      "desktopOnlyMessage": "This view requires a screen at least 768px wide. Please open it on a desktop."
+    },
     "pm": {
       "home": {
         "title": "My projects",

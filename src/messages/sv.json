@@ -391,6 +391,9 @@
       "cancel": "Avbryt",
       "confirm": "Fortsätt"
     },
+    "lineManager": {
+      "desktopOnlyMessage": "Den här vyn kräver en skärm på minst 768px. Öppna sidan på en dator."
+    },
     "pm": {
       "home": {
         "title": "Mina projekt",
