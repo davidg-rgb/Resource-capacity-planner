@@ -36,6 +36,9 @@ export interface PlanVsActualCellProps {
   projectId: string;
   monthKey: string;
   editable?: boolean;
+  /** v5.0 Phase 42 Plan 42-03: when true the cell renders a Σ badge indicating
+   *  the plan/actual values are summed across multiple months (quarter/year zoom). */
+  aggregate?: boolean;
   /** Fires after 600ms debounce of input changes. */
   onCellEdit?: (next: number) => void;
   /** Fires on click in read-only mode. */
@@ -57,7 +60,17 @@ function formatHours(value: number): string {
 const DEBOUNCE_MS = 600;
 
 export function PlanVsActualCell(props: PlanVsActualCellProps) {
-  const { planned, actual, delta, personId, projectId, monthKey, onCellEdit, onCellClick } = props;
+  const {
+    planned,
+    actual,
+    delta,
+    personId,
+    projectId,
+    monthKey,
+    aggregate,
+    onCellEdit,
+    onCellClick,
+  } = props;
 
   const t = useTranslations('v5.cell');
   const editable = !!onCellEdit;
@@ -111,6 +124,16 @@ export function PlanVsActualCell(props: PlanVsActualCellProps) {
 
   const body = (
     <>
+      {aggregate && (
+        <span
+          className={styles.row}
+          data-testid="cell-aggregate-badge"
+          aria-label="aggregated"
+          style={{ fontSize: '0.75em', opacity: 0.7 }}
+        >
+          Σ
+        </span>
+      )}
       <span className={styles.row}>
         <span className={styles.label}>{plannedLabel}</span>
         {editable ? (

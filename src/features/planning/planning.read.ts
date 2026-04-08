@@ -125,6 +125,12 @@ export interface CellView {
   plannedHours: number;
   actualHours: number | null;
   pendingProposal: { id: string; proposedHours: number; proposerId: string } | null;
+  /** v5.0 Phase 42 Plan 42-03 (Wave 2): set by the client-side zoom aggregator
+   *  when a CellView represents a quarter or year bucket synthesized from
+   *  multiple month-grain cells. The PlanVsActualCell renders a "Σ" badge and
+   *  the drill-down drawer opens for the first month in `underlyingMonths`. */
+  aggregate?: boolean;
+  underlyingMonths?: string[];
 }
 
 export interface PmTimelineView {
@@ -256,6 +262,172 @@ export async function getGroupTimeline(args: {
   });
 
   return { monthRange, persons };
+}
+
+// ---------------------------------------------------------------------------
+// Staff "My Schedule" (Phase 42 / Plan 42-02, D-04..D-06)
+// ---------------------------------------------------------------------------
+
+export interface StaffScheduleProjectRow {
+  projectId: string;
+  projectName: string;
+  /** monthKey → CellView; dense over the full monthRange (zero-filled). */
+  months: Record<string, CellView>;
+}
+
+export interface StaffSummaryStripEntry {
+  plannedHours: number;
+  actualHours: number;
+  utilizationPct: number;
+}
+
+export interface StaffScheduleResult {
+  person: { id: string; name: string };
+  monthRange: string[];
+  projects: StaffScheduleProjectRow[];
+  summaryStrip: Record<string, StaffSummaryStripEntry>;
+}
+
+/**
+ * Staff "My Schedule" read-model. Returns a projects × months grid plus a
+ * month summary strip for a single person.
+ *
+ * Invariants:
+ *  - Sums APPROVED allocations only (D-05 / Phase 41 D-07). Pending proposals
+ *    are NOT included.
+ *  - Every monthKey in the range has a CellView for every project row (dense,
+ *    zero-filled).
+ *  - summaryStrip is keyed by monthKey and reuses the capacity utilization
+ *    helper for the target + utilization% math (D-06).
+ */
+export async function getStaffSchedule(args: {
+  orgId: string;
+  personId: string;
+  monthRange: { from: string; to: string };
+}): Promise<StaffScheduleResult> {
+  const monthRange = expandMonthRange(args.monthRange.from, args.monthRange.to);
+  const dateRange = monthRangeToDateRange(args.monthRange);
+
+  // 1. Load + tenant-verify person.
+  const [personRow] = await db
+    .select({
+      id: schema.people.id,
+      firstName: schema.people.firstName,
+      lastName: schema.people.lastName,
+    })
+    .from(schema.people)
+    .where(and(eq(schema.people.organizationId, args.orgId), eq(schema.people.id, args.personId)))
+    .limit(1);
+  if (!personRow) throw new NotFoundError('Person', args.personId);
+
+  // 2. Approved allocations for this person in the date range, joined to projects.
+  const allocRows = await db
+    .select({
+      id: schema.allocations.id,
+      projectId: schema.allocations.projectId,
+      projectName: schema.projects.name,
+      month: schema.allocations.month,
+      hours: schema.allocations.hours,
+    })
+    .from(schema.allocations)
+    .innerJoin(schema.projects, eq(schema.projects.id, schema.allocations.projectId))
+    .where(
+      and(
+        eq(schema.allocations.organizationId, args.orgId),
+        eq(schema.allocations.personId, args.personId),
+        gte(schema.allocations.month, dateRange.from),
+        lte(schema.allocations.month, dateRange.to),
+      ),
+    );
+
+  // 3. Actuals by (project, monthKey) for this person.
+  const projectIds = Array.from(new Set(allocRows.map((r) => r.projectId)));
+  const actualRows = projectIds.length
+    ? await aggregateByMonth(args.orgId, {
+        projectIds,
+        monthKeys: monthRange,
+      })
+    : [];
+  const actualsByKey = new Map<string, number>();
+  for (const row of actualRows) {
+    if (row.personId !== args.personId) continue;
+    actualsByKey.set(`${row.projectId}::${row.monthKey}`, row.hours);
+  }
+
+  // 4. Index: projectId → { name, months: Map<monthKey, {hours, allocId}> }
+  const byProject = new Map<
+    string,
+    { name: string; months: Map<string, { hours: number; allocId: string }> }
+  >();
+  for (const row of allocRows) {
+    let entry = byProject.get(row.projectId);
+    if (!entry) {
+      entry = { name: row.projectName, months: new Map() };
+      byProject.set(row.projectId, entry);
+    }
+    const mk = normalizeMonth(row.month);
+    const existing = entry.months.get(mk);
+    entry.months.set(mk, {
+      hours: (existing?.hours ?? 0) + Number(row.hours),
+      allocId: row.id,
+    });
+  }
+
+  // 5. Compose dense rows.
+  const projects: StaffScheduleProjectRow[] = Array.from(byProject.entries()).map(
+    ([projectId, entry]) => {
+      const months: Record<string, CellView> = {};
+      for (const mk of monthRange) {
+        const cell = entry.months.get(mk);
+        const actual = actualsByKey.get(`${projectId}::${mk}`);
+        months[mk] = {
+          personId: args.personId,
+          monthKey: mk,
+          allocationId: cell?.allocId ?? null,
+          plannedHours: cell?.hours ?? 0,
+          actualHours: actual ?? null,
+          pendingProposal: null,
+        };
+      }
+      return { projectId, projectName: entry.name, months };
+    },
+  );
+
+  // 6. Summary strip: reuse capacity.read.getPersonMonthUtilization for
+  //    planned + target + utilizationPct. Actuals are summed per monthKey
+  //    from the same actuals query used above (single-person slice).
+  const { getPersonMonthUtilization } = await import('@/features/capacity/capacity.read');
+  const utilization = await getPersonMonthUtilization({
+    orgId: args.orgId,
+    monthRange: { start: args.monthRange.from, end: args.monthRange.to },
+  });
+  const cellsByKey = new Map(utilization.cells.map((c) => [`${c.personId}::${c.monthKey}`, c]));
+
+  const actualByMonth = new Map<string, number>();
+  for (const row of actualRows) {
+    if (row.personId !== args.personId) continue;
+    actualByMonth.set(row.monthKey, (actualByMonth.get(row.monthKey) ?? 0) + row.hours);
+  }
+
+  const summaryStrip: Record<string, StaffSummaryStripEntry> = {};
+  for (const mk of monthRange) {
+    const util = cellsByKey.get(`${args.personId}::${mk}`);
+    summaryStrip[mk] = {
+      plannedHours: util?.plannedHours ?? 0,
+      actualHours: actualByMonth.get(mk) ?? 0,
+      utilizationPct: util?.utilizationPct ?? 0,
+    };
+  }
+
+  return {
+    person: {
+      id: personRow.id,
+      name: `${personRow.firstName} ${personRow.lastName}`.trim(),
+    },
+    monthRange,
+    projects,
+    summaryStrip,
+  };
 }
 
 export async function getPmTimeline(args: {
