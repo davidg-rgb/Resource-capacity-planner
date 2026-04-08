@@ -33,3 +33,37 @@ export function formatWeekRange(start: Date, end: Date): string {
   if (sw === ew && sy === ey) return `v.${sw}`;
   return `v.${sw}\u2013v.${ew}`;
 }
+
+// ---------------------------------------------------------------------------
+// v5.0 — Phase 42 Wave 0: quarter / year display formatters.
+// Swedish prefix "KV" (kvartal); English prefix "Q".
+// ---------------------------------------------------------------------------
+
+const QUARTER_KEY_RE = /^(\d{4})-Q([1-4])$/;
+const YEAR_KEY_RE = /^\d{4}$/;
+
+/**
+ * Format a quarter key like '2026-Q1' as a localized label.
+ *   sv → 'KV1 2026'
+ *   en → 'Q1 2026'
+ */
+export function formatQuarter(quarterKey: string, locale: 'sv' | 'en'): string {
+  const m = QUARTER_KEY_RE.exec(quarterKey);
+  if (!m) {
+    throw new Error(`formatQuarter: invalid quarterKey '${quarterKey}'`);
+  }
+  const year = m[1];
+  const q = m[2];
+  const prefix = locale === 'sv' ? 'KV' : 'Q';
+  return `${prefix}${q} ${year}`;
+}
+
+/**
+ * Format a year key like '2026' as a localized label. Both locales return '2026'.
+ */
+export function formatYear(yearKey: string, _locale: 'sv' | 'en'): string {
+  if (!YEAR_KEY_RE.test(yearKey)) {
+    throw new Error(`formatYear: invalid yearKey '${yearKey}'`);
+  }
+  return yearKey;
+}
