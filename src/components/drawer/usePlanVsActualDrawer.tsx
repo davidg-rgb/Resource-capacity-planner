@@ -11,13 +11,27 @@
 
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
 
+/**
+ * Drawer view mode discriminant (Phase 42 D-17 / UX-V5-09).
+ *
+ * - 'daily' (Phase 37 original): single (person, project, month) — drawer renders
+ *   per-day rows for that one person on that one project.
+ * - 'project-person-breakdown' (Phase 42): R&D drill from a project-row cell with
+ *   no person — drawer renders per-person rows for that project-month. `personId`
+ *   MUST be null in this mode.
+ */
+export type DrawerMode = 'daily' | 'project-person-breakdown';
+
 export interface DrawerContext {
-  personId: string;
+  /** null only in 'project-person-breakdown' mode (R&D drill). */
+  personId: string | null;
   projectId: string;
   monthKey: string;
+  /** Empty string allowed in 'project-person-breakdown' mode. */
   personName: string;
   projectName: string;
   monthLabel: string;
+  mode: DrawerMode;
 }
 
 interface PlanVsActualDrawerStore {

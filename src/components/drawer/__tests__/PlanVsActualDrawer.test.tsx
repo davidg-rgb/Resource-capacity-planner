@@ -24,6 +24,7 @@ const ctx: DrawerContext = {
   personName: 'Anna',
   projectName: 'Atlas',
   monthLabel: 'April 2026',
+  mode: 'daily',
 };
 
 function Wrapper({ children }: { children: ReactNode }) {

@@ -8,10 +8,14 @@ import type { ColDef } from 'ag-grid-community';
 
 import { formatMonthHeader } from '@/lib/date-utils';
 
-export type TimelineZoom = 'month';
+export type TimelineZoom = 'month' | 'quarter' | 'year';
 
 export function buildTimelineColumns(monthRange: string[], zoom: TimelineZoom = 'month'): ColDef[] {
-  void zoom; // future: 'quarter' | 'year' land in Phase 42
+  if (zoom !== 'month') {
+    // Phase 42 Wave 0 widened the type so callers can compile against the
+    // future contract. Quarter / year branches land in Wave 2.
+    throw new Error(`buildTimelineColumns: zoom='${zoom}' not yet implemented (Wave 2)`);
+  }
   const personCol: ColDef = {
     field: 'personName',
     headerName: 'Person',

@@ -74,12 +74,21 @@ export function PlanVsActualDrawer(props: PlanVsActualDrawerProps) {
       context?.projectId ?? '',
       context?.monthKey ?? '',
     ],
-    queryFn: () =>
-      fetchFn(orgId, {
+    queryFn: () => {
+      // Phase 42 D-17: 'project-person-breakdown' mode has personId=null and is
+      // handled by a separate fetcher (Wave 3). The 'daily' mode invariant is
+      // enforced here so existing PM/LM call sites keep their string contract.
+      if (context!.mode !== 'daily' || context!.personId === null) {
+        throw new Error(
+          `PlanVsActualDrawer: daily fetch requires mode='daily' with non-null personId (got mode='${context!.mode}')`,
+        );
+      }
+      return fetchFn(orgId, {
         personId: context!.personId,
         projectId: context!.projectId,
         monthKey: context!.monthKey,
-      }),
+      });
+    },
     enabled: isOpen,
   });
 
