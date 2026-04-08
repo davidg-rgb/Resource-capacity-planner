@@ -65,3 +65,78 @@ export function useListProposals(filter: ListProposalsHookFilter) {
     },
   });
 }
+
+// Plan 39-07 (PROP-04): Line Manager approval queue mutations + impact query.
+
+export interface ApproveProposalHookInput {
+  proposalId: string;
+  departmentId: string;
+}
+
+export function useApproveProposal() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: ApproveProposalHookInput) => {
+      const res = await fetch(`/api/v5/proposals/${input.proposalId}/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ departmentId: input.departmentId }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'approve_failed' }));
+        throw new Error(err.code ?? err.error ?? `HTTP ${res.status}`);
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['proposals'] });
+    },
+  });
+}
+
+export interface RejectProposalHookInput {
+  proposalId: string;
+  departmentId: string;
+  reason: string;
+}
+
+export function useRejectProposal() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: RejectProposalHookInput) => {
+      const res = await fetch(`/api/v5/proposals/${input.proposalId}/reject`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ departmentId: input.departmentId, reason: input.reason }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'reject_failed' }));
+        throw new Error(err.code ?? err.error ?? `HTTP ${res.status}`);
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['proposals'] });
+    },
+  });
+}
+
+export interface ProposalImpactDTO {
+  personMonthPlannedBefore: number;
+  personMonthPlannedAfter: number;
+  proposedHours: number;
+  personName: string;
+  month: string;
+}
+
+export function useProposalImpact(proposalId: string | null) {
+  return useQuery({
+    queryKey: ['proposals', 'impact', proposalId],
+    enabled: !!proposalId,
+    queryFn: async (): Promise<ProposalImpactDTO> => {
+      const res = await fetch(`/api/v5/proposals/${proposalId}/impact`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    },
+  });
+}
