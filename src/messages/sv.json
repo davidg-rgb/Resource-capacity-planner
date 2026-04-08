@@ -717,6 +717,50 @@
         "generic": "Något gick fel. Försök igen."
       }
     },
+    "admin": {
+      "register": {
+        "title": {
+          "person": "Personer",
+          "project": "Projekt",
+          "department": "Avdelningar",
+          "discipline": "Discipliner",
+          "program": "Program"
+        },
+        "description": {
+          "person": "Hantera personer i organisationen.",
+          "project": "Hantera projekt i organisationen.",
+          "department": "Hantera avdelningar för personer.",
+          "discipline": "Hantera discipliner för personer.",
+          "program": "Hantera program som projekt kan tillhöra."
+        },
+        "new": "Ny",
+        "edit": "Redigera",
+        "archive": "Arkivera",
+        "archiveConfirm": "Arkivera {name}? Raden göms från standardvyn.",
+        "unarchive": "Återställ",
+        "showArchived": "Visa arkiverade",
+        "archivedBadge": "arkiverad",
+        "actionsColumn": "Åtgärder",
+        "empty": "Inga rader. Lägg till den första.",
+        "addFirst": "Lägg till",
+        "loading": "Laddar…",
+        "retry": "Försök igen",
+        "errorTitle": "Kunde inte ladda listan.",
+        "saveError": "Kunde inte spara. Försök igen.",
+        "saveSuccess": "Sparat.",
+        "closeLabel": "Stäng",
+        "submit": "Spara",
+        "cancel": "Avbryt",
+        "dependentRowsExist": {
+          "title": "Kan inte arkivera — raden används på andra ställen.",
+          "allocations": "{count} aktiva allokeringar",
+          "proposals": "{count} aktiva önskemål",
+          "people": "{count} personer",
+          "projects": "{count} projekt",
+          "leadPm": "{count} projekt där denna person är ansvarig PM"
+        }
+      }
+    },
     "proposals": {
       "page": {
         "approvalQueue": "Godkännandekö",

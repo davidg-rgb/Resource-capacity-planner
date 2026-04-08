@@ -652,6 +652,50 @@
         "generic": "Something went wrong. Try again."
       }
     },
+    "admin": {
+      "register": {
+        "title": {
+          "person": "People",
+          "project": "Projects",
+          "department": "Departments",
+          "discipline": "Disciplines",
+          "program": "Programs"
+        },
+        "description": {
+          "person": "Manage people in the organisation.",
+          "project": "Manage projects in the organisation.",
+          "department": "Manage departments for people.",
+          "discipline": "Manage disciplines for people.",
+          "program": "Manage programs that projects can belong to."
+        },
+        "new": "New",
+        "edit": "Edit",
+        "archive": "Archive",
+        "archiveConfirm": "Archive {name}? The row will be hidden from the default view.",
+        "unarchive": "Restore",
+        "showArchived": "Show archived",
+        "archivedBadge": "archived",
+        "actionsColumn": "Actions",
+        "empty": "No rows. Add the first one.",
+        "addFirst": "Add",
+        "loading": "Loading…",
+        "retry": "Retry",
+        "errorTitle": "Failed to load list.",
+        "saveError": "Failed to save. Try again.",
+        "saveSuccess": "Saved.",
+        "closeLabel": "Close",
+        "submit": "Save",
+        "cancel": "Cancel",
+        "dependentRowsExist": {
+          "title": "Cannot archive — the row is in use elsewhere.",
+          "allocations": "{count} active allocations",
+          "proposals": "{count} active proposals",
+          "people": "{count} people",
+          "projects": "{count} projects",
+          "leadPm": "{count} projects where this person is lead PM"
+        }
+      }
+    },
     "proposals": {
       "page": {
         "approvalQueue": "Approval queue",
