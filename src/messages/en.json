@@ -385,6 +385,21 @@
     "exportingWidget": "Exporting widget..."
   },
   "v5": {
+    "pm": {
+      "home": {
+        "title": "My projects",
+        "plannedVsActual": "Planned {planned}h / Actual {actual}h",
+        "pendingWishes": "{count} pending wishes",
+        "myWishesLink": "My wishes"
+      },
+      "timeline": {
+        "title": "Project timeline",
+        "placeholder": "Timeline grid (wired in Wave 3)"
+      },
+      "wishes": {
+        "title": "My wishes"
+      }
+    },
     "persona": {
       "label": "Role",
       "kind": {

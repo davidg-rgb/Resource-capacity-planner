@@ -247,6 +247,21 @@ export const K = {
         generic: 'import.error.generic',
       },
     },
+    pm: {
+      home: {
+        title: 'pm.home.title',
+        plannedVsActual: 'pm.home.plannedVsActual',
+        pendingWishes: 'pm.home.pendingWishes',
+        myWishesLink: 'pm.home.myWishesLink',
+      },
+      timeline: {
+        title: 'pm.timeline.title',
+        placeholder: 'pm.timeline.placeholder',
+      },
+      wishes: {
+        title: 'pm.wishes.title',
+      },
+    },
     proposals: {
       page: {
         approvalQueue: 'proposals.page.approvalQueue',

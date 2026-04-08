@@ -385,6 +385,21 @@
     "exportingWidget": "Exporterar widget..."
   },
   "v5": {
+    "pm": {
+      "home": {
+        "title": "Mina projekt",
+        "plannedVsActual": "Planerat {planned}h / Utfall {actual}h",
+        "pendingWishes": "{count} väntande önskemål",
+        "myWishesLink": "Mina önskemål"
+      },
+      "timeline": {
+        "title": "Projekttidslinje",
+        "placeholder": "Tidslinjeruta (kopplas in i Wave 3)"
+      },
+      "wishes": {
+        "title": "Mina önskemål"
+      }
+    },
     "persona": {
       "label": "Roll",
       "kind": {
