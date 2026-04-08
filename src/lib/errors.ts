@@ -68,6 +68,22 @@ export class PayloadTooLargeError extends AppError {
   }
 }
 
+export const ERR_PROPOSAL_NOT_ACTIVE = 'PROPOSAL_NOT_ACTIVE';
+
+/**
+ * v5.0 — Phase 39 / PROP-05: thrown when a caller tries to act on a
+ * proposal that is no longer in the 'proposed' state (already approved,
+ * rejected, withdrawn, or superseded). HTTP 409 Conflict.
+ */
+export class ProposalNotActiveError extends AppError {
+  constructor(
+    message = 'Proposal is no longer in proposed state',
+    details?: Record<string, unknown>,
+  ) {
+    super(message, ERR_PROPOSAL_NOT_ACTIVE, 409, details);
+  }
+}
+
 export class InternalError extends AppError {
   constructor(message = 'Internal server error') {
     super(message, 'ERR_INTERNAL', 500);
