@@ -44,7 +44,7 @@ Architecture frozen — each requirement traces to architecture sections and the
 - [x] **PROP-03**: PM inline cell edit on an out-of-department person triggers proposal mode (dashed border, Pending badge) instead of auto-save; explicit "Submit wish" button required (ADR-008b)
 - [ ] **PROP-04**: Line Manager approval queue lists pending proposals for their department with impact preview ("Sara's June utilization 40% → 90%") and Approve / Reject actions; rejection requires a reason
 - [ ] **PROP-05**: Approved proposals write through to `allocations`, mark proposal `approved`, record change_log; rejected proposals persist with reason and can be edited + resubmitted by proposer
-- [ ] **PROP-06**: PM "My Wishes" panel filterable by state (proposed/approved/rejected) with resubmit from rejected card
+- [x] **PROP-06**: PM "My Wishes" panel filterable by state (proposed/approved/rejected) with resubmit from rejected card
 - [ ] **PROP-07**: `target_department_id` stays in sync with `target_person.department_id` — if a person moves departments while a proposal is pending, re-route to the new department's line manager
 - [x] **PROP-08**: Line Mgr direct edits within own department bypass the approval gate; still audited via change_log
 
