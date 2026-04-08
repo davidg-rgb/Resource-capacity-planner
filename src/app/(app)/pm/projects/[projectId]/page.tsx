@@ -5,12 +5,14 @@
 // Renders project header + placeholder where Wave 3 will mount
 // <TimelineGrid /> built on PlanVsActualCell.
 
+import { useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { usePersona } from '@/features/personas/persona.context';
 import { generateMonthRange, getCurrentMonth } from '@/lib/date-utils';
+import { TimelineGrid } from '@/components/timeline/timeline-grid';
 import type { PmTimelineView } from '@/features/planning/planning.read';
 
 function defaultMonthWindow(): { from: string; to: string } {
@@ -41,12 +43,26 @@ export default function PmProjectTimelinePage() {
 
   const { from, to } = defaultMonthWindow();
   const enabled = !!projectId && persona.kind === 'pm';
+  const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['pm-timeline', projectId, from, to],
     queryFn: () => fetchPmTimeline(projectId, from, to),
     enabled,
   });
+
+  const handlePatch = useCallback(
+    async (args: { allocationId: string; hours: number; confirmHistoric?: boolean }) => {
+      const res = await fetch(`/api/v5/planning/allocations/${args.allocationId}`, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ hours: args.hours, confirmHistoric: args.confirmHistoric }),
+      });
+      if (!res.ok) throw new Error(`pm-timeline-patch ${res.status}`);
+      queryClient.invalidateQueries({ queryKey: ['pm-timeline', projectId] });
+    },
+    [queryClient, projectId],
+  );
 
   if (isLoading) return <div className="p-8">{tScreens('loading')}</div>;
   if (error) return <div className="text-error p-8">{tScreens('error')}</div>;
@@ -56,12 +72,7 @@ export default function PmProjectTimelinePage() {
     <div className="space-y-4 p-8">
       <h1 className="font-headline text-2xl font-bold">{data.project.name}</h1>
       <div className="text-on-surface-variant text-sm">{t('title')}</div>
-      <div
-        data-testid="pm-timeline-grid-placeholder"
-        className="border-outline-variant/30 bg-surface-container-low text-on-surface-variant rounded-md border p-8 text-center text-sm"
-      >
-        {t('placeholder')}
-      </div>
+      <TimelineGrid view={data} currentMonth={getCurrentMonth()} onAllocationPatch={handlePatch} />
     </div>
   );
 }
