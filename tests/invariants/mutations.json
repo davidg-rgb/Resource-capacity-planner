@@ -5,6 +5,18 @@
       "export": "upsertActuals"
     },
     {
+      "file": "src/features/admin/register.service.ts",
+      "export": "archiveRegisterRow"
+    },
+    {
+      "file": "src/features/admin/register.service.ts",
+      "export": "createRegisterRow"
+    },
+    {
+      "file": "src/features/admin/register.service.ts",
+      "export": "updateRegisterRow"
+    },
+    {
       "file": "src/features/import/actuals-import.service.ts",
       "export": "commitActualsBatch"
     },

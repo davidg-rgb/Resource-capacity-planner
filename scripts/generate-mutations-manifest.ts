@@ -21,6 +21,8 @@ const INCLUDE = [
   'src/features/change-log/**/*.service.ts',
   'src/features/actuals/**/*.service.ts',
   'src/features/import/**/*.service.ts',
+  // v5.0 — Phase 43 / Plan 43-01: admin register coverage (ADM-03).
+  'src/features/admin/**/*.service.ts',
 ];
 
 const OUTPUT = 'tests/invariants/mutations.json';
