@@ -33,16 +33,49 @@ const PERSONA_SCOPED_QUERY_KEYS: readonly string[] = [
 
 const STORAGE_KEY = 'nc:persona';
 
+/** Phase 41 / Plan 41-01: real department list for the line-manager picker. */
+export interface DepartmentLite {
+  id: string;
+  name: string;
+}
+
 interface PersonaContextValue {
   persona: Persona;
   setPersona: (next: Persona) => void;
+  /** Phase 41 — populated from /api/departments on mount. Empty array until
+   *  the fetch resolves (matches the prior Phase 40 stub fallback). */
+  departments: DepartmentLite[];
 }
 
 const PersonaContext = createContext<PersonaContextValue | null>(null);
 
 export function PersonaProvider({ children }: { children: ReactNode }) {
   const [persona, setPersonaState] = useState<Persona>(DEFAULT_PERSONA);
+  const [departments, setDepartments] = useState<DepartmentLite[]>([]);
   const queryClient = useQueryClient();
+
+  // Phase 41 / Plan 41-01: fetch the department list once on mount and expose
+  // it via context so the line-manager persona switcher renders a real
+  // dropdown. Errors are swallowed — the picker falls back to the previous
+  // empty-string stub if the fetch fails (offline tests, jsdom, etc.).
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    let cancelled = false;
+    fetch('/api/departments')
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
+      .then((data: { departments?: DepartmentLite[] }) => {
+        if (cancelled) return;
+        if (Array.isArray(data?.departments)) {
+          setDepartments(data.departments);
+        }
+      })
+      .catch(() => {
+        /* ignore — keep empty fallback */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Hydrate from localStorage on mount.
   useEffect(() => {
@@ -92,7 +125,9 @@ export function PersonaProvider({ children }: { children: ReactNode }) {
   );
 
   return (
-    <PersonaContext.Provider value={{ persona, setPersona }}>{children}</PersonaContext.Provider>
+    <PersonaContext.Provider value={{ persona, setPersona, departments }}>
+      {children}
+    </PersonaContext.Provider>
   );
 }
 

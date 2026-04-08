@@ -134,6 +134,114 @@ export interface PmTimelineView {
   cells: CellView[];
 }
 
+// ---------------------------------------------------------------------------
+// Line Manager group timeline (Phase 41 / Plan 41-01, D-12)
+// ---------------------------------------------------------------------------
+
+export interface GroupTimelineProjectRow {
+  projectId: string;
+  projectName: string;
+  months: Record<string, number>; // monthKey → hours
+}
+
+export interface GroupTimelinePersonRow {
+  personId: string;
+  personName: string;
+  projects: GroupTimelineProjectRow[];
+}
+
+export interface GroupTimelineView {
+  monthRange: string[];
+  persons: GroupTimelinePersonRow[];
+}
+
+/**
+ * Approved-only per-person × per-project month aggregation for the LM group
+ * timeline. Pending proposals are NOT included (consistent with capacity.read
+ * D-07). People are filtered to a single department.
+ */
+export async function getGroupTimeline(args: {
+  orgId: string;
+  departmentId: string;
+  monthRange: { from: string; to: string };
+}): Promise<GroupTimelineView> {
+  const monthRange = expandMonthRange(args.monthRange.from, args.monthRange.to);
+  const dateRange = monthRangeToDateRange(args.monthRange);
+
+  const peopleRows = await db
+    .select({
+      id: schema.people.id,
+      firstName: schema.people.firstName,
+      lastName: schema.people.lastName,
+    })
+    .from(schema.people)
+    .where(
+      and(
+        eq(schema.people.organizationId, args.orgId),
+        eq(schema.people.departmentId, args.departmentId),
+      ),
+    );
+
+  if (peopleRows.length === 0) {
+    return { monthRange, persons: [] };
+  }
+
+  const personIds = peopleRows.map((p) => p.id);
+  const allocRows = await db
+    .select({
+      personId: schema.allocations.personId,
+      projectId: schema.allocations.projectId,
+      projectName: schema.projects.name,
+      month: schema.allocations.month,
+      hours: schema.allocations.hours,
+    })
+    .from(schema.allocations)
+    .innerJoin(schema.projects, eq(schema.projects.id, schema.allocations.projectId))
+    .where(
+      and(
+        eq(schema.allocations.organizationId, args.orgId),
+        inArray(schema.allocations.personId, personIds),
+        gte(schema.allocations.month, dateRange.from),
+        lte(schema.allocations.month, dateRange.to),
+      ),
+    );
+
+  // Index: personId → projectId → { name, months: Map<monthKey, hours> }
+  const byPerson = new Map<string, Map<string, { name: string; months: Map<string, number> }>>();
+  for (const row of allocRows) {
+    let projects = byPerson.get(row.personId);
+    if (!projects) {
+      projects = new Map();
+      byPerson.set(row.personId, projects);
+    }
+    let entry = projects.get(row.projectId);
+    if (!entry) {
+      entry = { name: row.projectName, months: new Map() };
+      projects.set(row.projectId, entry);
+    }
+    const mk = normalizeMonth(row.month);
+    entry.months.set(mk, (entry.months.get(mk) ?? 0) + Number(row.hours));
+  }
+
+  const persons: GroupTimelinePersonRow[] = peopleRows.map((p) => {
+    const projects = byPerson.get(p.id);
+    const projectRows: GroupTimelineProjectRow[] = projects
+      ? Array.from(projects.entries()).map(([projectId, entry]) => {
+          const months: Record<string, number> = {};
+          for (const mk of monthRange) months[mk] = entry.months.get(mk) ?? 0;
+          return { projectId, projectName: entry.name, months };
+        })
+      : [];
+    return {
+      personId: p.id,
+      personName: `${p.firstName} ${p.lastName}`.trim(),
+      projects: projectRows,
+    };
+  });
+
+  return { monthRange, persons };
+}
+
 export async function getPmTimeline(args: {
   orgId: string;
   projectId: string;
