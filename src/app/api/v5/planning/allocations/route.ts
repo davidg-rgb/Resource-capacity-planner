@@ -7,7 +7,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { getGroupTimeline, getPmTimeline } from '@/features/planning/planning.read';
+import {
+  getGroupTimeline,
+  getPmTimeline,
+  getStaffSchedule,
+} from '@/features/planning/planning.read';
 import { handleApiError } from '@/lib/api-utils';
 import { requireRole } from '@/lib/auth';
 
@@ -27,13 +31,29 @@ const LineManagerQuery = z.object({
   endMonth: MONTH_KEY,
 });
 
-const Query = z.discriminatedUnion('scope', [PmQuery, LineManagerQuery]);
+const StaffQuery = z.object({
+  scope: z.literal('staff'),
+  personId: z.string().uuid(),
+  startMonth: MONTH_KEY,
+  endMonth: MONTH_KEY,
+});
+
+const Query = z.discriminatedUnion('scope', [PmQuery, LineManagerQuery, StaffQuery]);
 
 export async function GET(request: NextRequest) {
   try {
     const { orgId } = await requireRole('planner');
     const url = new URL(request.url);
     const parsed = Query.parse(Object.fromEntries(url.searchParams));
+
+    if (parsed.scope === 'staff') {
+      const result = await getStaffSchedule({
+        orgId,
+        personId: parsed.personId,
+        monthRange: { from: parsed.startMonth, to: parsed.endMonth },
+      });
+      return NextResponse.json(result, { status: 200 });
+    }
 
     if (parsed.scope === 'line-manager') {
       const result = await getGroupTimeline({
