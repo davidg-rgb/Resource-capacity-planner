@@ -73,7 +73,7 @@
 - [ ] **Phase 39: Proposal / approval workflow** — Allocation proposals state machine, routing, approve/reject/resubmit lifecycle
 - [x] **Phase 40: Persona views Part 1 — PM** — PM Home, PM project timeline, My Wishes panel, historic-edit dialog
  (completed 2026-04-08)
-- [ ] **Phase 41: Persona views Part 2 — Line Manager** — Line Mgr Home heatmap, group timeline, approval queue, change log feed
+- [x] **Phase 41: Persona views Part 2 — Line Manager** — Line Mgr Home heatmap, group timeline, approval queue, change log feed (completed 2026-04-08)
 - [ ] **Phase 42: Persona views Part 3 — Staff, R&D, drill-down, long-horizon zoom** — Staff schedule, R&D portfolio, shared drill-down drawer, zoom levels
 - [ ] **Phase 43: Admin register maintenance** — Self-service CRUD with archive, dependent-row blocking, change-log feed landing
 - [ ] **Phase 44: API hardening + test contract fill** — Every TC-* assertion from §15 has a passing automated test; AppError taxonomy coverage
@@ -198,7 +198,7 @@ Plans:
 - [x] 41-02-PLAN.md — Wave 1 LM Home capacity heatmap + persona route guard
 - [x] 41-03-PLAN.md — Wave 2 group timeline (flat synthetic child rows override) + direct edit
 - [x] 41-04-PLAN.md — Wave 3 approval queue impact wording + change log feed UI
-- [ ] 41-05-PLAN.md — Wave 4 i18n sweep + TC-E2E-2A + TC-MOBILE-001 + TC-NEG-013
+- [x] 41-05-PLAN.md — Wave 4 i18n sweep + TC-E2E-2A + TC-MOBILE-001 + TC-NEG-013
 **UI hint**: yes
 
 ### Phase 42: Persona views Part 3 — Staff, R&D, drill-down, long-horizon zoom
@@ -266,7 +266,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 38. Excel import pipeline | v5.0 | 3/3 | Complete    | 2026-04-07 |
 | 39. Proposal / approval workflow | v5.0 | 8/10 | In Progress|  |
 | 40. Persona views Part 1 — PM | v5.0 | 5/5 | Complete   | 2026-04-08 |
-| 41. Persona views Part 2 — Line Manager | v5.0 | 4/5 | In Progress|  |
+| 41. Persona views Part 2 — Line Manager | v5.0 | 5/5 | Complete   | 2026-04-08 |
 | 42. Persona views Part 3 — Staff/R&D/zoom | v5.0 | 0/0 | Not started | - |
 | 43. Admin register maintenance | v5.0 | 0/0 | Not started | - |
 | 44. API hardening + test contract fill | v5.0 | 0/0 | Not started | - |
