@@ -7,12 +7,21 @@
 //
 // Approve / reject / resubmit arrive in Plans 39-03 and 39-04.
 
-import { and, desc, eq, inArray } from 'drizzle-orm';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- `ne` reserved for Plan 39-03 approve/reject
+import { and, desc, eq, inArray, ne } from 'drizzle-orm';
 
 import { db } from '@/db';
 import * as schema from '@/db/schema';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- reserved for Plan 39-03 approveProposal
+import { _applyAllocationUpsertsInTx } from '@/features/allocations/allocation.service';
 import { recordChange } from '@/features/change-log/change-log.service';
-import { ForbiddenError, NotFoundError, ValidationError } from '@/lib/errors';
+import {
+  ForbiddenError,
+  NotFoundError,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- reserved for Plan 39-03 approveProposal
+  ProposalNotActiveError,
+  ValidationError,
+} from '@/lib/errors';
 import { normalizeMonth } from '@/lib/date-utils';
 
 import {
@@ -203,5 +212,100 @@ export async function withdrawProposal(raw: WithdrawProposalInput): Promise<Prop
 
     // liveDepartmentId not critical on withdraw path — pass snapshot.
     return toProposalDTO(row, row.targetDepartmentId);
+  });
+}
+
+/**
+ * PROP-06: clone a rejected proposal into a new 'proposed' row with
+ * parent_proposal_id set. Original rejected row is immutable history.
+ * target_department_id is re-snapshotted from LIVE people.department_id
+ * at resubmit time (PROP-07). Emits PROPOSAL_SUBMITTED in the same tx.
+ */
+export interface ResubmitProposalInput {
+  orgId: string;
+  rejectedProposalId: string;
+  proposedHours?: number;
+  note?: string | null;
+  month?: string; // 'YYYY-MM' — default: parent's month
+  requestedBy: string;
+  actorPersonaId: string;
+}
+
+export async function resubmitProposal(input: ResubmitProposalInput): Promise<ProposalDTO> {
+  return db.transaction(async (tx) => {
+    const [parent] = await tx
+      .select()
+      .from(schema.allocationProposals)
+      .where(
+        and(
+          eq(schema.allocationProposals.organizationId, input.orgId),
+          eq(schema.allocationProposals.id, input.rejectedProposalId),
+        ),
+      )
+      .limit(1);
+    if (!parent) throw new NotFoundError('Proposal', input.rejectedProposalId);
+    if (parent.status !== 'rejected') {
+      throw new ValidationError('Only rejected proposals can be resubmitted', 'INVALID_STATE');
+    }
+    if (parent.requestedBy !== input.requestedBy) {
+      throw new ForbiddenError('Only the original proposer can resubmit');
+    }
+
+    // Live read target person's department (PROP-07)
+    const [person] = await tx
+      .select({ id: schema.people.id, departmentId: schema.people.departmentId })
+      .from(schema.people)
+      .where(
+        and(eq(schema.people.organizationId, input.orgId), eq(schema.people.id, parent.personId)),
+      )
+      .limit(1);
+    if (!person) throw new NotFoundError('Person', parent.personId);
+
+    const monthNormalized = input.month ?? normalizeMonth(parent.month);
+    const monthDate = `${monthNormalized}-01`;
+    const hours = input.proposedHours ?? Number(parent.proposedHours);
+    const note = input.note !== undefined ? input.note : parent.note;
+
+    const [row] = await tx
+      .insert(schema.allocationProposals)
+      .values({
+        organizationId: input.orgId,
+        personId: parent.personId,
+        projectId: parent.projectId,
+        month: monthDate,
+        proposedHours: hours.toFixed(2),
+        note: note,
+        status: 'proposed',
+        requestedBy: input.requestedBy,
+        targetDepartmentId: person.departmentId,
+        parentProposalId: parent.id,
+      })
+      .returning();
+
+    await recordChange(
+      {
+        orgId: input.orgId,
+        actorPersonaId: input.actorPersonaId,
+        entity: 'proposal',
+        entityId: row.id,
+        action: 'PROPOSAL_SUBMITTED',
+        previousValue: null,
+        newValue: {
+          personId: row.personId,
+          projectId: row.projectId,
+          month: monthNormalized,
+          proposedHours: hours,
+          note: row.note,
+          parentProposalId: parent.id,
+        },
+        context: {
+          targetDepartmentId: row.targetDepartmentId,
+          resubmittedFrom: parent.id,
+        },
+      },
+      tx as unknown as Parameters<typeof recordChange>[1],
+    );
+
+    return toProposalDTO(row, person.departmentId);
   });
 }
