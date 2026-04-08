@@ -254,7 +254,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 37. Actuals layer | v5.0 | 2/2 | Complete    | 2026-04-07 |
 | 38. Excel import pipeline | v5.0 | 3/3 | Complete    | 2026-04-07 |
 | 39. Proposal / approval workflow | v5.0 | 8/10 | In Progress|  |
-| 40. Persona views Part 1 — PM | v5.0 | 3/5 | In Progress|  |
+| 40. Persona views Part 1 — PM | v5.0 | 4/5 | In Progress|  |
 | 41. Persona views Part 2 — Line Manager | v5.0 | 0/0 | Not started | - |
 | 42. Persona views Part 3 — Staff/R&D/zoom | v5.0 | 0/0 | Not started | - |
 | 43. Admin register maintenance | v5.0 | 0/0 | Not started | - |
