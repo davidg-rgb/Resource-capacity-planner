@@ -622,6 +622,85 @@
         "unresolvedNames": "Alla omatchade namn måste lösas innan importen kan genomföras.",
         "generic": "Något gick fel. Försök igen."
       }
+    },
+    "proposals": {
+      "page": {
+        "approvalQueue": "Godkännandekö",
+        "myWishes": "Mina önskemål",
+        "myWishesIntro": "Önskemål du har skickat in. Växla mellan flikar för att se status, och skicka om avvisade önskemål med uppdaterade timmar eller noteringar.",
+        "switchToLineManager": "Växla till linjechefspersonan för att se kön.",
+        "notAuthenticated": "Inte inloggad",
+        "loading": "Laddar…"
+      },
+      "tabs": {
+        "proposed": "Föreslagna",
+        "approved": "Godkända",
+        "rejected": "Avvisade",
+        "tablistLabel": "Önskemålsstatus"
+      },
+      "card": {
+        "status": "Status: {status}",
+        "hoursMonth": "{hours}h · {month}",
+        "rejected": "Avvisad: {reason}"
+      },
+      "actions": {
+        "approve": "Godkänn",
+        "reject": "Avvisa",
+        "editResubmit": "Redigera & skicka igen",
+        "submit": "Skicka önskemål",
+        "cancel": "Avbryt",
+        "confirmReject": "Bekräfta avvisning",
+        "resubmit": "Skicka igen",
+        "pending": "…"
+      },
+      "editor": {
+        "title": "Skicka önskemål (utanför avdelning)",
+        "notePlaceholder": "Valfri notering",
+        "hoursAria": "Föreslagna timmar",
+        "noteAria": "Notering",
+        "missingProject": "Saknar projektId",
+        "submitFailed": "Det gick inte att skicka önskemålet"
+      },
+      "rejectModal": {
+        "title": "Avvisa önskemål",
+        "dialogLabel": "Avvisa önskemål",
+        "reasonHint": "En anledning krävs och visas för den som skickade önskemålet.",
+        "reasonAria": "Avvisningsanledning",
+        "charCount": "{count}/1000"
+      },
+      "resubmit": {
+        "dialogLabel": "Redigera och skicka önskemål igen",
+        "title": "Redigera & skicka igen",
+        "monthSummary": "Månad {month} · ursprungligen {hours}h",
+        "hoursLabel": "Timmar",
+        "noteLabel": "Notering",
+        "hoursAria": "Föreslagna timmar",
+        "noteAria": "Notering",
+        "resubmitFailed": "resubmit_failed"
+      },
+      "queue": {
+        "loading": "Laddar…",
+        "empty": "Inga väntande önskemål.",
+        "loadFailed": "Kunde inte ladda: {error}",
+        "impactPhrase": "{name}s {monthName}-beläggning {before}h → {after}h"
+      },
+      "wishes": {
+        "emptyForTab": "Inga {tab} önskemål."
+      },
+      "months": {
+        "01": "januari",
+        "02": "februari",
+        "03": "mars",
+        "04": "april",
+        "05": "maj",
+        "06": "juni",
+        "07": "juli",
+        "08": "augusti",
+        "09": "september",
+        "10": "oktober",
+        "11": "november",
+        "12": "december"
+      }
     }
   }
 }

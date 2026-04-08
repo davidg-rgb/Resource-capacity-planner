@@ -10,7 +10,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { NextIntlClientProvider } from 'next-intl';
 import type { ReactNode } from 'react';
+
+import sv from '@/messages/sv.json';
 
 import { MyWishesPanel } from '../ui/my-wishes-panel';
 import type { ProposalDTO, ProposalStatus } from '../proposal.types';
@@ -20,7 +23,11 @@ function makeWrapper() {
     defaultOptions: { queries: { retry: false, gcTime: 0 }, mutations: { retry: false } },
   });
   return function Wrapper({ children }: { children: ReactNode }) {
-    return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+    return (
+      <NextIntlClientProvider locale="sv" messages={sv as Record<string, unknown>}>
+        <QueryClientProvider client={client}>{children}</QueryClientProvider>
+      </NextIntlClientProvider>
+    );
   };
 }
 
@@ -102,7 +109,7 @@ describe('MyWishesPanel (PROP-06)', () => {
 
     const tabs = await screen.findAllByRole('tab');
     expect(tabs).toHaveLength(3);
-    expect(tabs.map((t) => t.textContent)).toEqual(['Proposed', 'Approved', 'Rejected']);
+    expect(tabs.map((t) => t.textContent)).toEqual(['Föreslagna', 'Godkända', 'Avvisade']);
     expect(tabs[0].getAttribute('aria-selected')).toBe('true');
 
     await waitFor(() => {
@@ -116,27 +123,27 @@ describe('MyWishesPanel (PROP-06)', () => {
     const user = userEvent.setup();
     render(<MyWishesPanel proposerId="u1" />, { wrapper: makeWrapper() });
 
-    await user.click(screen.getByRole('tab', { name: 'Rejected' }));
+    await user.click(screen.getByRole('tab', { name: 'Avvisade' }));
 
     await waitFor(() => {
       const cards = screen.getAllByTestId('wish-card');
       expect(cards).toHaveLength(1);
       expect(cards[0].getAttribute('data-status')).toBe('rejected');
     });
-    expect(screen.getByRole('button', { name: /edit.*resubmit/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /redigera.*skicka igen/i })).toBeInTheDocument();
   });
 
   it('Edit & resubmit opens modal prefilled with hours and note', async () => {
     const user = userEvent.setup();
     render(<MyWishesPanel proposerId="u1" />, { wrapper: makeWrapper() });
 
-    await user.click(screen.getByRole('tab', { name: 'Rejected' }));
+    await user.click(screen.getByRole('tab', { name: 'Avvisade' }));
     await screen.findAllByTestId('wish-card');
-    await user.click(screen.getByRole('button', { name: /edit.*resubmit/i }));
+    await user.click(screen.getByRole('button', { name: /redigera.*skicka igen/i }));
 
     const dialog = await screen.findByRole('dialog');
-    const hours = within(dialog).getByLabelText('Proposed hours') as HTMLInputElement;
-    const note = within(dialog).getByLabelText('Note') as HTMLTextAreaElement;
+    const hours = within(dialog).getByLabelText('Föreslagna timmar') as HTMLInputElement;
+    const note = within(dialog).getByLabelText('Notering') as HTMLTextAreaElement;
     expect(hours.value).toBe('80');
     expect(note.value).toBe('Need Sara for Alpha');
   });
@@ -145,16 +152,16 @@ describe('MyWishesPanel (PROP-06)', () => {
     const user = userEvent.setup();
     render(<MyWishesPanel proposerId="u1" />, { wrapper: makeWrapper() });
 
-    await user.click(screen.getByRole('tab', { name: 'Rejected' }));
+    await user.click(screen.getByRole('tab', { name: 'Avvisade' }));
     await screen.findAllByTestId('wish-card');
-    await user.click(screen.getByRole('button', { name: /edit.*resubmit/i }));
+    await user.click(screen.getByRole('button', { name: /redigera.*skicka igen/i }));
 
     const dialog = await screen.findByRole('dialog');
-    const hours = within(dialog).getByLabelText('Proposed hours') as HTMLInputElement;
+    const hours = within(dialog).getByLabelText('Föreslagna timmar') as HTMLInputElement;
     await user.clear(hours);
     await user.type(hours, '60');
 
-    await user.click(within(dialog).getByRole('button', { name: /^resubmit$/i }));
+    await user.click(within(dialog).getByRole('button', { name: /^skicka igen$/i }));
 
     await waitFor(() => {
       const call = fetchMock.mock.calls.find(
@@ -176,6 +183,6 @@ describe('MyWishesPanel (PROP-06)', () => {
 
     render(<MyWishesPanel proposerId="u1" />, { wrapper: makeWrapper() });
 
-    expect(await screen.findByText(/no proposed wishes/i)).toBeInTheDocument();
+    expect(await screen.findByText(/inga föreslagna önskemål/i)).toBeInTheDocument();
   });
 });

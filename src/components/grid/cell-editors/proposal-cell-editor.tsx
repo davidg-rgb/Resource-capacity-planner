@@ -3,9 +3,11 @@
 // v5.0 — Phase 39 / Plan 39-06: ag-grid custom cell editor for proposal mode (PROP-03).
 // Direct auto-save is BLOCKED on this path — the user must click "Submit wish" to
 // POST a proposal via useCreateProposal. See edit-gate.ts for the routing decision.
+// i18n via useTranslations('v5.proposals') (Plan 39-09 sweep).
 
 import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import type { CustomCellEditorProps } from 'ag-grid-react';
+import { useTranslations } from 'next-intl';
 
 import { useCreateProposal } from '@/features/proposals/use-proposals';
 
@@ -25,6 +27,7 @@ export const ProposalCellEditor = forwardRef(function ProposalCellEditor(
   const [error, setError] = useState<string | null>(null);
   const createProposal = useCreateProposal();
   const inputRef = useRef<HTMLInputElement>(null);
+  const t = useTranslations('v5.proposals');
 
   useImperativeHandle(ref, () => ({
     // Always return the ORIGINAL value — the proposal path never writes through
@@ -44,7 +47,7 @@ export const ProposalCellEditor = forwardRef(function ProposalCellEditor(
       const row = props.data as { projectId?: string } | undefined;
       const projectId = row?.projectId;
       if (!projectId) {
-        setError('Missing projectId');
+        setError(t('editor.missingProject'));
         return;
       }
       await createProposal.mutateAsync({
@@ -56,7 +59,7 @@ export const ProposalCellEditor = forwardRef(function ProposalCellEditor(
       });
       props.api.stopEditing(true);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Submit wish failed';
+      const msg = err instanceof Error ? err.message : t('editor.submitFailed');
       setError(msg);
       console.error('Submit wish failed', err);
     }
@@ -64,7 +67,7 @@ export const ProposalCellEditor = forwardRef(function ProposalCellEditor(
 
   return (
     <div className="bg-surface min-w-[240px] rounded border-2 border-dashed border-amber-500 p-2 shadow-lg">
-      <div className="mb-1 text-xs font-medium">Submit wish (out-of-department)</div>
+      <div className="mb-1 text-xs font-medium">{t('editor.title')}</div>
       <input
         ref={inputRef}
         type="number"
@@ -74,16 +77,16 @@ export const ProposalCellEditor = forwardRef(function ProposalCellEditor(
         value={hours}
         onChange={(e) => setHours(Number(e.target.value) || 0)}
         className="w-full rounded border px-2 py-1 text-sm"
-        aria-label="Proposed hours"
+        aria-label={t('editor.hoursAria')}
         autoFocus
       />
       <textarea
-        placeholder="Optional note"
+        placeholder={t('editor.notePlaceholder')}
         value={note}
         maxLength={1000}
         onChange={(e) => setNote(e.target.value)}
         className="mt-1 w-full resize-none rounded border px-2 py-1 text-xs"
-        aria-label="Note"
+        aria-label={t('editor.noteAria')}
         rows={2}
       />
       {error && <div className="mt-1 text-xs text-red-600">{error}</div>}
@@ -94,14 +97,14 @@ export const ProposalCellEditor = forwardRef(function ProposalCellEditor(
           disabled={createProposal.isPending}
           className="bg-primary text-primary-foreground flex-1 rounded px-2 py-1 text-xs"
         >
-          {createProposal.isPending ? '…' : 'Submit wish'}
+          {createProposal.isPending ? t('actions.pending') : t('actions.submit')}
         </button>
         <button
           type="button"
           onClick={() => props.api.stopEditing(true)}
           className="rounded border px-2 py-1 text-xs"
         >
-          Cancel
+          {t('actions.cancel')}
         </button>
       </div>
     </div>

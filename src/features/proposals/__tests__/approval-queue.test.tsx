@@ -10,7 +10,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { NextIntlClientProvider } from 'next-intl';
 import type { ReactNode } from 'react';
+
+import sv from '@/messages/sv.json';
 
 import { ApprovalQueue } from '../ui/approval-queue';
 import type { ProposalDTO } from '../proposal.types';
@@ -20,7 +23,11 @@ function makeWrapper() {
     defaultOptions: { queries: { retry: false, gcTime: 0 }, mutations: { retry: false } },
   });
   return function Wrapper({ children }: { children: ReactNode }) {
-    return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+    return (
+      <NextIntlClientProvider locale="sv" messages={sv as Record<string, unknown>}>
+        <QueryClientProvider client={client}>{children}</QueryClientProvider>
+      </NextIntlClientProvider>
+    );
   };
 }
 
@@ -107,11 +114,12 @@ describe('ApprovalQueue (PROP-04)', () => {
       expect(screen.getAllByTestId('wish-card')).toHaveLength(2);
     });
 
-    // Impact phrase mirrors REQUIREMENTS PROP-04: "Sara's June utilization 40 → 90".
+    // Impact phrase mirrors REQUIREMENTS PROP-04 — Swedish locale rendering:
+    // "Saras juni-beläggning 40h → 90h".
     const impacts = await screen.findAllByTestId('wish-card-impact');
-    expect(impacts[0].textContent).toContain('utilization');
-    expect(impacts[0].textContent).toContain("Sara's");
-    expect(impacts[0].textContent).toContain('June');
+    expect(impacts[0].textContent).toContain('beläggning');
+    expect(impacts[0].textContent).toContain('Sara');
+    expect(impacts[0].textContent).toContain('juni');
   });
 
   it('Approve posts to /approve with departmentId in body', async () => {
@@ -119,7 +127,7 @@ describe('ApprovalQueue (PROP-04)', () => {
     render(<ApprovalQueue departmentId="dept-1" />, { wrapper: makeWrapper() });
 
     const cards = await screen.findAllByTestId('wish-card');
-    await user.click(within(cards[0]).getByRole('button', { name: /approve/i }));
+    await user.click(within(cards[0]).getByRole('button', { name: /godkänn/i }));
 
     await waitFor(() => {
       const approveCall = fetchMock.mock.calls.find(
@@ -135,15 +143,15 @@ describe('ApprovalQueue (PROP-04)', () => {
     render(<ApprovalQueue departmentId="dept-1" />, { wrapper: makeWrapper() });
 
     const cards = await screen.findAllByTestId('wish-card');
-    await user.click(within(cards[1]).getByRole('button', { name: /reject/i }));
+    await user.click(within(cards[1]).getByRole('button', { name: /^avvisa$/i }));
 
     const dialog = await screen.findByRole('dialog');
     expect(dialog).toBeInTheDocument();
 
-    const confirm = within(dialog).getByRole('button', { name: /confirm reject/i });
+    const confirm = within(dialog).getByRole('button', { name: /bekräfta avvisning/i });
     expect(confirm).toBeDisabled();
 
-    const textarea = within(dialog).getByLabelText('Rejection reason');
+    const textarea = within(dialog).getByLabelText('Avvisningsanledning');
     await user.type(textarea, 'Not enough evidence for 60h this month');
     expect(confirm).not.toBeDisabled();
 

@@ -557,6 +557,85 @@
         "unresolvedNames": "All unmatched names must be resolved before committing.",
         "generic": "Something went wrong. Try again."
       }
+    },
+    "proposals": {
+      "page": {
+        "approvalQueue": "Approval queue",
+        "myWishes": "My wishes",
+        "myWishesIntro": "Proposals you have submitted. Switch tabs to review state, and resubmit rejected wishes with updated hours or notes.",
+        "switchToLineManager": "Switch to the Line Manager persona to view the queue.",
+        "notAuthenticated": "Not authenticated",
+        "loading": "Loading…"
+      },
+      "tabs": {
+        "proposed": "Proposed",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "tablistLabel": "Wish state"
+      },
+      "card": {
+        "status": "Status: {status}",
+        "hoursMonth": "{hours}h · {month}",
+        "rejected": "Rejected: {reason}"
+      },
+      "actions": {
+        "approve": "Approve",
+        "reject": "Reject",
+        "editResubmit": "Edit & resubmit",
+        "submit": "Submit wish",
+        "cancel": "Cancel",
+        "confirmReject": "Confirm reject",
+        "resubmit": "Resubmit",
+        "pending": "…"
+      },
+      "editor": {
+        "title": "Submit wish (out-of-department)",
+        "notePlaceholder": "Optional note",
+        "hoursAria": "Proposed hours",
+        "noteAria": "Note",
+        "missingProject": "Missing projectId",
+        "submitFailed": "Submit wish failed"
+      },
+      "rejectModal": {
+        "title": "Reject proposal",
+        "dialogLabel": "Reject proposal",
+        "reasonHint": "A reason is required and visible to the proposer.",
+        "reasonAria": "Rejection reason",
+        "charCount": "{count}/1000"
+      },
+      "resubmit": {
+        "dialogLabel": "Edit and resubmit wish",
+        "title": "Edit & resubmit",
+        "monthSummary": "Month {month} · originally {hours}h",
+        "hoursLabel": "Hours",
+        "noteLabel": "Note",
+        "hoursAria": "Proposed hours",
+        "noteAria": "Note",
+        "resubmitFailed": "resubmit_failed"
+      },
+      "queue": {
+        "loading": "Loading…",
+        "empty": "No pending wishes.",
+        "loadFailed": "Failed to load: {error}",
+        "impactPhrase": "{name}'s {monthName} utilization {before}h → {after}h"
+      },
+      "wishes": {
+        "emptyForTab": "No {tab} wishes."
+      },
+      "months": {
+        "01": "January",
+        "02": "February",
+        "03": "March",
+        "04": "April",
+        "05": "May",
+        "06": "June",
+        "07": "July",
+        "08": "August",
+        "09": "September",
+        "10": "October",
+        "11": "November",
+        "12": "December"
+      }
     }
   }
 }

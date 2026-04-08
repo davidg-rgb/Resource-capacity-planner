@@ -5,13 +5,11 @@
 // preview, approve, and reject-with-reason. Optimistic removal via react-query
 // invalidation on success.
 //
-// Impact phrase format from REQUIREMENTS PROP-04:
-//   "Sara's June utilization 40% → 90%"
-// We render hours (40h → 90h) rather than percentages because the impact
-// endpoint returns raw hours; Plan 39-09 may revisit wording during the i18n
-// sweep.
+// Impact phrase format from REQUIREMENTS PROP-04 (rendered through
+// t('queue.impactPhrase', { name, monthName, before, after })).
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 import {
   useApproveProposal,
@@ -32,17 +30,22 @@ export function ApprovalQueue({ departmentId }: ApprovalQueueProps) {
   const approve = useApproveProposal();
   const reject = useRejectProposal();
   const [rejectTarget, setRejectTarget] = useState<ProposalDTO | null>(null);
+  const t = useTranslations('v5.proposals');
 
   if (isLoading) {
-    return <div className="text-muted-foreground text-sm">Loading…</div>;
+    return <div className="text-muted-foreground text-sm">{t('queue.loading')}</div>;
   }
   if (error) {
-    return <div className="text-destructive text-sm">Failed to load: {String(error)}</div>;
+    return (
+      <div className="text-destructive text-sm">
+        {t('queue.loadFailed', { error: String(error) })}
+      </div>
+    );
   }
 
   const proposals = data?.proposals ?? [];
   if (proposals.length === 0) {
-    return <div className="text-muted-foreground text-sm">No pending wishes.</div>;
+    return <div className="text-muted-foreground text-sm">{t('queue.empty')}</div>;
   }
 
   return (
@@ -81,9 +84,15 @@ interface QueueRowProps {
 
 function QueueRow({ proposal, onApprove, onReject, disabled }: QueueRowProps) {
   const { data: impact } = useProposalImpact(proposal.id);
-  // Matches REQUIREMENTS phrase pattern: "Sara's June utilization 40% → 90%".
+  const t = useTranslations('v5.proposals');
+  const tMonths = useTranslations('v5.proposals.months');
   const impactText = impact
-    ? `${impact.personName}'s ${formatMonthLabel(impact.month)} utilization ${impact.personMonthPlannedBefore}h → ${impact.personMonthPlannedAfter}h`
+    ? t('queue.impactPhrase', {
+        name: impact.personName,
+        monthName: monthLabel(impact.month, tMonths),
+        before: impact.personMonthPlannedBefore,
+        after: impact.personMonthPlannedAfter,
+      })
     : undefined;
 
   return (
@@ -97,24 +106,15 @@ function QueueRow({ proposal, onApprove, onReject, disabled }: QueueRowProps) {
   );
 }
 
-const MONTH_NAMES = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-];
-
-function formatMonthLabel(month: string): string {
-  // 'YYYY-MM' → 'Month name'; Plan 39-09 will i18n properly.
+function monthLabel(month: string, tMonths: ReturnType<typeof useTranslations>): string {
+  // 'YYYY-MM' → localized month name; falls back to the raw value.
   const [, m] = month.split('-');
-  const idx = Number(m) - 1;
-  return MONTH_NAMES[idx] ?? month;
+  if (!m) return month;
+  try {
+    return tMonths(
+      m as '01' | '02' | '03' | '04' | '05' | '06' | '07' | '08' | '09' | '10' | '11' | '12',
+    );
+  } catch {
+    return month;
+  }
 }

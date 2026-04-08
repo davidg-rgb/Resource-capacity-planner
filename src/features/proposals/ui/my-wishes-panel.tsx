@@ -3,9 +3,10 @@
 // v5.0 — Phase 39 / Plan 39-08 (PROP-06): PM "My Wishes" panel.
 // Tabs: proposed / approved / rejected. Rejected cards expose an
 // edit-and-resubmit modal that POSTs to /api/v5/proposals/[id]/resubmit
-// via useResubmitProposal. i18n: inline strings (Plan 39-09 sweeps).
+// via useResubmitProposal. i18n via useTranslations('v5.proposals') (Plan 39-09 sweep).
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 import { useListProposals, useResubmitProposal } from '../use-proposals';
 import type { ProposalDTO, ProposalStatus } from '../proposal.types';
@@ -23,6 +24,7 @@ export function MyWishesPanel({ proposerId }: MyWishesPanelProps) {
   const [tab, setTab] = useState<Tab>('proposed');
   const { data, isLoading } = useListProposals({ status: tab, proposerId });
   const resubmit = useResubmitProposal();
+  const t = useTranslations('v5.proposals');
 
   const [editing, setEditing] = useState<ProposalDTO | null>(null);
   const [editHours, setEditHours] = useState<number>(0);
@@ -51,7 +53,7 @@ export function MyWishesPanel({ proposerId }: MyWishesPanelProps) {
       });
       closeResubmit();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'resubmit_failed');
+      setError(e instanceof Error ? e.message : t('resubmit.resubmitFailed'));
     }
   }
 
@@ -59,24 +61,24 @@ export function MyWishesPanel({ proposerId }: MyWishesPanelProps) {
 
   return (
     <div data-testid="my-wishes-panel">
-      <div className="mb-3 flex gap-2 border-b" role="tablist" aria-label="Wish state">
-        {TABS.map((t) => (
+      <div className="mb-3 flex gap-2 border-b" role="tablist" aria-label={t('tabs.tablistLabel')}>
+        {TABS.map((tabKey) => (
           <button
-            key={t}
+            key={tabKey}
             type="button"
             role="tab"
-            aria-selected={tab === t}
-            onClick={() => setTab(t)}
+            aria-selected={tab === tabKey}
+            onClick={() => setTab(tabKey)}
             className={`px-3 py-2 text-sm ${
-              tab === t ? 'border-primary border-b-2 font-medium' : 'text-muted-foreground'
+              tab === tabKey ? 'border-primary border-b-2 font-medium' : 'text-muted-foreground'
             }`}
           >
-            {t.charAt(0).toUpperCase() + t.slice(1)}
+            {t(`tabs.${tabKey}`)}
           </button>
         ))}
       </div>
 
-      {isLoading && <div className="text-muted-foreground text-sm">Loading…</div>}
+      {isLoading && <div className="text-muted-foreground text-sm">{t('page.loading')}</div>}
 
       <div className="space-y-2" data-testid="my-wishes-list">
         {proposals.map((p) => (
@@ -88,7 +90,9 @@ export function MyWishesPanel({ proposerId }: MyWishesPanelProps) {
           />
         ))}
         {!isLoading && proposals.length === 0 && (
-          <div className="text-muted-foreground text-sm">No {tab} wishes.</div>
+          <div className="text-muted-foreground text-sm">
+            {t('wishes.emptyForTab', { tab: t(`tabs.${tab}`) })}
+          </div>
         )}
       </div>
 
@@ -97,16 +101,16 @@ export function MyWishesPanel({ proposerId }: MyWishesPanelProps) {
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
           role="dialog"
           aria-modal="true"
-          aria-label="Edit and resubmit wish"
+          aria-label={t('resubmit.dialogLabel')}
         >
           <div className="bg-surface w-full max-w-md rounded-lg border p-4 shadow-lg">
-            <h2 className="text-lg font-semibold">Edit &amp; resubmit</h2>
+            <h2 className="text-lg font-semibold">{t('resubmit.title')}</h2>
             <p className="text-muted-foreground mt-1 text-xs">
-              Month {editing.month} · originally {editing.proposedHours}h
+              {t('resubmit.monthSummary', { month: editing.month, hours: editing.proposedHours })}
             </p>
 
             <label className="mt-3 block text-xs font-medium" htmlFor="resubmit-hours">
-              Hours
+              {t('resubmit.hoursLabel')}
             </label>
             <input
               id="resubmit-hours"
@@ -117,11 +121,11 @@ export function MyWishesPanel({ proposerId }: MyWishesPanelProps) {
               value={editHours}
               onChange={(e) => setEditHours(Number(e.target.value) || 0)}
               className="w-full rounded border px-2 py-1 text-sm"
-              aria-label="Proposed hours"
+              aria-label={t('resubmit.hoursAria')}
             />
 
             <label className="mt-3 block text-xs font-medium" htmlFor="resubmit-note">
-              Note
+              {t('resubmit.noteLabel')}
             </label>
             <textarea
               id="resubmit-note"
@@ -130,7 +134,7 @@ export function MyWishesPanel({ proposerId }: MyWishesPanelProps) {
               onChange={(e) => setEditNote(e.target.value)}
               className="w-full rounded border px-2 py-1 text-sm"
               rows={3}
-              aria-label="Note"
+              aria-label={t('resubmit.noteAria')}
             />
 
             {error && (
@@ -146,7 +150,7 @@ export function MyWishesPanel({ proposerId }: MyWishesPanelProps) {
                 className="rounded border px-3 py-1 text-sm"
                 disabled={resubmit.isPending}
               >
-                Cancel
+                {t('actions.cancel')}
               </button>
               <button
                 type="button"
@@ -154,7 +158,7 @@ export function MyWishesPanel({ proposerId }: MyWishesPanelProps) {
                 disabled={resubmit.isPending || editHours <= 0}
                 className="bg-primary text-primary-foreground rounded px-3 py-1 text-sm disabled:opacity-50"
               >
-                {resubmit.isPending ? '…' : 'Resubmit'}
+                {resubmit.isPending ? t('actions.pending') : t('actions.resubmit')}
               </button>
             </div>
           </div>
