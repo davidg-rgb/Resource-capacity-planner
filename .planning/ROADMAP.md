@@ -67,7 +67,7 @@
 - [x] **Phase 37: Actuals layer — services, distribution, plan-vs-actual cell** — Day-grain actuals with largest-remainder distribution and the reusable comparison cell (completed 2026-04-07)
 - [x] **Phase 38: Excel import pipeline** — SheetJS parsers, two-stage parse→preview→commit, idempotency, rollback, supersession, template (completed 2026-04-07)
 - [ ] **Phase 39: Proposal / approval workflow** — Allocation proposals state machine, routing, approve/reject/resubmit lifecycle
-- [ ] **Phase 40: Persona views Part 1 — PM** — PM Home, PM project timeline, My Wishes panel, historic-edit dialog
+- [x] **Phase 40: Persona views Part 1 — PM** — PM Home, PM project timeline, My Wishes panel, historic-edit dialog (completed 2026-04-08)
 - [ ] **Phase 41: Persona views Part 2 — Line Manager** — Line Mgr Home heatmap, group timeline, approval queue, change log feed
 - [ ] **Phase 42: Persona views Part 3 — Staff, R&D, drill-down, long-horizon zoom** — Staff schedule, R&D portfolio, shared drill-down drawer, zoom levels
 - [ ] **Phase 43: Admin register maintenance** — Self-service CRUD with archive, dependent-row blocking, change-log feed landing
@@ -254,7 +254,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 37. Actuals layer | v5.0 | 2/2 | Complete    | 2026-04-07 |
 | 38. Excel import pipeline | v5.0 | 3/3 | Complete    | 2026-04-07 |
 | 39. Proposal / approval workflow | v5.0 | 8/10 | In Progress|  |
-| 40. Persona views Part 1 — PM | v5.0 | 4/5 | In Progress|  |
+| 40. Persona views Part 1 — PM | v5.0 | 5/5 | Complete   | 2026-04-08 |
 | 41. Persona views Part 2 — Line Manager | v5.0 | 0/0 | Not started | - |
 | 42. Persona views Part 3 — Staff/R&D/zoom | v5.0 | 0/0 | Not started | - |
 | 43. Admin register maintenance | v5.0 | 0/0 | Not started | - |
