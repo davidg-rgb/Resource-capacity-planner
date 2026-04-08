@@ -70,13 +70,13 @@
  (completed 2026-04-07)
 - [x] **Phase 38: Excel import pipeline** — SheetJS parsers, two-stage parse→preview→commit, idempotency, rollback, supersession, template
  (completed 2026-04-07)
-- [ ] **Phase 39: Proposal / approval workflow** — Allocation proposals state machine, routing, approve/reject/resubmit lifecycle
+- [x] **Phase 39: Proposal / approval workflow** — Allocation proposals state machine, routing, approve/reject/resubmit lifecycle (completed 2026-04-08)
 - [x] **Phase 40: Persona views Part 1 — PM** — PM Home, PM project timeline, My Wishes panel, historic-edit dialog
  (completed 2026-04-08)
 - [x] **Phase 41: Persona views Part 2 — Line Manager** — Line Mgr Home heatmap, group timeline, approval queue, change log feed
  (completed 2026-04-08)
 - [x] **Phase 42: Persona views Part 3 — Staff, R&D, drill-down, long-horizon zoom** — Staff schedule, R&D portfolio, shared drill-down drawer, zoom levels (completed 2026-04-08)
-- [ ] **Phase 43: Admin register maintenance** — Self-service CRUD with archive, dependent-row blocking, change-log feed landing
+- [x] **Phase 43: Admin register maintenance** — Self-service CRUD with archive, dependent-row blocking, change-log feed landing (completed 2026-04-08)
 - [ ] **Phase 44: API hardening + test contract fill** — Every TC-* assertion from §15 has a passing automated test; AppError taxonomy coverage
 - [ ] **Phase 45: Launch gate — PDF export bug fix** — Swap html2canvas for html-to-image / modern-screenshot (LAUNCH-01); blocks v5.0 launch
 

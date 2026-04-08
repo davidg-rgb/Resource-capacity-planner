@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Plan vs Actual + Approval Workflow
-status: verifying
-stopped_at: Completed 43-03-PLAN.md
-last_updated: "2026-04-08T17:28:19.288Z"
-last_activity: 2026-04-08
+status: ready
+stopped_at: Phase 43 complete — Phase 44 not yet started
+last_updated: "2026-04-09T00:00:00.000Z"
+last_activity: 2026-04-09
 progress:
   total_phases: 3
   completed_phases: 3
@@ -27,14 +27,16 @@ Planning artifacts (frozen):
 - .planning/ROADMAP.md (v5.0 phases 33-45)
 
 **Core value:** Plan vs actual comparison + proposal/approval workflow + persona-scoped views — stop being a fancier Excel, start being a workflow tool.
-**Current focus:** Phase 42 — persona-views-part-3-staff-rd-drilldown-zoom
+**Current focus:** Phase 44 — api-hardening-and-test-contract-fill (not yet started)
 
 ## Current Position
 
-Phase: 42 (persona-views-part-3-staff-rd-drilldown-zoom) — EXECUTING
-Plan: 4 of 4
-Status: Phase complete — ready for verification
-Last activity: 2026-04-08
+Phase: 44 (api-hardening-and-test-contract-fill) — NOT STARTED
+Plan: 0 of ?
+Status: Ready for /gsd:discuss-phase 44
+Last activity: 2026-04-09
+
+Phases 39, 42, 43 all complete on disk and verified. Phase 44 absorbs the TC-CL-005 runtime invariant harness repair deferred from Phase 43 (see .planning/phases/43-admin-register-maintenance/deferred-items.md). Phase 45 (PDF export launch gate) follows 44.
 
 ## v5.0 Phase Status
 
