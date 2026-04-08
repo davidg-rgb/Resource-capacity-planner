@@ -69,9 +69,9 @@ Architecture frozen — each requirement traces to architecture sections and the
 
 ### Admin Register Maintenance (ADM)
 
-- [ ] **ADM-01** (S14): Admin register tables for People, Projects, Departments, Disciplines, Programs with list view (active default, archived toggle) + side-sheet create/edit form
-- [ ] **ADM-02**: Archive with dependent-row blocking — archiving a project with active allocations raises `ConflictError` code `DEPENDENT_ROWS_EXIST`; archived rows hidden from default views
-- [ ] **ADM-03**: Every register mutation writes `change_log` entries (`REGISTER_ROW_CREATED` / `REGISTER_ROW_UPDATED` / `REGISTER_ROW_DELETED`)
+- [x] **ADM-01** (S14): Admin register tables for People, Projects, Departments, Disciplines, Programs with list view (active default, archived toggle) + side-sheet create/edit form
+- [x] **ADM-02**: Archive with dependent-row blocking — archiving a project with active allocations raises `ConflictError` code `DEPENDENT_ROWS_EXIST`; archived rows hidden from default views
+- [x] **ADM-03**: Every register mutation writes `change_log` entries (`REGISTER_ROW_CREATED` / `REGISTER_ROW_UPDATED` / `REGISTER_ROW_DELETED`)
 - [ ] **ADM-04**: Admin landing view is the change_log feed (scoped to all entities)
 
 ### Historic Edit Guardrails (HIST)
