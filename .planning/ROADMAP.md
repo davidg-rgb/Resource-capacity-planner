@@ -274,7 +274,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 40. Persona views Part 1 — PM | v5.0 | 5/5 | Complete   | 2026-04-08 |
 | 41. Persona views Part 2 — Line Manager | v5.0 | 5/5 | Complete   | 2026-04-08 |
 | 42. Persona views Part 3 — Staff/R&D/zoom | v5.0 | 4/4 | Complete   | 2026-04-08 |
-| 43. Admin register maintenance | v5.0 | 1/4 | In Progress|  |
+| 43. Admin register maintenance | v5.0 | 3/4 | In Progress|  |
 | 44. API hardening + test contract fill | v5.0 | 0/0 | Not started | - |
 | 45. Launch gate — PDF export bug fix | v5.0 | 0/0 | Not started | - |
 
