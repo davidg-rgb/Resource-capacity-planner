@@ -401,6 +401,18 @@
         "utilization": "Beläggning"
       }
     },
+    "rd": {
+      "title": "FoU-portfölj",
+      "empty": "Inga godkända allokeringar i perioden.",
+      "noPersonaHint": "Byt till personan FoU-chef för att se portföljen.",
+      "groupBy": {
+        "project": "Projekt",
+        "department": "Avdelning"
+      },
+      "overcommitDrill": "Överbelastning",
+      "overcommitHint": "Visa personer som är överbelagda i den valda perioden.",
+      "close": "Stäng"
+    },
     "lineManager": {
       "desktopOnlyMessage": "Den här vyn kräver en skärm på minst 768px. Öppna sidan på en dator.",
       "home": {

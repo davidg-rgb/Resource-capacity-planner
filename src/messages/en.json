@@ -401,6 +401,18 @@
         "utilization": "Utilization"
       }
     },
+    "rd": {
+      "title": "R&D Portfolio",
+      "empty": "No approved allocations in this range.",
+      "noPersonaHint": "Switch to the R&D persona to view the portfolio.",
+      "groupBy": {
+        "project": "Project",
+        "department": "Department"
+      },
+      "overcommitDrill": "Overcommit drill",
+      "overcommitHint": "Show people overcommitted in the selected range.",
+      "close": "Close"
+    },
     "lineManager": {
       "desktopOnlyMessage": "This view requires a screen at least 768px wide. Please open it on a desktop.",
       "home": {

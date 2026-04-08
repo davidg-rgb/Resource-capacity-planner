@@ -268,6 +268,18 @@ export const K = {
         utilization: 'staff.summaryStrip.utilization',
       },
     },
+    rd: {
+      title: 'rd.title',
+      empty: 'rd.empty',
+      noPersonaHint: 'rd.noPersonaHint',
+      groupBy: {
+        project: 'rd.groupBy.project',
+        department: 'rd.groupBy.department',
+      },
+      overcommitDrill: 'rd.overcommitDrill',
+      overcommitHint: 'rd.overcommitHint',
+      close: 'rd.close',
+    },
     lineManager: {
       desktopOnlyMessage: 'lineManager.desktopOnlyMessage',
       home: {

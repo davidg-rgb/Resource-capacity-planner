@@ -26,6 +26,18 @@ import type { PmTimelineView } from '@/features/planning/planning.read';
 
 vi.mock('next/navigation', () => ({
   useParams: () => ({ projectId: 'p1' }),
+  useRouter: () => ({ replace: vi.fn(), push: vi.fn() }),
+  usePathname: () => '/pm/projects/p1',
+  useSearchParams: () => new URLSearchParams(),
+}));
+
+vi.mock('@clerk/nextjs', () => ({
+  useAuth: () => ({ orgId: 'org-1', userId: 'u-1', isLoaded: true }),
+}));
+
+vi.mock('@/features/actuals/actuals.cell.actions', () => ({
+  getDailyCellBreakdown: vi.fn(async () => []),
+  getProjectPersonBreakdownAction: vi.fn(async () => []),
 }));
 
 vi.mock('@/features/personas/persona.context', () => ({

@@ -15,6 +15,9 @@ import { generateMonthRange, getCurrentMonth } from '@/lib/date-utils';
 import { TimelineGrid } from '@/components/timeline/timeline-grid';
 import { ZoomControls } from '@/components/timeline/zoom-controls';
 import { useZoom } from '@/components/timeline/useZoom';
+import { PlanVsActualDrawer } from '@/components/drawer/PlanVsActualDrawer';
+import { PlanVsActualDrawerProvider } from '@/components/drawer/usePlanVsActualDrawer';
+import { useAuth } from '@clerk/nextjs';
 import type { PmTimelineView } from '@/features/planning/planning.read';
 
 function defaultMonthWindow(): { from: string; to: string } {
@@ -37,6 +40,15 @@ async function fetchPmTimeline(
 }
 
 export default function PmProjectTimelinePage() {
+  return (
+    <PlanVsActualDrawerProvider>
+      <PmProjectTimelinePageInner />
+    </PlanVsActualDrawerProvider>
+  );
+}
+
+function PmProjectTimelinePageInner() {
+  const { orgId } = useAuth();
   const params = useParams<{ projectId: string }>();
   const projectId = params.projectId;
   const { persona } = usePersona();
@@ -86,6 +98,7 @@ export default function PmProjectTimelinePage() {
         onAllocationPatch={handlePatch}
         zoom={zoom}
       />
+      <PlanVsActualDrawer orgId={orgId ?? ''} />
     </div>
   );
 }

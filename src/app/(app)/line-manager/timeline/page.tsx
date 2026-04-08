@@ -16,10 +16,14 @@ import { useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
+import { useAuth } from '@clerk/nextjs';
+
 import { DesktopOnlyScreen } from '@/components/responsive/desktop-only-screen';
 import { LineManagerTimelineGrid } from '@/components/timeline/line-manager-timeline-grid';
 import { ZoomControls } from '@/components/timeline/zoom-controls';
 import { useZoom } from '@/components/timeline/useZoom';
+import { PlanVsActualDrawer } from '@/components/drawer/PlanVsActualDrawer';
+import { PlanVsActualDrawerProvider } from '@/components/drawer/usePlanVsActualDrawer';
 import { PersonaGate } from '@/features/personas/persona-route-guard';
 import { usePersona } from '@/features/personas/persona.context';
 import { generateMonthRange, getCurrentMonth } from '@/lib/date-utils';
@@ -59,13 +63,16 @@ export default function LineManagerTimelinePage() {
   return (
     <DesktopOnlyScreen>
       <PersonaGate allowed={['line-manager']}>
-        <LineManagerTimelineInner />
+        <PlanVsActualDrawerProvider>
+          <LineManagerTimelineInner />
+        </PlanVsActualDrawerProvider>
       </PersonaGate>
     </DesktopOnlyScreen>
   );
 }
 
 function LineManagerTimelineInner() {
+  const { orgId } = useAuth();
   const { persona } = usePersona();
   const t = useTranslations('v5.lineManager');
   const queryClient = useQueryClient();
@@ -139,6 +146,7 @@ function LineManagerTimelineInner() {
           onPatchAllocation={handlePatch}
         />
       )}
+      <PlanVsActualDrawer orgId={orgId ?? ''} />
     </div>
   );
 }
