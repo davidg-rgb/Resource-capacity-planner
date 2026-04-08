@@ -129,6 +129,56 @@ export interface ProposalImpactDTO {
   month: string;
 }
 
+// Plan 39-08 (PROP-06): resubmit from rejected + withdraw hooks for PM "My Wishes".
+
+export interface ResubmitProposalHookInput {
+  rejectedProposalId: string;
+  proposedHours?: number;
+  note?: string | null;
+  month?: string;
+}
+
+export function useResubmitProposal() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: ResubmitProposalHookInput): Promise<ProposalDTO> => {
+      const { rejectedProposalId, ...body } = input;
+      const res = await fetch(`/api/v5/proposals/${rejectedProposalId}/resubmit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'resubmit_failed' }));
+        throw new Error(err.code ?? err.error ?? `HTTP ${res.status}`);
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['proposals'] });
+    },
+  });
+}
+
+export function useWithdrawProposal() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: { proposalId: string }) => {
+      const res = await fetch(`/api/v5/proposals/${input.proposalId}/withdraw`, {
+        method: 'POST',
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'withdraw_failed' }));
+        throw new Error(err.code ?? err.error ?? `HTTP ${res.status}`);
+      }
+      return res.json();
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['proposals'] });
+    },
+  });
+}
+
 export function useProposalImpact(proposalId: string | null) {
   return useQuery({
     queryKey: ['proposals', 'impact', proposalId],
