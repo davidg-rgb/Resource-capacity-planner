@@ -62,12 +62,17 @@
 - [x] **Phase 33: Foundations — ISO calendar + Swedish holidays** — Centralized ISO 8601 / 53-week math and Swedish holiday helpers (completed 2026-04-07)
 - [x] **Phase 34: Foundations — Personas, i18n catalog, historic-edit helper** — Role switcher context, empty SV/EN key catalog, server-now month helper
  (completed 2026-04-07)
-- [x] **Phase 35: Foundations — Universal change_log infrastructure** — `change_log` table + `recordChange` + eslint rule + codegen manifest + runtime invariant test (completed 2026-04-07)
-- [x] **Phase 36: Data model — v5.0 schema migrations** — Four new tables and the only existing-table mutation (`projects.lead_pm_person_id`) (completed 2026-04-07)
-- [x] **Phase 37: Actuals layer — services, distribution, plan-vs-actual cell** — Day-grain actuals with largest-remainder distribution and the reusable comparison cell (completed 2026-04-07)
-- [x] **Phase 38: Excel import pipeline** — SheetJS parsers, two-stage parse→preview→commit, idempotency, rollback, supersession, template (completed 2026-04-07)
+- [x] **Phase 35: Foundations — Universal change_log infrastructure** — `change_log` table + `recordChange` + eslint rule + codegen manifest + runtime invariant test
+ (completed 2026-04-07)
+- [x] **Phase 36: Data model — v5.0 schema migrations** — Four new tables and the only existing-table mutation (`projects.lead_pm_person_id`)
+ (completed 2026-04-07)
+- [x] **Phase 37: Actuals layer — services, distribution, plan-vs-actual cell** — Day-grain actuals with largest-remainder distribution and the reusable comparison cell
+ (completed 2026-04-07)
+- [x] **Phase 38: Excel import pipeline** — SheetJS parsers, two-stage parse→preview→commit, idempotency, rollback, supersession, template
+ (completed 2026-04-07)
 - [ ] **Phase 39: Proposal / approval workflow** — Allocation proposals state machine, routing, approve/reject/resubmit lifecycle
-- [x] **Phase 40: Persona views Part 1 — PM** — PM Home, PM project timeline, My Wishes panel, historic-edit dialog (completed 2026-04-08)
+- [x] **Phase 40: Persona views Part 1 — PM** — PM Home, PM project timeline, My Wishes panel, historic-edit dialog
+ (completed 2026-04-08)
 - [ ] **Phase 41: Persona views Part 2 — Line Manager** — Line Mgr Home heatmap, group timeline, approval queue, change log feed
 - [ ] **Phase 42: Persona views Part 3 — Staff, R&D, drill-down, long-horizon zoom** — Staff schedule, R&D portfolio, shared drill-down drawer, zoom levels
 - [ ] **Phase 43: Admin register maintenance** — Self-service CRUD with archive, dependent-row blocking, change-log feed landing
@@ -187,7 +192,13 @@ Plans:
   2. Group timeline shows project breakdown per person with direct edit and visible change log (TC-PS-001..010, TC-API-040..041)
   3. Approval queue shows impact preview ("Sara's June utilization 40% → 90%") and Approve / Reject actions; counter-proposal is explicitly absent (TC-PR-004..009)
   4. Change log feed is filterable by project / person / period / author with persona-scoped defaults (**TC-API-040..041**, **TC-CL-***)
-**Plans**: TBD
+**Plans**: 5 plans
+Plans:
+- [ ] 41-01-PLAN.md — Wave 0 backend gap fill (capacity.read, change-log.read, impact % extension, line-manager scope branch, DesktopOnlyScreen, dept dropdown)
+- [ ] 41-02-PLAN.md — Wave 1 LM Home capacity heatmap + persona route guard
+- [ ] 41-03-PLAN.md — Wave 2 group timeline (flat synthetic child rows override) + direct edit
+- [ ] 41-04-PLAN.md — Wave 3 approval queue impact wording + change log feed UI
+- [ ] 41-05-PLAN.md — Wave 4 i18n sweep + TC-E2E-2A + TC-MOBILE-001 + TC-NEG-013
 **UI hint**: yes
 
 ### Phase 42: Persona views Part 3 — Staff, R&D, drill-down, long-horizon zoom
