@@ -78,7 +78,7 @@
 - [x] **Phase 42: Persona views Part 3 — Staff, R&D, drill-down, long-horizon zoom** — Staff schedule, R&D portfolio, shared drill-down drawer, zoom levels (completed 2026-04-08)
 - [x] **Phase 43: Admin register maintenance** — Self-service CRUD with archive, dependent-row blocking, change-log feed landing (completed 2026-04-08)
 - [x] **Phase 44: API hardening + test contract fill** — Every TC-* assertion from §15 has a passing automated test; AppError taxonomy coverage (completed 2026-04-09, APPROVED-WITH-DEFERRALS; TC-E2E Playwright infra deferred to Phase 46)
-- [ ] **Phase 45: Launch gate — PDF export bug fix** — Swap html2canvas for html-to-image / modern-screenshot (LAUNCH-01); blocks v5.0 launch
+- [x] **Phase 45: Launch gate — PDF export bug fix** — Swapped html2canvas for html-to-image@^1.11.13; 7/9 widget families fixed; 2 residuals (Department Capacity Gauges, Availability Finder) deferred to Phase 46 (completed 2026-04-09 LAUNCH-01-WITH-DEFERRALS)
 
 ## Phase Details
 
@@ -290,7 +290,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 42. Persona views Part 3 — Staff/R&D/zoom | v5.0 | 4/4 | Complete   | 2026-04-08 |
 | 43. Admin register maintenance | v5.0 | 3/4 | In Progress|  |
 | 44. API hardening + test contract fill | v5.0 | 10/14 | In Progress|  |
-| 45. Launch gate — PDF export bug fix | v5.0 | 0/0 | Not started | - |
+| 45. Launch gate — PDF export bug fix | v5.0 | 1/1 | Complete (with deferrals) | 2026-04-09 |
 
 ---
 

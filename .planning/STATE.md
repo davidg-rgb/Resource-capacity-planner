@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Plan vs Actual + Approval Workflow
 status: ready
-stopped_at: Completed phase 44 (14/14 plans + verification)
-last_updated: "2026-04-09T11:39:42.819Z"
+stopped_at: Completed phase 45 (1/1 plan, LAUNCH-01 satisfied with deferrals)
+last_updated: "2026-04-09T12:00:00.000Z"
 last_activity: 2026-04-09
 progress:
   total_phases: 3
@@ -27,13 +27,21 @@ Planning artifacts (frozen):
 - .planning/ROADMAP.md (v5.0 phases 33-45)
 
 **Core value:** Plan vs actual comparison + proposal/approval workflow + persona-scoped views — stop being a fancier Excel, start being a workflow tool.
-**Current focus:** Phase 45 — Launch gate (PDF export bug fix)
+**Current focus:** Phase 46 — Playwright E2E infra + widget rendering polish (TC-E2E-* from Phase 44 + 2 PDF widget residuals from Phase 45)
 
 ## Current Position
 
-Phase: 45 (launch-gate-pdf-export) — NEXT
-Last shipped: Phase 44 (API hardening + test contract fill) — 14/14 plans, verified APPROVED-WITH-DEFERRALS on 2026-04-09
+Phase: 46 (playwright-e2e-and-widget-polish) — NEXT
+Last shipped: Phase 45 (Launch gate — PDF export bug fix) — 1/1 plan, LAUNCH-01 satisfied with deferrals on 2026-04-09
 Last activity: 2026-04-09
+
+Phase 45 results:
+- html2canvas → html-to-image@^1.11.13 swap in src/features/dashboard/pdf-export/svg-snapshot.ts
+- 7/9 widget families fully fixed in PDF export (KPI cards, heat map, sparklines, bench report + 3 Recharts fast-path widgets already working)
+- 2 residuals deferred to Phase 46: Department Capacity Gauges (empty frame — strictly better than pre-phase hijacked arc), Availability Finder (shrunken ~20% — unchanged pre/post phase)
+- 8 new tests (5 capture-path + 3 dependency invariant), all green
+- Rule 4 scope limit: shipped 7/9 fix now rather than block launch on deeper widget-specific rendering quirks
+- v5.0 is UNBLOCKED for launch
 
 Phase 44 results:
 - 696/696 tests passing (+229 since baseline 467/473; 6 pre-existing TC-CL-005 failures now green)
@@ -59,7 +67,8 @@ Phase 44 results:
 | 42 | Persona views Part 3 — Staff, R&D, drill-down, zoom | Not started |
 | 43 | Admin register maintenance | Not started |
 | 44 | API hardening + test contract fill | Complete (APPROVED-WITH-DEFERRALS, 2026-04-09) |
-| 45 | Launch gate — PDF export bug fix | Not started |
+| 45 | Launch gate — PDF export bug fix | Complete (LAUNCH-01-WITH-DEFERRALS, 2026-04-09) |
+| 46 | Playwright E2E infra + widget rendering polish | Not started |
 
 ## Previous Milestones
 
@@ -91,12 +100,12 @@ None.
 
 ### Blockers/Concerns
 
-- **PDF export bug (launch gate, scheduled as Phase 45):** html2canvas still blank for non-SVG widgets. Last attempt commit `9e19794`. Next try: swap to `html-to-image` or `modern-screenshot`.
+- **PDF export residuals (deferred to Phase 46):** Department Capacity Gauges render empty frame (Recharts nested-SVG composition); Availability Finder renders shrunken (~20%, react-window virtualization during capture). See `.planning/phases/45-launch-gate-pdf-export/deferred-items.md`. Core LAUNCH-01 blank-placeholder bug is FIXED for 7/9 widget families.
 
 ## Session Continuity
 
-Last session: 2026-04-09T11:32:57.104Z
-Stopped at: Completed 44-14-PLAN.md
+Last session: 2026-04-09T12:00:00.000Z
+Stopped at: Completed 45-01-PLAN.md (LAUNCH-01 satisfied with deferrals)
 
 ---
 
