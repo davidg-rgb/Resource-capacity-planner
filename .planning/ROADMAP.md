@@ -246,7 +246,7 @@ Plans:
 - [x] 44-03-PLAN.md — Wave A: Tenant-isolation static audit (both withTenant and requireRole+orgId patterns) + exceptions manifest
 - [x] 44-04-PLAN.md — Wave B: TC-NEG-* error wire-format tests for all 8 documented codes
 - [x] 44-05-PLAN.md — Wave B: Parameterized runtime cross-tenant 404 test over mutating-routes manifest
-- [ ] 44-06-PLAN.md — Wave C foundation: canonical TC-ID extractor + manifest generator + CI diff gate with allowlist
+- [x] 44-06-PLAN.md — Wave C foundation: canonical TC-ID extractor + manifest generator + CI diff gate with allowlist
 - [ ] 44-07-PLAN.md — Wave C1: Fill TC-CAL-* + TC-DB-* gaps (unit tests)
 - [ ] 44-08-PLAN.md — Wave C2: Fill TC-PS-* + TC-PR-* + TC-AC-* + TC-AR-* + TC-CP-* gaps (PGlite integration)
 - [ ] 44-09-PLAN.md — Wave C3: Fill TC-IMP-* + TC-EX-* gaps (Excel import + export tests)
@@ -289,7 +289,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 41. Persona views Part 2 — Line Manager | v5.0 | 5/5 | Complete   | 2026-04-08 |
 | 42. Persona views Part 3 — Staff/R&D/zoom | v5.0 | 4/4 | Complete   | 2026-04-08 |
 | 43. Admin register maintenance | v5.0 | 3/4 | In Progress|  |
-| 44. API hardening + test contract fill | v5.0 | 5/14 | In Progress|  |
+| 44. API hardening + test contract fill | v5.0 | 6/14 | In Progress|  |
 | 45. Launch gate — PDF export bug fix | v5.0 | 0/0 | Not started | - |
 
 ---
