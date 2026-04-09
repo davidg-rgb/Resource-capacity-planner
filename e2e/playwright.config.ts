@@ -20,10 +20,10 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
     env: {
+      ...process.env,
       NODE_ENV: 'test',
       E2E_TEST: '1',
       E2E_SEED_ENABLED: '1',
-      ...process.env,
     },
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
