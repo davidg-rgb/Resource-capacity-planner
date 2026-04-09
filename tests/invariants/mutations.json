@@ -23,6 +23,30 @@
     {
       "file": "src/features/import/actuals-import.service.ts",
       "export": "rollbackBatch"
+    },
+    {
+      "file": "src/features/proposals/proposal.service.ts",
+      "export": "approveProposal"
+    },
+    {
+      "file": "src/features/proposals/proposal.service.ts",
+      "export": "createProposal"
+    },
+    {
+      "file": "src/features/proposals/proposal.service.ts",
+      "export": "editProposal"
+    },
+    {
+      "file": "src/features/proposals/proposal.service.ts",
+      "export": "rejectProposal"
+    },
+    {
+      "file": "src/features/proposals/proposal.service.ts",
+      "export": "resubmitProposal"
+    },
+    {
+      "file": "src/features/proposals/proposal.service.ts",
+      "export": "withdrawProposal"
     }
   ]
 }

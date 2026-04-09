@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-09T20:28:07.005Z",
+  "generatedAt": "2026-04-09T20:33:01.020Z",
   "entries": {
     "TC-AC-001": {
       "file": "src/features/actuals/__tests__/upsert-actuals.contract.test.ts",

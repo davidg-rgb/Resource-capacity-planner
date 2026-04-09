@@ -23,6 +23,8 @@ const eslintConfig = defineConfig([
       'src/features/import/**/*.service.ts',
       // v5.0 — Phase 43 / Plan 43-01: admin register coverage (ADM-03).
       'src/features/admin/**/*.service.ts',
+      // v5.0 — Phase 39 / PROP-06: proposals service coverage.
+      'src/features/proposals/**/*.service.ts',
     ],
     plugins: { nordic },
     rules: { 'nordic/require-change-log': 'error' },

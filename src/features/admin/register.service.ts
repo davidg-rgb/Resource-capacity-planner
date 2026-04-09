@@ -17,7 +17,7 @@
 // they call db.* directly and would write outside our tx (RESEARCH §1
 // Option A). All inserts/updates are inlined here against `schema.*`.
 
-import { and, asc, desc, eq, gte, isNull, ne, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gte, inArray, isNull, ne, sql } from 'drizzle-orm';
 import { z } from 'zod/v4';
 
 import { db } from '@/db';
@@ -322,6 +322,27 @@ export async function updateRegisterRow(input: UpdateRegisterRowInput): Promise<
       .where(and(eq(idCol, input.id), eq(orgCol, input.orgId)))
       .returning()) as unknown as RegisterRow[];
     const after = afterRows[0];
+
+    // ARCHITECTURE §7.1 line 1150: when a person's departmentId changes, sync
+    // allocation_proposals.target_department_id for any open (proposed/rejected)
+    // proposals so they reappear in the new department's approval queue rather
+    // than being orphaned in the old one. TC-REG-010.
+    if (input.entity === 'person') {
+      const beforeDept = (before as { departmentId?: string | null }).departmentId ?? null;
+      const afterDept = (after as { departmentId?: string | null }).departmentId ?? null;
+      if (afterDept && afterDept !== beforeDept) {
+        await tx
+          .update(schema.allocationProposals)
+          .set({ targetDepartmentId: afterDept })
+          .where(
+            and(
+              eq(schema.allocationProposals.organizationId, input.orgId),
+              eq(schema.allocationProposals.personId, input.id),
+              inArray(schema.allocationProposals.status, ['proposed', 'rejected']),
+            ),
+          );
+      }
+    }
 
     await recordChange(
       {

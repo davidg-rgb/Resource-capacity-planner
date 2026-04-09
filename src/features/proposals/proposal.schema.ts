@@ -36,3 +36,16 @@ export const withdrawProposalInputSchema = z.object({
   requestedBy: z.string().min(1),
   actorPersonaId: z.string().min(1),
 });
+
+// PROP-06 in-place edit (status='proposed' only). Rejected proposals must
+// go through resubmitProposal (which clones into a new row).
+export const editProposalInputSchema = z.object({
+  orgId: z.string().uuid(),
+  proposalId: z.string().uuid(),
+  proposedHours: z.number().min(0).max(999.99).optional(),
+  note: z.string().max(1000).nullable().optional(),
+  requestedBy: z.string().min(1),
+  actorPersonaId: z.string().min(1),
+});
+
+export type EditProposalInput = z.infer<typeof editProposalInputSchema>;

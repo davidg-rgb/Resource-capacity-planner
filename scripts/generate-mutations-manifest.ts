@@ -15,7 +15,7 @@ import { dirname, relative, sep } from 'node:path';
 import { globSync } from 'glob';
 
 const MUTATING_RE =
-  /^(create|update|delete|edit|submit|approve|reject|commit|rollback|upsert|archive|withdraw|bulk[A-Z])/;
+  /^(create|update|delete|edit|submit|resubmit|approve|reject|commit|rollback|upsert|archive|withdraw|bulk[A-Z])/;
 
 const INCLUDE = [
   'src/features/change-log/**/*.service.ts',
@@ -23,6 +23,8 @@ const INCLUDE = [
   'src/features/import/**/*.service.ts',
   // v5.0 — Phase 43 / Plan 43-01: admin register coverage (ADM-03).
   'src/features/admin/**/*.service.ts',
+  // v5.0 — Phase 39 / PROP-06: proposals service coverage.
+  'src/features/proposals/**/*.service.ts',
 ];
 
 const OUTPUT = 'tests/invariants/mutations.json';

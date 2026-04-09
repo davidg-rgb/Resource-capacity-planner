@@ -26,6 +26,8 @@ import {
   createProposalInputSchema,
   listProposalsFilterSchema,
   withdrawProposalInputSchema,
+  editProposalInputSchema,
+  type EditProposalInput,
 } from './proposal.schema';
 import type {
   CreateProposalInput,
@@ -209,6 +211,81 @@ export async function withdrawProposal(raw: WithdrawProposalInput): Promise<Prop
     );
 
     // liveDepartmentId not critical on withdraw path — pass snapshot.
+    return toProposalDTO(row, row.targetDepartmentId);
+  });
+}
+
+/**
+ * PROP-06 (in-place edit half): update a proposal's hours/note while it
+ * is still in 'proposed' state. Rejected proposals must go through
+ * resubmitProposal (clone-on-rejected). Emits PROPOSAL_EDITED change_log
+ * inside the same tx. ARCHITECTURE §6 line 661, TC-API-013, TC-PR-010.
+ */
+export async function editProposal(raw: EditProposalInput): Promise<ProposalDTO> {
+  const input = editProposalInputSchema.parse(raw);
+  if (input.proposedHours === undefined && input.note === undefined) {
+    throw new ValidationError(
+      'At least one of proposedHours or note must be provided',
+      'EMPTY_EDIT',
+    );
+  }
+
+  return db.transaction(async (tx) => {
+    const [existing] = await tx
+      .select()
+      .from(schema.allocationProposals)
+      .where(
+        and(
+          eq(schema.allocationProposals.organizationId, input.orgId),
+          eq(schema.allocationProposals.id, input.proposalId),
+        ),
+      )
+      .limit(1);
+    if (!existing) throw new NotFoundError('Proposal', input.proposalId);
+    if (existing.requestedBy !== input.requestedBy) {
+      throw new ForbiddenError('Only the original proposer can edit this proposal');
+    }
+    if (existing.status !== 'proposed') {
+      throw new ValidationError(
+        'Only proposed proposals can be edited in place; rejected proposals must be resubmitted',
+        'INVALID_STATE',
+      );
+    }
+
+    const setValues: Record<string, unknown> = { updatedAt: new Date() };
+    if (input.proposedHours !== undefined) {
+      setValues.proposedHours = input.proposedHours.toFixed(2);
+    }
+    if (input.note !== undefined) {
+      setValues.note = input.note;
+    }
+
+    const [row] = await tx
+      .update(schema.allocationProposals)
+      .set(setValues)
+      .where(eq(schema.allocationProposals.id, input.proposalId))
+      .returning();
+
+    await recordChange(
+      {
+        orgId: input.orgId,
+        actorPersonaId: input.actorPersonaId,
+        entity: 'proposal',
+        entityId: row.id,
+        action: 'PROPOSAL_EDITED',
+        previousValue: {
+          proposedHours: Number(existing.proposedHours),
+          note: existing.note,
+        },
+        newValue: {
+          proposedHours: Number(row.proposedHours),
+          note: row.note,
+        },
+        context: { source: 'editProposal' },
+      },
+      tx as unknown as Parameters<typeof recordChange>[1],
+    );
+
     return toProposalDTO(row, row.targetDepartmentId);
   });
 }
