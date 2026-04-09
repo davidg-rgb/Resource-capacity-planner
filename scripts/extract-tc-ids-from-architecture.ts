@@ -11,9 +11,15 @@ import { dirname } from 'node:path';
 const ARCH_PATH = '.planning/v5.0-ARCHITECTURE.md';
 const OUT_PATH = '.planning/test-contract/tc-canonical.json';
 
-const SINGLE_RE = /TC-[A-Z]+(?:-[A-Z]+)*-\d+[a-z]?/g;
-const RANGE_RE = /TC-[A-Z]+(?:-[A-Z]+)*-\d+\.\.\d+/g;
-const VALID_RE = /^TC-[A-Z]+(?:-[A-Z]+)*-\d+[a-z]?$/;
+// Canonical TC-ID grammar. Supports:
+//   TC-NEG-001                (pure numeric suffix)
+//   TC-UI-EMPTY-014           (multi-segment alpha prefix)
+//   TC-E2E-1A                 (digit + uppercase letter suffix)
+//   TC-E2E-2B-approve         (digit+letter + lowercase qualifier tail)
+//   TC-E2E-2B-reject
+const SINGLE_RE = /TC-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d+[A-Za-z]*(?:-[a-z]+)*/g;
+const RANGE_RE = /TC-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d+\.\.\d+/g;
+const VALID_RE = /^TC-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d+[A-Za-z]*(?:-[a-z]+)*$/;
 
 function extractSection15(md: string): string {
   const start = md.search(/^## 15\./m);
