@@ -122,8 +122,14 @@ async function domToImageCapture(container: HTMLElement): Promise<string> {
     filter: (node) => {
       if (!(node instanceof HTMLElement)) return true;
       const tag = node.tagName?.toLowerCase();
-      if (tag === 'button' || tag === 'select') return false;
-      if (node.getAttribute('role') === 'button') return false;
+      const isButton = tag === 'button' || node.getAttribute('role') === 'button';
+      if (isButton || tag === 'select') {
+        // Preserve buttons that wrap chart content — Capacity Gauges renders
+        // each gauge inside a <button> for navigation. Only strip buttons
+        // whose subtree has no chart/SVG content (export button, filters).
+        if (node.querySelector('.recharts-wrapper, svg')) return true;
+        return false;
+      }
       return true;
     },
   });

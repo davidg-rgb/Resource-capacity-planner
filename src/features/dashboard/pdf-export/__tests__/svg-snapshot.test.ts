@@ -90,6 +90,38 @@ describe('captureWidgetSnapshot', () => {
   });
 });
 
+describe('TC-PDF-004: gauge button filter', () => {
+  it('preserves buttons wrapping Recharts content but strips plain buttons and selects', async () => {
+    toPngMock.mockResolvedValue('data:image/png;base64,MOCK');
+    document.body.innerHTML = `
+      <div data-widget-id="gauges">
+        <button type="button" id="gauge-btn"><div class="recharts-wrapper"><svg><g></g></svg></div></button>
+        <button type="button" id="gauge-btn-2"><div class="recharts-wrapper"><svg><g></g></svg></div></button>
+        <button type="button" id="export-btn">Export PDF</button>
+        <select id="filter-sel"><option>All</option></select>
+        <div role="button" id="role-btn-chart"><svg><g></g></svg></div>
+        <div role="button" id="role-btn-plain">Click</div>
+      </div>
+    `;
+    await captureWidgetSnapshot('gauges');
+    expect(toPngMock).toHaveBeenCalledOnce();
+    const opts = toPngMock.mock.calls[0][1] as { filter: (n: Node) => boolean };
+    expect(typeof opts.filter).toBe('function');
+
+    const gaugeBtn = document.getElementById('gauge-btn')!;
+    const exportBtn = document.getElementById('export-btn')!;
+    const filterSel = document.getElementById('filter-sel')!;
+    const roleBtnChart = document.getElementById('role-btn-chart')!;
+    const roleBtnPlain = document.getElementById('role-btn-plain')!;
+
+    expect(opts.filter(gaugeBtn)).toBe(true);
+    expect(opts.filter(exportBtn)).toBe(false);
+    expect(opts.filter(filterSel)).toBe(false);
+    expect(opts.filter(roleBtnChart)).toBe(true);
+    expect(opts.filter(roleBtnPlain)).toBe(false);
+  });
+});
+
 describe('captureWidgetSnapshots', () => {
   it('returns a record keyed by widget id for multiple widgets', async () => {
     toPngMock.mockResolvedValue('data:image/png;base64,MOCK');
