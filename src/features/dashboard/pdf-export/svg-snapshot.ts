@@ -103,54 +103,48 @@ async function domToImageCapture(container: HTMLElement): Promise<string> {
     });
   }
 
-  // Use the laid-out bounding rect as explicit capture dimensions. Without
-  // this, html-to-image falls back to the container's intrinsic size which
-  // can collapse for flex/grid widgets whose children drive the real layout.
-  // Parent-width fallback: when the container's own rect is narrower than
-  // its parent (e.g. Availability Finder rendered at intrinsic content width
-  // inside a stretched grid cell), use the parent width so the widget fills
-  // its allocated PDF tile instead of being shrunken.
+  // Use the container's own laid-out bounding rect as capture dimensions.
+  // The previous parent-width fallback was harmful for grid-cell widgets:
+  // it would stretch a 756px col-span-6 widget to its 1536px grid parent,
+  // forcing a canvas wider than the children would relayout to occupy.
+  // Trust the container's own measurement; the dashboard PDF document
+  // component handles tile-fitting downstream.
   const selfRect = container.getBoundingClientRect();
-  const parentRect = container.parentElement?.getBoundingClientRect();
-  const useParent = !!parentRect && parentRect.width > selfRect.width;
-  const width = Math.max(1, Math.round(useParent ? parentRect!.width : selfRect.width));
-  const height = Math.max(1, Math.round(selfRect.height));
+  const rawWidth = Math.max(1, Math.round(selfRect.width));
+  const rawHeight = Math.max(1, Math.round(selfRect.height));
 
-  // When using parent width, temporarily stretch the container so the
-  // foreignObject layout inside html-to-image matches the allocated tile
-  // width. Restored in finally.
-  const prevInlineWidth = container.style.width;
-  if (useParent) {
-    container.style.width = `${width}px`;
-  }
-  try {
-    return await toPng(container, {
-      backgroundColor: '#ffffff',
-      pixelRatio: 2,
-      cacheBust: true,
-      width,
-      height,
-      canvasWidth: width,
-      canvasHeight: height,
-      filter: (node) => {
-        if (!(node instanceof HTMLElement)) return true;
-        const tag = node.tagName?.toLowerCase();
-        const isButton = tag === 'button' || node.getAttribute('role') === 'button';
-        if (isButton || tag === 'select') {
-          // Preserve buttons that wrap chart content — Capacity Gauges renders
-          // each gauge inside a <button> for navigation. Only strip buttons
-          // whose subtree has no chart/SVG content (export button, filters).
-          if (node.querySelector('.recharts-wrapper, svg')) return true;
-          return false;
-        }
-        return true;
-      },
-    });
-  } finally {
-    if (useParent) {
-      container.style.width = prevInlineWidth;
-    }
-  }
+  // Cap the captured height. Widgets like Availability Finder render at
+  // their full content height (3000px+) when the page lays out, but the
+  // PDF tile is at most ~700px tall — passing the full height to toPng
+  // produces an image that the document component then scales down to a
+  // sliver. Capping forces a manageable canvas; tall content gets clipped
+  // at MAX_CAPTURE_HEIGHT and the user is told "see app for full content".
+  const MAX_CAPTURE_HEIGHT = 1200;
+  const width = rawWidth;
+  const height = Math.min(rawHeight, MAX_CAPTURE_HEIGHT);
+
+  return await toPng(container, {
+    backgroundColor: '#ffffff',
+    pixelRatio: 2,
+    cacheBust: true,
+    width,
+    height,
+    canvasWidth: width,
+    canvasHeight: height,
+    filter: (node) => {
+      if (!(node instanceof HTMLElement)) return true;
+      const tag = node.tagName?.toLowerCase();
+      const isButton = tag === 'button' || node.getAttribute('role') === 'button';
+      if (isButton || tag === 'select') {
+        // Preserve buttons that wrap chart content — Capacity Gauges renders
+        // each gauge inside a <button> for navigation. Only strip buttons
+        // whose subtree has no chart/SVG content (export button, filters).
+        if (node.querySelector('.recharts-wrapper, svg')) return true;
+        return false;
+      }
+      return true;
+    },
+  });
 }
 
 // ---------------------------------------------------------------------------
