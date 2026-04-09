@@ -90,6 +90,19 @@ async function domToImageCapture(container: HTMLElement): Promise<string> {
     await document.fonts.ready;
   }
 
+  // Below-the-fold widgets may use content-visibility:auto or intersection-
+  // observer lazy rendering. Their children aren't painted until the
+  // container is scrolled into the viewport — capturing without this yields
+  // an empty frame or a collapsed bounding rect. Force a layout pass by
+  // scrolling the container into view and waiting two RAFs so the browser
+  // commits the painted layout before html-to-image serializes.
+  if (typeof container.scrollIntoView === 'function') {
+    container.scrollIntoView({ block: 'center', inline: 'center' });
+    await new Promise<void>((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+    });
+  }
+
   // Use the laid-out bounding rect as explicit capture dimensions. Without
   // this, html-to-image falls back to the container's intrinsic size which
   // can collapse for flex/grid widgets whose children drive the real layout
