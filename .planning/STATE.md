@@ -27,7 +27,9 @@ Planning artifacts (frozen):
 - .planning/ROADMAP.md (v5.0 phases 33-45)
 
 **Core value:** Plan vs actual comparison + proposal/approval workflow + persona-scoped views — stop being a fancier Excel, start being a workflow tool.
-**Current focus:** v5.0 fully shipped + hardened; no next phase scheduled
+**Current focus:** v5.0 fully shipped + hardened + deployed; no next phase scheduled
+
+Last deploy fix (2026-04-10, commit 67a9878): moved /api/test/seed prod-mode throw from module scope into POST handler body. Vercel `next build` was failing during page-data collection because Next instantiates route modules at build time; the throw was meant only as a tripwire for runtime invocations. Build now green, no-test-routes-in-prod invariant still passes.
 
 ## Current Position
 

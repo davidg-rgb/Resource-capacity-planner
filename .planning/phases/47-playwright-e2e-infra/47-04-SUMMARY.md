@@ -140,3 +140,13 @@ The `.next/` bundle check (`NODE_ENV=production pnpm build` followed by re-runni
 - commit `5f8ad0c` — FOUND
 - `pnpm typecheck` — clean
 - `pnpm test` — 714/714 green
+
+## 2026-04-10 — Post-deploy fix (commit 67a9878)
+
+Vercel `next build` failed during the "Collecting page data" step because Next.js instantiates route modules at build time, triggering the module-level production-mode `throw`. This was the documented build error fallback above.
+
+**Fix:** moved the production-mode throw into the `POST` handler body. Same security guarantee — any prod-mode invocation throws — but `next build`'s module instantiation no longer fires it. The `no-test-routes-in-prod` static invariant continues to pass because it greps the source for the throw string, which is preserved.
+
+- `pnpm build` → success
+- `pnpm vitest run tests/invariants/no-test-routes-in-prod.test.ts` → 2/2 green
+- Vercel deploy → success (commit `67a9878`)
