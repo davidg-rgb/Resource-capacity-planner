@@ -17,12 +17,6 @@
     "TC-IMP-014",
     "TC-IMP-015",
     "TC-IMP-016",
-    "TC-INV-001",
-    "TC-INV-002",
-    "TC-INV-003",
-    "TC-INV-004",
-    "TC-INV-005",
-    "TC-INV-006",
     "TC-NEG-001",
     "TC-NEG-002",
     "TC-NEG-003",
@@ -129,14 +123,6 @@
       "TC-IMP-014",
       "TC-IMP-015",
       "TC-IMP-016"
-    ],
-    "TC-INV": [
-      "TC-INV-001",
-      "TC-INV-002",
-      "TC-INV-003",
-      "TC-INV-004",
-      "TC-INV-005",
-      "TC-INV-006"
     ],
     "TC-NEG": [
       "TC-NEG-001",
