@@ -106,6 +106,24 @@ const eslintConfig = defineConfig([
       ],
     },
   },
+  // v5.0 — Phase 44 / Plan 44-02 (API-V5-01): AppError taxonomy guard.
+  // Forbid `throw new Error(...)` inside v5 API routes and feature services.
+  // Every error path must flow through a typed AppError subclass from
+  // '@/lib/errors' so the documented error-code wire contract is preserved.
+  {
+    files: ['src/app/api/v5/**/*.ts', 'src/features/**/*.service.ts'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            "ThrowStatement[argument.type='NewExpression'][argument.callee.name='Error']",
+          message:
+            "Throw AppError subclasses from '@/lib/errors', not raw Error. v5 API contract requires typed error codes.",
+        },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;
