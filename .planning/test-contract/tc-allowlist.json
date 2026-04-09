@@ -59,6 +59,13 @@
     ]
   },
   "reasons": {
+    "TC-NEG": {
+      "status": "deferred",
+      "decidedIn": "44-verification",
+      "decidedOn": "2026-04-09",
+      "rationale": "TC-NEG-* IDs from ARCHITECTURE §15.14/§15.21 are negative-space assertions (things that must NOT exist: no task_id column, no counter-propose endpoint, etc.), not behavioral flow tests. Several are already implicitly covered by existing invariants: TC-DB-005/009 static schema checks cover TC-NEG-003-class schema forbiddings; TC-INV-002/003 cross-cutting invariants cover wire-format and taxonomy forbiddings. A dedicated TC-NEG-*-labelled static audit pass has not been written — phase budget prioritized positive behavioral TCs and real security bugs surfaced in 44-05.",
+      "followUp": "Fold TC-NEG-* dedicated labeling into a follow-up hardening pass, or pin TC-NEG-* labels to the existing covering invariants during the next test-contract hygiene sweep. Mitigating coverage is already in place — this is a labeling/traceability gap, not a coverage gap."
+    },
     "TC-E2E": {
       "status": "deferred",
       "decidedIn": "44-12",
