@@ -27,19 +27,20 @@ Planning artifacts (frozen):
 - .planning/ROADMAP.md (v5.0 phases 33-45)
 
 **Core value:** Plan vs actual comparison + proposal/approval workflow + persona-scoped views — stop being a fancier Excel, start being a workflow tool.
-**Current focus:** Phase 46 — Playwright E2E infra + widget rendering polish (TC-E2E-* from Phase 44 + 2 PDF widget residuals from Phase 45)
+**Current focus:** Phase 47 — Playwright E2E infrastructure (TC-E2E-* from §15.13)
 
 ## Current Position
 
-Phase: 46 (playwright-e2e-and-widget-polish) — IN PROGRESS (1/? plans complete)
-Last shipped: Phase 46 Plan 01 (PDF widget rendering polish) — WIDGET-01 + WIDGET-02 resolved, awaiting orchestrator smoke re-run (9/9 target)
+Phase: 47 (playwright-e2e-infra) — NEXT
+Last shipped: Phase 46 (PDF widget rendering polish) — APPROVED on 2026-04-09. ALL 9/9 widgets render correctly in PDF export
 Last activity: 2026-04-09
 
-Phase 46-01 results:
-- domToImageCapture filter narrowed: preserves button/select/role=button nodes whose subtree has .recharts-wrapper or svg → Department Capacity Gauges no longer stripped
-- Parent-width fallback in domToImageCapture: when parentElement rect wider than container, capture at parent width and temporarily stretch container.style.width (restored in finally) → Availability Finder renders at full tile width
-- Phase 45 deferred-items.md hypotheses disproved by 46-RESEARCH source inspection (nested-SVG + react-window both wrong); actual root causes documented
-- 2 new Vitest jsdom tests: TC-PDF-004 (gauge button filter), TC-PDF-005 (parent-width fallback, 2 scenarios)
+Phase 46 results:
+- Department Capacity Gauges FIXED: button-preservation filter (preserve buttons containing recharts/svg)
+- Availability Finder FIXED: capture height cap (1200px) + dashboard PDF document chartImage maxHeight 350→600
+- Live DOM inspection via chrome devtools disproved both research hypotheses; corrected after 2 rounds
+- 11/11 pdf-export tests passing (8 baseline + TC-PDF-004 gauge filter + TC-PDF-005 height cap × 2)
+- Playwright E2E infrastructure SPLIT to Phase 47 (was originally bundled here)
 - 11/11 pdf-export tests green, 707/707 full vitest suite green, pnpm typecheck clean, pnpm build success
 - Commits: 1ed32a2, 535526f, ddbd9c3
 
