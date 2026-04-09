@@ -1,46 +1,53 @@
-# Session Handoff — resume Phase 44 tomorrow
+# Session Handoff — review agents next
 
-**Paused:** 2026-04-09
-**Resume with:** `/clear` → `/gsd:discuss-phase 44-api-hardening-and-test-contract-fill`
+**Paused:** 2026-04-10
+**Resume with:** `/clear` → "summon review agents"
 
 ## Where we are
 
-- **Phase 43 (Admin register maintenance) ✅ complete and committed.** All 4 plans shipped with summaries:
-  - 43-01 backend foundation (migrations 0007+0008, register.service dispatcher, v5 API routes)
-  - 43-02 shared UI scaffolding (RegisterTable, RegisterDrawer, RegisterFormField, hooks, DependentRowsError, i18n)
-  - 43-03 five per-entity admin pages + forms + RTL tests
-  - 43-04 `/admin` landing + ChangeLogFeed extension + persona D-19 + TC-REG-001..010 integration tests + manifest static check
-- **Last commit:** `994855e docs(43-04): complete admin change-log landing + TC-REG integration plan`
-- **Test status at pause:** `pnpm vitest run` → **467 passed / 6 failed / 473 total**. All 6 failures are the pre-existing TC-CL-005 runtime invariant — documented in `.planning/phases/43-admin-register-maintenance/deferred-items.md`.
-- **Stale state cleanup done this session:**
-  - ROADMAP.md: Phases 39 and 43 flipped to `[x]`
-  - STATE.md: `current_phase` advanced from 42 → 44, `status: ready`
+- **Phases 44, 45, 46, 47 all shipped, verified, deployed.** v5.0 fully launched + hardened + has E2E test scaffold ready for first CI run.
+- **Last commit on main:** `1007f5b docs(47-04): note post-deploy build fix`
+- **Last deploy issue (resolved):** Vercel `next build` was crashing on `/api/test/seed` module-level throw during page-data collection. Fixed in `67a9878` by moving the throw into POST handler body. Local build green, deploy green.
+- **Test status:** 714/714 vitest green, tc-id-coverage 3/3 green, typecheck clean.
+- **Uncommitted:** none.
 
-## What's next — Phase 44
+## What's next — review agents
 
-**Phase 44: API hardening + test contract fill**
+User wants to summon review agents next session. I offered 5 options; user said "next session". Options to re-present:
 
-> Every TC-* assertion from v5.0-ARCHITECTURE.md §15 has a passing automated test; AppError taxonomy coverage.
+1. **Code review** — independent diff review across phases 44–47
+2. **Architect review** — high-level v5.0 stack critique (skill at ~/.claude/skills/architect/)
+3. **Frontend app review** — UI surfaces touched by 44–47 (admin pages, PDF export, persona views)
+4. **UI/design audit** (gsd-ui-auditor) — 6-pillar visual review against Stitch prototypes in `creative-direction/`
+5. **All in parallel** — fastest
 
-This phase absorbs the deferred TC-CL-005 fix. The harness bug is specific: `tests/invariants/change-log.coverage.test.ts` stubs `@/db` with `{ insert, values, returning }` but 6 services (4 pre-existing + 2 register services) wrap writes in `db.transaction(...)`. The stub lacks a `transaction` method, so every call throws `TypeError` before `recordChange` is reached. The `try/catch` swallows it silently and the spy assertion fails.
+Open question to ask user at kickoff:
+- Which review(s)?
+- Scope: just phases 44–47 (~250 commits) or full v5.0 codebase?
 
-**Recommended fix (copy from deferred-items.md):** extend the `@/db` mock with `transaction: (fn) => fn(stubTx)` so services written against `db.transaction(...)` can be invoked through the invariant runner. Once fixed, all 6 failures go green and Phase 43's ADM-03 fully closes at the runtime level (the static manifest check shipped in 43-04 is the complementary check).
+## Phase 47 known follow-ups
 
-## Open questions for Phase 44 discussion
-
-- **Scope discipline:** v5.0-ARCHITECTURE.md §15 enumerates TC-* codes across the whole system. Phase 44 should be a *completionist sweep* — inventory what's covered vs not, not add new features. Worth confirming this interpretation upfront.
-- **AppError taxonomy:** RESEARCH should surface the current AppError shape and decide whether Phase 44 codifies a taxonomy (error codes, categories) or just audits existing usage.
-- **Deferred TC-CL-005 fix:** confirm it lands inside Phase 44 (not a standalone test-infra plan).
-- **Does Phase 44 block Phase 45?** Phase 45 is LAUNCH-01 (PDF bug). If 44 is expected to be heavy, consider whether 45 can run in parallel or interleaved.
+- **First CI run will be the real Playwright validation.** Specs were written but not executed locally — expect spec adjustments once selectors meet the running app.
+- **TC-E2E-2A heatmap** has a Case (ii) fallback documented in `47-07-PLAN.md` if seed produces uniform colors.
+- **Cross-executor commit race** in Wave 2 — `ad7e48a` carries both 47-06's historic-edit + 47-08's portfolio. Content correct, attribution slightly off. Non-blocking, documented in 47-08-SUMMARY.
 
 ## Files worth re-reading when resuming
 
-- `.planning/ROADMAP.md` lines 73-81 (v5.0 phase list, now accurate)
-- `.planning/v5.0-ARCHITECTURE.md` §15 (the TC-* contract Phase 44 has to fill)
-- `.planning/phases/43-admin-register-maintenance/deferred-items.md` (TC-CL-005 root cause + recommended fix)
-- `tests/invariants/change-log.coverage.test.ts` (the test that needs its stub expanded)
-- `tests/invariants/mutations.json` (manifest — should already list the 6 mutations)
+- `.planning/STATE.md` (current focus + last deploy fix note)
+- `.planning/ROADMAP.md` (phases 33-47 all closed)
+- `.planning/phases/47-playwright-e2e-infra/47-VERIFICATION.md` (final verdict)
+- `.planning/phases/47-playwright-e2e-infra/47-04-SUMMARY.md` (with the post-deploy fix note appended)
+- `.planning/v5.0-ARCHITECTURE.md` (reviewers will need this)
 
-## Uncommitted work
+## Recent commit context (top 10)
 
-None. STATE.md, ROADMAP.md, HANDOFF.md about to be committed as the session close.
+- `1007f5b` docs(47-04): note post-deploy build fix
+- `67a9878` fix(47): move test/seed prod throw out of module scope into POST handler
+- `d56f2cf` docs(47): close phase 47 — APPROVED
+- `f77c062` docs(47-10): complete TC-E2E allowlist cleanup plan
+- `81abdbe` chore(47-10): remove TC-E2E from tc-allowlist
+- `159b457` feat(47-10): extend tc-manifest generator to scan e2e specs
+- `4e39ab6` ci(47-09): add Vitest step to quality job + new e2e job with postgres:16
+- `1332892` docs(46): close phase 46 — APPROVED, all 9/9 PDF widgets working
+- `4cb3880` fix(46-01): bump pdf chart image maxHeight 350→600
+- `93ce8bf` fix(46-01): revert harmful parent-width hack, cap captured height instead
