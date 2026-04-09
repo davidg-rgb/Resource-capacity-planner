@@ -105,34 +105,52 @@ async function domToImageCapture(container: HTMLElement): Promise<string> {
 
   // Use the laid-out bounding rect as explicit capture dimensions. Without
   // this, html-to-image falls back to the container's intrinsic size which
-  // can collapse for flex/grid widgets whose children drive the real layout
-  // (e.g. Availability Finder rendered at ~20% size).
-  const rect = container.getBoundingClientRect();
-  const width = Math.max(1, Math.round(rect.width));
-  const height = Math.max(1, Math.round(rect.height));
+  // can collapse for flex/grid widgets whose children drive the real layout.
+  // Parent-width fallback: when the container's own rect is narrower than
+  // its parent (e.g. Availability Finder rendered at intrinsic content width
+  // inside a stretched grid cell), use the parent width so the widget fills
+  // its allocated PDF tile instead of being shrunken.
+  const selfRect = container.getBoundingClientRect();
+  const parentRect = container.parentElement?.getBoundingClientRect();
+  const useParent = !!parentRect && parentRect.width > selfRect.width;
+  const width = Math.max(1, Math.round(useParent ? parentRect!.width : selfRect.width));
+  const height = Math.max(1, Math.round(selfRect.height));
 
-  return await toPng(container, {
-    backgroundColor: '#ffffff',
-    pixelRatio: 2,
-    cacheBust: true,
-    width,
-    height,
-    canvasWidth: width,
-    canvasHeight: height,
-    filter: (node) => {
-      if (!(node instanceof HTMLElement)) return true;
-      const tag = node.tagName?.toLowerCase();
-      const isButton = tag === 'button' || node.getAttribute('role') === 'button';
-      if (isButton || tag === 'select') {
-        // Preserve buttons that wrap chart content — Capacity Gauges renders
-        // each gauge inside a <button> for navigation. Only strip buttons
-        // whose subtree has no chart/SVG content (export button, filters).
-        if (node.querySelector('.recharts-wrapper, svg')) return true;
-        return false;
-      }
-      return true;
-    },
-  });
+  // When using parent width, temporarily stretch the container so the
+  // foreignObject layout inside html-to-image matches the allocated tile
+  // width. Restored in finally.
+  const prevInlineWidth = container.style.width;
+  if (useParent) {
+    container.style.width = `${width}px`;
+  }
+  try {
+    return await toPng(container, {
+      backgroundColor: '#ffffff',
+      pixelRatio: 2,
+      cacheBust: true,
+      width,
+      height,
+      canvasWidth: width,
+      canvasHeight: height,
+      filter: (node) => {
+        if (!(node instanceof HTMLElement)) return true;
+        const tag = node.tagName?.toLowerCase();
+        const isButton = tag === 'button' || node.getAttribute('role') === 'button';
+        if (isButton || tag === 'select') {
+          // Preserve buttons that wrap chart content — Capacity Gauges renders
+          // each gauge inside a <button> for navigation. Only strip buttons
+          // whose subtree has no chart/SVG content (export button, filters).
+          if (node.querySelector('.recharts-wrapper, svg')) return true;
+          return false;
+        }
+        return true;
+      },
+    });
+  } finally {
+    if (useParent) {
+      container.style.width = prevInlineWidth;
+    }
+  }
 }
 
 // ---------------------------------------------------------------------------

@@ -122,6 +122,53 @@ describe('TC-PDF-004: gauge button filter', () => {
   });
 });
 
+describe('TC-PDF-005: parent-width fallback', () => {
+  it('uses parent width when parent is wider than container and restores inline style', async () => {
+    toPngMock.mockResolvedValue('data:image/png;base64,MOCK');
+    document.body.innerHTML = `
+      <div id="parent"><div data-widget-id="finder"><p>content</p></div></div>
+    `;
+    const parent = document.getElementById('parent')!;
+    const container = document.querySelector<HTMLElement>('[data-widget-id="finder"]')!;
+    vi.spyOn(container, 'getBoundingClientRect').mockReturnValue({
+      width: 200, height: 300, top: 0, left: 0, right: 200, bottom: 300, x: 0, y: 0, toJSON: () => ({}),
+    } as DOMRect);
+    vi.spyOn(parent, 'getBoundingClientRect').mockReturnValue({
+      width: 800, height: 300, top: 0, left: 0, right: 800, bottom: 300, x: 0, y: 0, toJSON: () => ({}),
+    } as DOMRect);
+
+    expect(container.style.width).toBe('');
+    await captureWidgetSnapshot('finder');
+
+    const opts = toPngMock.mock.calls[0][1] as { width: number; canvasWidth: number; height: number };
+    expect(opts.width).toBe(800);
+    expect(opts.canvasWidth).toBe(800);
+    expect(opts.height).toBe(300);
+    // inline width restored in finally
+    expect(container.style.width).toBe('');
+  });
+
+  it('uses self width when parent is not wider', async () => {
+    toPngMock.mockResolvedValue('data:image/png;base64,MOCK');
+    document.body.innerHTML = `
+      <div id="parent2"><div data-widget-id="widget2"><p>content</p></div></div>
+    `;
+    const parent = document.getElementById('parent2')!;
+    const container = document.querySelector<HTMLElement>('[data-widget-id="widget2"]')!;
+    vi.spyOn(container, 'getBoundingClientRect').mockReturnValue({
+      width: 600, height: 200, top: 0, left: 0, right: 600, bottom: 200, x: 0, y: 0, toJSON: () => ({}),
+    } as DOMRect);
+    vi.spyOn(parent, 'getBoundingClientRect').mockReturnValue({
+      width: 400, height: 200, top: 0, left: 0, right: 400, bottom: 200, x: 0, y: 0, toJSON: () => ({}),
+    } as DOMRect);
+
+    await captureWidgetSnapshot('widget2');
+    const opts = toPngMock.mock.calls[0][1] as { width: number };
+    expect(opts.width).toBe(600);
+    expect(container.style.width).toBe('');
+  });
+});
+
 describe('captureWidgetSnapshots', () => {
   it('returns a record keyed by widget id for multiple widgets', async () => {
     toPngMock.mockResolvedValue('data:image/png;base64,MOCK');
