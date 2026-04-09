@@ -90,7 +90,10 @@ const s = StyleSheet.create({
   },
   chartImage: {
     objectFit: 'contain',
-    maxHeight: 350,
+    // 600pt cap (was 350) so squarish-aspect widgets like Availability Finder
+    // get a usable render. Wide widgets (KPI Cards, Heat Map) are constrained
+    // by page width regardless, so the larger cap doesn't blow them up.
+    maxHeight: 600,
   },
   placeholderBox: {
     height: 200,
