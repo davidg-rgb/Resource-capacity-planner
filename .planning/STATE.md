@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Plan vs Actual + Approval Workflow
-status: ready
-stopped_at: Completed phase 45 (1/1 plan, LAUNCH-01 satisfied with deferrals)
-last_updated: "2026-04-09T12:00:00.000Z"
+status: in-progress
+stopped_at: Completed 46-01-PLAN.md (WIDGET-01 + WIDGET-02 fixed, 11/11 pdf-export tests green, 707/707 full suite)
+last_updated: "2026-04-09T19:30:00.000Z"
 last_activity: 2026-04-09
 progress:
   total_phases: 3
   completed_phases: 3
-  total_plans: 3
-  completed_plans: 3
+  total_plans: 4
+  completed_plans: 4
 ---
 
 # Nordic Capacity -- Project State
@@ -31,9 +31,17 @@ Planning artifacts (frozen):
 
 ## Current Position
 
-Phase: 46 (playwright-e2e-and-widget-polish) — NEXT
-Last shipped: Phase 45 (Launch gate — PDF export bug fix) — 1/1 plan, LAUNCH-01 satisfied with deferrals on 2026-04-09
+Phase: 46 (playwright-e2e-and-widget-polish) — IN PROGRESS (1/? plans complete)
+Last shipped: Phase 46 Plan 01 (PDF widget rendering polish) — WIDGET-01 + WIDGET-02 resolved, awaiting orchestrator smoke re-run (9/9 target)
 Last activity: 2026-04-09
+
+Phase 46-01 results:
+- domToImageCapture filter narrowed: preserves button/select/role=button nodes whose subtree has .recharts-wrapper or svg → Department Capacity Gauges no longer stripped
+- Parent-width fallback in domToImageCapture: when parentElement rect wider than container, capture at parent width and temporarily stretch container.style.width (restored in finally) → Availability Finder renders at full tile width
+- Phase 45 deferred-items.md hypotheses disproved by 46-RESEARCH source inspection (nested-SVG + react-window both wrong); actual root causes documented
+- 2 new Vitest jsdom tests: TC-PDF-004 (gauge button filter), TC-PDF-005 (parent-width fallback, 2 scenarios)
+- 11/11 pdf-export tests green, 707/707 full vitest suite green, pnpm typecheck clean, pnpm build success
+- Commits: 1ed32a2, 535526f, ddbd9c3
 
 Phase 45 results:
 - html2canvas → html-to-image@^1.11.13 swap in src/features/dashboard/pdf-export/svg-snapshot.ts
@@ -68,7 +76,7 @@ Phase 44 results:
 | 43 | Admin register maintenance | Not started |
 | 44 | API hardening + test contract fill | Complete (APPROVED-WITH-DEFERRALS, 2026-04-09) |
 | 45 | Launch gate — PDF export bug fix | Complete (LAUNCH-01-WITH-DEFERRALS, 2026-04-09) |
-| 46 | Playwright E2E infra + widget rendering polish | Not started |
+| 46 | Playwright E2E infra + widget rendering polish | In progress (46-01 complete 2026-04-09, widget polish shipped) |
 
 ## Previous Milestones
 
@@ -100,12 +108,12 @@ None.
 
 ### Blockers/Concerns
 
-- **PDF export residuals (deferred to Phase 46):** Department Capacity Gauges render empty frame (Recharts nested-SVG composition); Availability Finder renders shrunken (~20%, react-window virtualization during capture). See `.planning/phases/45-launch-gate-pdf-export/deferred-items.md`. Core LAUNCH-01 blank-placeholder bug is FIXED for 7/9 widget families.
+- **PDF export residuals RESOLVED (Phase 46-01, 2026-04-09):** Department Capacity Gauges (WIDGET-01) and Availability Finder (WIDGET-02) both fixed in `svg-snapshot.ts` via narrowed button filter and parent-width fallback. Awaiting orchestrator browser smoke re-run to record 9/9 PDF widget family result. Original Phase 45 hypotheses (nested-SVG, react-window) were disproved; actual causes were a wholesale `<button>` denylist and intrinsic-content-width `getBoundingClientRect()`, both documented in `46-01-SUMMARY.md`.
 
 ## Session Continuity
 
-Last session: 2026-04-09T12:00:00.000Z
-Stopped at: Completed 45-01-PLAN.md (LAUNCH-01 satisfied with deferrals)
+Last session: 2026-04-09T19:30:00.000Z
+Stopped at: Completed 46-01-PLAN.md (WIDGET-01 + WIDGET-02 fixed, 11/11 pdf-export tests green, 707/707 full suite, orchestrator smoke re-run pending)
 
 ---
 
