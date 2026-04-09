@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-09T11:21:02.099Z",
+  "generatedAt": "2026-04-09T11:30:19.550Z",
   "entries": {
     "TC-AC-001": {
       "file": "src/features/actuals/__tests__/upsert-actuals.contract.test.ts",
@@ -374,6 +374,21 @@
     "TC-IMP-002": {
       "file": "src/features/import/__tests__/actuals-import-service.contract.test.ts",
       "testName": "TC-IMP-002: previewStagedBatch returns counts",
+      "status": "present"
+    },
+    "TC-INV-COVERAGE-001": {
+      "file": "tests/invariants/tc-id-coverage.test.ts",
+      "testName": "TC-INV-COVERAGE-001 canonical TC-IDs are all present in manifest or allowlist",
+      "status": "present"
+    },
+    "TC-INV-COVERAGE-002": {
+      "file": "tests/invariants/tc-id-coverage.test.ts",
+      "testName": "TC-INV-COVERAGE-002 allowlist contains no IDs that are already present",
+      "status": "present"
+    },
+    "TC-INV-COVERAGE-003": {
+      "file": "tests/invariants/tc-id-coverage.test.ts",
+      "testName": "TC-INV-COVERAGE-003 allowlist entries are all in the canonical list",
       "status": "present"
     },
     "TC-MOBILE-001": {
