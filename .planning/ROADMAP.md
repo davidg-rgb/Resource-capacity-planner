@@ -241,7 +241,7 @@ Plans:
   3. Every mutating endpoint goes through `withTenant()`; cross-tenant read attempt returns 404 (TC-API tenant-isolation tests)
   4. Deterministic UUID v5 seed (§16) produces identical fixtures across test runs (TEST-V5-02)
 **Plans**: 14 plans
-- [ ] 44-01-PLAN.md — Wave A: AppError taxonomy extension + errors/codes barrel + static taxonomy invariant
+- [x] 44-01-PLAN.md — Wave A: AppError taxonomy extension + errors/codes barrel + static taxonomy invariant
 - [x] 44-02-PLAN.md — Wave A: ESLint no-restricted-syntax guard + sweep raw throws in v5 routes/services
 - [x] 44-03-PLAN.md — Wave A: Tenant-isolation static audit (both withTenant and requireRole+orgId patterns) + exceptions manifest
 - [ ] 44-04-PLAN.md — Wave B: TC-NEG-* error wire-format tests for all 8 documented codes
@@ -289,7 +289,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 41. Persona views Part 2 — Line Manager | v5.0 | 5/5 | Complete   | 2026-04-08 |
 | 42. Persona views Part 3 — Staff/R&D/zoom | v5.0 | 4/4 | Complete   | 2026-04-08 |
 | 43. Admin register maintenance | v5.0 | 3/4 | In Progress|  |
-| 44. API hardening + test contract fill | v5.0 | 2/14 | In Progress|  |
+| 44. API hardening + test contract fill | v5.0 | 3/14 | In Progress|  |
 | 45. Launch gate — PDF export bug fix | v5.0 | 0/0 | Not started | - |
 
 ---
