@@ -248,9 +248,9 @@ Plans:
 - [x] 44-05-PLAN.md — Wave B: Parameterized runtime cross-tenant 404 test over mutating-routes manifest
 - [x] 44-06-PLAN.md — Wave C foundation: canonical TC-ID extractor + manifest generator + CI diff gate with allowlist
 - [ ] 44-07-PLAN.md — Wave C1: Fill TC-CAL-* + TC-DB-* gaps (unit tests)
-- [ ] 44-08-PLAN.md — Wave C2: Fill TC-PS-* + TC-PR-* + TC-AC-* + TC-AR-* + TC-CP-* gaps (PGlite integration)
+- [x] 44-08-PLAN.md — Wave C2: Fill TC-PS-* + TC-PR-* + TC-AC-* + TC-AR-* + TC-CP-* gaps (PGlite integration)
 - [ ] 44-09-PLAN.md — Wave C3: Fill TC-IMP-* + TC-EX-* gaps (Excel import + export tests)
-- [ ] 44-10-PLAN.md — Wave C4: Fill TC-API-* + TC-REG-* + TC-CL-* (excluding TC-CL-005) gaps
+- [x] 44-10-PLAN.md — Wave C4: Fill TC-API-* + TC-REG-* + TC-CL-* (excluding TC-CL-005) gaps
 - [ ] 44-11-PLAN.md — Wave C5: Fill TC-PSN-* + TC-UI-* + TC-ZOOM-* + TC-MOBILE-* + TC-RD-READONLY-* (RTL component tests)
 - [ ] 44-12-PLAN.md — Wave C6: Fill TC-E2E-* Playwright flows (~12 IDs)
 - [ ] 44-13-PLAN.md — Wave C7: Fill TC-PERF-* (skip-in-CI) + TC-INV-* (flat wire shape per R2)
@@ -289,7 +289,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 41. Persona views Part 2 — Line Manager | v5.0 | 5/5 | Complete   | 2026-04-08 |
 | 42. Persona views Part 3 — Staff/R&D/zoom | v5.0 | 4/4 | Complete   | 2026-04-08 |
 | 43. Admin register maintenance | v5.0 | 3/4 | In Progress|  |
-| 44. API hardening + test contract fill | v5.0 | 7/14 | In Progress|  |
+| 44. API hardening + test contract fill | v5.0 | 9/14 | In Progress|  |
 | 45. Launch gate — PDF export bug fix | v5.0 | 0/0 | Not started | - |
 
 ---
