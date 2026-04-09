@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-09T11:30:19.550Z",
+  "generatedAt": "2026-04-09T11:37:19.498Z",
   "entries": {
     "TC-AC-001": {
       "file": "src/features/actuals/__tests__/upsert-actuals.contract.test.ts",
@@ -86,6 +86,21 @@
       "testName": "TC-API-001: GET /api/v5/planning/allocations?scope=staff",
       "status": "present"
     },
+    "TC-API-002": {
+      "file": "src/app/api/v5/planning/allocations/__tests__/scope.contract.test.ts",
+      "testName": "TC-API-002: 400 when personId (scope id) is missing for scope=staff",
+      "status": "present"
+    },
+    "TC-API-003": {
+      "file": "src/features/allocations/__tests__/patch-allocation.contract.test.ts",
+      "testName": "TC-API-003: negative newHours is rejected (BAD_HOURS) by allocation schema",
+      "status": "present"
+    },
+    "TC-API-004": {
+      "file": "src/features/allocations/__tests__/patch-allocation.contract.test.ts",
+      "testName": "TC-API-004: Phase 40 / Plan 40-01: patchAllocation contract (TC-API-004 + TC-PS-006)",
+      "status": "present"
+    },
     "TC-API-004a": {
       "file": "src/features/allocations/__tests__/patch-allocation.contract.test.ts",
       "testName": "TC-API-004a: non-historic edit writes ALLOCATION_EDITED change_log row",
@@ -94,6 +109,11 @@
     "TC-API-004b": {
       "file": "src/features/allocations/__tests__/patch-allocation.contract.test.ts",
       "testName": "TC-API-004b: historic edit without confirmHistoric throws and does NOT mutate",
+      "status": "present"
+    },
+    "TC-API-005": {
+      "file": "src/app/api/v5/__tests__/tc-api-gap-fill.test.ts",
+      "testName": "TC-API-005: POST /api/v5/planning/allocations/bulk-copy returns monthsUpdated",
       "status": "present"
     },
     "TC-API-010": {
@@ -119,6 +139,16 @@
     "TC-API-014": {
       "file": "src/app/api/v5/proposals/__tests__/routes.test.ts",
       "testName": "TC-API-014: POST second approve on same id → 409 PROPOSAL_NOT_ACTIVE",
+      "status": "present"
+    },
+    "TC-API-020": {
+      "file": "src/app/api/v5/__tests__/tc-api-gap-fill.test.ts",
+      "testName": "TC-API-020: GET /api/v5/actuals?groupBy=month returns aggregation map",
+      "status": "present"
+    },
+    "TC-API-021": {
+      "file": "src/app/api/v5/__tests__/tc-api-gap-fill.test.ts",
+      "testName": "TC-API-021: GET /api/v5/actuals/daily returns rows for person/project/month",
       "status": "present"
     },
     "TC-API-030": {
@@ -191,6 +221,11 @@
       "testName": "TC-CAL-001: 2026 is a 53-week ISO year",
       "status": "present"
     },
+    "TC-CAL-001b": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-001b isoWeek(2025-12-28) Sunday returns year 2025 week 52 (boundary before W01 2026)",
+      "status": "present"
+    },
     "TC-CAL-002": {
       "file": "src/lib/time/__tests__/iso-calendar.test.ts",
       "testName": "TC-CAL-002: Week 1 of 2027 starts Mon Jan 4 (2026-12-31 in W53)",
@@ -216,6 +251,86 @@
       "testName": "TC-CAL-006: week 53 of 2026 belongs to Q4-2026",
       "status": "present"
     },
+    "TC-CAL-007": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-007 weeksInIsoYear(2025) returns 52",
+      "status": "present"
+    },
+    "TC-CAL-008": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-008 weeksInIsoYear(2032) returns 53",
+      "status": "present"
+    },
+    "TC-CAL-009": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-009 rangeWeeks(2026-01-01..2026-12-31) yields exactly 53 unique ISO weeks",
+      "status": "present"
+    },
+    "TC-CAL-010": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-010 rangeMonths(2026-01-01..2026-12-31) yields exactly 12 entries",
+      "status": "present"
+    },
+    "TC-CAL-011": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-011 workDaysInIsoWeek(2026, 53) returns a Mon–Fri subset straddling Dec/Jan",
+      "status": "present"
+    },
+    "TC-CAL-012": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-012 workDaysInMonth(2026, February) returns 20 working days (non-leap, Mon–Fri)",
+      "status": "present"
+    },
+    "TC-CAL-013": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-013 monthKey(2026-03-15) equals \"2026-03\"",
+      "status": "present"
+    },
+    "TC-CAL-014": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-014 quarterKey(2026-05-20) equals \"2026-Q2\"",
+      "status": "present"
+    },
+    "TC-CAL-015": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-015 parseIsoDate(\"not a date\") throws ValidationError",
+      "status": "present"
+    },
+    "TC-CAL-016": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-016 formatWeekLabel(2026, 14) produces \"v.14\" short / \"v.14 2026\" long form",
+      "status": "present"
+    },
+    "TC-CAL-017": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-017 isHistoricPeriod(\"2025-01\", \"2026-04\") returns true",
+      "status": "present"
+    },
+    "TC-CAL-018": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-018 isHistoricPeriod(\"2026-04\", \"2026-04\") returns false (current month is not historic)",
+      "status": "present"
+    },
+    "TC-CAL-019": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-019 isHistoricPeriod(\"2026-05\", \"2026-04\") returns false (future is not historic)",
+      "status": "present"
+    },
+    "TC-CAL-020": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-020 parseIsoDate(isoDate(d)) round-trips for every day in 2026 (representative)",
+      "status": "present"
+    },
+    "TC-CAL-021": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-021 every ISO week in 2026 has Mon–Fri = 5 calendar weekdays before holiday removal",
+      "status": "present"
+    },
+    "TC-CAL-022": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-022 no source file outside lib/time imports date-fns (static scan)",
+      "status": "present"
+    },
     "TC-CAL-023": {
       "file": "src/lib/time/__tests__/distribute.test.ts",
       "testName": "TC-CAL-023: distribute(37, 22) length is 22 and sum is exactly 37.00",
@@ -229,6 +344,31 @@
     "TC-CAL-025": {
       "file": "src/lib/time/__tests__/distribute.test.ts",
       "testName": "TC-CAL-025 (sampled): sum-preservation invariant for representative inputs",
+      "status": "present"
+    },
+    "TC-CAL-026": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-026 swedishHolidays(2026) includes Jan 1, Good Friday Apr 3, May 1, Dec 25",
+      "status": "present"
+    },
+    "TC-CAL-027": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-027 workDaysInIsoWeek(2026, 53) excludes Nyårsafton (Dec 31) and Nyårsdagen (Jan 1)",
+      "status": "present"
+    },
+    "TC-CAL-028": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-028 workDaysInMonth(2026, December) excludes Dec 24, 25, 26, 31",
+      "status": "present"
+    },
+    "TC-CAL-029": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-029 swedishHolidays(2030) returns a populated list (range extended to 2026–2030)",
+      "status": "present"
+    },
+    "TC-CAL-030": {
+      "file": "tests/unit/calendar/iso-calendar.contract.test.ts",
+      "testName": "TC-CAL-030 swedishHolidays(2025) and swedishHolidays(2031) throw ValidationError with range message",
       "status": "present"
     },
     "TC-CL-001": {
@@ -341,6 +481,16 @@
       "testName": "TC-EX-004: 3 valid rows → 3 ParsedRow",
       "status": "present"
     },
+    "TC-EX-005": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-005: Swedish decimal \"7,5\" → 7.5",
+      "status": "present"
+    },
+    "TC-EX-006": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-006: bad date \"2026/04/07\" → warning ERR_BAD_DATE, row skipped",
+      "status": "present"
+    },
     "TC-EX-007": {
       "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
       "testName": "TC-EX-007: hours ≤ 0 → warning ERR_BAD_HOURS, row skipped",
@@ -349,6 +499,36 @@
     "TC-EX-008": {
       "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
       "testName": "TC-EX-008: ISO date headers → one ParsedRow per (person,project,date) with hours > 0",
+      "status": "present"
+    },
+    "TC-EX-009": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-009: ISO week headers \"2026-W15\" → one ParsedRow per week with WEEK_GRAIN_PENDING_DISTRIBUTION warning",
+      "status": "present"
+    },
+    "TC-EX-010": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-010: ISO month headers \"2026-04\" → one ParsedRow per month with MONTH_GRAIN_PENDING_DISTRIBUTION warning",
+      "status": "present"
+    },
+    "TC-EX-011": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-011 US WEEKNUM hard-stop (alias for TC-EX-011a..e group)",
+      "status": "present"
+    },
+    "TC-EX-011a": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-011a: bare \"W12\" headers → ERR_US_WEEK_HEADERS",
+      "status": "present"
+    },
+    "TC-EX-011b": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-011b: \"Week 12\" headers → ERR_US_WEEK_HEADERS",
+      "status": "present"
+    },
+    "TC-EX-011c": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-011c: header containing \"WEEKNUM(\" → ERR_US_WEEK_HEADERS",
       "status": "present"
     },
     "TC-EX-011d": {
@@ -401,6 +581,41 @@
       "testName": "TC-NEG-013 — PM persona attempting /line-manager/*",
       "status": "present"
     },
+    "TC-PERF-001": {
+      "file": "tests/perf/budgets.test.ts",
+      "testName": "TC-PERF-001 GET /api/v5/planning/allocations rd portfolio 30 months 50 projects < 800 ms",
+      "status": "present"
+    },
+    "TC-PERF-002": {
+      "file": "tests/perf/budgets.test.ts",
+      "testName": "TC-PERF-002 GET /api/v5/capacity 12-person department 24 months < 300 ms",
+      "status": "present"
+    },
+    "TC-PERF-003": {
+      "file": "tests/perf/budgets.test.ts",
+      "testName": "TC-PERF-003 getDailyRows one person-project-month (<=22 daily rows) < 50 ms",
+      "status": "present"
+    },
+    "TC-PERF-004": {
+      "file": "tests/perf/budgets.test.ts",
+      "testName": "TC-PERF-004 commitActualsBatch for 1000-row staged session < 2.5 s (parse excluded)",
+      "status": "present"
+    },
+    "TC-PERF-005": {
+      "file": "tests/perf/budgets.test.ts",
+      "testName": "TC-PERF-005 Timeline grid first-paint 30 months x 50 rows < 1500 ms (Lighthouse)",
+      "status": "present"
+    },
+    "TC-PERF-006": {
+      "file": "tests/perf/budgets.test.ts",
+      "testName": "TC-PERF-006 Auto-save under 100 edits/min distributed across distinct cells — last-write-wins per cell",
+      "status": "present"
+    },
+    "TC-PERF-007": {
+      "file": "tests/perf/budgets.test.ts",
+      "testName": "TC-PERF-007 aggregateByMonth over 70k actual_entry rows < 500 ms",
+      "status": "present"
+    },
     "TC-PR-001": {
       "file": "src/features/proposals/__tests__/proposal.service.create.test.ts",
       "testName": "TC-PR-001: createProposal inserts proposed row + change_log in same tx",
@@ -417,8 +632,8 @@
       "status": "present"
     },
     "TC-PR-004": {
-      "file": "src/features/proposals/__tests__/proposal.service.approve.test.ts",
-      "testName": "TC-PR-004: approveProposal happy path (write-through + dual change_log)",
+      "file": "src/features/proposals/__tests__/approval-queue-impact.test.tsx",
+      "testName": "TC-PR-004: wish card shows \"40% → 90%\" utilization format",
       "status": "present"
     },
     "TC-PR-005": {
@@ -451,9 +666,9 @@
       "testName": "TC-PR-010: approving an already-approved row → ProposalNotActiveError",
       "status": "present"
     },
-    "TC-PR-011a": {
+    "TC-PR-011": {
       "file": "src/features/proposals/__tests__/proposal.service.resubmit.test.ts",
-      "testName": "TC-PR-011a: resubmit clones rejected row with parent_proposal_id",
+      "testName": "TC-PR-011: resubmit clones rejected row with parent_proposal_id",
       "status": "present"
     },
     "TC-PR-011b": {
@@ -484,6 +699,11 @@
     "TC-PR-013": {
       "file": "src/features/proposals/__tests__/proposal.service.concurrency.test.ts",
       "testName": "TC-PR-013: concurrent approveProposal → exactly one winner",
+      "status": "present"
+    },
+    "TC-PR-014": {
+      "file": "src/features/proposals/__tests__/tc-pr-spec.test.ts",
+      "testName": "TC-PR-014 spec traceability (Phase 44-08)",
       "status": "present"
     },
     "TC-PS-001": {
@@ -536,9 +756,44 @@
       "testName": "TC-PS-010: expand state survives a data refetch (state outside gridApi)",
       "status": "present"
     },
+    "TC-PS-011": {
+      "file": "src/features/allocations/__tests__/tc-ps-spec.test.ts",
+      "testName": "TC-PS-011 editAllocation historic check uses DB now(), not Node clock",
+      "status": "present"
+    },
+    "TC-PS-012": {
+      "file": "src/features/allocations/__tests__/tc-ps-spec.test.ts",
+      "testName": "TC-PS-012 bulkCopyForward historic range with confirmHistoric=false aborts atomically",
+      "status": "present"
+    },
+    "TC-PS-013": {
+      "file": "src/features/allocations/__tests__/tc-ps-spec.test.ts",
+      "testName": "TC-PS-013 bulkCopyForward with PROPOSAL_IN_RANGE aborts atomically",
+      "status": "present"
+    },
+    "TC-PS-014": {
+      "file": "src/features/allocations/__tests__/tc-ps-spec.test.ts",
+      "testName": "TC-PS-014 bulkCopyForward source-cell rule uses approved, not proposed",
+      "status": "present"
+    },
+    "TC-PS-015": {
+      "file": "src/features/allocations/__tests__/tc-ps-spec.test.ts",
+      "testName": "TC-PS-015 line-manager edit boundary is department-scoped",
+      "status": "present"
+    },
+    "TC-PS-016": {
+      "file": "src/features/allocations/__tests__/tc-ps-spec.test.ts",
+      "testName": "TC-PS-016 bulkCopyForward writes exactly one change_log row per operation",
+      "status": "present"
+    },
     "TC-PSN-001": {
       "file": "src/features/personas/__tests__/persona.context.test.tsx",
       "testName": "TC-PSN-001: defaults to admin when localStorage is empty",
+      "status": "present"
+    },
+    "TC-PSN-002": {
+      "file": "src/features/personas/__tests__/persona.context.test.tsx",
+      "testName": "TC-PSN-002: setPersona persists to localStorage under key 'nc:persona'",
       "status": "present"
     },
     "TC-PSN-003": {
@@ -619,6 +874,96 @@
     "TC-UI-002": {
       "file": "src/components/timeline/__tests__/PlanVsActualCell.test.tsx",
       "testName": "TC-UI-002: 600ms debounced edit",
+      "status": "present"
+    },
+    "TC-UI-002a": {
+      "file": "src/components/timeline/__tests__/PlanActualCell.contract.test.tsx",
+      "testName": "TC-UI-002a: Direct edit, mutation 500 → optimistic revert + red toast \"Misslyckades att spara\"",
+      "status": "present"
+    },
+    "TC-UI-002b": {
+      "file": "src/components/timeline/__tests__/PlanActualCell.contract.test.tsx",
+      "testName": "TC-UI-002b: Direct edit success → \"Sparar…\" then green flash",
+      "status": "present"
+    },
+    "TC-UI-002c": {
+      "file": "src/components/timeline/__tests__/PlanActualCell.contract.test.tsx",
+      "testName": "TC-UI-002c: Proposal submission does NOT auto-save",
+      "status": "present"
+    },
+    "TC-UI-002d": {
+      "file": "src/components/timeline/__tests__/PlanActualCell.contract.test.tsx",
+      "testName": "TC-UI-002d: Navigating away from cell with draft proposal fires Discard guard",
+      "status": "present"
+    },
+    "TC-UI-003": {
+      "file": "src/components/timeline/__tests__/TimelineGrid.contract.test.tsx",
+      "testName": "TC-UI-003: TimelineGrid read-only mode — cells non-editable and click fires onCellClick",
+      "status": "present"
+    },
+    "TC-UI-004": {
+      "file": "src/components/timeline/__tests__/TimelineGrid.contract.test.tsx",
+      "testName": "TC-UI-004: TimelineGrid — editing a historic cell opens HistoricEditDialog before onCellEdit",
+      "status": "present"
+    },
+    "TC-UI-005": {
+      "file": "src/components/timeline/__tests__/TimelineGrid.contract.test.tsx",
+      "testName": "TC-UI-005: TimelineGrid — drag-to-copy (alt+drag) fires onCellDragCopy with source and target range",
+      "status": "present"
+    },
+    "TC-UI-006": {
+      "file": "src/components/timeline/__tests__/TimelineGrid.contract.test.tsx",
+      "testName": "TC-UI-006: TimelineGrid — zoom control switches columns to quarter/year aggregation",
+      "status": "present"
+    },
+    "TC-UI-007": {
+      "file": "src/components/timeline/__tests__/TimelineGrid.contract.test.tsx",
+      "testName": "TC-UI-007: TimelineGrid opens scrolled to currentMonthKey on first mount",
+      "status": "present"
+    },
+    "TC-UI-010": {
+      "file": "src/components/timeline/__tests__/PlanActualCell.contract.test.tsx",
+      "testName": "TC-UI-010: PlanActualCell with pendingProposal — dashed border + pending badge + old→new",
+      "status": "present"
+    },
+    "TC-UI-011": {
+      "file": "src/components/timeline/__tests__/PlanActualCell.contract.test.tsx",
+      "testName": "TC-UI-011: PlanActualCell with actualHours and approvedHours — split visual + delta color",
+      "status": "present"
+    },
+    "TC-UI-012": {
+      "file": "src/components/timeline/__tests__/PlanActualCell.contract.test.tsx",
+      "testName": "TC-UI-012: Delta within ±10% renders green",
+      "status": "present"
+    },
+    "TC-UI-013": {
+      "file": "src/components/timeline/__tests__/PlanActualCell.contract.test.tsx",
+      "testName": "TC-UI-013: Delta >10% over renders red",
+      "status": "present"
+    },
+    "TC-UI-014": {
+      "file": "src/components/timeline/__tests__/PlanActualCell.contract.test.tsx",
+      "testName": "TC-UI-014: Delta <-20% under renders yellow",
+      "status": "present"
+    },
+    "TC-UI-015": {
+      "file": "src/components/timeline/__tests__/PlanActualCell.contract.test.tsx",
+      "testName": "TC-UI-015: Empty cell renders em-dash",
+      "status": "present"
+    },
+    "TC-UI-020": {
+      "file": "src/components/dialogs/__tests__/HistoricEditDialog.contract.test.tsx",
+      "testName": "TC-UI-020: HistoricEditDialog rendered in Swedish on locale=\"sv\"",
+      "status": "present"
+    },
+    "TC-UI-021": {
+      "file": "src/components/dialogs/__tests__/HistoricEditDialog.contract.test.tsx",
+      "testName": "TC-UI-021: HistoricEditDialog — Escape cancels, Enter confirms",
+      "status": "present"
+    },
+    "TC-UI-022": {
+      "file": "src/components/dialogs/__tests__/HistoricEditDialog.contract.test.tsx",
+      "testName": "TC-UI-022: HistoricEditDialog — on confirm, calls onConfirm with no args",
       "status": "present"
     },
     "TC-ZOOM-001": {

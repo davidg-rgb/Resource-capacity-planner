@@ -12,6 +12,8 @@ export default defineConfig({
       'src/**/__tests__/**/*.test.{ts,tsx}',
       'tests/invariants/**/*.test.{ts,tsx}',
       'tests/fixtures/**/*.test.{ts,tsx}',
+      'tests/perf/**/*.test.{ts,tsx}',
+      'tests/unit/**/*.test.{ts,tsx}',
     ],
     passWithNoTests: true,
     environmentMatchGlobs: [

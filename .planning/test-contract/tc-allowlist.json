@@ -2,12 +2,6 @@
   "note": "Each Wave C plan (44-07..44-13) removes its prefix group from this list as it lands. Final state: empty array.",
   "stillMissing": [
     "TC-AC-011",
-    "TC-API-002",
-    "TC-API-003",
-    "TC-API-004",
-    "TC-API-005",
-    "TC-API-020",
-    "TC-API-021",
     "TC-CAL-001b",
     "TC-CAL-007",
     "TC-CAL-008",
@@ -32,11 +26,6 @@
     "TC-CAL-030",
     "TC-DB-005",
     "TC-DB-009",
-    "TC-EX-005",
-    "TC-EX-006",
-    "TC-EX-009",
-    "TC-EX-010",
-    "TC-EX-011",
     "TC-IMP-003",
     "TC-IMP-004",
     "TC-IMP-005",
@@ -72,21 +61,6 @@
     "TC-NEG-011",
     "TC-NEG-012",
     "TC-NEG-014",
-    "TC-PERF-001",
-    "TC-PERF-002",
-    "TC-PERF-003",
-    "TC-PERF-004",
-    "TC-PERF-005",
-    "TC-PERF-006",
-    "TC-PERF-007",
-    "TC-PR-011",
-    "TC-PR-014",
-    "TC-PS-011",
-    "TC-PS-012",
-    "TC-PS-013",
-    "TC-PS-014",
-    "TC-PS-015",
-    "TC-PS-016",
     "TC-PSN-002",
     "TC-PSN-007",
     "TC-PSN-010",
@@ -166,14 +140,6 @@
     "TC-AC": [
       "TC-AC-011"
     ],
-    "TC-API": [
-      "TC-API-002",
-      "TC-API-003",
-      "TC-API-004",
-      "TC-API-005",
-      "TC-API-020",
-      "TC-API-021"
-    ],
     "TC-CAL": [
       "TC-CAL-001b",
       "TC-CAL-007",
@@ -201,13 +167,6 @@
     "TC-DB": [
       "TC-DB-005",
       "TC-DB-009"
-    ],
-    "TC-EX": [
-      "TC-EX-005",
-      "TC-EX-006",
-      "TC-EX-009",
-      "TC-EX-010",
-      "TC-EX-011"
     ],
     "TC-IMP": [
       "TC-IMP-003",
@@ -249,27 +208,6 @@
       "TC-NEG-011",
       "TC-NEG-012",
       "TC-NEG-014"
-    ],
-    "TC-PERF": [
-      "TC-PERF-001",
-      "TC-PERF-002",
-      "TC-PERF-003",
-      "TC-PERF-004",
-      "TC-PERF-005",
-      "TC-PERF-006",
-      "TC-PERF-007"
-    ],
-    "TC-PR": [
-      "TC-PR-011",
-      "TC-PR-014"
-    ],
-    "TC-PS": [
-      "TC-PS-011",
-      "TC-PS-012",
-      "TC-PS-013",
-      "TC-PS-014",
-      "TC-PS-015",
-      "TC-PS-016"
     ],
     "TC-PSN": [
       "TC-PSN-002",
