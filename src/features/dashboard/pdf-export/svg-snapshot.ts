@@ -16,17 +16,14 @@ import { toPng } from 'html-to-image';
 // ---------------------------------------------------------------------------
 
 function extractSvgElement(container: HTMLElement): SVGSVGElement | null {
-  // Recharts wraps SVG inside .recharts-responsive-container > .recharts-wrapper > svg
-  const svg = container.querySelector<SVGSVGElement>('.recharts-wrapper > svg');
-  if (svg) return svg;
-
-  // Fallback: find any top-level SVG (but skip tiny icons)
-  const allSvgs = container.querySelectorAll<SVGSVGElement>('svg');
-  for (const s of allSvgs) {
-    const rect = s.getBoundingClientRect();
-    if (rect.width > 100 && rect.height > 50) return s;
-  }
-  return null;
+  // Only activate the SVG fast-path for Recharts-rendered widgets. Multi-SVG
+  // widgets (e.g. Capacity Gauges with 3 radial gauges, Availability Finder
+  // with per-row bars) must go through html-to-image so the full laid-out DOM
+  // is captured — picking the "first big SVG" hijacks the capture and stretches
+  // one child to the container bounds.
+  const rechartsWrappers = container.querySelectorAll<HTMLElement>('.recharts-wrapper');
+  if (rechartsWrappers.length !== 1) return null;
+  return rechartsWrappers[0].querySelector<SVGSVGElement>(':scope > svg');
 }
 
 // ---------------------------------------------------------------------------
@@ -93,10 +90,22 @@ async function domToImageCapture(container: HTMLElement): Promise<string> {
     await document.fonts.ready;
   }
 
+  // Use the laid-out bounding rect as explicit capture dimensions. Without
+  // this, html-to-image falls back to the container's intrinsic size which
+  // can collapse for flex/grid widgets whose children drive the real layout
+  // (e.g. Availability Finder rendered at ~20% size).
+  const rect = container.getBoundingClientRect();
+  const width = Math.max(1, Math.round(rect.width));
+  const height = Math.max(1, Math.round(rect.height));
+
   return await toPng(container, {
     backgroundColor: '#ffffff',
     pixelRatio: 2,
     cacheBust: true,
+    width,
+    height,
+    canvasWidth: width,
+    canvasHeight: height,
     filter: (node) => {
       if (!(node instanceof HTMLElement)) return true;
       const tag = node.tagName?.toLowerCase();
