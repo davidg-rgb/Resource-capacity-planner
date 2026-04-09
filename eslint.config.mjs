@@ -25,6 +25,8 @@ const eslintConfig = defineConfig([
       'src/features/admin/**/*.service.ts',
       // v5.0 — Phase 39 / PROP-06: proposals service coverage.
       'src/features/proposals/**/*.service.ts',
+      // v5.0: allocations service coverage (batchUpsertAllocations, patchAllocation).
+      'src/features/allocations/**/*.service.ts',
     ],
     plugins: { nordic },
     rules: { 'nordic/require-change-log': 'error' },

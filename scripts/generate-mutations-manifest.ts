@@ -15,7 +15,7 @@ import { dirname, relative, sep } from 'node:path';
 import { globSync } from 'glob';
 
 const MUTATING_RE =
-  /^(create|update|delete|edit|submit|resubmit|approve|reject|commit|rollback|upsert|archive|withdraw|bulk[A-Z])/;
+  /^(create|update|delete|edit|submit|resubmit|approve|reject|commit|rollback|upsert|archive|withdraw|patch|bulk[A-Z]|batch[A-Z])/;
 
 const INCLUDE = [
   'src/features/change-log/**/*.service.ts',
@@ -25,6 +25,8 @@ const INCLUDE = [
   'src/features/admin/**/*.service.ts',
   // v5.0 — Phase 39 / PROP-06: proposals service coverage.
   'src/features/proposals/**/*.service.ts',
+  // v5.0: allocations service coverage.
+  'src/features/allocations/**/*.service.ts',
 ];
 
 const OUTPUT = 'tests/invariants/mutations.json';

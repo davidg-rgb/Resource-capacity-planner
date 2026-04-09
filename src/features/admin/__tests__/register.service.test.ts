@@ -487,3 +487,163 @@ describe('Phase 43 Task 2 — registerService.create / update / archive / list',
     expect(orgA.every((r) => (r as { name: string }).name === 'OrgA Dept')).toBe(true);
   });
 });
+
+// TC-REG-010 + ARCH §7.1 line 1150: when a person's departmentId changes,
+// updateRegisterRow must sync allocation_proposals.target_department_id for
+// all open (proposed/rejected) proposals so they reappear in the new
+// department's approval queue rather than being orphaned in the old one.
+describe('updateRegisterRow person department sync (TC-REG-010)', () => {
+  it('updates target_department_id on proposed and rejected proposals when person dept changes', async () => {
+    const { createRegisterRow, updateRegisterRow } = await registerSvcPromise;
+
+    const [deptOld] = await testDb
+      .insert(schema.departments)
+      .values({ organizationId: ORG_ID, name: 'Old Dept' })
+      .returning();
+    const [deptNew] = await testDb
+      .insert(schema.departments)
+      .values({ organizationId: ORG_ID, name: 'New Dept' })
+      .returning();
+    const [disc] = await testDb
+      .insert(schema.disciplines)
+      .values({ organizationId: ORG_ID, name: 'Disc', abbreviation: 'D1' })
+      .returning();
+    const person = await createRegisterRow({
+      orgId: ORG_ID,
+      actorUserId: 'admin',
+      entity: 'person',
+      data: {
+        firstName: 'Sync',
+        lastName: 'Tester',
+        departmentId: deptOld.id,
+        disciplineId: disc.id,
+        targetHoursPerMonth: 160,
+      },
+    });
+    const [project] = await testDb
+      .insert(schema.projects)
+      .values({ organizationId: ORG_ID, name: 'Atlas', status: 'active' })
+      .returning();
+
+    // Seed three proposals: proposed, rejected, approved (the last must NOT sync).
+    const [proposed] = await testDb
+      .insert(schema.allocationProposals)
+      .values({
+        organizationId: ORG_ID,
+        personId: (person as { id: string }).id,
+        projectId: project.id,
+        month: '2026-06-01',
+        proposedHours: '40.00',
+        status: 'proposed',
+        requestedBy: 'pm-user',
+        targetDepartmentId: deptOld.id,
+      })
+      .returning();
+    const [rejected] = await testDb
+      .insert(schema.allocationProposals)
+      .values({
+        organizationId: ORG_ID,
+        personId: (person as { id: string }).id,
+        projectId: project.id,
+        month: '2026-07-01',
+        proposedHours: '20.00',
+        status: 'rejected',
+        rejectionReason: 'no capacity',
+        requestedBy: 'pm-user',
+        targetDepartmentId: deptOld.id,
+      })
+      .returning();
+    const [approved] = await testDb
+      .insert(schema.allocationProposals)
+      .values({
+        organizationId: ORG_ID,
+        personId: (person as { id: string }).id,
+        projectId: project.id,
+        month: '2026-08-01',
+        proposedHours: '10.00',
+        status: 'approved',
+        requestedBy: 'pm-user',
+        decidedBy: 'lm-user',
+        decidedAt: new Date(),
+        targetDepartmentId: deptOld.id,
+      })
+      .returning();
+
+    // Flip the person to a new department.
+    await updateRegisterRow({
+      orgId: ORG_ID,
+      actorUserId: 'admin',
+      entity: 'person',
+      id: (person as { id: string }).id,
+      data: { departmentId: deptNew.id },
+    });
+
+    const after = await testDb
+      .select()
+      .from(schema.allocationProposals)
+      .where(eq(schema.allocationProposals.personId, (person as { id: string }).id));
+    const byId = Object.fromEntries(after.map((r) => [r.id, r]));
+
+    expect(byId[proposed.id].targetDepartmentId).toBe(deptNew.id);
+    expect(byId[rejected.id].targetDepartmentId).toBe(deptNew.id);
+    // Approved must NOT be re-routed — it represents an immutable historical decision.
+    expect(byId[approved.id].targetDepartmentId).toBe(deptOld.id);
+  });
+
+  it('does not touch proposals when departmentId is unchanged in the patch', async () => {
+    const { createRegisterRow, updateRegisterRow } = await registerSvcPromise;
+
+    const [dept] = await testDb
+      .insert(schema.departments)
+      .values({ organizationId: ORG_ID, name: 'Stable Dept' })
+      .returning();
+    const [disc] = await testDb
+      .insert(schema.disciplines)
+      .values({ organizationId: ORG_ID, name: 'Disc', abbreviation: 'D2' })
+      .returning();
+    const person = await createRegisterRow({
+      orgId: ORG_ID,
+      actorUserId: 'admin',
+      entity: 'person',
+      data: {
+        firstName: 'Stable',
+        lastName: 'Tester',
+        departmentId: dept.id,
+        disciplineId: disc.id,
+        targetHoursPerMonth: 160,
+      },
+    });
+    const [project] = await testDb
+      .insert(schema.projects)
+      .values({ organizationId: ORG_ID, name: 'Stable Project', status: 'active' })
+      .returning();
+    const [proposed] = await testDb
+      .insert(schema.allocationProposals)
+      .values({
+        organizationId: ORG_ID,
+        personId: (person as { id: string }).id,
+        projectId: project.id,
+        month: '2026-06-01',
+        proposedHours: '40.00',
+        status: 'proposed',
+        requestedBy: 'pm-user',
+        targetDepartmentId: dept.id,
+      })
+      .returning();
+
+    // Update only lastName — no department change.
+    await updateRegisterRow({
+      orgId: ORG_ID,
+      actorUserId: 'admin',
+      entity: 'person',
+      id: (person as { id: string }).id,
+      data: { lastName: 'Renamed' },
+    });
+
+    const [after] = await testDb
+      .select()
+      .from(schema.allocationProposals)
+      .where(eq(schema.allocationProposals.id, proposed.id));
+    expect(after.targetDepartmentId).toBe(dept.id);
+  });
+});

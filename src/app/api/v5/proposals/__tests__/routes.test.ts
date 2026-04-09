@@ -26,6 +26,7 @@ vi.mock('@/lib/auth', () => ({
 const { POST: createRoute, GET: listRoute } = await import('../route');
 const { POST: approveRoute } = await import('../[id]/approve/route');
 const { POST: rejectRoute } = await import('../[id]/reject/route');
+const { PATCH: editRoute } = await import('../[id]/route');
 
 const ORG_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const DEPT_OLD = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
@@ -249,6 +250,48 @@ describe('TC-API-013: POST reject with empty reason → 400 ValidationError enve
     // Zod at the route layer short-circuits before the service's REASON_REQUIRED.
     // handleApiError wraps ZodError as a ValidationError envelope.
     expect(err.error).toBe('ERR_VALIDATION');
+  });
+});
+
+describe('PROP-06: PATCH /api/v5/proposals/[id] edits a proposed row in place (TC-API-013-edit)', () => {
+  function jsonPatch(url: string, body: unknown): Request {
+    return new Request(url, {
+      method: 'PATCH',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  }
+
+  it('updates hours+note and returns 200 with the updated DTO', async () => {
+    const id = await seedProposalViaRoute(40);
+    const res = await editRoute(
+      jsonPatch(`http://localhost/api/v5/proposals/${id}`, {
+        proposedHours: 28,
+        note: 'scaled back',
+      }) as never,
+      { params: Promise.resolve({ id }) },
+    );
+    expect(res.status).toBe(200);
+    const dto = (await res.json()) as {
+      id: string;
+      proposedHours: number;
+      note: string | null;
+      status: string;
+    };
+    expect(dto.id).toBe(id);
+    expect(dto.proposedHours).toBe(28);
+    expect(dto.note).toBe('scaled back');
+    expect(dto.status).toBe('proposed');
+  });
+
+  it('returns 400 EMPTY_EDIT when neither field provided', async () => {
+    const id = await seedProposalViaRoute(40);
+    const res = await editRoute(jsonPatch(`http://localhost/api/v5/proposals/${id}`, {}) as never, {
+      params: Promise.resolve({ id }),
+    });
+    expect(res.status).toBe(400);
+    const err = (await res.json()) as { error: string };
+    expect(err.error).toBe('EMPTY_EDIT');
   });
 });
 

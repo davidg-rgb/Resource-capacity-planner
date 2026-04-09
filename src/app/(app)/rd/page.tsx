@@ -14,6 +14,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
 
+import { DesktopOnlyScreen } from '@/components/responsive/desktop-only-screen';
 import { PersonaGate } from '@/features/personas/persona-route-guard';
 import {
   PlanVsActualDrawerProvider,
@@ -47,11 +48,13 @@ async function fetchPortfolio(
 
 export default function RdPage() {
   return (
-    <PersonaGate allowed={['rd', 'admin']}>
-      <PlanVsActualDrawerProvider>
-        <RdPageInner />
-      </PlanVsActualDrawerProvider>
-    </PersonaGate>
+    <DesktopOnlyScreen>
+      <PersonaGate allowed={['rd', 'admin']}>
+        <PlanVsActualDrawerProvider>
+          <RdPageInner />
+        </PlanVsActualDrawerProvider>
+      </PersonaGate>
+    </DesktopOnlyScreen>
   );
 }
 

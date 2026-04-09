@@ -17,6 +17,14 @@
       "export": "updateRegisterRow"
     },
     {
+      "file": "src/features/allocations/allocation.service.ts",
+      "export": "batchUpsertAllocations"
+    },
+    {
+      "file": "src/features/allocations/allocation.service.ts",
+      "export": "patchAllocation"
+    },
+    {
       "file": "src/features/import/actuals-import.service.ts",
       "export": "commitActualsBatch"
     },
