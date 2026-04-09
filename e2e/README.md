@@ -21,27 +21,43 @@ e2e/
 Specs are named `TC-E2E-<id>: <short description>` inside `test(...)` so
 `scripts/generate-tc-manifest.ts` picks them up automatically.
 
-## Local Setup
+## First-time local setup
 
-1. **Create a dedicated Postgres database** — `nc_e2e` on your local Postgres
-   (or a Docker `postgres:16` container, or a Neon dev branch). **Never point
-   E2E at your dev or prod database.**
-2. **Create `.env.test`** at repo root with:
+1. **Create the `nc_e2e` database** on your local Postgres instance (or a
+   Docker `postgres:16` container, or a Neon dev branch). **Never point E2E
+   at your dev or prod database.**
+   ```sql
+   CREATE DATABASE nc_e2e;
    ```
-   DATABASE_URL=postgresql://<user>:<pass>@localhost:5432/nc_e2e
+2. **Create `.env.test`** at repo root (gitignored) with:
+   ```
    NODE_ENV=test
    E2E_TEST=1
    E2E_SEED_ENABLED=1
-   PLATFORM_ADMIN_SECRET=dummy_e2e_secret
+   DATABASE_URL=postgresql://<user>:<pass>@localhost:5432/nc_e2e
    CLERK_SECRET_KEY=sk_test_dummy
    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_dummy
+   CLERK_WEBHOOK_SECRET=whsec_dummy
+   PLATFORM_ADMIN_SECRET=a-dummy-secret-that-is-at-least-sixty-four-characters-long-for-validation
+   NEXT_PUBLIC_APP_URL=http://localhost:3000
    ```
    Clerk dummy keys are fine — `src/proxy.ts` bypasses Clerk when
    `NODE_ENV=test` (added in PLAY-02).
-3. **Push schema to the E2E DB** once:
-   ```bash
-   DATABASE_URL=postgresql://.../nc_e2e pnpm db:push
-   ```
+3. **Run `pnpm test:e2e`** — `global-setup.ts` will push the drizzle schema
+   into `nc_e2e` automatically on first run (and truncate between runs).
+
+## Safety guardrail
+
+`e2e/lib/db.ts` refuses to run against any `DATABASE_URL` whose database
+name does not contain `e2e` or `test`. This is an absolute last line of
+defense against accidentally nuking the dev or prod DB. **NEVER override
+it.** If you see `[e2e/db] Refusing to run E2E against database '...'`,
+fix your `.env.test` — don't work around the check.
+
+The guardrail also requires `psql` on `PATH` for the TRUNCATE step. On
+Windows it ships with the Postgres installer; on macOS use `brew install
+libpq && brew link --force libpq`; on Linux it's in the `postgresql-client`
+package.
 
 ## Running
 
@@ -71,8 +87,7 @@ uploaded on failure.
 
 - `fullyParallel: false` + `workers: 1` — strictly serial for MVP. Parallelism is
   explicitly post-MVP (Phase 47 non-goal).
-- `globalSetup: ./global-setup.ts` — this file does NOT exist yet as of plan 47-01.
-  It will be created in the next Wave 1 plan (PLAY-03). Running `pnpm test:e2e`
-  before that plan lands will error on missing `global-setup.ts` — expected.
+- `globalSetup: ./global-setup.ts` — lands in plan 47-03 (PLAY-03). Runs
+  `migrate()` + `reset()` from `e2e/lib/db.ts` before the webServer boots.
 - `webServer` launches `pnpm dev` with `NODE_ENV=test E2E_TEST=1 E2E_SEED_ENABLED=1`
   and probes `/api/health` (already public in `src/proxy.ts`).
