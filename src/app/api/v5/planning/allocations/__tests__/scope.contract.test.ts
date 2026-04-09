@@ -147,7 +147,7 @@ describe('TC-API-001: GET /api/v5/planning/allocations?scope=staff', () => {
     expect(body.summaryStrip['2026-06']!.utilizationPct).toBe(40);
   });
 
-  it('400 when personId is missing for scope=staff', async () => {
+  it('TC-API-002: 400 when personId (scope id) is missing for scope=staff', async () => {
     const res = await GET(
       req(`/api/v5/planning/allocations?scope=staff&startMonth=2026-06&endMonth=2026-07`) as never,
     );

@@ -131,7 +131,21 @@ beforeEach(async () => {
   );
 });
 
-describe('Phase 40 / Plan 40-01: patchAllocation contract (TC-API-004 + TC-PS-006)', () => {
+describe('TC-API-004: Phase 40 / Plan 40-01: patchAllocation contract (TC-API-004 + TC-PS-006)', () => {
+  test('TC-API-003: negative newHours is rejected (BAD_HOURS) by allocation schema', async () => {
+    // Zod schema hours.min(0) is the wire-level BAD_HOURS guard for all
+    // allocation mutations (upsert + patch share the same hours constraint).
+    const { allocationUpsertSchema } = await import('../allocation.schema');
+    const parsed = allocationUpsertSchema.safeParse({
+      personId: PERSON_ID,
+      projectId: PROJECT_ID,
+      month: '2026-09',
+      hours: -5,
+    });
+    expect(parsed.success).toBe(false);
+  });
+
+
   test('TC-API-004a: non-historic edit writes ALLOCATION_EDITED change_log row', async () => {
     const result = await patchAllocation({
       orgId: ORG_ID,
