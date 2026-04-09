@@ -1,0 +1,104 @@
+{
+  "$comment": "v5.0 Phase 44 / Plan 44-05 — mutating /api/v5/* route manifest. Consumed by tests/invariants/tenant-isolation.runtime.test.ts which fires a cross-tenant request at each entry and asserts 404. Fields: routeFile (POSIX), method, requiresRow, rowFixture, sampleBody, pathParams (values are fixture placeholders the test rewrites to orgB-owned ids or orgB FK refs). Excluded: src/app/api/v5/imports/parse/route.ts — it creates a fresh import_session with no target row, so cross-tenant semantics do not apply (validated via the existing imports.api.test.ts suite).",
+  "routes": [
+    {
+      "routeFile": "src/app/api/v5/proposals/route.ts",
+      "method": "POST",
+      "requiresRow": false,
+      "rowFixture": "proposal:create",
+      "sampleBody": {
+        "personId": "orgB:person",
+        "projectId": "orgB:project",
+        "month": "2026-06",
+        "proposedHours": 20,
+        "note": "xtenant"
+      },
+      "pathParams": {}
+    },
+    {
+      "routeFile": "src/app/api/v5/proposals/[id]/approve/route.ts",
+      "method": "POST",
+      "requiresRow": true,
+      "rowFixture": "proposal",
+      "sampleBody": { "departmentId": "orgB:department" },
+      "pathParams": { "id": "orgB:proposal" }
+    },
+    {
+      "routeFile": "src/app/api/v5/proposals/[id]/reject/route.ts",
+      "method": "POST",
+      "requiresRow": true,
+      "rowFixture": "proposal",
+      "sampleBody": { "departmentId": "orgB:department", "reason": "xtenant" },
+      "pathParams": { "id": "orgB:proposal" }
+    },
+    {
+      "routeFile": "src/app/api/v5/proposals/[id]/resubmit/route.ts",
+      "method": "POST",
+      "requiresRow": true,
+      "rowFixture": "proposal",
+      "sampleBody": { "proposedHours": 30 },
+      "pathParams": { "id": "orgB:proposal" }
+    },
+    {
+      "routeFile": "src/app/api/v5/proposals/[id]/withdraw/route.ts",
+      "method": "POST",
+      "requiresRow": true,
+      "rowFixture": "proposal",
+      "sampleBody": null,
+      "pathParams": { "id": "orgB:proposal" }
+    },
+    {
+      "routeFile": "src/app/api/v5/imports/[sessionId]/commit/route.ts",
+      "method": "POST",
+      "requiresRow": true,
+      "rowFixture": "import_session",
+      "sampleBody": { "overrideManualEdits": false, "overrideUnrolledImports": false },
+      "pathParams": { "sessionId": "orgB:import_session" }
+    },
+    {
+      "routeFile": "src/app/api/v5/imports/batches/[batchId]/rollback/route.ts",
+      "method": "POST",
+      "requiresRow": true,
+      "rowFixture": "import_batch",
+      "sampleBody": null,
+      "pathParams": { "batchId": "orgB:import_batch" }
+    },
+    {
+      "routeFile": "src/app/api/v5/planning/allocations/[id]/route.ts",
+      "method": "PATCH",
+      "requiresRow": true,
+      "rowFixture": "allocation",
+      "sampleBody": { "hours": 10 },
+      "pathParams": { "id": "orgB:allocation" }
+    },
+    {
+      "routeFile": "src/app/api/v5/admin/registers/[entity]/route.ts",
+      "method": "POST",
+      "requiresRow": false,
+      "rowFixture": "register:person",
+      "sampleBody": {
+        "firstName": "Cross",
+        "lastName": "Tenant",
+        "disciplineId": "orgB:discipline",
+        "departmentId": "orgB:department"
+      },
+      "pathParams": { "entity": "person" }
+    },
+    {
+      "routeFile": "src/app/api/v5/admin/registers/[entity]/[id]/route.ts",
+      "method": "PATCH",
+      "requiresRow": true,
+      "rowFixture": "register:person",
+      "sampleBody": { "firstName": "Updated" },
+      "pathParams": { "entity": "person", "id": "orgB:person" }
+    },
+    {
+      "routeFile": "src/app/api/v5/admin/registers/[entity]/[id]/route.ts",
+      "method": "DELETE",
+      "requiresRow": true,
+      "rowFixture": "register:person",
+      "sampleBody": null,
+      "pathParams": { "entity": "person", "id": "orgB:person" }
+    }
+  ]
+}
