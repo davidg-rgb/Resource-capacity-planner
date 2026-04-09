@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-09T11:38:14.080Z",
+  "generatedAt": "2026-04-09T11:39:25.452Z",
   "entries": {
     "TC-AC-001": {
       "file": "src/features/actuals/__tests__/upsert-actuals.contract.test.ts",
@@ -441,6 +441,11 @@
       "testName": "TC-DB-004: actual_entries.hours is numeric(5,2)",
       "status": "present"
     },
+    "TC-DB-005": {
+      "file": "tests/unit/db/schema.contract.test.ts",
+      "testName": "TC-DB-005 change_log has the four indexes documented in §7.4",
+      "status": "present"
+    },
     "TC-DB-006": {
       "file": "src/features/change-log/__tests__/v5-schema.contract.test.ts",
       "testName": "TC-DB-006: import_batches.reversal_payload jsonb nullable",
@@ -454,6 +459,11 @@
     "TC-DB-008": {
       "file": "src/features/change-log/__tests__/v5-schema.contract.test.ts",
       "testName": "TC-DB-008: proposal_status and actual_source enums have exact values",
+      "status": "present"
+    },
+    "TC-DB-009": {
+      "file": "tests/unit/db/schema.contract.test.ts",
+      "testName": "TC-DB-009 demo-seed foreign keys are schema-consistent (no dangling references)",
       "status": "present"
     },
     "TC-DB-010": {
@@ -559,6 +569,36 @@
     "TC-IMP-002": {
       "file": "src/features/import/__tests__/actuals-import-service.contract.test.ts",
       "testName": "TC-IMP-002: previewStagedBatch returns counts",
+      "status": "present"
+    },
+    "TC-INV-001": {
+      "file": "tests/invariants/cross-cutting.test.ts",
+      "testName": "TC-INV-001 mutating-services manifest is non-empty and every entry names a change_log-writing function",
+      "status": "present"
+    },
+    "TC-INV-002": {
+      "file": "tests/invariants/cross-cutting.test.ts",
+      "testName": "TC-INV-002 no file outside src/lib/time imports date-fns",
+      "status": "present"
+    },
+    "TC-INV-003": {
+      "file": "tests/invariants/cross-cutting.test.ts",
+      "testName": "TC-INV-003 error wire shape is FLAT { error, message, details? } (NOT nested per RESEARCH R2)",
+      "status": "present"
+    },
+    "TC-INV-004": {
+      "file": "tests/invariants/cross-cutting.test.ts",
+      "testName": "TC-INV-004 every new v5.0 table in the schema has an organization_id column",
+      "status": "present"
+    },
+    "TC-INV-005": {
+      "file": "tests/invariants/cross-cutting.test.ts",
+      "testName": "TC-INV-005 at least one v5.0 mutating route body accepts actorPersonaId (informational, not validated)",
+      "status": "present"
+    },
+    "TC-INV-006": {
+      "file": "tests/invariants/cross-cutting.test.ts",
+      "testName": "TC-INV-006 every *.service.ts that mutates exports at least one function with an optional tx? parameter",
       "status": "present"
     },
     "TC-INV-COVERAGE-001": {

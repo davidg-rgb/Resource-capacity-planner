@@ -1,8 +1,6 @@
 {
   "note": "Each Wave C plan (44-07..44-13) removes its prefix group from this list as it lands. Final state: empty array.",
   "stillMissing": [
-    "TC-DB-005",
-    "TC-DB-009",
     "TC-IMP-003",
     "TC-IMP-004",
     "TC-IMP-005",
@@ -114,10 +112,6 @@
     "TC-UI-LOAD-014"
   ],
   "groups": {
-    "TC-DB": [
-      "TC-DB-005",
-      "TC-DB-009"
-    ],
     "TC-IMP": [
       "TC-IMP-003",
       "TC-IMP-004",
