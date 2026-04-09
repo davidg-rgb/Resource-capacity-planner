@@ -23,7 +23,7 @@ import { z } from 'zod/v4';
 import { db } from '@/db';
 import * as schema from '@/db/schema';
 import { recordChange } from '@/features/change-log/change-log.service';
-import { ConflictError, NotFoundError, ValidationError } from '@/lib/errors';
+import { ConflictError, InternalError, NotFoundError, ValidationError } from '@/lib/errors';
 
 import { departmentCreateSchema, departmentUpdateSchema } from './register.schema';
 import {
@@ -211,7 +211,7 @@ export async function createRegisterRow(input: CreateRegisterRowInput): Promise<
       .returning()) as unknown as RegisterRow[];
     const row = insertedRows[0];
     if (!row) {
-      throw new Error(`Failed to insert ${input.entity}`);
+      throw new InternalError(`Failed to insert ${input.entity}`);
     }
     await recordChange(
       {

@@ -2,7 +2,7 @@ import { and, eq, sql, desc, count as drizzleCount } from 'drizzle-orm';
 
 import { db } from '@/db';
 import * as schema from '@/db/schema';
-import { NotFoundError, ForbiddenError, ValidationError } from '@/lib/errors';
+import { NotFoundError, ForbiddenError, ValidationError, InternalError } from '@/lib/errors';
 
 import type {
   CreateScenarioRequest,
@@ -159,7 +159,7 @@ export async function createScenario(
     })
     .returning();
 
-  if (!scenario) throw new Error('Failed to create scenario');
+  if (!scenario) throw new InternalError('Failed to create scenario');
 
   // Snapshot current allocations into scenario_allocations
   if (data.baseScenarioId) {
@@ -534,7 +534,7 @@ export async function createTempEntity(
     })
     .returning();
 
-  if (!entity) throw new Error('Failed to create temp entity');
+  if (!entity) throw new InternalError('Failed to create temp entity');
 
   return {
     id: entity.id,
