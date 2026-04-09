@@ -1,0 +1,635 @@
+{
+  "generatedAt": "2026-04-09T11:21:02.099Z",
+  "entries": {
+    "TC-AC-001": {
+      "file": "src/features/actuals/__tests__/upsert-actuals.contract.test.ts",
+      "testName": "TC-AC-001: day-grain insert writes one row + change_log entry",
+      "status": "present"
+    },
+    "TC-AC-002": {
+      "file": "src/features/actuals/__tests__/upsert-actuals.contract.test.ts",
+      "testName": "TC-AC-002: day-grain second call is idempotent on the unique key",
+      "status": "present"
+    },
+    "TC-AC-003": {
+      "file": "src/features/actuals/__tests__/upsert-actuals.contract.test.ts",
+      "testName": "TC-AC-003: week-grain 40h across 5 working days = 8.00 each",
+      "status": "present"
+    },
+    "TC-AC-004": {
+      "file": "src/features/actuals/__tests__/upsert-actuals.contract.test.ts",
+      "testName": "TC-AC-004: week-grain 37h preserves sum exactly (largest-remainder)",
+      "status": "present"
+    },
+    "TC-AC-005": {
+      "file": "src/features/actuals/__tests__/upsert-actuals.contract.test.ts",
+      "testName": "TC-AC-005: ISO 2026-W53 spans Dec 28-30 (Dec 31 + Jan 1 are SE holidays)",
+      "status": "present"
+    },
+    "TC-AC-006": {
+      "file": "src/features/actuals/__tests__/upsert-actuals.contract.test.ts",
+      "testName": "TC-AC-006: month-grain 160h distributed across June 2026 working days",
+      "status": "present"
+    },
+    "TC-AC-007": {
+      "file": "src/features/import/__tests__/actuals-import-service.contract.test.ts",
+      "testName": "TC-AC-007: commit happy path writes actual_entries + one change_log row",
+      "status": "present"
+    },
+    "TC-AC-008": {
+      "file": "src/features/import/__tests__/actuals-import-service.contract.test.ts",
+      "testName": "TC-AC-008: overrideManualEdits=false preserves manual rows",
+      "status": "present"
+    },
+    "TC-AC-009": {
+      "file": "src/features/import/__tests__/actuals-import-service.contract.test.ts",
+      "testName": "TC-AC-009: overrideManualEdits=true replaces manual rows",
+      "status": "present"
+    },
+    "TC-AC-010": {
+      "file": "src/features/import/__tests__/actuals-import-service.contract.test.ts",
+      "testName": "TC-AC-010: re-commit of an already-committed session is refused",
+      "status": "present"
+    },
+    "TC-AC-012": {
+      "file": "src/features/import/__tests__/rollback-supersession.contract.test.ts",
+      "testName": "TC-AC-012: rollback within 24h restores prior values (DELETE for new rows)",
+      "status": "present"
+    },
+    "TC-AC-013": {
+      "file": "src/features/import/__tests__/rollback-supersession.contract.test.ts",
+      "testName": "TC-AC-013: rollback restores prior hours when row pre-existed (UPDATE path)",
+      "status": "present"
+    },
+    "TC-AC-014": {
+      "file": "src/features/import/__tests__/rollback-supersession.contract.test.ts",
+      "testName": "TC-AC-014: rollback after 24h returns ROLLBACK_WINDOW_EXPIRED",
+      "status": "present"
+    },
+    "TC-AC-015": {
+      "file": "src/features/import/__tests__/rollback-supersession.contract.test.ts",
+      "testName": "TC-AC-015: double rollback returns BATCH_ALREADY_ROLLED_BACK",
+      "status": "present"
+    },
+    "TC-AC-016": {
+      "file": "src/features/import/__tests__/rollback-supersession.contract.test.ts",
+      "testName": "TC-AC-016: second commit on overlapping rows is refused without override",
+      "status": "present"
+    },
+    "TC-AC-017": {
+      "file": "src/features/import/__tests__/rollback-supersession.contract.test.ts",
+      "testName": "TC-AC-017: supersession + chained reversal_payload",
+      "status": "present"
+    },
+    "TC-API-001": {
+      "file": "src/app/api/v5/planning/allocations/__tests__/scope.contract.test.ts",
+      "testName": "TC-API-001: GET /api/v5/planning/allocations?scope=staff",
+      "status": "present"
+    },
+    "TC-API-004a": {
+      "file": "src/features/allocations/__tests__/patch-allocation.contract.test.ts",
+      "testName": "TC-API-004a: non-historic edit writes ALLOCATION_EDITED change_log row",
+      "status": "present"
+    },
+    "TC-API-004b": {
+      "file": "src/features/allocations/__tests__/patch-allocation.contract.test.ts",
+      "testName": "TC-API-004b: historic edit without confirmHistoric throws and does NOT mutate",
+      "status": "present"
+    },
+    "TC-API-010": {
+      "file": "src/app/api/v5/proposals/__tests__/routes.test.ts",
+      "testName": "TC-API-010: POST /api/v5/proposals creates a proposed row",
+      "status": "present"
+    },
+    "TC-API-011": {
+      "file": "src/app/api/v5/proposals/__tests__/routes.test.ts",
+      "testName": "TC-API-011: POST /api/v5/proposals/[id]/approve with matching departmentId → 200",
+      "status": "present"
+    },
+    "TC-API-012": {
+      "file": "src/app/api/v5/proposals/__tests__/routes.test.ts",
+      "testName": "TC-API-012: POST approve with mismatched departmentId → 403 ForbiddenError envelope",
+      "status": "present"
+    },
+    "TC-API-013": {
+      "file": "src/app/api/v5/proposals/__tests__/routes.test.ts",
+      "testName": "TC-API-013: POST reject with empty reason → 400 ValidationError envelope",
+      "status": "present"
+    },
+    "TC-API-014": {
+      "file": "src/app/api/v5/proposals/__tests__/routes.test.ts",
+      "testName": "TC-API-014: POST second approve on same id → 409 PROPOSAL_NOT_ACTIVE",
+      "status": "present"
+    },
+    "TC-API-030": {
+      "file": "src/app/api/v5/imports/__tests__/imports.api.test.ts",
+      "testName": "TC-API-030: POST /api/v5/imports/parse",
+      "status": "present"
+    },
+    "TC-API-031": {
+      "file": "src/app/api/v5/imports/__tests__/imports.api.test.ts",
+      "testName": "TC-API-031: GET /api/v5/imports/{sessionId}/preview",
+      "status": "present"
+    },
+    "TC-API-032": {
+      "file": "src/app/api/v5/imports/__tests__/imports.api.test.ts",
+      "testName": "TC-API-032: POST commit preserves manual rows by default",
+      "status": "present"
+    },
+    "TC-API-033": {
+      "file": "src/app/api/v5/imports/__tests__/imports.api.test.ts",
+      "testName": "TC-API-033: POST rollback within 24h restores values",
+      "status": "present"
+    },
+    "TC-API-034": {
+      "file": "src/app/api/v5/imports/__tests__/imports.api.test.ts",
+      "testName": "TC-API-034: POST rollback after 24h returns ROLLBACK_WINDOW_EXPIRED",
+      "status": "present"
+    },
+    "TC-API-040": {
+      "file": "src/app/api/v5/change-log/__tests__/change-log.contract.test.ts",
+      "testName": "TC-API-040: GET /api/v5/change-log happy path + cursor follow-through",
+      "status": "present"
+    },
+    "TC-API-041": {
+      "file": "src/app/api/v5/change-log/__tests__/change-log.contract.test.ts",
+      "testName": "TC-API-041: GET /api/v5/change-log filter combinations",
+      "status": "present"
+    },
+    "TC-API-050": {
+      "file": "src/app/api/v5/capacity/__tests__/capacity.contract.test.ts",
+      "testName": "TC-API-050: GET /api/v5/capacity happy path",
+      "status": "present"
+    },
+    "TC-API-051": {
+      "file": "src/app/api/v5/capacity/__tests__/capacity.contract.test.ts",
+      "testName": "TC-API-051: GET /api/v5/capacity error cases",
+      "status": "present"
+    },
+    "TC-AR-001": {
+      "file": "src/features/actuals/__tests__/aggregation.contract.test.ts",
+      "testName": "TC-AR-001: aggregateByMonth groups per (person, project, monthKey)",
+      "status": "present"
+    },
+    "TC-AR-002": {
+      "file": "src/features/actuals/__tests__/aggregation.contract.test.ts",
+      "testName": "TC-AR-002: aggregateByWeek buckets ISO week 53 of 2026 vs week 1 of 2027",
+      "status": "present"
+    },
+    "TC-AR-003": {
+      "file": "src/features/actuals/__tests__/aggregation.contract.test.ts",
+      "testName": "TC-AR-003: getDailyRows returns rows inside the requested month only",
+      "status": "present"
+    },
+    "TC-AR-004": {
+      "file": "src/features/actuals/__tests__/aggregation.contract.test.ts",
+      "testName": "TC-AR-004: getProjectBurn sums planned + actual within range",
+      "status": "present"
+    },
+    "TC-CAL-001": {
+      "file": "src/lib/time/__tests__/iso-calendar.test.ts",
+      "testName": "TC-CAL-001: 2026 is a 53-week ISO year",
+      "status": "present"
+    },
+    "TC-CAL-002": {
+      "file": "src/lib/time/__tests__/iso-calendar.test.ts",
+      "testName": "TC-CAL-002: Week 1 of 2027 starts Mon Jan 4 (2026-12-31 in W53)",
+      "status": "present"
+    },
+    "TC-CAL-003": {
+      "file": "src/lib/time/__tests__/iso-calendar.zoom.test.ts",
+      "testName": "TC-CAL-003: quarter buckets snap on ISO-year boundary",
+      "status": "present"
+    },
+    "TC-CAL-004": {
+      "file": "src/lib/time/__tests__/swedish-holidays.test.ts",
+      "testName": "TC-CAL-004: Jan 1 2026 is a holiday and in ISO week 1",
+      "status": "present"
+    },
+    "TC-CAL-005": {
+      "file": "src/lib/time/__tests__/iso-calendar.test.ts",
+      "testName": "TC-CAL-005: workingDaysInRange April 2026 excludes Good Fri and Easter Mon",
+      "status": "present"
+    },
+    "TC-CAL-006": {
+      "file": "src/lib/time/__tests__/iso-calendar.zoom.test.ts",
+      "testName": "TC-CAL-006: week 53 of 2026 belongs to Q4-2026",
+      "status": "present"
+    },
+    "TC-CAL-023": {
+      "file": "src/lib/time/__tests__/distribute.test.ts",
+      "testName": "TC-CAL-023: distribute(37, 22) length is 22 and sum is exactly 37.00",
+      "status": "present"
+    },
+    "TC-CAL-024": {
+      "file": "src/lib/time/__tests__/distribute.test.ts",
+      "testName": "TC-CAL-024: distribute(37, 5) returns five equal 7.40 slots",
+      "status": "present"
+    },
+    "TC-CAL-025": {
+      "file": "src/lib/time/__tests__/distribute.test.ts",
+      "testName": "TC-CAL-025 (sampled): sum-preservation invariant for representative inputs",
+      "status": "present"
+    },
+    "TC-CL-001": {
+      "file": "src/features/change-log/__tests__/change-log.service.test.ts",
+      "testName": "TC-CL-001: recordChange inserts a row with all required fields",
+      "status": "present"
+    },
+    "TC-CL-002": {
+      "file": "src/features/change-log/__tests__/change-log.service.test.ts",
+      "testName": "TC-CL-002: recordChange rejects an unknown action value",
+      "status": "present"
+    },
+    "TC-CL-003": {
+      "file": "src/features/change-log/__tests__/change-log.service.test.ts",
+      "testName": "TC-CL-003: recordChange routes its insert through the supplied tx",
+      "status": "present"
+    },
+    "TC-CL-004": {
+      "file": "src/features/change-log/__tests__/change-log.service.test.ts",
+      "testName": "TC-CL-004: recordChange inside a rolled-back tx leaves no row",
+      "status": "present"
+    },
+    "TC-CL-005": {
+      "file": "tests/invariants/change-log.coverage.test.ts",
+      "testName": "TC-CL-005: every mutating service calls recordChange()",
+      "status": "present"
+    },
+    "TC-CP-001": {
+      "file": "src/features/capacity/__tests__/capacity.read.test.ts",
+      "testName": "TC-CP-001: planned=59h with target=100 → under",
+      "status": "present"
+    },
+    "TC-CP-002": {
+      "file": "src/features/capacity/__tests__/capacity.read.test.ts",
+      "testName": "TC-CP-002: planned=60h and planned=100h with target=100 → ok",
+      "status": "present"
+    },
+    "TC-CP-003": {
+      "file": "src/features/capacity/__tests__/capacity.read.test.ts",
+      "testName": "TC-CP-003: planned=101h with target=100 → over",
+      "status": "present"
+    },
+    "TC-CP-004": {
+      "file": "src/features/capacity/__tests__/capacity.read.test.ts",
+      "testName": "TC-CP-004: targetHours=0 → absent regardless of planned",
+      "status": "present"
+    },
+    "TC-DB-001": {
+      "file": "src/features/change-log/__tests__/v5-schema.contract.test.ts",
+      "testName": "TC-DB-001: allocation_proposals table exists with expected columns",
+      "status": "present"
+    },
+    "TC-DB-002": {
+      "file": "src/features/change-log/__tests__/v5-schema.contract.test.ts",
+      "testName": "TC-DB-002: projects.lead_pm_person_id column + partial index + v4 unique index preserved",
+      "status": "present"
+    },
+    "TC-DB-003": {
+      "file": "src/features/change-log/__tests__/v5-schema.contract.test.ts",
+      "testName": "TC-DB-003: actuals unique index on (org, person, project, date)",
+      "status": "present"
+    },
+    "TC-DB-004": {
+      "file": "src/features/change-log/__tests__/v5-schema.contract.test.ts",
+      "testName": "TC-DB-004: actual_entries.hours is numeric(5,2)",
+      "status": "present"
+    },
+    "TC-DB-006": {
+      "file": "src/features/change-log/__tests__/v5-schema.contract.test.ts",
+      "testName": "TC-DB-006: import_batches.reversal_payload jsonb nullable",
+      "status": "present"
+    },
+    "TC-DB-007": {
+      "file": "src/features/change-log/__tests__/v5-schema.contract.test.ts",
+      "testName": "TC-DB-007: allocation_proposals FKs to people, projects, organizations, departments",
+      "status": "present"
+    },
+    "TC-DB-008": {
+      "file": "src/features/change-log/__tests__/v5-schema.contract.test.ts",
+      "testName": "TC-DB-008: proposal_status and actual_source enums have exact values",
+      "status": "present"
+    },
+    "TC-DB-010": {
+      "file": "src/features/change-log/__tests__/v5-schema.contract.test.ts",
+      "testName": "TC-DB-010: Phase 35 change_log table is still intact",
+      "status": "present"
+    },
+    "TC-EX-001": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-001: row-per-entry headers → row-per-entry",
+      "status": "present"
+    },
+    "TC-EX-001b": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-001b: accepts Swedish / alias headers",
+      "status": "present"
+    },
+    "TC-EX-002": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-002: pivoted layout with ≥2 date headers",
+      "status": "present"
+    },
+    "TC-EX-003": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-003: unknown layout throws ERR_UNKNOWN_LAYOUT",
+      "status": "present"
+    },
+    "TC-EX-004": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-004: 3 valid rows → 3 ParsedRow",
+      "status": "present"
+    },
+    "TC-EX-007": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-007: hours ≤ 0 → warning ERR_BAD_HOURS, row skipped",
+      "status": "present"
+    },
+    "TC-EX-008": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-008: ISO date headers → one ParsedRow per (person,project,date) with hours > 0",
+      "status": "present"
+    },
+    "TC-EX-011d": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-011d: Sunday-start weekly date sequence → ERR_US_WEEK_HEADERS",
+      "status": "present"
+    },
+    "TC-EX-011e": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-011e: DOES throw on hard-stop without emitting partial ParsedRows",
+      "status": "present"
+    },
+    "TC-EX-012": {
+      "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
+      "testName": "TC-EX-012: headers only, no data rows → empty rows, EMPTY_SHEET warning",
+      "status": "present"
+    },
+    "TC-IMP-001": {
+      "file": "src/features/import/__tests__/actuals-import-service.contract.test.ts",
+      "testName": "TC-IMP-001: parseAndStageActuals stages parsed rows",
+      "status": "present"
+    },
+    "TC-IMP-002": {
+      "file": "src/features/import/__tests__/actuals-import-service.contract.test.ts",
+      "testName": "TC-IMP-002: previewStagedBatch returns counts",
+      "status": "present"
+    },
+    "TC-MOBILE-001": {
+      "file": "src/app/(app)/line-manager/timeline/__tests__/desktop-only.test.tsx",
+      "testName": "TC-MOBILE-001 — <DesktopOnlyScreen> interstitial",
+      "status": "present"
+    },
+    "TC-NEG-013": {
+      "file": "src/features/personas/__tests__/line-manager-route-guard.negative.test.tsx",
+      "testName": "TC-NEG-013 — PM persona attempting /line-manager/*",
+      "status": "present"
+    },
+    "TC-PR-001": {
+      "file": "src/features/proposals/__tests__/proposal.service.create.test.ts",
+      "testName": "TC-PR-001: createProposal inserts proposed row + change_log in same tx",
+      "status": "present"
+    },
+    "TC-PR-002": {
+      "file": "src/features/proposals/__tests__/proposal.service.create.test.ts",
+      "testName": "TC-PR-002: createProposal returns DTO with month normalized to YYYY-MM",
+      "status": "present"
+    },
+    "TC-PR-003": {
+      "file": "src/features/proposals/__tests__/proposal.service.create.test.ts",
+      "testName": "TC-PR-003: listProposals filters on LIVE people.department_id (PROP-07)",
+      "status": "present"
+    },
+    "TC-PR-004": {
+      "file": "src/features/proposals/__tests__/proposal.service.approve.test.ts",
+      "testName": "TC-PR-004: approveProposal happy path (write-through + dual change_log)",
+      "status": "present"
+    },
+    "TC-PR-005": {
+      "file": "src/features/proposals/__tests__/approval-queue-impact.test.tsx",
+      "testName": "TC-PR-005: Approve button calls /approve mutation with proposalId",
+      "status": "present"
+    },
+    "TC-PR-006": {
+      "file": "src/features/proposals/__tests__/approval-queue-impact.test.tsx",
+      "testName": "TC-PR-006: Reject button opens the reject modal",
+      "status": "present"
+    },
+    "TC-PR-007": {
+      "file": "src/features/proposals/__tests__/approval-queue-impact.test.tsx",
+      "testName": "TC-PR-007: Counter-proposal button is absent from the queue",
+      "status": "present"
+    },
+    "TC-PR-008": {
+      "file": "src/features/proposals/__tests__/approval-queue-impact.test.tsx",
+      "testName": "TC-PR-008: impact loading shows skeleton before data resolves",
+      "status": "present"
+    },
+    "TC-PR-009": {
+      "file": "src/features/proposals/__tests__/approval-queue-impact.test.tsx",
+      "testName": "TC-PR-009: impact error hides impact line but keeps approve/reject",
+      "status": "present"
+    },
+    "TC-PR-010": {
+      "file": "src/features/proposals/__tests__/proposal.service.approve.test.ts",
+      "testName": "TC-PR-010: approving an already-approved row → ProposalNotActiveError",
+      "status": "present"
+    },
+    "TC-PR-011a": {
+      "file": "src/features/proposals/__tests__/proposal.service.resubmit.test.ts",
+      "testName": "TC-PR-011a: resubmit clones rejected row with parent_proposal_id",
+      "status": "present"
+    },
+    "TC-PR-011b": {
+      "file": "src/features/proposals/__tests__/proposal.service.resubmit.test.ts",
+      "testName": "TC-PR-011b: resubmit with edits carries overrides",
+      "status": "present"
+    },
+    "TC-PR-011c": {
+      "file": "src/features/proposals/__tests__/proposal.service.resubmit.test.ts",
+      "testName": "TC-PR-011c: resubmit on non-rejected row → INVALID_STATE",
+      "status": "present"
+    },
+    "TC-PR-011d": {
+      "file": "src/features/proposals/__tests__/proposal.service.resubmit.test.ts",
+      "testName": "TC-PR-011d: resubmit as a different user → Forbidden",
+      "status": "present"
+    },
+    "TC-PR-011e": {
+      "file": "src/features/proposals/__tests__/proposal.service.resubmit.test.ts",
+      "testName": "TC-PR-011e: change_log PROPOSAL_SUBMITTED carries resubmittedFrom",
+      "status": "present"
+    },
+    "TC-PR-012": {
+      "file": "src/features/proposals/__tests__/proposal.service.approve.test.ts",
+      "testName": "TC-PR-012: sibling supersession on approve",
+      "status": "present"
+    },
+    "TC-PR-013": {
+      "file": "src/features/proposals/__tests__/proposal.service.concurrency.test.ts",
+      "testName": "TC-PR-013: concurrent approveProposal → exactly one winner",
+      "status": "present"
+    },
+    "TC-PS-001": {
+      "file": "src/components/timeline/__tests__/line-manager-timeline-grid.test.tsx",
+      "testName": "TC-PS-001: clicking expand on a person row inserts synthetic child rows below",
+      "status": "present"
+    },
+    "TC-PS-002": {
+      "file": "src/components/timeline/__tests__/line-manager-timeline-grid.test.tsx",
+      "testName": "TC-PS-002: clicking expand a second time hides the child rows",
+      "status": "present"
+    },
+    "TC-PS-003": {
+      "file": "src/components/timeline/__tests__/line-manager-timeline-grid.test.tsx",
+      "testName": "TC-PS-003: in-dept direct edit calls onPatchAllocation with patched hours",
+      "status": "present"
+    },
+    "TC-PS-004": {
+      "file": "src/components/timeline/__tests__/line-manager-timeline-grid.test.tsx",
+      "testName": "TC-PS-004: PlanVsActualCell debounce lives in the cell (600ms) — verified indirectly via project wiring",
+      "status": "present"
+    },
+    "TC-PS-005": {
+      "file": "src/components/timeline/__tests__/line-manager-timeline-grid.test.tsx",
+      "testName": "TC-PS-005: historic month edit opens HistoricEditDialog first",
+      "status": "present"
+    },
+    "TC-PS-006": {
+      "file": "src/components/timeline/__tests__/line-manager-timeline-grid.test.tsx",
+      "testName": "TC-PS-006: historic confirm dispatches patch with confirmHistoric=true",
+      "status": "present"
+    },
+    "TC-PS-007": {
+      "file": "src/components/timeline/__tests__/line-manager-timeline-grid.test.tsx",
+      "testName": "TC-PS-007: approved-only — pending proposal hours NOT rendered in cells",
+      "status": "present"
+    },
+    "TC-PS-008": {
+      "file": "src/components/timeline/__tests__/line-manager-timeline-grid.test.tsx",
+      "testName": "TC-PS-008: expanding two persons yields 4 child rows with distinct row ids",
+      "status": "present"
+    },
+    "TC-PS-009": {
+      "file": "src/components/timeline/__tests__/line-manager-timeline-grid.test.tsx",
+      "testName": "TC-PS-009: child rows receive the lm-child-row class via rowClassRules",
+      "status": "present"
+    },
+    "TC-PS-010": {
+      "file": "src/components/timeline/__tests__/line-manager-timeline-grid.test.tsx",
+      "testName": "TC-PS-010: expand state survives a data refetch (state outside gridApi)",
+      "status": "present"
+    },
+    "TC-PSN-001": {
+      "file": "src/features/personas/__tests__/persona.context.test.tsx",
+      "testName": "TC-PSN-001: defaults to admin when localStorage is empty",
+      "status": "present"
+    },
+    "TC-PSN-003": {
+      "file": "src/features/personas/__tests__/persona.context.test.tsx",
+      "testName": "TC-PSN-003: setPersona invalidates persona-scoped query keys (incl. pm-home)",
+      "status": "present"
+    },
+    "TC-PSN-004": {
+      "file": "src/features/personas/__tests__/persona.context.test.tsx",
+      "testName": "TC-PSN-004: getLandingRoute returns the correct path for each kind",
+      "status": "present"
+    },
+    "TC-PSN-005": {
+      "file": "src/components/persona/__tests__/persona-switcher.test.tsx",
+      "testName": "TC-PSN-005: dropdown lists all 5 persona kinds",
+      "status": "present"
+    },
+    "TC-PSN-006": {
+      "file": "src/components/persona/__tests__/persona-switcher.test.tsx",
+      "testName": "TC-PSN-006: selecting a persona calls setPersona AND router.push(landingRoute)",
+      "status": "present"
+    },
+    "TC-REG-001": {
+      "file": "src/features/admin/__tests__/register.integration.test.ts",
+      "testName": "TC-REG-001 create: POST /api/v5/admin/registers/:entity",
+      "status": "present"
+    },
+    "TC-REG-002": {
+      "file": "src/features/admin/__tests__/register.integration.test.ts",
+      "testName": "TC-REG-002 update: PATCH /api/v5/admin/registers/:entity/:id",
+      "status": "present"
+    },
+    "TC-REG-003": {
+      "file": "src/features/admin/__tests__/register.dependents.test.ts",
+      "testName": "TC-REG-003 — person dependent-row blockers",
+      "status": "present"
+    },
+    "TC-REG-004": {
+      "file": "src/features/admin/__tests__/register.dependents.test.ts",
+      "testName": "TC-REG-004 — project dependent-row blockers",
+      "status": "present"
+    },
+    "TC-REG-005": {
+      "file": "src/features/admin/__tests__/register.dependents.test.ts",
+      "testName": "TC-REG-005 — department dependent-row blockers",
+      "status": "present"
+    },
+    "TC-REG-006": {
+      "file": "src/features/admin/__tests__/register.dependents.test.ts",
+      "testName": "TC-REG-006 — discipline dependent-row blockers",
+      "status": "present"
+    },
+    "TC-REG-007": {
+      "file": "src/features/admin/__tests__/register.dependents.test.ts",
+      "testName": "TC-REG-007 — program dependent-row blockers",
+      "status": "present"
+    },
+    "TC-REG-008": {
+      "file": "src/features/admin/__tests__/register.integration.test.ts",
+      "testName": "TC-REG-008 archive happy path",
+      "status": "present"
+    },
+    "TC-REG-009": {
+      "file": "src/features/admin/__tests__/register.integration.test.ts",
+      "testName": "TC-REG-009 un-archive via PATCH { archivedAt: null }",
+      "status": "present"
+    },
+    "TC-REG-010": {
+      "file": "src/features/admin/__tests__/register.integration.test.ts",
+      "testName": "TC-REG-010 audit completeness: every mutation writes exactly one change_log row",
+      "status": "present"
+    },
+    "TC-UI-001": {
+      "file": "src/components/timeline/__tests__/PlanVsActualCell.test.tsx",
+      "testName": "TC-UI-001 / TC-UI-003: read-only click fires onCellClick with context",
+      "status": "present"
+    },
+    "TC-UI-002": {
+      "file": "src/components/timeline/__tests__/PlanVsActualCell.test.tsx",
+      "testName": "TC-UI-002: 600ms debounced edit",
+      "status": "present"
+    },
+    "TC-ZOOM-001": {
+      "file": "src/components/timeline/__tests__/timeline-columns.zoom.test.ts",
+      "testName": "TC-ZOOM-001: month zoom returns 1 pinned + 12 month cols",
+      "status": "present"
+    },
+    "TC-ZOOM-002": {
+      "file": "src/components/timeline/__tests__/timeline-columns.zoom.test.ts",
+      "testName": "TC-ZOOM-002: quarter zoom returns 1 pinned + 4 quarter cols with KV labels (sv default)",
+      "status": "present"
+    },
+    "TC-ZOOM-003": {
+      "file": "src/components/timeline/__tests__/timeline-columns.zoom.test.ts",
+      "testName": "TC-ZOOM-003: year zoom returns 1 pinned + 1 year col for a single-year range",
+      "status": "present"
+    },
+    "TC-ZOOM-003b": {
+      "file": "src/components/timeline/__tests__/timeline-columns.zoom.test.ts",
+      "testName": "TC-ZOOM-003b: year zoom across two years returns two year cols",
+      "status": "present"
+    },
+    "TC-ZOOM-004": {
+      "file": "src/components/timeline/__tests__/timeline-columns.zoom.test.ts",
+      "testName": "TC-ZOOM-004: Q4-2026 column exposes underlyingMonths = Oct/Nov/Dec 2026 (TC-CAL-006 gate)",
+      "status": "present"
+    }
+  }
+}
