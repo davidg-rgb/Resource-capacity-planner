@@ -1,5 +1,20 @@
 # Phase 45 — Deferred Items
 
+## Resolution (2026-04-09, Phase 46-01)
+
+Both items below were resolved in Phase 46 Plan 01. The Phase 45 root-cause hypotheses preserved below were **disproved by source inspection** in `.planning/phases/46-playwright-e2e-and-widget-polish/46-RESEARCH.md`:
+
+- **WIDGET-01 (Department Capacity Gauges empty frame)** — NOT a nested-SVG serialization problem. Root cause: the `domToImageCapture` filter in `src/features/dashboard/pdf-export/svg-snapshot.ts` stripped every `<button>` element wholesale, and each gauge is rendered inside a `<button>` wrapper (`src/components/charts/capacity-gauges.tsx:88`) for navigation. **Fix:** Narrowed the filter so buttons/selects/`role="button"` nodes whose subtree contains `.recharts-wrapper` or `<svg>` are preserved; only buttons without chart descendants are stripped. See commit `1ed32a2`, Vitest `TC-PDF-004`.
+- **WIDGET-02 (Availability Finder shrunken ~20%)** — NOT a `react-window` / virtualization problem. The Availability Finder widget uses a plain `data.results.map(...)` (no `react-window`, no `content-visibility`). Root cause: `container.getBoundingClientRect()` read the intrinsic content width of `[data-widget-id]`, which is narrower than the stretched grid cell parent. **Fix:** `domToImageCapture` now falls back to `parentElement.getBoundingClientRect().width` when the parent is wider than the container, and temporarily sets `container.style.width` to match (restored in `finally`) so the foreignObject layout fills the allocated tile. See commit `535526f`, Vitest `TC-PDF-005`.
+
+Live mixed-widget PDF smoke re-run (all 9 widget families) is performed by the orchestrator via browser automation as a post-plan verification step — not a checkpoint in the autonomous plan. The 9/9 result table is recorded in `.planning/phases/46-playwright-e2e-and-widget-polish/46-01-SUMMARY.md` once the orchestrator confirms it.
+
+Research source: `.planning/phases/46-playwright-e2e-and-widget-polish/46-RESEARCH.md`.
+
+---
+
+## Original (pre-resolution) hypotheses — preserved for the record
+
 Items discovered during Phase 45 (LAUNCH-01 PDF export fix) that are out of scope for the launch gate and carried into Phase 46.
 
 ## For Phase 46 (Playwright E2E infra + widget rendering polish)
