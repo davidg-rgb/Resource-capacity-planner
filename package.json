@@ -11,6 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test --config=e2e/playwright.config.ts",
+    "test:e2e:ui": "playwright test --config=e2e/playwright.config.ts --ui",
     "generate:import-template": "tsx scripts/generate-import-template.ts",
     "generate:mutations-manifest": "tsx scripts/generate-mutations-manifest.ts",
     "check:mutations-manifest": "tsx scripts/generate-mutations-manifest.ts && git diff --exit-code tests/invariants/mutations.json",
@@ -62,6 +64,7 @@
   "devDependencies": {
     "@electric-sql/pglite": "^0.4.3",
     "@eslint/eslintrc": "^3.3.5",
+    "@playwright/test": "^1.59.1",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
