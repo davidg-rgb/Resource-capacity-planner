@@ -254,7 +254,7 @@ Plans:
 - [ ] 44-11-PLAN.md — Wave C5: Fill TC-PSN-* + TC-UI-* + TC-ZOOM-* + TC-MOBILE-* + TC-RD-READONLY-* (RTL component tests)
 - [ ] 44-12-PLAN.md — Wave C6: Fill TC-E2E-* Playwright flows (~12 IDs)
 - [ ] 44-13-PLAN.md — Wave C7: Fill TC-PERF-* (skip-in-CI) + TC-INV-* (flat wire shape per R2)
-- [ ] 44-14-PLAN.md — Wave D: Deterministic UUID v5 seed harness + TEST-V5-02 determinism test + TC-CL-005 runtime harness repair
+- [x] 44-14-PLAN.md — Wave D: Deterministic UUID v5 seed harness + TEST-V5-02 determinism test + TC-CL-005 runtime harness repair
 
 ### Phase 45: Launch gate — PDF export bug fix
 **Goal**: Fix the v4.0 PDF export bug (html2canvas blank for non-SVG widgets) by swapping to `html-to-image` or `modern-screenshot`. This is the launch gate for v5.0 and is separate from v5.0 feature work.
@@ -289,7 +289,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 41. Persona views Part 2 — Line Manager | v5.0 | 5/5 | Complete   | 2026-04-08 |
 | 42. Persona views Part 3 — Staff/R&D/zoom | v5.0 | 4/4 | Complete   | 2026-04-08 |
 | 43. Admin register maintenance | v5.0 | 3/4 | In Progress|  |
-| 44. API hardening + test contract fill | v5.0 | 6/14 | In Progress|  |
+| 44. API hardening + test contract fill | v5.0 | 7/14 | In Progress|  |
 | 45. Launch gate — PDF export bug fix | v5.0 | 0/0 | Not started | - |
 
 ---
