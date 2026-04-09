@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-09T11:37:19.498Z",
+  "generatedAt": "2026-04-09T11:38:14.080Z",
   "entries": {
     "TC-AC-001": {
       "file": "src/features/actuals/__tests__/upsert-actuals.contract.test.ts",
@@ -49,6 +49,11 @@
     "TC-AC-010": {
       "file": "src/features/import/__tests__/actuals-import-service.contract.test.ts",
       "testName": "TC-AC-010: re-commit of an already-committed session is refused",
+      "status": "present"
+    },
+    "TC-AC-011": {
+      "file": "src/features/actuals/__tests__/tc-ac-spec.test.ts",
+      "testName": "TC-AC-011 spec traceability (Phase 44-08)",
       "status": "present"
     },
     "TC-AC-012": {
@@ -921,6 +926,16 @@
       "testName": "TC-UI-007: TimelineGrid opens scrolled to currentMonthKey on first mount",
       "status": "present"
     },
+    "TC-UI-007a": {
+      "file": "src/components/persona/__tests__/persona.contract.test.tsx",
+      "testName": "TC-UI-007a: TimelineGrid columns — identity cols sticky leftmost, month cols chronological; order persisted to localStorage",
+      "status": "present"
+    },
+    "TC-UI-007b": {
+      "file": "src/components/persona/__tests__/persona.contract.test.tsx",
+      "testName": "TC-UI-007b: TimelineGrid restores saved column order on next mount",
+      "status": "present"
+    },
     "TC-UI-010": {
       "file": "src/components/timeline/__tests__/PlanActualCell.contract.test.tsx",
       "testName": "TC-UI-010: PlanActualCell with pendingProposal — dashed border + pending badge + old→new",
@@ -964,6 +979,46 @@
     "TC-UI-022": {
       "file": "src/components/dialogs/__tests__/HistoricEditDialog.contract.test.tsx",
       "testName": "TC-UI-022: HistoricEditDialog — on confirm, calls onConfirm with no args",
+      "status": "present"
+    },
+    "TC-UI-030": {
+      "file": "src/components/dialogs/__tests__/WishCard.contract.test.tsx",
+      "testName": "TC-UI-030: WishCard displays requester, project, person, month, current→requested values",
+      "status": "present"
+    },
+    "TC-UI-031": {
+      "file": "src/components/dialogs/__tests__/WishCard.contract.test.tsx",
+      "testName": "TC-UI-031: WishCard reject button opens dialog requiring reason ≥1 char",
+      "status": "present"
+    },
+    "TC-UI-032": {
+      "file": "src/components/dialogs/__tests__/WishCard.contract.test.tsx",
+      "testName": "TC-UI-032: WishCard approve button calls onApprove once and disables while pending",
+      "status": "present"
+    },
+    "TC-UI-040": {
+      "file": "src/components/persona/__tests__/persona.contract.test.tsx",
+      "testName": "TC-UI-040: PersonaSwitcher renders all five persona options",
+      "status": "present"
+    },
+    "TC-UI-041": {
+      "file": "src/components/persona/__tests__/persona.contract.test.tsx",
+      "testName": "TC-UI-041: PersonaSwitcher — selecting a persona triggers setPersona and router.push",
+      "status": "present"
+    },
+    "TC-UI-050": {
+      "file": "src/components/persona/__tests__/persona.contract.test.tsx",
+      "testName": "TC-UI-050: DrillDownDrawer on open fires /api/v5/actuals/daily query",
+      "status": "present"
+    },
+    "TC-UI-051": {
+      "file": "src/components/persona/__tests__/persona.contract.test.tsx",
+      "testName": "TC-UI-051: DrillDownDrawer table shows one row per day in the selected month",
+      "status": "present"
+    },
+    "TC-UI-052": {
+      "file": "src/components/persona/__tests__/persona.contract.test.tsx",
+      "testName": "TC-UI-052: DrillDownDrawer — Escape or backdrop click closes",
       "status": "present"
     },
     "TC-ZOOM-001": {
