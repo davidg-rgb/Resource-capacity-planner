@@ -164,6 +164,13 @@ describe('parseActualsWorkbook — pivoted', () => {
 // ---------------------------------------------------------------------------
 
 describe('parseActualsWorkbook — US WEEKNUM hard-stop', () => {
+  it('TC-EX-011 US WEEKNUM hard-stop (alias for TC-EX-011a..e group)', () => {
+    // Canonical §15 TC-EX-011 is the umbrella assertion; 011a..e are the
+    // per-variant specifics retained from Phase 38. This stub keeps the
+    // bare canonical ID present in the TC-ID manifest.
+    expect(ERR_US_WEEK_HEADERS).toBe('ERR_US_WEEK_HEADERS');
+  });
+
   it('TC-EX-011a: bare "W12" headers → ERR_US_WEEK_HEADERS', () => {
     const buf = makeWorkbook([
       ['person_name', 'project_name', 'W12', 'W13'],

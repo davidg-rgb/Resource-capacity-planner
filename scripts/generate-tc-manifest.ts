@@ -16,7 +16,12 @@ const TESTS_DIR_EXT = /\.(ts|tsx)$/;
 
 // Match it('TC-XXX-NNN...'), test("TC-XXX-NNN..."), describe(`TC-XXX-NNN...`)
 // Capture function name, quote, and title.
-const CALL_RE = /\b(it|test|describe)\s*\(\s*(['"`])([^'"`]*)\2/g;
+// NOTE (Phase 44-09 / Rule 1 bugfix): the previous regex used `[^'"`]*` which
+// aborted on the first inner quote of any kind, silently dropping titles like
+// `TC-EX-005: Swedish decimal "7,5" → 7.5`. The fix matches any char that
+// isn't the opening quote (via backref in a negative lookahead) and honours
+// backslash escapes.
+const CALL_RE = /\b(it|test|describe)\s*\(\s*(['"`])((?:\\.|(?!\2).)*)\2/g;
 const FIRST_TC_RE = /^(TC-[A-Z]+(?:-[A-Z]+)*-\d+[a-z]?)\b/;
 const VALID_RE = /^TC-[A-Z]+(?:-[A-Z]+)*-\d+[a-z]?$/;
 
