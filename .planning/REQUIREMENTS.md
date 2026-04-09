@@ -80,7 +80,7 @@ Architecture frozen — each requirement traces to architecture sections and the
 
 ### API Contract (API-V5)
 
-- [ ] **API-V5-01**: All new endpoints live under `/api/v5/*` (proposals, actuals, imports, change-log, register) and return AppError hierarchy with consistent error codes
+- [x] **API-V5-01**: All new endpoints live under `/api/v5/*` (proposals, actuals, imports, change-log, register) and return AppError hierarchy with consistent error codes
 - [x] **API-V5-02**: Every mutating endpoint tenant-scoped via existing `withTenant()` ORM wrapper; no cross-tenant reads
 
 ### Testable Functional Contract (TEST-V5)
