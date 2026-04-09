@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Plan vs Actual + Approval Workflow
-status: executing
-stopped_at: Completed 44-14-PLAN.md
+status: ready
+stopped_at: Completed phase 44 (14/14 plans + verification)
 last_updated: "2026-04-09T11:39:42.819Z"
 last_activity: 2026-04-09
 progress:
@@ -27,16 +27,21 @@ Planning artifacts (frozen):
 - .planning/ROADMAP.md (v5.0 phases 33-45)
 
 **Core value:** Plan vs actual comparison + proposal/approval workflow + persona-scoped views — stop being a fancier Excel, start being a workflow tool.
-**Current focus:** Phase 44 — api-hardening-and-test-contract-fill
+**Current focus:** Phase 45 — Launch gate (PDF export bug fix)
 
 ## Current Position
 
-Phase: 44 (api-hardening-and-test-contract-fill) — EXECUTING
-Plan: 4 of 14
-Status: Ready to execute
+Phase: 45 (launch-gate-pdf-export) — NEXT
+Last shipped: Phase 44 (API hardening + test contract fill) — 14/14 plans, verified APPROVED-WITH-DEFERRALS on 2026-04-09
 Last activity: 2026-04-09
 
-Phases 39, 42, 43 all complete on disk and verified. Phase 44 absorbs the TC-CL-005 runtime invariant harness repair deferred from Phase 43 (see .planning/phases/43-admin-register-maintenance/deferred-items.md). Phase 45 (PDF export launch gate) follows 44.
+Phase 44 results:
+- 696/696 tests passing (+229 since baseline 467/473; 6 pre-existing TC-CL-005 failures now green)
+- AppError taxonomy: 8 codes, 7 subclasses, ESLint guard active, TC-INV-ERRTAX + TC-INV-ERRWIRE passing
+- Tenant isolation: static audit + runtime prober. Wave 2 surfaced and fixed 2 real security bugs (proposals 409→404 leak, register cross-tenant FK poisoning)
+- TC-ID coverage gate green (3/3 invariants). 285 canonical TC-IDs; Wave 4 landed service/component tests
+- Deferred: TC-E2E-* (12 IDs) → Phase 46 (Playwright infra). TC-NEG-* (13 IDs) → labeling-only gap, mitigating coverage already in place
+- Latent bugs fixed in scripts/generate-tc-manifest.ts and scripts/extract-tc-ids-from-architecture.ts regex
 
 ## v5.0 Phase Status
 
@@ -53,7 +58,7 @@ Phases 39, 42, 43 all complete on disk and verified. Phase 44 absorbs the TC-CL-
 | 41 | Persona views Part 2 — Line Manager | Not started |
 | 42 | Persona views Part 3 — Staff, R&D, drill-down, zoom | Not started |
 | 43 | Admin register maintenance | Not started |
-| 44 | API hardening + test contract fill | Not started |
+| 44 | API hardening + test contract fill | Complete (APPROVED-WITH-DEFERRALS, 2026-04-09) |
 | 45 | Launch gate — PDF export bug fix | Not started |
 
 ## Previous Milestones

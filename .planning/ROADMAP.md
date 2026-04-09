@@ -77,7 +77,7 @@
  (completed 2026-04-08)
 - [x] **Phase 42: Persona views Part 3 — Staff, R&D, drill-down, long-horizon zoom** — Staff schedule, R&D portfolio, shared drill-down drawer, zoom levels (completed 2026-04-08)
 - [x] **Phase 43: Admin register maintenance** — Self-service CRUD with archive, dependent-row blocking, change-log feed landing (completed 2026-04-08)
-- [ ] **Phase 44: API hardening + test contract fill** — Every TC-* assertion from §15 has a passing automated test; AppError taxonomy coverage
+- [x] **Phase 44: API hardening + test contract fill** — Every TC-* assertion from §15 has a passing automated test; AppError taxonomy coverage (completed 2026-04-09, APPROVED-WITH-DEFERRALS; TC-E2E Playwright infra deferred to Phase 46)
 - [ ] **Phase 45: Launch gate — PDF export bug fix** — Swap html2canvas for html-to-image / modern-screenshot (LAUNCH-01); blocks v5.0 launch
 
 ## Phase Details
