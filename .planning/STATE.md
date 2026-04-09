@@ -3,8 +3,8 @@ gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Plan vs Actual + Approval Workflow
 status: in-progress
-stopped_at: Completed 46-01-PLAN.md (WIDGET-01 + WIDGET-02 fixed, 11/11 pdf-export tests green, 707/707 full suite)
-last_updated: "2026-04-09T19:30:00.000Z"
+stopped_at: Completed 47-10-PLAN.md (TC-E2E deferral closed, tc-manifest generator widened for e2e specs, 714/714 vitest green)
+last_updated: "2026-04-09T22:30:00.000Z"
 last_activity: 2026-04-09
 progress:
   total_phases: 3
@@ -27,13 +27,21 @@ Planning artifacts (frozen):
 - .planning/ROADMAP.md (v5.0 phases 33-45)
 
 **Core value:** Plan vs actual comparison + proposal/approval workflow + persona-scoped views — stop being a fancier Excel, start being a workflow tool.
-**Current focus:** Phase 47 — Playwright E2E infrastructure (TC-E2E-* from §15.13)
+**Current focus:** Phase 47 complete — awaiting `/gsd:verify-work`
 
 ## Current Position
 
-Phase: 47 (playwright-e2e-infra) — NEXT
-Last shipped: Phase 46 (PDF widget rendering polish) — APPROVED on 2026-04-09. ALL 9/9 widgets render correctly in PDF export
+Phase: 47 (playwright-e2e-infra) — 47-10 shipped; run `/gsd:verify-work` to close
+Last shipped: Phase 47 Plan 10 (TC-E2E deferral closed) — 2026-04-09
 Last activity: 2026-04-09
+
+Phase 47-10 results:
+- scripts/generate-tc-manifest.ts widened: added `e2e` to ROOTS, regex now accepts alphanumeric prefix segments and `-approve`/`-reject` tail suffixes (TC-E2E-* grammar)
+- tc-manifest.json regenerated: 280 → 292 entries, all 12 canonical TC-E2E-* IDs present with e2e/**/*.spec.ts sources
+- tc-allowlist.json: removed 12 TC-E2E entries, dropped groups.TC-E2E and reasons.TC-E2E (TC-NEG deferral preserved)
+- tc-id-coverage invariant 3/3 green; full vitest suite 714/714 green; typecheck clean
+- Commits: 159b457, 81abdbe
+- Phase 44-12's remaining deferral is now closed
 
 Phase 46 results:
 - Department Capacity Gauges FIXED: button-preservation filter (preserve buttons containing recharts/svg)
@@ -78,6 +86,7 @@ Phase 44 results:
 | 44 | API hardening + test contract fill | Complete (APPROVED-WITH-DEFERRALS, 2026-04-09) |
 | 45 | Launch gate — PDF export bug fix | Complete (LAUNCH-01-WITH-DEFERRALS, 2026-04-09) |
 | 46 | Playwright E2E infra + widget rendering polish | In progress (46-01 complete 2026-04-09, widget polish shipped) |
+| 47 | Playwright E2E infrastructure (TC-E2E-* coverage) | 47-10 complete 2026-04-09; awaiting `/gsd:verify-work` |
 
 ## Previous Milestones
 
@@ -113,8 +122,8 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-09T19:30:00.000Z
-Stopped at: Completed 46-01-PLAN.md (WIDGET-01 + WIDGET-02 fixed, 11/11 pdf-export tests green, 707/707 full suite, orchestrator smoke re-run pending)
+Last session: 2026-04-09T22:30:00.000Z
+Stopped at: Completed 47-10-PLAN.md (TC-E2E deferral closed, tc-manifest generator widened for e2e specs, 714/714 vitest green, tc-id-coverage 3/3 green)
 
 ---
 
