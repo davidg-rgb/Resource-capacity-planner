@@ -9,7 +9,7 @@ import { readFileSync, writeFileSync, readdirSync, statSync, mkdirSync } from 'n
 import { dirname, join, relative, sep } from 'node:path';
 
 const OUT_PATH = '.planning/test-contract/tc-manifest.json';
-const ROOTS = ['tests', 'src'];
+const ROOTS = ['tests', 'src', 'e2e'];
 
 const TEST_EXT = /\.(test|spec)\.(ts|tsx)$/;
 const TESTS_DIR_EXT = /\.(ts|tsx)$/;
@@ -21,9 +21,14 @@ const TESTS_DIR_EXT = /\.(ts|tsx)$/;
 // `TC-EX-005: Swedish decimal "7,5" → 7.5`. The fix matches any char that
 // isn't the opening quote (via backref in a negative lookahead) and honours
 // backslash escapes.
+// NOTE (Phase 47-10 / Rule 2): extended TC-ID grammar to support Playwright
+// `TC-E2E-*` IDs from ARCHITECTURE §15.13, which use:
+//   - alphanumeric prefix segments (`E2E` has a digit in the middle)
+//   - uppercase trailing suffix (`TC-E2E-1A`, not just `1a`)
+//   - optional lowercase tail suffix (`TC-E2E-2B-approve`, `TC-E2E-2B-reject`)
 const CALL_RE = /\b(it|test|describe)\s*\(\s*(['"`])((?:\\.|(?!\2).)*)\2/g;
-const FIRST_TC_RE = /^(TC-[A-Z]+(?:-[A-Z]+)*-\d+[a-z]?)\b/;
-const VALID_RE = /^TC-[A-Z]+(?:-[A-Z]+)*-\d+[a-z]?$/;
+const FIRST_TC_RE = /^(TC-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d+[A-Za-z]?(?:-[a-z]+)?)\b/;
+const VALID_RE = /^TC-[A-Z0-9]+(?:-[A-Z0-9]+)*-\d+[A-Za-z]?(?:-[a-z]+)?$/;
 
 interface ManifestEntry {
   file: string;
@@ -55,6 +60,7 @@ function walk(dir: string, acc: string[] = []): string[] {
 
 function isTestFile(path: string, root: string): boolean {
   if (root === 'tests') return TESTS_DIR_EXT.test(path);
+  if (root === 'e2e') return TEST_EXT.test(path);
   // src/** only counts *.test.* / *.spec.*
   return TEST_EXT.test(path);
 }

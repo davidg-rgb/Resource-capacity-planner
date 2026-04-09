@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-09T11:45:40.643Z",
+  "generatedAt": "2026-04-09T20:28:07.005Z",
   "entries": {
     "TC-AC-001": {
       "file": "src/features/actuals/__tests__/upsert-actuals.contract.test.ts",
@@ -471,6 +471,66 @@
       "testName": "TC-DB-010: Phase 35 change_log table is still intact",
       "status": "present"
     },
+    "TC-E2E-1A": {
+      "file": "e2e/pm/monday-checkin.spec.ts",
+      "testName": "TC-E2E-1A: Anna sees project overview, timeline, and drill-down drawer",
+      "status": "present"
+    },
+    "TC-E2E-1B": {
+      "file": "e2e/pm/submit-wish.spec.ts",
+      "testName": "TC-E2E-1B: Anna submits a wish and sees toast confirmation",
+      "status": "present"
+    },
+    "TC-E2E-1C": {
+      "file": "e2e/pm/rejected-resubmit.spec.ts",
+      "testName": "TC-E2E-1C: Anna sees the seeded rejected wish (Sara/Nordlys/2026-06) and can resubmit",
+      "status": "present"
+    },
+    "TC-E2E-1D": {
+      "file": "e2e/pm/historic-edit.spec.ts",
+      "testName": "TC-E2E-1D: Anna edits a historic allocation via HistoricEditDialog, change_log row asserted",
+      "status": "present"
+    },
+    "TC-E2E-2A": {
+      "file": "src/features/planning/__tests__/line-manager.e2e.test.ts",
+      "testName": "TC-E2E-2A — load-bearing gate (D-21): Per switches to line-manager",
+      "status": "present"
+    },
+    "TC-E2E-2B-approve": {
+      "file": "e2e/line-manager/approve.spec.ts",
+      "testName": "TC-E2E-2B-approve: approving a proposal flips status and writes change_log",
+      "status": "present"
+    },
+    "TC-E2E-2B-reject": {
+      "file": "e2e/line-manager/reject.spec.ts",
+      "testName": "TC-E2E-2B-reject: rejecting requires a reason before submit",
+      "status": "present"
+    },
+    "TC-E2E-2C": {
+      "file": "e2e/line-manager/direct-edit.spec.ts",
+      "testName": "TC-E2E-2C: direct edit of an allocation persists and writes change_log",
+      "status": "present"
+    },
+    "TC-E2E-2D": {
+      "file": "e2e/line-manager/import.spec.ts",
+      "testName": "TC-E2E-2D: import xlsx shows preview and rollback works within window",
+      "status": "present"
+    },
+    "TC-E2E-3A": {
+      "file": "src/features/planning/__tests__/staff.e2e.test.ts",
+      "testName": "TC-E2E-3A — Sara switches to staff, /staff happy path",
+      "status": "present"
+    },
+    "TC-E2E-4A": {
+      "file": "src/features/planning/__tests__/rd.e2e.test.ts",
+      "testName": "TC-E2E-4A — R&D portfolio happy path",
+      "status": "present"
+    },
+    "TC-E2E-4B": {
+      "file": "e2e/rd/overcommit-drill.spec.ts",
+      "testName": "TC-E2E-4B: clicking a red cell opens a drill-down dialog",
+      "status": "present"
+    },
     "TC-EX-001": {
       "file": "src/features/import/parsers/__tests__/actuals-excel.parser.test.ts",
       "testName": "TC-EX-001: row-per-entry headers → row-per-entry",
@@ -704,6 +764,16 @@
     "TC-NEG-013": {
       "file": "src/features/personas/__tests__/line-manager-route-guard.negative.test.tsx",
       "testName": "TC-NEG-013 — PM persona attempting /line-manager/*",
+      "status": "present"
+    },
+    "TC-PDF-004": {
+      "file": "src/features/dashboard/pdf-export/__tests__/svg-snapshot.test.ts",
+      "testName": "TC-PDF-004: gauge button filter",
+      "status": "present"
+    },
+    "TC-PDF-005": {
+      "file": "src/features/dashboard/pdf-export/__tests__/svg-snapshot.test.ts",
+      "testName": "TC-PDF-005: max-height cap",
       "status": "present"
     },
     "TC-PERF-001": {
