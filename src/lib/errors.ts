@@ -89,3 +89,78 @@ export class InternalError extends AppError {
     super(message, 'ERR_INTERNAL', 500);
   }
 }
+
+// v5.0 / Phase 44 — 7 additional documented AppError subclasses required by
+// API-V5-01. Codes re-exported via the ./errors/codes barrel.
+import {
+  HISTORIC_CONFIRM_REQUIRED,
+  BAD_HOURS,
+  REASON_REQUIRED,
+  BATCH_ALREADY_ROLLED_BACK,
+  ROLLBACK_WINDOW_EXPIRED,
+  DEPENDENT_ROWS_EXIST,
+  ERR_US_WEEK_HEADERS,
+} from './errors/codes';
+
+export class HistoricConfirmRequiredError extends AppError {
+  constructor(
+    message = 'Historic edit requires explicit confirmation',
+    details?: Record<string, unknown>,
+  ) {
+    super(message, HISTORIC_CONFIRM_REQUIRED, 409, details);
+  }
+}
+
+export class BadHoursError extends AppError {
+  constructor(
+    message = 'Hours value out of allowed range',
+    details?: Record<string, unknown>,
+  ) {
+    super(message, BAD_HOURS, 400, details);
+  }
+}
+
+export class ReasonRequiredError extends AppError {
+  constructor(
+    message = 'A reason is required for this action',
+    details?: Record<string, unknown>,
+  ) {
+    super(message, REASON_REQUIRED, 400, details);
+  }
+}
+
+export class BatchAlreadyRolledBackError extends AppError {
+  constructor(
+    message = 'Import batch has already been rolled back',
+    details?: Record<string, unknown>,
+  ) {
+    super(message, BATCH_ALREADY_ROLLED_BACK, 409, details);
+  }
+}
+
+export class RollbackWindowExpiredError extends AppError {
+  constructor(
+    message = 'Rollback window has expired for this batch',
+    details?: Record<string, unknown>,
+  ) {
+    super(message, ROLLBACK_WINDOW_EXPIRED, 409, details);
+  }
+}
+
+export class DependentRowsExistError extends AppError {
+  constructor(
+    message = 'Cannot archive: dependent rows exist',
+    details?: Record<string, unknown>,
+  ) {
+    super(message, DEPENDENT_ROWS_EXIST, 409, details);
+  }
+}
+
+export class UsWeekHeadersError extends AppError {
+  constructor(
+    message = 'Excel import uses US week headers instead of ISO 8601',
+    details?: Record<string, unknown>,
+  ) {
+    super(message, ERR_US_WEEK_HEADERS, 400, details);
+  }
+}
