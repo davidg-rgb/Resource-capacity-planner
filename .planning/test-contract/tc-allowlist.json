@@ -1,5 +1,5 @@
 {
-  "note": "Each Wave C plan (44-07..44-13) removes its prefix group from this list as it lands. Final state: empty array.",
+  "note": "Each Wave C plan (44-07..44-13) removes its prefix group from this list as it lands. Final state: empty array, except for groups with a documented deferral reason below.",
   "stillMissing": [
     "TC-NEG-001",
     "TC-NEG-002",
@@ -13,7 +13,19 @@
     "TC-NEG-010",
     "TC-NEG-011",
     "TC-NEG-012",
-    "TC-NEG-014"
+    "TC-NEG-014",
+    "TC-E2E-1A",
+    "TC-E2E-1B",
+    "TC-E2E-1C",
+    "TC-E2E-1D",
+    "TC-E2E-2A",
+    "TC-E2E-2B-approve",
+    "TC-E2E-2B-reject",
+    "TC-E2E-2C",
+    "TC-E2E-2D",
+    "TC-E2E-3A",
+    "TC-E2E-4A",
+    "TC-E2E-4B"
   ],
   "groups": {
     "TC-NEG": [
@@ -30,6 +42,29 @@
       "TC-NEG-011",
       "TC-NEG-012",
       "TC-NEG-014"
+    ],
+    "TC-E2E": [
+      "TC-E2E-1A",
+      "TC-E2E-1B",
+      "TC-E2E-1C",
+      "TC-E2E-1D",
+      "TC-E2E-2A",
+      "TC-E2E-2B-approve",
+      "TC-E2E-2B-reject",
+      "TC-E2E-2C",
+      "TC-E2E-2D",
+      "TC-E2E-3A",
+      "TC-E2E-4A",
+      "TC-E2E-4B"
     ]
+  },
+  "reasons": {
+    "TC-E2E": {
+      "status": "deferred",
+      "decidedIn": "44-12",
+      "decidedOn": "2026-04-09",
+      "rationale": "Playwright E2E tier not yet stood up in this repo. Standing up browser infra (Playwright install, CI runner, persistent test DB bootstrap, persona switching harness) is a multi-day effort and out of scope for Phase 44 ('API hardening and test contract fill'). Static coverage of the underlying flows is already provided by service-layer tests in the TC-PR-*, TC-IMP-*, TC-CL-*, and TC-REG-* groups landed earlier in this phase.",
+      "followUp": "Tentatively Phase 46 — dedicated 'Playwright E2E infrastructure' phase. Scope: install @playwright/test, add CI job, build fixture/persona bootstrap, then port the 12 TC-E2E-* flows from ARCHITECTURE §15.13 into e2e/**/*.spec.ts."
+    }
   }
 }
