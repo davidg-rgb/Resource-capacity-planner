@@ -80,7 +80,7 @@
 - [x] **Phase 44: API hardening + test contract fill** — Every TC-* assertion from §15 has a passing automated test; AppError taxonomy coverage (completed 2026-04-09, APPROVED-WITH-DEFERRALS; TC-E2E Playwright infra deferred to Phase 46)
 - [x] **Phase 45: Launch gate — PDF export bug fix** — Swapped html2canvas for html-to-image@^1.11.13; 7/9 widget families fixed; 2 residuals (Department Capacity Gauges, Availability Finder) deferred to Phase 46 (completed 2026-04-09 LAUNCH-01-WITH-DEFERRALS)
 - [x] **Phase 46: PDF widget rendering polish** — Capacity Gauges (button-filter preservation) + Availability Finder (capture height cap + chartImage maxHeight 350→600). All 9/9 widgets render correctly. Playwright E2E split to Phase 47. (completed 2026-04-09 APPROVED)
-- [ ] **Phase 47: Playwright E2E infrastructure** — Stand up @playwright/test, write 12 TC-E2E-* flows from §15.13, Clerk testing tokens, persona harness via localStorage
+- [x] **Phase 47: Playwright E2E infrastructure** — @playwright/test installed, NODE_ENV=test Clerk bypass, nc_e2e database bootstrap, /api/test/seed triple-gated route, persona harness, 12 TC-E2E-* spec files, CI extended with Vitest + Playwright jobs, TC-E2E deferral closed. (completed 2026-04-09, APPROVED)
 
 ## Phase Details
 

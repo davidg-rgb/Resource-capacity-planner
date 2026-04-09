@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Plan vs Actual + Approval Workflow
-status: in-progress
-stopped_at: Completed 47-10-PLAN.md (TC-E2E deferral closed, tc-manifest generator widened for e2e specs, 714/714 vitest green)
+status: ready
+stopped_at: Completed phase 47 (10/10 plans, APPROVED, 12 TC-E2E specs + CI + allowlist closed)
 last_updated: "2026-04-09T22:30:00.000Z"
 last_activity: 2026-04-09
 progress:
@@ -27,12 +27,12 @@ Planning artifacts (frozen):
 - .planning/ROADMAP.md (v5.0 phases 33-45)
 
 **Core value:** Plan vs actual comparison + proposal/approval workflow + persona-scoped views — stop being a fancier Excel, start being a workflow tool.
-**Current focus:** Phase 47 complete — awaiting `/gsd:verify-work`
+**Current focus:** v5.0 fully shipped + hardened; no next phase scheduled
 
 ## Current Position
 
-Phase: 47 (playwright-e2e-infra) — 47-10 shipped; run `/gsd:verify-work` to close
-Last shipped: Phase 47 Plan 10 (TC-E2E deferral closed) — 2026-04-09
+Phase: 47 (playwright-e2e-infra) — COMPLETE, APPROVED on 2026-04-09
+Last shipped: Phase 47 (10 plans, full Playwright E2E infra + 12 TC-E2E specs + CI extension + allowlist cleanup)
 Last activity: 2026-04-09
 
 Phase 47-10 results:
@@ -86,7 +86,7 @@ Phase 44 results:
 | 44 | API hardening + test contract fill | Complete (APPROVED-WITH-DEFERRALS, 2026-04-09) |
 | 45 | Launch gate — PDF export bug fix | Complete (LAUNCH-01-WITH-DEFERRALS, 2026-04-09) |
 | 46 | Playwright E2E infra + widget rendering polish | In progress (46-01 complete 2026-04-09, widget polish shipped) |
-| 47 | Playwright E2E infrastructure (TC-E2E-* coverage) | 47-10 complete 2026-04-09; awaiting `/gsd:verify-work` |
+| 47 | Playwright E2E infrastructure (TC-E2E-* coverage) | Complete (APPROVED, 2026-04-09) |
 
 ## Previous Milestones
 
