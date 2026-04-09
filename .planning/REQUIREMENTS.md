@@ -85,7 +85,7 @@ Architecture frozen — each requirement traces to architecture sections and the
 
 ### Testable Functional Contract (TEST-V5)
 
-- [ ] **TEST-V5-01**: ~280 assertions from ARCHITECTURE.md §15 (TC-CAL-*, TC-PS-*, TC-PR-*, TC-AC-*, TC-IMP-*, TC-API-*, TC-UI-*, TC-E2E-*, TC-NEG-*, TC-PERF-*, TC-REG-*, TC-PSN-*, TC-ZOOM-*, TC-CL-*) have corresponding automated tests that pass before launch — each phase's DoD points at its test IDs
+- [x] **TEST-V5-01**: ~280 assertions from ARCHITECTURE.md §15 (TC-CAL-*, TC-PS-*, TC-PR-*, TC-AC-*, TC-IMP-*, TC-API-*, TC-UI-*, TC-E2E-*, TC-NEG-*, TC-PERF-*, TC-REG-*, TC-PSN-*, TC-ZOOM-*, TC-CL-*) have corresponding automated tests that pass before launch — each phase's DoD points at its test IDs
 - [ ] **TEST-V5-02**: Deterministic UUID v5 seed data (ARCHITECTURE.md §16) produces identical fixtures across runs for integration tests
 
 ### Launch Gate (LAUNCH) — separate from v5.0 feature work
