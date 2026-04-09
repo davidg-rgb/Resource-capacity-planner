@@ -8,7 +8,11 @@ export default defineConfig({
     },
   },
   test: {
-    include: ['src/**/__tests__/**/*.test.{ts,tsx}', 'tests/invariants/**/*.test.{ts,tsx}'],
+    include: [
+      'src/**/__tests__/**/*.test.{ts,tsx}',
+      'tests/invariants/**/*.test.{ts,tsx}',
+      'tests/fixtures/**/*.test.{ts,tsx}',
+    ],
     passWithNoTests: true,
     environmentMatchGlobs: [
       ['**/*.test.tsx', 'jsdom'],
