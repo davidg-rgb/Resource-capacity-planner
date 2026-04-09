@@ -1,9 +1,12 @@
 // TEST-ONLY ROUTE — Phase 47-04.
 //
 // Triple-gated so it is impossible to hit in production:
-//   1. MODULE-LEVEL throw if NODE_ENV === 'production' AND E2E_TEST !== '1'.
-//      next build imports route handlers to inspect their exports — if this
-//      file is ever part of a prod bundle, `next build` crashes loudly.
+//   1. HANDLER-ENTRY throw if NODE_ENV === 'production' AND E2E_TEST !== '1'.
+//      Originally this was a module-level throw, but Next.js's "collect page
+//      data" build step instantiates route modules and that crashed `next
+//      build` on Vercel (47-04-SUMMARY documented this exact fallback).
+//      Moved into POST() so the route can exist in the bundle but is
+//      unreachable at runtime in prod.
 //   2. Runtime 404 if E2E_SEED_ENABLED !== '1' — defense in depth so a stray
 //      NODE_ENV=test process in a shared environment still can't be reset
 //      without explicit opt-in.
@@ -13,17 +16,11 @@
 //      environment (proxy.ts only bypasses Clerk when NODE_ENV=test or
 //      E2E_TEST=1 is already set).
 //
-// A fourth gate — static invariant test — asserts the route is absent from
-// the .next/ production build output
+// A fourth gate — static invariant test — asserts the production-mode throw
+// string is present in the source
 // (tests/invariants/no-test-routes-in-prod.test.ts).
 //
 // ADR-004: this route exists ONLY for the E2E test tier.
-
-if (process.env.NODE_ENV === 'production' && process.env.E2E_TEST !== '1') {
-  throw new Error(
-    '[api/test/seed] test-only route imported in production build',
-  );
-}
 
 import { randomUUID } from 'node:crypto';
 
@@ -73,6 +70,16 @@ function abbrFor(name: string): string {
 }
 
 export async function POST(): Promise<Response> {
+  // Gate 1: hard production block — moved here from module scope so the file
+  // can be present in the build bundle without crashing `next build`'s
+  // page-data collection step. The throw string is asserted by the
+  // no-test-routes-in-prod static invariant.
+  if (process.env.NODE_ENV === 'production' && process.env.E2E_TEST !== '1') {
+    throw new Error(
+      '[api/test/seed] test-only route imported in production build',
+    );
+  }
+  // Gate 2: runtime opt-in.
   if (process.env.E2E_SEED_ENABLED !== '1') {
     return new NextResponse(null, { status: 404 });
   }
