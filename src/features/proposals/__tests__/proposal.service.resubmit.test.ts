@@ -140,7 +140,7 @@ async function createThenReject() {
   return created;
 }
 
-describe('TC-PR-011a: resubmit clones rejected row with parent_proposal_id', () => {
+describe('TC-PR-011: resubmit clones rejected row with parent_proposal_id', () => {
   it('creates a new proposed row and leaves the original rejected row untouched', async () => {
     const parent = await createThenReject();
 
