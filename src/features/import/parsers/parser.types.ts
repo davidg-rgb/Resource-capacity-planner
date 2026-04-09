@@ -42,6 +42,15 @@ export const ERR_US_WEEK_HEADERS = 'ERR_US_WEEK_HEADERS' as const;
 /** Hard-stop: sheet headers match neither the row-per-entry nor pivoted layout. */
 export const ERR_UNKNOWN_LAYOUT = 'ERR_UNKNOWN_LAYOUT' as const;
 
+/** Hard-stop (Phase 44-09 / TC-IMP-011): pivoted sheet mixes grain kinds. */
+export const ERR_MIXED_GRAIN_PIVOT = 'ERR_MIXED_GRAIN_PIVOT' as const;
+
+/** Preview-surfaced count: hidden source rows silently skipped. TC-IMP-007 / TC-IMP-014. */
+export const HIDDEN_ROWS_SKIPPED = 'HIDDEN_ROWS_SKIPPED' as const;
+
+/** Preview-surfaced count: merged cells forward-filled in person/project columns. TC-IMP-008. */
+export const MERGED_CELLS_FORWARD_FILLED = 'MERGED_CELLS_FORWARD_FILLED' as const;
+
 /** Row-level warning: hours cell was NaN, zero, or negative. Row is skipped. */
 export const ERR_BAD_HOURS = 'ERR_BAD_HOURS' as const;
 
@@ -57,11 +66,16 @@ export const MONTH_GRAIN_PENDING_DISTRIBUTION = 'MONTH_GRAIN_PENDING_DISTRIBUTIO
 /** Sheet parsed successfully but contained no data rows after the header. */
 export const EMPTY_SHEET = 'EMPTY_SHEET' as const;
 
-export type ParseErrorCode = typeof ERR_US_WEEK_HEADERS | typeof ERR_UNKNOWN_LAYOUT;
+export type ParseErrorCode =
+  | typeof ERR_US_WEEK_HEADERS
+  | typeof ERR_UNKNOWN_LAYOUT
+  | typeof ERR_MIXED_GRAIN_PIVOT;
 
 export type ParseWarningCode =
   | typeof ERR_BAD_HOURS
   | typeof ERR_BAD_DATE
   | typeof WEEK_GRAIN_PENDING_DISTRIBUTION
   | typeof MONTH_GRAIN_PENDING_DISTRIBUTION
-  | typeof EMPTY_SHEET;
+  | typeof EMPTY_SHEET
+  | typeof HIDDEN_ROWS_SKIPPED
+  | typeof MERGED_CELLS_FORWARD_FILLED;

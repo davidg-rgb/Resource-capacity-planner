@@ -24,6 +24,7 @@ import {
   EMPTY_SHEET,
   ERR_BAD_DATE,
   ERR_BAD_HOURS,
+  ERR_MIXED_GRAIN_PIVOT,
   ERR_UNKNOWN_LAYOUT,
   ERR_US_WEEK_HEADERS,
   MONTH_GRAIN_PENDING_DISTRIBUTION,
@@ -66,10 +67,18 @@ function isoMondayString(isoYear: number, isoWeek: number): string {
 // Column alias maps for row-per-entry layout detection
 // ---------------------------------------------------------------------------
 
-const PERSON_ALIASES = new Set(['person_name', 'person', 'namn', 'name']);
+// Phase 44-09 / TC-IMP-013, 013b, 013c — Swedish column synonym coverage.
+const PERSON_ALIASES = new Set([
+  'person_name',
+  'person',
+  'namn',
+  'name',
+  'medarbetare',
+  'anställd',
+]);
 const PROJECT_ALIASES = new Set(['project_name', 'project', 'projekt']);
-const DATE_ALIASES = new Set(['date', 'datum']);
-const HOURS_ALIASES = new Set(['hours', 'timmar', 'tid']);
+const DATE_ALIASES = new Set(['date', 'datum', 'dag']);
+const HOURS_ALIASES = new Set(['hours', 'timmar', 'tid', 'tim', 'h', 'timme']);
 
 // ---------------------------------------------------------------------------
 // Header classification
@@ -338,6 +347,24 @@ export function parsePivoted(rows: unknown[][]): {
   const dateCols = headers.slice(2);
 
   assertNoUsWeekHeaders(headers, dateCols);
+
+  // Phase 44-09 / TC-IMP-011: reject pivoted sheets that mix grain kinds
+  // (e.g. one column is an ISO-week and another is an ISO-month). US_WEEK
+  // detection above takes precedence per TC-IMP-012 (checked first).
+  {
+    const kinds = new Set<string>();
+    for (const h of dateCols) {
+      const k = classifyHeader(h);
+      if (k === 'date' || k === 'iso-week' || k === 'iso-month') kinds.add(k);
+    }
+    if (kinds.size > 1) {
+      throw new ValidationError(
+        `Mixed grain in pivoted sheet: ${[...kinds].join(', ')}. Use a single grain per sheet.`,
+        ERR_MIXED_GRAIN_PIVOT,
+        { grainsFound: [...kinds] },
+      );
+    }
+  }
 
   const out: ParsedRow[] = [];
   const warnings: ParseWarning[] = [];

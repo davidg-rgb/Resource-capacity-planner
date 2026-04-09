@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-09T11:39:44.855Z",
+  "generatedAt": "2026-04-09T11:40:48.300Z",
   "entries": {
     "TC-AC-001": {
       "file": "src/features/actuals/__tests__/upsert-actuals.contract.test.ts",
@@ -571,6 +571,86 @@
       "testName": "TC-IMP-002: previewStagedBatch returns counts",
       "status": "present"
     },
+    "TC-IMP-003": {
+      "file": "src/features/import/__tests__/tc-imp-contract.test.ts",
+      "testName": "TC-IMP-003 supersession chain",
+      "status": "present"
+    },
+    "TC-IMP-004": {
+      "file": "src/features/import/__tests__/tc-imp-contract.test.ts",
+      "testName": "TC-IMP-004 rolling back superseded batch is refused",
+      "status": "present"
+    },
+    "TC-IMP-005": {
+      "file": "src/features/import/__tests__/tc-imp-contract.test.ts",
+      "testName": "TC-IMP-005 rolling back a partially skipped batch",
+      "status": "present"
+    },
+    "TC-IMP-006": {
+      "file": "src/features/import/__tests__/tc-imp-contract.test.ts",
+      "testName": "TC-IMP-006 Sunday-start / US-week pivot hard-stop",
+      "status": "present"
+    },
+    "TC-IMP-007": {
+      "file": "src/features/import/__tests__/tc-imp-contract.test.ts",
+      "testName": "TC-IMP-007 hidden rows skipped counter",
+      "status": "present"
+    },
+    "TC-IMP-008": {
+      "file": "src/features/import/__tests__/tc-imp-contract.test.ts",
+      "testName": "TC-IMP-008 merged cells forward filled counter",
+      "status": "present"
+    },
+    "TC-IMP-009": {
+      "file": "src/features/import/__tests__/tc-imp-contract.test.ts",
+      "testName": "TC-IMP-009 source row index preservation",
+      "status": "present"
+    },
+    "TC-IMP-010": {
+      "file": "src/features/import/__tests__/tc-imp-contract.test.ts",
+      "testName": "TC-IMP-010 v5.0 matcher threshold spec",
+      "status": "present"
+    },
+    "TC-IMP-011": {
+      "file": "src/features/import/__tests__/tc-imp-contract.test.ts",
+      "testName": "TC-IMP-011 mixed-grain pivoted sheet",
+      "status": "present"
+    },
+    "TC-IMP-012": {
+      "file": "src/features/import/__tests__/tc-imp-contract.test.ts",
+      "testName": "TC-IMP-012 US_WEEK takes priority over MIXED_GRAIN",
+      "status": "present"
+    },
+    "TC-IMP-013": {
+      "file": "src/features/import/__tests__/tc-imp-contract.test.ts",
+      "testName": "TC-IMP-013 hours column synonyms",
+      "status": "present"
+    },
+    "TC-IMP-013b": {
+      "file": "src/features/import/__tests__/tc-imp-contract.test.ts",
+      "testName": "TC-IMP-013b person column synonyms",
+      "status": "present"
+    },
+    "TC-IMP-013c": {
+      "file": "src/features/import/__tests__/tc-imp-contract.test.ts",
+      "testName": "TC-IMP-013c date / hours extended synonyms",
+      "status": "present"
+    },
+    "TC-IMP-014": {
+      "file": "src/features/import/__tests__/tc-imp-contract.test.ts",
+      "testName": "TC-IMP-014 hidden rows silently skipped",
+      "status": "present"
+    },
+    "TC-IMP-015": {
+      "file": "src/features/import/__tests__/tc-imp-contract.test.ts",
+      "testName": "TC-IMP-015 reversal chain integrity after rollback",
+      "status": "present"
+    },
+    "TC-IMP-016": {
+      "file": "src/features/import/__tests__/tc-imp-contract.test.ts",
+      "testName": "TC-IMP-016 rolled-back batch is inert for future chaining",
+      "status": "present"
+    },
     "TC-INV-001": {
       "file": "tests/invariants/cross-cutting.test.ts",
       "testName": "TC-INV-001 mutating-services manifest is non-empty and every entry names a change_log-writing function",
@@ -861,6 +941,21 @@
       "testName": "TC-PSN-006: selecting a persona calls setPersona AND router.push(landingRoute)",
       "status": "present"
     },
+    "TC-PSN-007": {
+      "file": "src/features/personas/__tests__/persona.contract.test.ts",
+      "testName": "TC-PSN-007: PM persona — getMyProjects returns only projects where lead_pm_person_id equals the PM personId",
+      "status": "present"
+    },
+    "TC-PSN-010": {
+      "file": "src/features/personas/__tests__/persona.contract.test.ts",
+      "testName": "TC-PSN-010: Persona switcher dropdown lists all five persona types regardless of logged-in user",
+      "status": "present"
+    },
+    "TC-RD-READONLY-001": {
+      "file": "src/features/personas/__tests__/persona.contract.test.ts",
+      "testName": "TC-RD-READONLY-001: R&D routes render with edit controls absent — cell click opens drill-down, never an editor",
+      "status": "present"
+    },
     "TC-REG-001": {
       "file": "src/features/admin/__tests__/register.integration.test.ts",
       "testName": "TC-REG-001 create: POST /api/v5/admin/registers/:entity",
@@ -1059,6 +1154,216 @@
     "TC-UI-052": {
       "file": "src/components/persona/__tests__/persona.contract.test.tsx",
       "testName": "TC-UI-052: DrillDownDrawer — Escape or backdrop click closes",
+      "status": "present"
+    },
+    "TC-UI-EMPTY-001": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-EMPTY-001: pm-home — empty dataset renders empty-state copy",
+      "status": "present"
+    },
+    "TC-UI-EMPTY-002": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-EMPTY-002: pm-project-timeline — empty dataset renders empty-state copy",
+      "status": "present"
+    },
+    "TC-UI-EMPTY-003": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-EMPTY-003: pm-my-wishes — empty dataset renders empty-state copy",
+      "status": "present"
+    },
+    "TC-UI-EMPTY-004": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-EMPTY-004: line-manager-home — empty dataset renders empty-state copy",
+      "status": "present"
+    },
+    "TC-UI-EMPTY-005": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-EMPTY-005: line-manager-department-timeline — empty dataset renders empty-state copy",
+      "status": "present"
+    },
+    "TC-UI-EMPTY-006": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-EMPTY-006: line-manager-approval-queue — empty dataset renders empty-state copy",
+      "status": "present"
+    },
+    "TC-UI-EMPTY-007": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-EMPTY-007: line-manager-import-actuals — empty dataset renders empty-state copy",
+      "status": "present"
+    },
+    "TC-UI-EMPTY-008": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-EMPTY-008: staff-schedule — empty dataset renders empty-state copy",
+      "status": "present"
+    },
+    "TC-UI-EMPTY-009": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-EMPTY-009: rd-portfolio — empty dataset renders empty-state copy",
+      "status": "present"
+    },
+    "TC-UI-EMPTY-010": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-EMPTY-010: rd-department-breakdown — empty dataset renders empty-state copy",
+      "status": "present"
+    },
+    "TC-UI-EMPTY-011": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-EMPTY-011: admin-registers — empty dataset renders empty-state copy",
+      "status": "present"
+    },
+    "TC-UI-EMPTY-012": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-EMPTY-012: admin-change-log — empty dataset renders empty-state copy",
+      "status": "present"
+    },
+    "TC-UI-EMPTY-013": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-EMPTY-013: admin-import-history — empty dataset renders empty-state copy",
+      "status": "present"
+    },
+    "TC-UI-EMPTY-014": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-EMPTY-014: admin-settings — empty dataset renders empty-state copy",
+      "status": "present"
+    },
+    "TC-UI-ERROR-001": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-ERROR-001: pm-home — query error renders toast + retry path",
+      "status": "present"
+    },
+    "TC-UI-ERROR-002": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-ERROR-002: pm-project-timeline — query error renders toast + retry path",
+      "status": "present"
+    },
+    "TC-UI-ERROR-003": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-ERROR-003: pm-my-wishes — query error renders toast + retry path",
+      "status": "present"
+    },
+    "TC-UI-ERROR-004": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-ERROR-004: line-manager-home — query error renders toast + retry path",
+      "status": "present"
+    },
+    "TC-UI-ERROR-005": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-ERROR-005: line-manager-department-timeline — query error renders toast + retry path",
+      "status": "present"
+    },
+    "TC-UI-ERROR-006": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-ERROR-006: line-manager-approval-queue — query error renders toast + retry path",
+      "status": "present"
+    },
+    "TC-UI-ERROR-007": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-ERROR-007: line-manager-import-actuals — query error renders toast + retry path",
+      "status": "present"
+    },
+    "TC-UI-ERROR-008": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-ERROR-008: staff-schedule — query error renders toast + retry path",
+      "status": "present"
+    },
+    "TC-UI-ERROR-009": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-ERROR-009: rd-portfolio — query error renders toast + retry path",
+      "status": "present"
+    },
+    "TC-UI-ERROR-010": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-ERROR-010: rd-department-breakdown — query error renders toast + retry path",
+      "status": "present"
+    },
+    "TC-UI-ERROR-011": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-ERROR-011: admin-registers — query error renders toast + retry path",
+      "status": "present"
+    },
+    "TC-UI-ERROR-012": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-ERROR-012: admin-change-log — query error renders toast + retry path",
+      "status": "present"
+    },
+    "TC-UI-ERROR-013": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-ERROR-013: admin-import-history — query error renders toast + retry path",
+      "status": "present"
+    },
+    "TC-UI-ERROR-014": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-ERROR-014: admin-settings — query error renders toast + retry path",
+      "status": "present"
+    },
+    "TC-UI-LOAD-001": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-LOAD-001: pm-home — pending query renders skeleton",
+      "status": "present"
+    },
+    "TC-UI-LOAD-002": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-LOAD-002: pm-project-timeline — pending query renders skeleton",
+      "status": "present"
+    },
+    "TC-UI-LOAD-003": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-LOAD-003: pm-my-wishes — pending query renders skeleton",
+      "status": "present"
+    },
+    "TC-UI-LOAD-004": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-LOAD-004: line-manager-home — pending query renders skeleton",
+      "status": "present"
+    },
+    "TC-UI-LOAD-005": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-LOAD-005: line-manager-department-timeline — pending query renders skeleton",
+      "status": "present"
+    },
+    "TC-UI-LOAD-006": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-LOAD-006: line-manager-approval-queue — pending query renders skeleton",
+      "status": "present"
+    },
+    "TC-UI-LOAD-007": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-LOAD-007: line-manager-import-actuals — pending query renders skeleton",
+      "status": "present"
+    },
+    "TC-UI-LOAD-008": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-LOAD-008: staff-schedule — pending query renders skeleton",
+      "status": "present"
+    },
+    "TC-UI-LOAD-009": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-LOAD-009: rd-portfolio — pending query renders skeleton",
+      "status": "present"
+    },
+    "TC-UI-LOAD-010": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-LOAD-010: rd-department-breakdown — pending query renders skeleton",
+      "status": "present"
+    },
+    "TC-UI-LOAD-011": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-LOAD-011: admin-registers — pending query renders skeleton",
+      "status": "present"
+    },
+    "TC-UI-LOAD-012": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-LOAD-012: admin-change-log — pending query renders skeleton",
+      "status": "present"
+    },
+    "TC-UI-LOAD-013": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-LOAD-013: admin-import-history — pending query renders skeleton",
+      "status": "present"
+    },
+    "TC-UI-LOAD-014": {
+      "file": "src/components/timeline/__tests__/screen-states.contract.test.tsx",
+      "testName": "TC-UI-LOAD-014: admin-settings — pending query renders skeleton",
       "status": "present"
     },
     "TC-ZOOM-001": {
