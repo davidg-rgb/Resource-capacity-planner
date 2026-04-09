@@ -240,7 +240,21 @@ Plans:
   2. Every `/api/v5/*` endpoint returns the AppError hierarchy with the documented error codes (`HISTORIC_CONFIRM_REQUIRED`, `BAD_HOURS`, `PROPOSAL_NOT_ACTIVE`, `REASON_REQUIRED`, `BATCH_ALREADY_ROLLED_BACK`, `ROLLBACK_WINDOW_EXPIRED`, `DEPENDENT_ROWS_EXIST`, `ERR_US_WEEK_HEADERS`) — verified by **TC-NEG-***
   3. Every mutating endpoint goes through `withTenant()`; cross-tenant read attempt returns 404 (TC-API tenant-isolation tests)
   4. Deterministic UUID v5 seed (§16) produces identical fixtures across test runs (TEST-V5-02)
-**Plans**: TBD
+**Plans**: 14 plans
+- [ ] 44-01-PLAN.md — Wave A: AppError taxonomy extension + errors/codes barrel + static taxonomy invariant
+- [ ] 44-02-PLAN.md — Wave A: ESLint no-restricted-syntax guard + sweep raw throws in v5 routes/services
+- [ ] 44-03-PLAN.md — Wave A: Tenant-isolation static audit (both withTenant and requireRole+orgId patterns) + exceptions manifest
+- [ ] 44-04-PLAN.md — Wave B: TC-NEG-* error wire-format tests for all 8 documented codes
+- [ ] 44-05-PLAN.md — Wave B: Parameterized runtime cross-tenant 404 test over mutating-routes manifest
+- [ ] 44-06-PLAN.md — Wave C foundation: canonical TC-ID extractor + manifest generator + CI diff gate with allowlist
+- [ ] 44-07-PLAN.md — Wave C1: Fill TC-CAL-* + TC-DB-* gaps (unit tests)
+- [ ] 44-08-PLAN.md — Wave C2: Fill TC-PS-* + TC-PR-* + TC-AC-* + TC-AR-* + TC-CP-* gaps (PGlite integration)
+- [ ] 44-09-PLAN.md — Wave C3: Fill TC-IMP-* + TC-EX-* gaps (Excel import + export tests)
+- [ ] 44-10-PLAN.md — Wave C4: Fill TC-API-* + TC-REG-* + TC-CL-* (excluding TC-CL-005) gaps
+- [ ] 44-11-PLAN.md — Wave C5: Fill TC-PSN-* + TC-UI-* + TC-ZOOM-* + TC-MOBILE-* + TC-RD-READONLY-* (RTL component tests)
+- [ ] 44-12-PLAN.md — Wave C6: Fill TC-E2E-* Playwright flows (~12 IDs)
+- [ ] 44-13-PLAN.md — Wave C7: Fill TC-PERF-* (skip-in-CI) + TC-INV-* (flat wire shape per R2)
+- [ ] 44-14-PLAN.md — Wave D: Deterministic UUID v5 seed harness + TEST-V5-02 determinism test + TC-CL-005 runtime harness repair
 
 ### Phase 45: Launch gate — PDF export bug fix
 **Goal**: Fix the v4.0 PDF export bug (html2canvas blank for non-SVG widgets) by swapping to `html-to-image` or `modern-screenshot`. This is the launch gate for v5.0 and is separate from v5.0 feature work.
