@@ -201,6 +201,72 @@ export async function createRegisterRow(input: CreateRegisterRowInput): Promise<
   const parsed = parseCreate(input.entity, input.data);
 
   return db.transaction(async (tx) => {
+    // Phase 44 / Plan 44-05 (API-V5-02): tenant-scoped FK validation.
+    // Without this, a caller in orgA could create a person/project that
+    // references another tenant's discipline/department/program/lead PM.
+    // The row itself would live in orgA (not a direct cross-tenant write),
+    // but it would encode a cross-tenant link, defeating row-level isolation.
+    // We enforce 404 (NotFoundError) for unknown-in-this-tenant FK targets
+    // so existence is not leaked.
+    if (input.entity === 'person') {
+      const p = parsed as { disciplineId?: string; departmentId?: string };
+      if (p.disciplineId) {
+        const [d] = await tx
+          .select({ id: schema.disciplines.id })
+          .from(schema.disciplines)
+          .where(
+            and(
+              eq(schema.disciplines.organizationId, input.orgId),
+              eq(schema.disciplines.id, p.disciplineId),
+            ),
+          )
+          .limit(1);
+        if (!d) throw new NotFoundError('Discipline', p.disciplineId);
+      }
+      if (p.departmentId) {
+        const [d] = await tx
+          .select({ id: schema.departments.id })
+          .from(schema.departments)
+          .where(
+            and(
+              eq(schema.departments.organizationId, input.orgId),
+              eq(schema.departments.id, p.departmentId),
+            ),
+          )
+          .limit(1);
+        if (!d) throw new NotFoundError('Department', p.departmentId);
+      }
+    }
+    if (input.entity === 'project') {
+      const p = parsed as { programId?: string | null; leadPmPersonId?: string | null };
+      if (p.programId) {
+        const [r] = await tx
+          .select({ id: schema.programs.id })
+          .from(schema.programs)
+          .where(
+            and(
+              eq(schema.programs.organizationId, input.orgId),
+              eq(schema.programs.id, p.programId),
+            ),
+          )
+          .limit(1);
+        if (!r) throw new NotFoundError('Program', p.programId);
+      }
+      if (p.leadPmPersonId) {
+        const [r] = await tx
+          .select({ id: schema.people.id })
+          .from(schema.people)
+          .where(
+            and(
+              eq(schema.people.organizationId, input.orgId),
+              eq(schema.people.id, p.leadPmPersonId),
+            ),
+          )
+          .limit(1);
+        if (!r) throw new NotFoundError('Person', p.leadPmPersonId);
+      }
+    }
+
     const t = tableFor(input.entity);
     const insertValues = { ...(parsed as object), organizationId: input.orgId };
     const insertedRows = (await tx

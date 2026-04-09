@@ -335,6 +335,26 @@ export interface RejectProposalInput {
  */
 export async function approveProposal(input: ApproveProposalInput): Promise<ProposalDTO> {
   return db.transaction(async (tx) => {
+    // Phase 44 / Plan 44-05 (API-V5-02): tenant-scoped pre-flight existence
+    // check. Without this, a cross-tenant caller receives 409
+    // PROPOSAL_NOT_ACTIVE (because the org-scoped UPDATE's WHERE misses),
+    // which leaks the "row was found but in wrong state" distinction from
+    // "row does not exist in this tenant". Spec (CONTEXT §4): cross-tenant
+    // must return 404 so existence is not leaked.
+    const [existing] = await tx
+      .select({ id: schema.allocationProposals.id })
+      .from(schema.allocationProposals)
+      .where(
+        and(
+          eq(schema.allocationProposals.organizationId, input.orgId),
+          eq(schema.allocationProposals.id, input.proposalId),
+        ),
+      )
+      .limit(1);
+    if (!existing) {
+      throw new NotFoundError('Proposal', input.proposalId);
+    }
+
     const [winner] = await tx
       .update(schema.allocationProposals)
       .set({
@@ -499,6 +519,22 @@ export async function rejectProposal(input: RejectProposalInput): Promise<Propos
   }
 
   return db.transaction(async (tx) => {
+    // Phase 44 / Plan 44-05 (API-V5-02): tenant-scoped pre-flight existence
+    // check — mirror of approveProposal. See comment there.
+    const [existing] = await tx
+      .select({ id: schema.allocationProposals.id })
+      .from(schema.allocationProposals)
+      .where(
+        and(
+          eq(schema.allocationProposals.organizationId, input.orgId),
+          eq(schema.allocationProposals.id, input.proposalId),
+        ),
+      )
+      .limit(1);
+    if (!existing) {
+      throw new NotFoundError('Proposal', input.proposalId);
+    }
+
     const [winner] = await tx
       .update(schema.allocationProposals)
       .set({
