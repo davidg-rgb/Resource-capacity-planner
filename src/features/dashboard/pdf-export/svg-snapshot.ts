@@ -3,10 +3,13 @@
  *
  * Two capture strategies:
  * 1. Recharts SVG extraction → PNG (fast, crisp for chart widgets)
- * 2. html2canvas fallback → PNG (captures any HTML widget: KPIs, tables, etc.)
+ * 2. html-to-image DOM capture fallback → PNG (captures any HTML widget:
+ *    KPIs, tables, sparklines, bench report, etc.) via foreignObject
+ *    rasterization, so the browser handles modern CSS (custom properties,
+ *    oklch, web fonts, content-visibility).
  */
 
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 
 // ---------------------------------------------------------------------------
 // extractSvgFromWidget — finds the Recharts SVG inside a widget container
@@ -77,67 +80,36 @@ export async function svgToPngDataUri(
 }
 
 // ---------------------------------------------------------------------------
-// html2canvasCapture — fallback: screenshot the widget container as PNG
+// domToImageCapture — fallback: rasterize the widget container as PNG via
+// html-to-image's foreignObject pipeline. Delegates CSS resolution to the
+// browser so Tailwind v4 oklch tokens, CSS custom properties, web fonts, and
+// content-visibility all "just work".
 // ---------------------------------------------------------------------------
 
-/**
- * Inline all CSS custom properties as computed values on a cloned DOM tree.
- * html2canvas cannot resolve var(--xxx) — it needs actual color/size values.
- */
-function inlineCustomProperties(clonedDoc: Document) {
-  const elements = clonedDoc.querySelectorAll('*');
-  for (const el of elements) {
-    if (!(el instanceof HTMLElement)) continue;
-    const computed = getComputedStyle(el);
-
-    // Inline key visual properties that commonly use CSS custom properties
-    const props = [
-      'color',
-      'background-color',
-      'border-color',
-      'border-top-color',
-      'border-bottom-color',
-      'border-left-color',
-      'border-right-color',
-      'fill',
-      'stroke',
-      'box-shadow',
-      'outline-color',
-    ];
-
-    for (const prop of props) {
-      const value = computed.getPropertyValue(prop);
-      if (value && value !== 'rgba(0, 0, 0, 0)' && value !== 'transparent') {
-        el.style.setProperty(prop, value);
-      }
-    }
-
-    // Also ensure font is inlined
-    el.style.setProperty('font-family', computed.fontFamily);
+async function domToImageCapture(container: HTMLElement): Promise<string> {
+  // Ensure web fonts are loaded so Swedish characters (åäö) render in the
+  // correct typeface rather than a fallback. Guarded for jsdom/test envs.
+  if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
+    await document.fonts.ready;
   }
-}
 
-async function html2canvasCapture(container: HTMLElement): Promise<string> {
-  const canvas = await html2canvas(container, {
+  return await toPng(container, {
     backgroundColor: '#ffffff',
-    scale: 2,
-    logging: false,
-    useCORS: true,
-    onclone: (_doc, clonedEl) => {
-      // Inline CSS custom properties on the cloned element tree
-      inlineCustomProperties(clonedEl.ownerDocument);
-    },
-    ignoreElements: (el) => {
-      const tag = el.tagName?.toLowerCase();
-      return tag === 'button' || tag === 'select' || el.getAttribute('role') === 'button';
+    pixelRatio: 2,
+    cacheBust: true,
+    filter: (node) => {
+      if (!(node instanceof HTMLElement)) return true;
+      const tag = node.tagName?.toLowerCase();
+      if (tag === 'button' || tag === 'select') return false;
+      if (node.getAttribute('role') === 'button') return false;
+      return true;
     },
   });
-  return canvas.toDataURL('image/png');
 }
 
 // ---------------------------------------------------------------------------
 // captureWidgetSnapshot — high-level: widget container -> PNG data URI
-// Uses SVG extraction for Recharts, html2canvas fallback for everything else
+// Uses SVG extraction for Recharts, html-to-image fallback for everything else
 // ---------------------------------------------------------------------------
 
 export async function captureWidgetSnapshot(widgetId: string): Promise<string | null> {
@@ -152,15 +124,20 @@ export async function captureWidgetSnapshot(widgetId: string): Promise<string | 
       const width = Math.round(rect.width) || 800;
       const height = Math.round(rect.height) || 400;
       return await svgToPngDataUri(svg, width, Math.min(height, 600));
-    } catch {
-      // Fall through to html2canvas
+    } catch (err) {
+      console.warn(
+        `[pdf-export] SVG fast-path failed for widget ${widgetId}, falling back to DOM capture:`,
+        err,
+      );
+      // Fall through to html-to-image
     }
   }
 
-  // Strategy 2: html2canvas fallback (captures any HTML content)
+  // Strategy 2: html-to-image fallback (captures any HTML content via foreignObject)
   try {
-    return await html2canvasCapture(container);
-  } catch {
+    return await domToImageCapture(container);
+  } catch (err) {
+    console.warn(`[pdf-export] DOM capture failed for widget ${widgetId}:`, err);
     return null;
   }
 }
@@ -176,7 +153,8 @@ export async function captureWidgetSnapshots(
   for (const id of widgetIds) {
     try {
       results[id] = await captureWidgetSnapshot(id);
-    } catch {
+    } catch (err) {
+      console.warn(`[pdf-export] captureWidgetSnapshot threw for widget ${id}:`, err);
       results[id] = null;
     }
   }
