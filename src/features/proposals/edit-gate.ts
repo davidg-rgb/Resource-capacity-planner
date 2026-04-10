@@ -28,7 +28,8 @@ export function resolveEditGate(input: EditGateInput): EditGateDecision {
   // Lexical compare works for 'YYYY-MM'.
   const isHistoric = month < currentMonth;
 
-  if (persona.kind === 'staff') return 'blocked';
+  // Staff and R&D are read-only in v5.0 (§2.2, ADR-004 clarification).
+  if (persona.kind === 'staff' || persona.kind === 'rd') return 'blocked';
 
   let base: 'direct' | 'proposal';
   if (persona.kind === 'pm') {
@@ -40,7 +41,7 @@ export function resolveEditGate(input: EditGateInput): EditGateDecision {
   } else if (persona.kind === 'line-manager') {
     base = targetPerson.departmentId === persona.departmentId ? 'direct' : 'proposal';
   } else {
-    // rd, admin — read-write everywhere (v4 behavior preserved).
+    // admin — read-write everywhere.
     base = 'direct';
   }
 

@@ -45,12 +45,25 @@ export interface PlanVsActualCellProps {
   onCellClick?: (ctx: { personId: string; projectId: string; monthKey: string }) => void;
 }
 
-type CellState = 'no-actual' | 'on-plan' | 'under' | 'over';
+type CellState = 'no-actual' | 'on-plan' | 'under' | 'over' | 'unplanned';
 
+/**
+ * Delta color rules per §6.14:
+ *   - |delta|/approved < 0.1  → green ('on-plan')
+ *   - over by >10%            → red ('over')
+ *   - under by >20%           → yellow ('under')
+ *   - under by 10-20%         → green ('on-plan')
+ *   - no approved but actual  → red ('unplanned')
+ */
 function computeState(planned: number, actual: number | null): CellState {
   if (actual === null) return 'no-actual';
-  if (Math.abs(actual - planned) < 0.005) return 'on-plan';
-  return actual < planned ? 'under' : 'over';
+  if (planned === 0 && actual > 0) return 'unplanned';
+  if (planned === 0) return 'on-plan';
+  const ratio = (actual - planned) / planned;
+  if (Math.abs(ratio) < 0.1) return 'on-plan';
+  if (ratio > 0) return 'over'; // over by >10%
+  if (ratio <= -0.2) return 'under'; // under by ≥20%
+  return 'on-plan'; // under 10-20% → still green
 }
 
 function formatHours(value: number): string {
@@ -131,7 +144,7 @@ export function PlanVsActualCell(props: PlanVsActualCellProps) {
           aria-label="aggregated"
           style={{ fontSize: '0.75em', opacity: 0.7 }}
         >
-          Σ
+          {'\u03A3'}
         </span>
       )}
       <span className={styles.row}>

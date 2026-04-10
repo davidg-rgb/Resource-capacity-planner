@@ -29,16 +29,22 @@
   --cell-border: #b3c7e6;
 }
 
-.cell[data-state='under'] {
-  --cell-bg: #e6f6ea;
-  --cell-fg: #0f5132;
-  --cell-border: #b7dfc1;
-}
-
 .cell[data-state='over'] {
   --cell-bg: #fdecec;
   --cell-fg: #842029;
   --cell-border: #f1b7b7;
+}
+
+.cell[data-state='unplanned'] {
+  --cell-bg: #fdecec;
+  --cell-fg: #842029;
+  --cell-border: #f1b7b7;
+}
+
+.cell[data-state='under'] {
+  --cell-bg: #fff8e1;
+  --cell-fg: #7a5900;
+  --cell-border: #e6d5a0;
 }
 
 .row {

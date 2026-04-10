@@ -181,12 +181,14 @@ describe('useArchiveRegisterRow', () => {
 
   it('throws DependentRowsError with blockers map on 409 DEPENDENT_ROWS_EXIST', async () => {
     const body = {
-      error: 'ERR_CONFLICT',
-      message: 'DEPENDENT_ROWS_EXIST',
-      details: {
-        entity: 'person',
-        id: 'p1',
-        blockers: { allocations: 3, proposals: 1 },
+      error: {
+        code: 'ERR_CONFLICT',
+        message: 'DEPENDENT_ROWS_EXIST',
+        details: {
+          entity: 'person',
+          id: 'p1',
+          blockers: { allocations: 3, proposals: 1 },
+        },
       },
     };
     const fetchMock = vi.fn().mockResolvedValue({
@@ -219,7 +221,7 @@ describe('useArchiveRegisterRow', () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: false,
       status: 500,
-      json: async () => ({ error: 'ERR_INTERNAL', message: 'boom' }),
+      json: async () => ({ error: { code: 'ERR_INTERNAL', message: 'boom' } }),
     });
     globalThis.fetch = fetchMock as unknown as typeof fetch;
 

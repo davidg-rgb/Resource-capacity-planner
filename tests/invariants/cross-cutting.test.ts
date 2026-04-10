@@ -5,17 +5,11 @@
  * begin with a `TC-INV-NNN` token so the TC-ID manifest generator
  * (44-06) registers them.
  *
- * IMPORTANT deviation from §15.15 text — TC-INV-003:
- *   ARCHITECTURE §15.15 text describes the error wire shape as nested:
- *     `{ error: { code, message, details? } }`
- *   The v5.0 implementation actually emits (and tests already assert)
- *   the FLAT shape:
- *     `{ error: <code>, message: <text>, details?: <object> }`
- *   Per RESEARCH R2 (44-RESEARCH.md) the flat shape is canonical —
- *   AppError.toJSON() returns flat, handleApiError passes it through,
- *   and tests/invariants/error-wire-format.test.ts already locks the
- *   flat shape in for every documented error code. TC-INV-003 here
- *   explicitly asserts FLAT to prevent accidental "fix" to nested.
+ * TC-INV-003: Error wire shape is nested per §11.1:
+ *   `{ error: { code, message, details? } }`
+ *   AppError.toJSON() returns nested, handleApiError passes it through,
+ *   and tests/invariants/error-wire-format.test.ts locks the nested
+ *   shape for every documented error code.
  */
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
@@ -79,27 +73,24 @@ describe('TC-INV — Cross-cutting invariants (ARCHITECTURE §15.15)', () => {
     expect(violations).toEqual([]);
   });
 
-  it('TC-INV-003 error wire shape is FLAT { error, message, details? } (NOT nested per RESEARCH R2)', async () => {
+  it('TC-INV-003 error wire shape is nested { error: { code, message, details? } } per §11.1', async () => {
     // Throw a known AppError subclass through the standard handler and
-    // assert the body shape. See file header for the §15.15 vs
-    // implementation deviation rationale.
+    // assert the body shape matches the architecture spec §11.1.
     const res = handleApiError(
       new ValidationError('bad', { fields: [{ field: 'x', message: 'y' }] }),
     );
     const body = (await res.json()) as Record<string, unknown>;
 
-    // FLAT shape assertions:
-    expect(typeof body.error).toBe('string');
-    expect(typeof body.message).toBe('string');
-    expect(body.error).toBe('ERR_VALIDATION');
+    // Nested shape assertions per §11.1:
+    expect(typeof body.error).toBe('object');
+    const err = body.error as Record<string, unknown>;
+    expect(err.code).toBe('ERR_VALIDATION');
+    expect(typeof err.message).toBe('string');
 
-    // Explicit NOT-nested assertion — `body.error` is a string, so it
-    // has no own `.code` property. This line is the guard that prevents
-    // accidental migration to the nested shape from the architecture
-    // text.
-    expect(
-      body.error && typeof body.error === 'object' && 'code' in (body.error as object),
-    ).toBe(false);
+    // Guard: body.error IS an object with a code property.
+    expect(body.error && typeof body.error === 'object' && 'code' in (body.error as object)).toBe(
+      true,
+    );
   });
 
   it('TC-INV-004 every new v5.0 table in the schema has an organization_id column', () => {
@@ -171,9 +162,7 @@ describe('TC-INV — Cross-cutting invariants (ARCHITECTURE §15.15)', () => {
     //      phases.
     const services = walk('src/features').filter((f) => /\.service\.ts$/.test(f));
     expect(services.length).toBeGreaterThan(0);
-    const withTxParam = services.filter((f) =>
-      /\btx\s*\?\s*:/.test(readFileSync(f, 'utf8')),
-    );
+    const withTxParam = services.filter((f) => /\btx\s*\?\s*:/.test(readFileSync(f, 'utf8')));
     expect(withTxParam.length).toBeGreaterThan(0);
   });
 });

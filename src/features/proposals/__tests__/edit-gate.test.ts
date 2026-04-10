@@ -129,7 +129,7 @@ describe('resolveEditGate', () => {
     ).toBe('blocked');
   });
 
-  test('TC-PS-009: rd persona → direct (historic-warn-direct in past)', () => {
+  test('TC-PS-009: rd persona → blocked (read-only per §2.2, ADR-004)', () => {
     expect(
       resolveEditGate({
         persona: rd,
@@ -137,7 +137,7 @@ describe('resolveEditGate', () => {
         month: FUTURE,
         currentMonth: CURRENT,
       }),
-    ).toBe('direct');
+    ).toBe('blocked');
     expect(
       resolveEditGate({
         persona: rd,
@@ -145,7 +145,7 @@ describe('resolveEditGate', () => {
         month: PAST,
         currentMonth: CURRENT,
       }),
-    ).toBe('historic-warn-direct');
+    ).toBe('blocked');
   });
 
   test('TC-PS-010: admin persona → direct (historic-warn-direct in past)', () => {

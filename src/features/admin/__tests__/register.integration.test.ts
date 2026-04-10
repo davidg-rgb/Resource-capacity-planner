@@ -224,13 +224,11 @@ describe('TC-REG-003..007 HTTP-level dependent-row blocker smoke', () => {
     const res = await DELETE('department', target.id);
     expect(res.status).toBe(409);
     const json = (await res.json()) as {
-      error: string;
-      message: string;
-      details: { blockers: Record<string, number> };
+      error: { code: string; message: string; details?: { blockers?: Record<string, number> } };
     };
-    expect(json.error).toBe('ERR_CONFLICT');
-    expect(json.message).toBe('DEPENDENT_ROWS_EXIST');
-    expect(json.details.blockers.people).toBeGreaterThan(0);
+    expect(json.error.code).toBe('ERR_CONFLICT');
+    expect(json.error.message).toBe('DEPENDENT_ROWS_EXIST');
+    expect(json.error.details?.blockers?.people).toBeGreaterThan(0);
   });
 });
 

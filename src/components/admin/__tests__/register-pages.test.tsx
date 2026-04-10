@@ -280,9 +280,11 @@ describe('Phase 43-03 — /admin/departments page', () => {
       if (method === 'DELETE') {
         return new Response(
           JSON.stringify({
-            error: 'ERR_CONFLICT',
-            message: 'DEPENDENT_ROWS_EXIST',
-            details: { entity: 'department', id: DEPT_A.id, blockers: { people: 3 } },
+            error: {
+              code: 'ERR_CONFLICT',
+              message: 'DEPENDENT_ROWS_EXIST',
+              details: { entity: 'department', id: DEPT_A.id, blockers: { people: 3 } },
+            },
           }),
           { status: 409 },
         );
@@ -480,12 +482,14 @@ describe('Phase 43-03 — /admin/people page', () => {
     handlers[`/api/v5/admin/registers/person/${PERSON_A.id}`] = async () =>
       new Response(
         JSON.stringify({
-          error: 'ERR_CONFLICT',
-          message: 'DEPENDENT_ROWS_EXIST',
-          details: {
-            entity: 'person',
-            id: PERSON_A.id,
-            blockers: { allocations: 5 },
+          error: {
+            code: 'ERR_CONFLICT',
+            message: 'DEPENDENT_ROWS_EXIST',
+            details: {
+              entity: 'person',
+              id: PERSON_A.id,
+              blockers: { allocations: 5 },
+            },
           },
         }),
         { status: 409 },
@@ -534,12 +538,14 @@ describe('Phase 43-03 — /admin/projects page', () => {
     handlers[`/api/v5/admin/registers/project/${PROJECT_A.id}`] = async () =>
       new Response(
         JSON.stringify({
-          error: 'ERR_CONFLICT',
-          message: 'DEPENDENT_ROWS_EXIST',
-          details: {
-            entity: 'project',
-            id: PROJECT_A.id,
-            blockers: { allocations: 2 },
+          error: {
+            code: 'ERR_CONFLICT',
+            message: 'DEPENDENT_ROWS_EXIST',
+            details: {
+              entity: 'project',
+              id: PROJECT_A.id,
+              blockers: { allocations: 2 },
+            },
           },
         }),
         { status: 409 },

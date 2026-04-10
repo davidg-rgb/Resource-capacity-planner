@@ -132,28 +132,25 @@ describe('API-V5-01 error wire format', () => {
   });
 
   for (const c of cases) {
-    it(`${c.tcId} ${c.code} returns status ${c.status} with flat wire shape`, async () => {
+    it(`${c.tcId} ${c.code} returns status ${c.status} with nested wire shape`, async () => {
       const res = handleApiError(c.make());
 
       expect(res.status).toBe(c.status);
 
       const body = (await res.json()) as {
-        error: string;
-        message: string;
-        details?: Record<string, unknown>;
+        error: { code: string; message: string; details?: Record<string, unknown> };
       };
 
-      // Flat shape per RESEARCH R2: { error, message, details? }.
-      // No nesting, no `code` + `error` duplication, no envelope.
-      expect(body.error).toBe(c.code);
-      expect(typeof body.message).toBe('string');
-      expect(body.message.length).toBeGreaterThan(0);
-      expect(body.details).toBeDefined();
-      expect(typeof body.details).toBe('object');
+      // Nested shape per §11.1: { error: { code, message, details? } }.
+      expect(body.error.code).toBe(c.code);
+      expect(typeof body.error.message).toBe('string');
+      expect(body.error.message.length).toBeGreaterThan(0);
+      expect(body.error.details).toBeDefined();
+      expect(typeof body.error.details).toBe('object');
 
-      // Guard: the top-level keys are exactly { error, message, details }.
+      // Guard: the top-level key is exactly { error }.
       const keys = Object.keys(body).sort();
-      expect(keys).toEqual(['details', 'error', 'message']);
+      expect(keys).toEqual(['error']);
     });
   }
 });

@@ -220,8 +220,8 @@ describe('TC-API-030: POST /api/v5/imports/parse', () => {
     const req = new Request('http://localhost/api/v5/imports/parse', { method: 'POST', body: fd });
     const res = await parseRoute(req as never);
     expect(res.status).toBe(400);
-    const json = (await res.json()) as { error: string };
-    expect(json.error).toBe('UNSUPPORTED_FILE_TYPE');
+    const json = (await res.json()) as { error: { code: string } };
+    expect(json.error.code).toBe('UNSUPPORTED_FILE_TYPE');
   });
 });
 

@@ -11,9 +11,11 @@ export class AppError extends Error {
 
   toJSON() {
     return {
-      error: this.code,
-      message: this.message,
-      ...(this.details && { details: this.details }),
+      error: {
+        code: this.code,
+        message: this.message,
+        ...(this.details && { details: this.details }),
+      },
     };
   }
 }
@@ -112,19 +114,13 @@ export class HistoricConfirmRequiredError extends AppError {
 }
 
 export class BadHoursError extends AppError {
-  constructor(
-    message = 'Hours value out of allowed range',
-    details?: Record<string, unknown>,
-  ) {
+  constructor(message = 'Hours value out of allowed range', details?: Record<string, unknown>) {
     super(message, BAD_HOURS, 400, details);
   }
 }
 
 export class ReasonRequiredError extends AppError {
-  constructor(
-    message = 'A reason is required for this action',
-    details?: Record<string, unknown>,
-  ) {
+  constructor(message = 'A reason is required for this action', details?: Record<string, unknown>) {
     super(message, REASON_REQUIRED, 400, details);
   }
 }
@@ -148,10 +144,7 @@ export class RollbackWindowExpiredError extends AppError {
 }
 
 export class DependentRowsExistError extends AppError {
-  constructor(
-    message = 'Cannot archive: dependent rows exist',
-    details?: Record<string, unknown>,
-  ) {
+  constructor(message = 'Cannot archive: dependent rows exist', details?: Record<string, unknown>) {
     super(message, DEPENDENT_ROWS_EXIST, 409, details);
   }
 }

@@ -230,8 +230,8 @@ describe('TC-API-012: POST approve with mismatched departmentId → 403 Forbidde
       { params: Promise.resolve({ id }) },
     );
     expect(res.status).toBe(403);
-    const err = (await res.json()) as { error: string };
-    expect(err.error).toBe('ERR_FORBIDDEN');
+    const err = (await res.json()) as { error: { code: string } };
+    expect(err.error.code).toBe('ERR_FORBIDDEN');
   });
 });
 
@@ -246,10 +246,10 @@ describe('TC-API-013: POST reject with empty reason → 400 ValidationError enve
       { params: Promise.resolve({ id }) },
     );
     expect(res.status).toBe(400);
-    const err = (await res.json()) as { error: string };
+    const err = (await res.json()) as { error: { code: string } };
     // Zod at the route layer short-circuits before the service's REASON_REQUIRED.
     // handleApiError wraps ZodError as a ValidationError envelope.
-    expect(err.error).toBe('ERR_VALIDATION');
+    expect(err.error.code).toBe('ERR_VALIDATION');
   });
 });
 
@@ -290,8 +290,8 @@ describe('PROP-06: PATCH /api/v5/proposals/[id] edits a proposed row in place (T
       params: Promise.resolve({ id }),
     });
     expect(res.status).toBe(400);
-    const err = (await res.json()) as { error: string };
-    expect(err.error).toBe('EMPTY_EDIT');
+    const err = (await res.json()) as { error: { code: string } };
+    expect(err.error.code).toBe('EMPTY_EDIT');
   });
 });
 
@@ -313,7 +313,7 @@ describe('TC-API-014: POST second approve on same id → 409 PROPOSAL_NOT_ACTIVE
       { params: Promise.resolve({ id }) },
     );
     expect(second.status).toBe(409);
-    const err = (await second.json()) as { error: string };
-    expect(err.error).toBe('PROPOSAL_NOT_ACTIVE');
+    const err = (await second.json()) as { error: { code: string } };
+    expect(err.error.code).toBe('PROPOSAL_NOT_ACTIVE');
   });
 });

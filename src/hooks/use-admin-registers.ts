@@ -56,15 +56,26 @@ function entityScopeKey(entity: RegisterEntity) {
 }
 
 async function parseErrorBody(res: Response): Promise<{
-  error?: string;
+  code?: string;
   message?: string;
   details?: Record<string, unknown>;
 }> {
   try {
-    return (await res.json()) as {
-      error?: string;
-      message?: string;
-      details?: Record<string, unknown>;
+    const raw = (await res.json()) as Record<string, unknown>;
+    // v5.0 nested shape: { error: { code, message, details? } }
+    if (raw.error && typeof raw.error === 'object') {
+      const nested = raw.error as Record<string, unknown>;
+      return {
+        code: nested.code as string | undefined,
+        message: nested.message as string | undefined,
+        details: nested.details as Record<string, unknown> | undefined,
+      };
+    }
+    // Legacy flat shape fallback
+    return {
+      code: raw.error as string | undefined,
+      message: raw.message as string | undefined,
+      details: raw.details as Record<string, unknown> | undefined,
     };
   } catch {
     return { message: `HTTP ${res.status}` };
@@ -73,8 +84,8 @@ async function parseErrorBody(res: Response): Promise<{
 
 async function throwFromResponse(res: Response, fallback: string): Promise<never> {
   const body = await parseErrorBody(res);
-  // 43-01 shape: { error: 'ERR_CONFLICT', message: 'DEPENDENT_ROWS_EXIST',
-  //                details: { entity, id, blockers: { ... } } }
+  // v5.0 shape: { error: { code: 'ERR_CONFLICT', message: 'DEPENDENT_ROWS_EXIST',
+  //                         details: { entity, id, blockers: { ... } } } }
   if (res.status === 409 && body.message === 'DEPENDENT_ROWS_EXIST') {
     const d = (body.details ?? {}) as {
       entity?: string;
