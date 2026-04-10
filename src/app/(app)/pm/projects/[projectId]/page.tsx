@@ -11,6 +11,7 @@ import { useTranslations } from 'next-intl';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { usePersona } from '@/features/personas/persona.context';
+import { PersonaGate } from '@/features/personas/persona-route-guard';
 import { generateMonthRange, getCurrentMonth } from '@/lib/date-utils';
 import { TimelineGrid } from '@/components/timeline/timeline-grid';
 import { ZoomControls } from '@/components/timeline/zoom-controls';
@@ -41,9 +42,11 @@ async function fetchPmTimeline(
 
 export default function PmProjectTimelinePage() {
   return (
-    <PlanVsActualDrawerProvider>
-      <PmProjectTimelinePageInner />
-    </PlanVsActualDrawerProvider>
+    <PersonaGate allowed={['pm', 'admin']}>
+      <PlanVsActualDrawerProvider>
+        <PmProjectTimelinePageInner />
+      </PlanVsActualDrawerProvider>
+    </PersonaGate>
   );
 }
 
@@ -56,7 +59,7 @@ function PmProjectTimelinePageInner() {
   const tScreens = useTranslations('v5.screens.pmTimeline');
 
   const { from, to } = defaultMonthWindow();
-  const [zoom, setZoom] = useZoom();
+  const [zoom, setZoom] = useZoom({ persona: 'pm', screen: 'project' });
   const enabled = !!projectId && persona.kind === 'pm';
   const queryClient = useQueryClient();
 

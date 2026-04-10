@@ -97,9 +97,24 @@ export type RollbackResult = {
   rowsRestored: number;
 };
 
+export type ImportBatch = {
+  id: string;
+  importSessionId: string;
+  fileName: string;
+  committedBy: string;
+  committedAt: Date;
+  rowsInserted: number;
+  rowsUpdated: number;
+  rowsSkippedManual: number;
+  rowsSkippedPriorBatch: number;
+  rolledBackAt: Date | null;
+  supersededAt: Date | null;
+};
+
 // Error codes (string constants exported for tests + API layer mapping).
 export const ERR_SESSION_NOT_FOUND = 'SESSION_NOT_FOUND';
 export const ERR_SESSION_ALREADY_COMMITTED = 'SESSION_ALREADY_COMMITTED';
+export const ERR_SESSION_NOT_STAGED = 'SESSION_NOT_STAGED';
 export const ERR_PRIOR_BATCH_ACTIVE = 'PRIOR_BATCH_ACTIVE';
 export const ERR_UNRESOLVED_NAMES = 'UNRESOLVED_NAMES';
 export const ERR_BATCH_NOT_FOUND = 'BATCH_NOT_FOUND';

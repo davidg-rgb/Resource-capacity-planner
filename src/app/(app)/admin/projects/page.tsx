@@ -9,6 +9,7 @@
  * expose.
  */
 
+import { PersonaGate } from '@/features/personas/persona-route-guard';
 import { AdminRegisterPageShell } from '@/components/admin/AdminRegisterPageShell';
 import { ProjectForm, type ProjectFormValues } from '@/components/admin/forms/ProjectForm';
 import type { RegisterTableColumn } from '@/components/admin/RegisterTable';
@@ -29,7 +30,11 @@ const STATUS_CHIP: Record<ProjectRegisterRow['status'], string> = {
 };
 
 export default function AdminProjectsPage() {
-  return <AdminProjectsRegister />;
+  return (
+    <PersonaGate allowed={['admin']}>
+      <AdminProjectsRegister />
+    </PersonaGate>
+  );
 }
 
 function AdminProjectsRegister() {

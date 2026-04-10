@@ -7,6 +7,14 @@ import {
   workingDaysInRange,
   countWorkingDays,
   isHistoricPeriod,
+  isoWeek,
+  isoDate,
+  parseIsoDate,
+  monthKey,
+  quarterKey,
+  rangeMonths,
+  rangeWeeks,
+  formatWeekLabel,
 } from '../iso-calendar';
 import { ValidationError } from '@/lib/errors';
 
@@ -79,5 +87,60 @@ describe('iso-calendar', () => {
     expect(countWorkingDays(utc(2026, 3, 4), utc(2026, 3, 4))).toBe(0);
     // Good Fri 2026-04-03
     expect(countWorkingDays(utc(2026, 3, 3), utc(2026, 3, 3))).toBe(0);
+  });
+
+  // -----------------------------------------------------------------------
+  // v5.0 convenience wrappers (ARCHITECTURE §6.1)
+  // -----------------------------------------------------------------------
+
+  it('TC-CAL-001: isoWeek(2026-01-01) → { year: 2026, week: 1 }', () => {
+    expect(isoWeek(utc(2026, 0, 1))).toEqual({ year: 2026, week: 1 });
+  });
+
+  it('TC-CAL-001b: isoWeek(2025-12-28) → { year: 2025, week: 52 }', () => {
+    expect(isoWeek(utc(2025, 11, 28))).toEqual({ year: 2025, week: 52 });
+  });
+
+  it('TC-CAL-002: isoWeek(2025-12-29) → { year: 2026, week: 1 }', () => {
+    expect(isoWeek(utc(2025, 11, 29))).toEqual({ year: 2026, week: 1 });
+  });
+
+  it('TC-CAL-009: rangeWeeks(2026-01-01, 2026-12-31) returns 53 entries', () => {
+    const weeks = rangeWeeks(utc(2026, 0, 1), utc(2026, 11, 31));
+    expect(weeks.length).toBe(53);
+    expect(weeks[0]).toEqual({ year: 2026, week: 1 });
+    expect(weeks[52]).toEqual({ year: 2026, week: 53 });
+  });
+
+  it('TC-CAL-010: rangeMonths(2026-01-01, 2026-12-31) returns 12 entries', () => {
+    const months = rangeMonths(utc(2026, 0, 1), utc(2026, 11, 31));
+    expect(months.length).toBe(12);
+    expect(months[0]).toBe('2026-01');
+    expect(months[11]).toBe('2026-12');
+  });
+
+  it('TC-CAL-013: monthKey(2026-03-15) → "2026-03"', () => {
+    expect(monthKey(utc(2026, 2, 15))).toBe('2026-03');
+  });
+
+  it('TC-CAL-014: quarterKey(2026-05-20) → "2026-Q2"', () => {
+    expect(quarterKey(utc(2026, 4, 20))).toBe('2026-Q2');
+  });
+
+  it('TC-CAL-015: parseIsoDate("not a date") throws ValidationError', () => {
+    expect(() => parseIsoDate('not a date')).toThrow(ValidationError);
+    expect(() => parseIsoDate('not a date')).toThrow(/INVALID_DATE|Invalid ISO date/);
+  });
+
+  it('parseIsoDate round-trips with isoDate', () => {
+    const d = utc(2026, 5, 15);
+    expect(isoDate(d)).toBe('2026-06-15');
+    expect(parseIsoDate('2026-06-15').getTime()).toBe(d.getTime());
+  });
+
+  it('formatWeekLabel Swedish and English', () => {
+    // When year differs from current, year is appended
+    expect(formatWeekLabel(2020, 14, 'sv')).toBe('v.14 2020');
+    expect(formatWeekLabel(2020, 14, 'en')).toBe('W14 2020');
   });
 });

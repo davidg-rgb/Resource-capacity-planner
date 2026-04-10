@@ -5,7 +5,7 @@
 // POST a proposal via useCreateProposal. See edit-gate.ts for the routing decision.
 // i18n via useTranslations('v5.proposals') (Plan 39-09 sweep).
 
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import type { CustomCellEditorProps } from 'ag-grid-react';
 import { useTranslations } from 'next-intl';
 
@@ -29,15 +29,31 @@ export const ProposalCellEditor = forwardRef(function ProposalCellEditor(
   const inputRef = useRef<HTMLInputElement>(null);
   const t = useTranslations('v5.proposals');
 
+  // TC-UI-002d: track dirty state for navigation guard.
+  const isDirty = hours !== initialHours || note.trim().length > 0;
+
+  useEffect(() => {
+    if (!isDirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [isDirty]);
+
   useImperativeHandle(ref, () => ({
     // Always return the ORIGINAL value — the proposal path never writes through
     // to the grid. The only way hours change on screen is via invalidation
     // after POST success (future: renderer consults useListProposals).
     getValue: () => props.value,
     isCancelBeforeStart: () => false,
-    // Always cancel on normal "end edit" (tab/enter/blur). Submit wish is the
-    // only way to persist a proposed change.
-    isCancelAfterEnd: () => true,
+    // TC-UI-002d: confirm discard if the user has unsaved changes.
+    isCancelAfterEnd: () => {
+      if (isDirty) {
+        return window.confirm('Discard unsaved proposal?');
+      }
+      return true;
+    },
   }));
 
   async function handleSubmit() {
@@ -101,7 +117,10 @@ export const ProposalCellEditor = forwardRef(function ProposalCellEditor(
         </button>
         <button
           type="button"
-          onClick={() => props.api.stopEditing(true)}
+          onClick={() => {
+            if (isDirty && !window.confirm('Discard unsaved proposal?')) return;
+            props.api.stopEditing(true);
+          }}
           className="rounded border px-2 py-1 text-xs"
         >
           {t('actions.cancel')}

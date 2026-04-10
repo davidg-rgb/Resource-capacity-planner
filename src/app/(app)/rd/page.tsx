@@ -62,7 +62,7 @@ function RdPageInner() {
   const { orgId } = useAuth();
   const t = useTranslations('v5.rd');
   const drawer = usePlanVsActualDrawer();
-  const [zoom, setZoom] = useZoom();
+  const [zoom, setZoom] = useZoom({ persona: 'rd', screen: 'portfolio' });
   const [groupBy, setGroupBy] = useState<GroupBy>('project');
   const [overcommitOpen, setOvercommitOpen] = useState(false);
 

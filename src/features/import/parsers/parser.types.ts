@@ -66,6 +66,9 @@ export const MONTH_GRAIN_PENDING_DISTRIBUTION = 'MONTH_GRAIN_PENDING_DISTRIBUTIO
 /** Sheet parsed successfully but contained no data rows after the header. */
 export const EMPTY_SHEET = 'EMPTY_SHEET' as const;
 
+/** Row-level warning: person column was empty. Row is skipped. */
+export const EMPTY_PERSON = 'EMPTY_PERSON' as const;
+
 export type ParseErrorCode =
   | typeof ERR_US_WEEK_HEADERS
   | typeof ERR_UNKNOWN_LAYOUT
@@ -77,5 +80,6 @@ export type ParseWarningCode =
   | typeof WEEK_GRAIN_PENDING_DISTRIBUTION
   | typeof MONTH_GRAIN_PENDING_DISTRIBUTION
   | typeof EMPTY_SHEET
+  | typeof EMPTY_PERSON
   | typeof HIDDEN_ROWS_SKIPPED
   | typeof MERGED_CELLS_FORWARD_FILLED;

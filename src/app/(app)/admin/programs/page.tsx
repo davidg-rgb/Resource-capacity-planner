@@ -7,6 +7,7 @@
  * Columns per D-17: Name, Description.
  */
 
+import { PersonaGate } from '@/features/personas/persona-route-guard';
 import { AdminRegisterPageShell } from '@/components/admin/AdminRegisterPageShell';
 import { ProgramForm, type ProgramFormValues } from '@/components/admin/forms/ProgramForm';
 import type { RegisterTableColumn } from '@/components/admin/RegisterTable';
@@ -29,12 +30,14 @@ const columns: ReadonlyArray<RegisterTableColumn<ProgramRegisterRow>> = [
 
 export default function AdminProgramsPage() {
   return (
-    <AdminRegisterPageShell<ProgramRegisterRow, ProgramFormValues>
-      entity="program"
-      titleKey="title.program"
-      descriptionKey="description.program"
-      columns={columns}
-      formComponent={ProgramForm}
-    />
+    <PersonaGate allowed={['admin']}>
+      <AdminRegisterPageShell<ProgramRegisterRow, ProgramFormValues>
+        entity="program"
+        titleKey="title.program"
+        descriptionKey="description.program"
+        columns={columns}
+        formComponent={ProgramForm}
+      />
+    </PersonaGate>
   );
 }

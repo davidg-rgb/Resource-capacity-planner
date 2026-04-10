@@ -27,6 +27,7 @@ import {
   parseRowPerEntry,
 } from '../parsers/actuals-excel.parser';
 import {
+  EMPTY_PERSON,
   ERR_MIXED_GRAIN_PIVOT,
   ERR_US_WEEK_HEADERS,
   HIDDEN_ROWS_SKIPPED,
@@ -47,9 +48,8 @@ vi.mock('@/db', () => ({
   },
 }));
 
-const { parseAndStageActuals, commitActualsBatch, rollbackBatch } = await import(
-  '../actuals-import.service'
-);
+const { parseAndStageActuals, commitActualsBatch, rollbackBatch } =
+  await import('../actuals-import.service');
 
 const ORG_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const PERSON_ID = 'b1111111-1111-4111-8111-111111111111';
@@ -525,5 +525,33 @@ describe('TC-IMP-016 rolled-back batch is inert for future chaining', () => {
       .where(eq(schema.importBatches.id, a.batchId));
     expect(row.rolledBackAt).not.toBeNull();
     expect(row.reversalPayload).toBeNull();
+  });
+});
+
+describe('EMPTY_PERSON warning in parseRowPerEntry', () => {
+  it('emits EMPTY_PERSON warning and skips the row when person column is empty', () => {
+    const aoa: unknown[][] = [
+      ['person_name', 'project_name', 'date', 'hours'],
+      ['Anna Tester', 'Atlas', '2026-06-01', 8],
+      ['', 'Atlas', '2026-06-02', 4], // empty person
+      ['Anna Tester', 'Atlas', '2026-06-03', 6],
+    ];
+    const result = parseRowPerEntry(aoa);
+    expect(result.rows).toHaveLength(2);
+    expect(result.warnings.some((w) => w.code === EMPTY_PERSON)).toBe(true);
+    const w = result.warnings.find((w) => w.code === EMPTY_PERSON)!;
+    expect(w.sourceRow).toBe(3); // 1-based: header=1, row1=2, empty-person=3
+    expect(w.message).toContain('person column is empty');
+  });
+
+  it('does not emit EMPTY_PERSON for fully empty trailing rows', () => {
+    const aoa: unknown[][] = [
+      ['person_name', 'project_name', 'date', 'hours'],
+      ['Anna Tester', 'Atlas', '2026-06-01', 8],
+      ['', '', '', null], // fully empty — should be silently skipped
+    ];
+    const result = parseRowPerEntry(aoa);
+    expect(result.rows).toHaveLength(1);
+    expect(result.warnings.some((w) => w.code === EMPTY_PERSON)).toBe(false);
   });
 });

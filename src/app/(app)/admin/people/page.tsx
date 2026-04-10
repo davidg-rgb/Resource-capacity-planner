@@ -9,6 +9,7 @@
  * not `employment_percentage`. We ship what's actually in the schema.
  */
 
+import { PersonaGate } from '@/features/personas/persona-route-guard';
 import { AdminRegisterPageShell } from '@/components/admin/AdminRegisterPageShell';
 import { PersonForm, type PersonFormValues } from '@/components/admin/forms/PersonForm';
 import type { RegisterTableColumn } from '@/components/admin/RegisterTable';
@@ -26,7 +27,11 @@ type PersonRegisterRow = {
 };
 
 export default function AdminPeoplePage() {
-  return <AdminPeopleRegister />;
+  return (
+    <PersonaGate allowed={['admin']}>
+      <AdminPeopleRegister />
+    </PersonaGate>
+  );
 }
 
 function AdminPeopleRegister() {

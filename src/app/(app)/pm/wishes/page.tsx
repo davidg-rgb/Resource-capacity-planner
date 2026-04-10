@@ -7,9 +7,18 @@
 import { useAuth } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
 
+import { PersonaGate } from '@/features/personas/persona-route-guard';
 import { MyWishesPanel } from '@/features/proposals/ui/my-wishes-panel';
 
 export default function PmWishesPage() {
+  return (
+    <PersonaGate allowed={['pm', 'admin']}>
+      <PmWishesInner />
+    </PersonaGate>
+  );
+}
+
+function PmWishesInner() {
   const { userId, isLoaded } = useAuth();
   const tProp = useTranslations('v5.proposals.page');
   const tPm = useTranslations('v5.pm.wishes');

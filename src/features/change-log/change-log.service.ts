@@ -4,7 +4,12 @@
 import { z } from 'zod';
 import { db } from '@/db';
 import { changeLog, changeLogActionEnum, changeLogEntityEnum } from './change-log.schema';
-import type { RecordChangeInput, ChangeLogEntry } from './change-log.types';
+import type {
+  RecordChangeInput,
+  ChangeLogEntry,
+  ChangeLogAction,
+  ChangeLogEntity,
+} from './change-log.types';
 
 const recordChangeInputSchema = z.object({
   orgId: z.string().uuid(),
@@ -42,4 +47,48 @@ export async function recordChange(
     })
     .returning();
   return row as ChangeLogEntry;
+}
+
+/**
+ * Opt-in decorator that wraps a service function in a transaction and
+ * automatically writes a change_log entry on success.
+ *
+ * Usage:
+ *   const result = await withChangeLog('ALLOCATION_EDITED', {
+ *     orgId, actorPersonaId, entity: 'allocation', entityId,
+ *   }, async (tx) => {
+ *     // ... do work inside tx ...
+ *     return { result: updatedRow, previousValue: old, newValue: updated };
+ *   });
+ */
+export async function withChangeLog<T>(
+  action: ChangeLogAction,
+  input: {
+    orgId: string;
+    actorPersonaId: string;
+    entity: ChangeLogEntity;
+    entityId: string;
+    context?: Record<string, unknown>;
+  },
+  fn: (
+    tx: ChangeLogExecutor,
+  ) => Promise<{ result: T; previousValue?: unknown; newValue?: unknown }>,
+): Promise<T> {
+  return db.transaction(async (tx) => {
+    const { result, previousValue, newValue } = await fn(tx as unknown as ChangeLogExecutor);
+    await recordChange(
+      {
+        orgId: input.orgId,
+        actorPersonaId: input.actorPersonaId,
+        entity: input.entity,
+        entityId: input.entityId,
+        action,
+        previousValue: previousValue ?? null,
+        newValue: newValue ?? null,
+        context: input.context ?? null,
+      },
+      tx as unknown as ChangeLogExecutor,
+    );
+    return result;
+  });
 }

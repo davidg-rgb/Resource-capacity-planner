@@ -7,6 +7,7 @@
  * Columns per D-17: Name, Abbreviation (no `color` — not in schema).
  */
 
+import { PersonaGate } from '@/features/personas/persona-route-guard';
 import { AdminRegisterPageShell } from '@/components/admin/AdminRegisterPageShell';
 import { DisciplineForm, type DisciplineFormValues } from '@/components/admin/forms/DisciplineForm';
 import type { RegisterTableColumn } from '@/components/admin/RegisterTable';
@@ -25,12 +26,14 @@ const columns: ReadonlyArray<RegisterTableColumn<DisciplineRegisterRow>> = [
 
 export default function AdminDisciplinesPage() {
   return (
-    <AdminRegisterPageShell<DisciplineRegisterRow, DisciplineFormValues>
-      entity="discipline"
-      titleKey="title.discipline"
-      descriptionKey="description.discipline"
-      columns={columns}
-      formComponent={DisciplineForm}
-    />
+    <PersonaGate allowed={['admin']}>
+      <AdminRegisterPageShell<DisciplineRegisterRow, DisciplineFormValues>
+        entity="discipline"
+        titleKey="title.discipline"
+        descriptionKey="description.discipline"
+        columns={columns}
+        formComponent={DisciplineForm}
+      />
+    </PersonaGate>
   );
 }

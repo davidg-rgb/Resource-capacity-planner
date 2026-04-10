@@ -59,11 +59,10 @@ function StaffPageInner() {
   const { orgId } = useAuth();
   const t = useTranslations('v5.staff');
   const drawer = usePlanVsActualDrawer();
-  const [zoom, setZoom] = useZoom();
+  const [zoom, setZoom] = useZoom({ persona: 'staff', screen: 'schedule' });
 
   // Staff persona carries a personId; admin/rd use empty until they pick.
-  const personId =
-    persona.kind === 'staff' ? persona.personId : '';
+  const personId = persona.kind === 'staff' ? persona.personId : '';
 
   const months = useMemo(() => generateMonthRange(getCurrentMonth(), MONTH_HORIZON), []);
   const startMonth = months[0]!;
@@ -101,10 +100,7 @@ function StaffPageInner() {
       </div>
 
       {!personId && (
-        <div
-          data-testid="staff-no-persona"
-          className="text-on-surface-variant p-4 text-sm"
-        >
+        <div data-testid="staff-no-persona" className="text-on-surface-variant p-4 text-sm">
           {t('noPersonaHint')}
         </div>
       )}
@@ -154,7 +150,7 @@ function StaffScheduleTable({ data, onCellClick }: StaffScheduleTableProps) {
       <table className="min-w-full border-collapse text-sm">
         <thead>
           <tr>
-            <th className="sticky left-0 bg-surface p-2 text-left" />
+            <th className="bg-surface sticky left-0 p-2 text-left" />
             {monthRange.map((mk) => (
               <th key={mk} className="p-2 text-left font-medium">
                 {mk}
@@ -162,18 +158,14 @@ function StaffScheduleTable({ data, onCellClick }: StaffScheduleTableProps) {
             ))}
           </tr>
           <tr data-testid="staff-summary-strip" className="text-on-surface-variant text-xs">
-            <th className="sticky left-0 bg-surface p-2 text-left font-normal">
+            <th className="bg-surface sticky left-0 p-2 text-left font-normal">
               {t('summaryStrip.planned')} / {t('summaryStrip.actual')} /{' '}
               {t('summaryStrip.utilization')}
             </th>
             {monthRange.map((mk) => {
               const s = summaryStrip[mk];
               return (
-                <td
-                  key={mk}
-                  data-testid={`staff-summary-${mk}`}
-                  className="p-2 tabular-nums"
-                >
+                <td key={mk} data-testid={`staff-summary-${mk}`} className="p-2 tabular-nums">
                   {s?.plannedHours.toFixed(0) ?? '0'} / {s?.actualHours.toFixed(0) ?? '0'} /{' '}
                   {s?.utilizationPct ?? 0}%
                 </td>
@@ -184,7 +176,7 @@ function StaffScheduleTable({ data, onCellClick }: StaffScheduleTableProps) {
         <tbody>
           {projects.map((row) => (
             <tr key={row.projectId} data-testid={`staff-row-${row.projectId}`}>
-              <td className="sticky left-0 bg-surface p-2 font-medium">{row.projectName}</td>
+              <td className="bg-surface sticky left-0 p-2 font-medium">{row.projectName}</td>
               {monthRange.map((mk) => {
                 const cell = row.months[mk]!;
                 return (

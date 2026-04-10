@@ -10,9 +10,18 @@
 
 import { useTranslations } from 'next-intl';
 
+import { PersonaGate } from '@/features/personas/persona-route-guard';
 import { ChangeLogFeed } from '@/components/change-log/change-log-feed';
 
 export default function AdminLandingPage() {
+  return (
+    <PersonaGate allowed={['admin']}>
+      <AdminLandingInner />
+    </PersonaGate>
+  );
+}
+
+function AdminLandingInner() {
   const t = useTranslations('v5.admin.landing');
   return (
     <div className="space-y-4 p-4" data-testid="admin-landing-page">

@@ -155,55 +155,122 @@ export async function getPersonMonthUtilization(
 
 export interface GetCapacityBreakdownArgs {
   orgId: string;
-  scope: 'person';
+  scope: 'person' | 'project' | 'department';
   scopeId: string;
   monthKey: string; // 'YYYY-MM'
 }
 
 /**
- * Per-project breakdown for a single (person, month) cell. Used by:
- *   - the LM heatmap drill-down popover, and
- *   - the proposal impact preview (Task 4) to derive the "before" hours.
+ * "Why is this cell red?" — return contributing projects/people.
+ *
+ * - scope='person': breakdown by project (which projects consume this person's hours)
+ * - scope='project': breakdown by person (who is allocated to this project)
+ * - scope='department': breakdown by person (who in this dept has allocations)
  *
  * Rows are sorted by hours desc so the largest contributor renders first.
  */
 export async function getCapacityBreakdown(
   args: GetCapacityBreakdownArgs,
 ): Promise<BreakdownRow[]> {
-  if (args.scope !== 'person') {
-    throw new Error(`Unsupported breakdown scope: ${args.scope}`);
-  }
   const monthFirstDay = `${args.monthKey}-01`;
 
+  if (args.scope === 'person') {
+    const rows = await db
+      .select({
+        projectId: schema.allocations.projectId,
+        projectName: schema.projects.name,
+        hours: schema.allocations.hours,
+      })
+      .from(schema.allocations)
+      .innerJoin(schema.projects, eq(schema.projects.id, schema.allocations.projectId))
+      .where(
+        and(
+          eq(schema.allocations.organizationId, args.orgId),
+          eq(schema.allocations.personId, args.scopeId),
+          eq(schema.allocations.month, monthFirstDay),
+        ),
+      );
+
+    const merged = new Map<string, BreakdownRow>();
+    for (const r of rows) {
+      const existing = merged.get(r.projectId);
+      if (existing) {
+        existing.hours += Number(r.hours);
+      } else {
+        merged.set(r.projectId, {
+          projectId: r.projectId,
+          projectName: r.projectName,
+          hours: Number(r.hours),
+        });
+      }
+    }
+    return Array.from(merged.values()).sort((a, b) => b.hours - a.hours);
+  }
+
+  if (args.scope === 'project') {
+    const rows = await db
+      .select({
+        personId: schema.allocations.personId,
+        firstName: schema.people.firstName,
+        lastName: schema.people.lastName,
+        hours: schema.allocations.hours,
+      })
+      .from(schema.allocations)
+      .innerJoin(schema.people, eq(schema.people.id, schema.allocations.personId))
+      .where(
+        and(
+          eq(schema.allocations.organizationId, args.orgId),
+          eq(schema.allocations.projectId, args.scopeId),
+          eq(schema.allocations.month, monthFirstDay),
+        ),
+      );
+
+    const merged = new Map<string, BreakdownRow>();
+    for (const r of rows) {
+      const existing = merged.get(r.personId);
+      if (existing) {
+        existing.hours += Number(r.hours);
+      } else {
+        merged.set(r.personId, {
+          personId: r.personId,
+          personName: `${r.firstName} ${r.lastName}`.trim(),
+          hours: Number(r.hours),
+        });
+      }
+    }
+    return Array.from(merged.values()).sort((a, b) => b.hours - a.hours);
+  }
+
+  // scope === 'department'
   const rows = await db
     .select({
-      projectId: schema.allocations.projectId,
-      projectName: schema.projects.name,
+      personId: schema.allocations.personId,
+      firstName: schema.people.firstName,
+      lastName: schema.people.lastName,
       hours: schema.allocations.hours,
     })
     .from(schema.allocations)
-    .innerJoin(schema.projects, eq(schema.projects.id, schema.allocations.projectId))
+    .innerJoin(schema.people, eq(schema.people.id, schema.allocations.personId))
     .where(
       and(
         eq(schema.allocations.organizationId, args.orgId),
-        eq(schema.allocations.personId, args.scopeId),
+        eq(schema.people.departmentId, args.scopeId),
         eq(schema.allocations.month, monthFirstDay),
       ),
     );
 
   const merged = new Map<string, BreakdownRow>();
   for (const r of rows) {
-    const existing = merged.get(r.projectId);
+    const existing = merged.get(r.personId);
     if (existing) {
       existing.hours += Number(r.hours);
     } else {
-      merged.set(r.projectId, {
-        projectId: r.projectId,
-        projectName: r.projectName,
+      merged.set(r.personId, {
+        personId: r.personId,
+        personName: `${r.firstName} ${r.lastName}`.trim(),
         hours: Number(r.hours),
       });
     }
   }
-
   return Array.from(merged.values()).sort((a, b) => b.hours - a.hours);
 }

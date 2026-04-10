@@ -60,7 +60,7 @@ export function distribute(totalHours: number, dayCount: number): number[] {
 }
 
 /** Format a UTC Date as 'YYYY-MM-DD'. */
-function toIsoDateString(d: Date): string {
+export function toIsoDateString(d: Date): string {
   const y = d.getUTCFullYear();
   const m = String(d.getUTCMonth() + 1).padStart(2, '0');
   const day = String(d.getUTCDate()).padStart(2, '0');
@@ -298,4 +298,122 @@ export function rangeYears(monthRange: string[]): string[] {
     }
   }
   return out;
+}
+
+// ---------------------------------------------------------------------------
+// v5.0 — Convenience wrappers (ARCHITECTURE §6.1)
+// ---------------------------------------------------------------------------
+
+const ISO_DATE_RE = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
+
+/**
+ * Composite ISO week info for a given date.
+ * Wraps `getISOWeek` + `getISOWeekYear` into a single call.
+ */
+export function isoWeek(date: Date): { year: number; week: number } {
+  return { year: getISOWeekYear(date), week: getISOWeek(date) };
+}
+
+/**
+ * Format a UTC Date as 'YYYY-MM-DD'.
+ * Public alias of `toIsoDateString`.
+ */
+export function isoDate(date: Date): string {
+  return toIsoDateString(date);
+}
+
+/**
+ * Parse a 'YYYY-MM-DD' string into a Date at 00:00 UTC.
+ * @throws ValidationError(code='INVALID_DATE') if the string doesn't match.
+ */
+export function parseIsoDate(s: string): Date {
+  if (!ISO_DATE_RE.test(s)) {
+    throw new ValidationError(`Invalid ISO date string: ${s}`, 'INVALID_DATE');
+  }
+  const [y, m, d] = s.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
+}
+
+/**
+ * Return the month key 'YYYY-MM' for a given Date (reads UTC fields).
+ */
+export function monthKey(date: Date): string {
+  const y = date.getUTCFullYear();
+  const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+  return `${y}-${m}`;
+}
+
+/**
+ * Return the quarter key 'YYYY-Qn' for a given Date.
+ * Delegates to `quarterKeyForMonth` after deriving the month key.
+ */
+export function quarterKey(date: Date): string {
+  return quarterKeyForMonth(monthKey(date));
+}
+
+/**
+ * Enumerate month keys ('YYYY-MM') from `start` to `end`, inclusive.
+ * Both endpoints are clamped to their month.
+ */
+export function rangeMonths(start: Date, end: Date): string[] {
+  const out: string[] = [];
+  let y = start.getUTCFullYear();
+  let m = start.getUTCMonth();
+  const ey = end.getUTCFullYear();
+  const em = end.getUTCMonth();
+  while (y < ey || (y === ey && m <= em)) {
+    out.push(`${y}-${String(m + 1).padStart(2, '0')}`);
+    m++;
+    if (m > 11) {
+      m = 0;
+      y++;
+    }
+  }
+  return out;
+}
+
+/**
+ * Enumerate ISO weeks from `start` to `end`, inclusive.
+ * Handles 53-week years correctly.
+ */
+export function rangeWeeks(start: Date, end: Date): { year: number; week: number }[] {
+  const out: { year: number; week: number }[] = [];
+  let { year: cy, week: cw } = isoWeek(start);
+  const { year: ey, week: ew } = isoWeek(end);
+  while (cy < ey || (cy === ey && cw <= ew)) {
+    out.push({ year: cy, week: cw });
+    cw++;
+    if (cw > getISOWeeksInYear(cy)) {
+      cw = 1;
+      cy++;
+    }
+  }
+  return out;
+}
+
+/**
+ * Month key for "now". Reads `process.env.NC_TEST_NOW` (YYYY-MM-DD) if set,
+ * otherwise uses the real clock.
+ */
+export function currentMonthKey(): string {
+  const envNow = typeof process !== 'undefined' ? process.env.NC_TEST_NOW : undefined;
+  if (envNow && ISO_DATE_RE.test(envNow)) {
+    return envNow.slice(0, 7);
+  }
+  return monthKey(new Date());
+}
+
+/**
+ * Format an ISO week as a human-readable label.
+ *   sv → "v.14" or "v.14 2026" (when year differs from current)
+ *   en → "W14" or "W14 2026"
+ */
+export function formatWeekLabel(year: number, week: number, locale: 'sv' | 'en'): string {
+  const now = new Date();
+  const currentYear = getISOWeekYear(now);
+  const prefix = locale === 'sv' ? `v.${week}` : `W${week}`;
+  if (year !== currentYear) {
+    return `${prefix} ${year}`;
+  }
+  return prefix;
 }

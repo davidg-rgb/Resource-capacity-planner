@@ -29,8 +29,12 @@ export interface UtilizationMap {
 }
 
 export interface BreakdownRow {
-  projectId: string;
-  projectName: string;
+  /** Present when scope='person' — breakdown by project */
+  projectId?: string;
+  projectName?: string;
+  /** Present when scope='project' or scope='department' — breakdown by person */
+  personId?: string;
+  personName?: string;
   hours: number;
 }
 

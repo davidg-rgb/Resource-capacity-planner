@@ -22,6 +22,20 @@ export {
   distribute,
   workDaysInIsoWeek,
   workDaysInMonth,
+  quarterKeyForMonth,
+  yearKeyForMonth,
+  rangeQuarters,
+  rangeYears,
+  isoWeek,
+  isoDate,
+  parseIsoDate,
+  monthKey,
+  quarterKey,
+  rangeMonths,
+  rangeWeeks,
+  currentMonthKey,
+  formatWeekLabel,
+  toIsoDateString,
 } from './iso-calendar';
 
 export { isSwedishHoliday, getSwedishHolidays } from './swedish-holidays';

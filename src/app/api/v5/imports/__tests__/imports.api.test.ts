@@ -28,7 +28,9 @@ vi.mock('@/lib/auth', () => ({
 const { POST: parseRoute } = await import('../parse/route');
 const { GET: previewRoute } = await import('../[sessionId]/preview/route');
 const { POST: commitRoute } = await import('../[sessionId]/commit/route');
+const { DELETE: deleteRoute } = await import('../[sessionId]/route');
 const { POST: rollbackRoute } = await import('../batches/[batchId]/rollback/route');
+const { GET: batchesRoute } = await import('../batches/route');
 
 const ORG_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const OTHER_ORG_ID = 'a2222222-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -323,5 +325,62 @@ describe('Tenant isolation: preview a sessionId from another org returns 404', (
       params: Promise.resolve({ sessionId }),
     });
     expect(res.status).toBe(404);
+  });
+});
+
+describe('DELETE /api/v5/imports/{sessionId}: cancel staged session', () => {
+  it('returns 204 and deletes the staged session', async () => {
+    const sessionId = await parseAndGetSessionId([['Anna Tester', 'Atlas', '2026-06-26', 8]]);
+    const res = await deleteRoute(new Request('http://localhost', { method: 'DELETE' }) as never, {
+      params: Promise.resolve({ sessionId }),
+    });
+    expect(res.status).toBe(204);
+
+    // Verify session is gone
+    const previewRes = await previewRoute(new Request('http://localhost') as never, {
+      params: Promise.resolve({ sessionId }),
+    });
+    expect(previewRes.status).toBe(404);
+  });
+
+  it('returns 409 when session is already committed', async () => {
+    const sessionId = await parseAndGetSessionId([['Anna Tester', 'Atlas', '2026-06-27', 8]]);
+    await commitRoute(
+      new Request('http://localhost', {
+        method: 'POST',
+        body: JSON.stringify({ overrideManualEdits: false, overrideUnrolledImports: false }),
+      }) as never,
+      { params: Promise.resolve({ sessionId }) },
+    );
+    const res = await deleteRoute(new Request('http://localhost', { method: 'DELETE' }) as never, {
+      params: Promise.resolve({ sessionId }),
+    });
+    expect(res.status).toBe(409);
+  });
+});
+
+describe('GET /api/v5/imports/batches: list committed batches', () => {
+  it('returns an empty array when no batches exist', async () => {
+    const res = await batchesRoute(new Request('http://localhost/api/v5/imports/batches') as never);
+    expect(res.status).toBe(200);
+    const json = (await res.json()) as unknown[];
+    expect(json).toEqual([]);
+  });
+
+  it('returns batches after a commit', async () => {
+    const sessionId = await parseAndGetSessionId([['Anna Tester', 'Atlas', '2026-06-28', 8]]);
+    await commitRoute(
+      new Request('http://localhost', {
+        method: 'POST',
+        body: JSON.stringify({ overrideManualEdits: false, overrideUnrolledImports: false }),
+      }) as never,
+      { params: Promise.resolve({ sessionId }) },
+    );
+    const res = await batchesRoute(new Request('http://localhost/api/v5/imports/batches') as never);
+    expect(res.status).toBe(200);
+    const json = (await res.json()) as Array<{ id: string; fileName: string }>;
+    expect(json).toHaveLength(1);
+    expect(json[0].id).toBeDefined();
+    expect(json[0].fileName).toBe('test.xlsx');
   });
 });

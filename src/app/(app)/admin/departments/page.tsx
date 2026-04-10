@@ -9,6 +9,7 @@
  * Columns per D-17: Name (no `parent` — column does not exist in schema).
  */
 
+import { PersonaGate } from '@/features/personas/persona-route-guard';
 import { AdminRegisterPageShell } from '@/components/admin/AdminRegisterPageShell';
 import { DepartmentForm, type DepartmentFormValues } from '@/components/admin/forms/DepartmentForm';
 import type { RegisterTableColumn } from '@/components/admin/RegisterTable';
@@ -25,12 +26,14 @@ const columns: ReadonlyArray<RegisterTableColumn<DepartmentRegisterRow>> = [
 
 export default function AdminDepartmentsPage() {
   return (
-    <AdminRegisterPageShell<DepartmentRegisterRow, DepartmentFormValues>
-      entity="department"
-      titleKey="title.department"
-      descriptionKey="description.department"
-      columns={columns}
-      formComponent={DepartmentForm}
-    />
+    <PersonaGate allowed={['admin']}>
+      <AdminRegisterPageShell<DepartmentRegisterRow, DepartmentFormValues>
+        entity="department"
+        titleKey="title.department"
+        descriptionKey="description.department"
+        columns={columns}
+        formComponent={DepartmentForm}
+      />
+    </PersonaGate>
   );
 }

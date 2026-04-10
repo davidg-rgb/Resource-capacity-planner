@@ -76,7 +76,7 @@ function LineManagerTimelineInner() {
   const { persona } = usePersona();
   const t = useTranslations('v5.lineManager');
   const queryClient = useQueryClient();
-  const [zoom, setZoom] = useZoom();
+  const [zoom, setZoom] = useZoom({ persona: 'line-manager', screen: 'timeline' });
 
   const departmentId = persona.kind === 'line-manager' ? persona.departmentId : '';
 

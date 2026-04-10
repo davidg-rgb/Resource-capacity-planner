@@ -18,7 +18,7 @@ vi.mock('@/db', () => ({
   },
 }));
 
-const { parseAndStageActuals, previewStagedBatch, commitActualsBatch } =
+const { parseAndStageActuals, previewStagedBatch, commitActualsBatch, cancelStaged, listBatches } =
   await import('../actuals-import.service');
 
 const ORG_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -340,5 +340,59 @@ describe('Tenant isolation: previewStagedBatch from another org returns NotFound
   it('throws NotFoundError when called with the wrong orgId', async () => {
     const sessionId = await stage([['Anna Tester', 'Atlas', '2026-06-11', 8]]);
     await expect(previewStagedBatch(OTHER_ORG_ID, sessionId)).rejects.toThrow();
+  });
+});
+
+describe('cancelStaged: deletes a staged session', () => {
+  it('deletes the import_sessions row when status is staged', async () => {
+    const sessionId = await stage([['Anna Tester', 'Atlas', '2026-06-12', 8]]);
+    await cancelStaged({ orgId: ORG_ID, sessionId });
+    const rows = await testDb
+      .select()
+      .from(schema.importSessions)
+      .where(eq(schema.importSessions.id, sessionId));
+    expect(rows).toHaveLength(0);
+  });
+
+  it('throws ConflictError when session is already committed', async () => {
+    const sessionId = await stage([['Anna Tester', 'Atlas', '2026-06-13', 8]]);
+    await commitActualsBatch({ ...baseCommit, sessionId });
+    await expect(cancelStaged({ orgId: ORG_ID, sessionId })).rejects.toThrow(/not in staged/i);
+  });
+
+  it('throws NotFoundError for a non-existent session', async () => {
+    await expect(
+      cancelStaged({ orgId: ORG_ID, sessionId: 'deadbeef-dead-4ead-8ead-deaddeadbeef' }),
+    ).rejects.toThrow();
+  });
+});
+
+describe('listBatches: returns committed batches in reverse chronological order', () => {
+  it('returns an empty array when no batches exist', async () => {
+    const result = await listBatches({ orgId: ORG_ID });
+    expect(result).toEqual([]);
+  });
+
+  it('returns batches ordered by committedAt desc', async () => {
+    const s1 = await stage([['Anna Tester', 'Atlas', '2026-06-14', 8]]);
+    await commitActualsBatch({ ...baseCommit, sessionId: s1 });
+    const s2 = await stage([['Anna Tester', 'Atlas', '2026-06-15', 4]]);
+    await commitActualsBatch({ ...baseCommit, sessionId: s2, overrideUnrolledImports: true });
+
+    const result = await listBatches({ orgId: ORG_ID });
+    expect(result).toHaveLength(2);
+    expect(new Date(result[0].committedAt).getTime()).toBeGreaterThanOrEqual(
+      new Date(result[1].committedAt).getTime(),
+    );
+  });
+
+  it('respects the limit parameter', async () => {
+    const s1 = await stage([['Anna Tester', 'Atlas', '2026-06-16', 8]]);
+    await commitActualsBatch({ ...baseCommit, sessionId: s1 });
+    const s2 = await stage([['Anna Tester', 'Atlas', '2026-06-17', 4]]);
+    await commitActualsBatch({ ...baseCommit, sessionId: s2, overrideUnrolledImports: true });
+
+    const result = await listBatches({ orgId: ORG_ID, limit: 1 });
+    expect(result).toHaveLength(1);
   });
 });

@@ -12,6 +12,7 @@ import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
 
 import { usePersona } from '@/features/personas/persona.context';
+import { PersonaGate } from '@/features/personas/persona-route-guard';
 import type { PmOverviewResult } from '@/features/planning/planning.read';
 
 async function fetchPmHome(personId: string): Promise<PmOverviewResult> {
@@ -21,6 +22,14 @@ async function fetchPmHome(personId: string): Promise<PmOverviewResult> {
 }
 
 export default function PmHomePage() {
+  return (
+    <PersonaGate allowed={['pm', 'admin']}>
+      <PmHomeInner />
+    </PersonaGate>
+  );
+}
+
+function PmHomeInner() {
   const { isLoaded } = useAuth();
   const { persona } = usePersona();
   const t = useTranslations('v5.pm.home');

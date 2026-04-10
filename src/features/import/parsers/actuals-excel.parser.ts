@@ -21,6 +21,7 @@ import { ValidationError } from '@/lib/errors';
 import { getISOWeek, getISOWeekYear, workDaysInIsoWeek, workDaysInMonth } from '@/lib/time';
 
 import {
+  EMPTY_PERSON,
   EMPTY_SHEET,
   ERR_BAD_DATE,
   ERR_BAD_HOURS,
@@ -231,6 +232,16 @@ export function parseRowPerEntry(rows: unknown[][]): {
 
     // Skip fully empty trailing rows silently
     if (!personName && !projectName && !dateRaw && (hoursRaw == null || hoursRaw === '')) {
+      continue;
+    }
+
+    // Emit warning and skip when person column is empty but row is not fully empty
+    if (!personName) {
+      warnings.push({
+        code: EMPTY_PERSON,
+        message: `Row ${sourceRow}: person column is empty — row skipped`,
+        sourceRow,
+      });
       continue;
     }
 

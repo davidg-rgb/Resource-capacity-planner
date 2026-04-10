@@ -5,8 +5,13 @@
 // (ModuleRegistry + AllCommunityModule + AgGridReact). Rows = people,
 // columns = months (from monthRange), cell renderer = PmTimelineCell.
 
-import { useMemo } from 'react';
-import { AllCommunityModule, ModuleRegistry, type ICellRendererParams } from 'ag-grid-community';
+import { useCallback, useMemo } from 'react';
+import {
+  AllCommunityModule,
+  ModuleRegistry,
+  type GridReadyEvent,
+  type ICellRendererParams,
+} from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 
 import type { CellView, PmTimelineView } from '@/features/planning/planning.read';
@@ -95,6 +100,21 @@ export function TimelineGrid(props: TimelineGridProps) {
     [view.project.id, currentMonth, onAllocationPatch],
   );
 
+  /** TC-UI-007: scroll the current month column into view on first render. */
+  const handleGridReady = useCallback(
+    (event: GridReadyEvent) => {
+      if (!currentMonth) return;
+      const colId = `m_${currentMonth}`;
+      // ensureColumnVisible is a no-op if the column doesn't exist.
+      try {
+        event.api.ensureColumnVisible(colId, 'middle');
+      } catch {
+        // Column may not be in the current month range — ignore silently.
+      }
+    },
+    [currentMonth],
+  );
+
   return (
     <div
       className="ag-theme-custom border-outline-variant/15 bg-surface-container-lowest overflow-hidden rounded-sm border shadow-sm"
@@ -107,6 +127,7 @@ export function TimelineGrid(props: TimelineGridProps) {
         columnDefs={columnDefs}
         components={components}
         context={gridContext}
+        onGridReady={handleGridReady}
         getRowId={(params) => params.data.personId}
         rowHeight={100}
         defaultColDef={{ sortable: false, filter: false, resizable: true }}

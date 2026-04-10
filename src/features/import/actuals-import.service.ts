@@ -21,7 +21,7 @@
 // batch restores values to the pre-FIRST-batch state. This prevents the
 // "two imports → rollback corruption" failure mode.
 
-import { and, eq, inArray, isNull, sql } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
 
 import { db } from '@/db';
 import { actualEntries, importBatches, importSessions } from '@/db/schema';
@@ -33,10 +33,12 @@ import {
   ERR_PRIOR_BATCH_ACTIVE,
   ERR_ROLLBACK_WINDOW_EXPIRED,
   ERR_SESSION_ALREADY_COMMITTED,
+  ERR_SESSION_NOT_STAGED,
   ERR_UNRESOLVED_NAMES,
   ROLLBACK_WINDOW_MS,
   type CommitInput,
   type CommitResult,
+  type ImportBatch,
   type ParseAndStageInput,
   type ParseAndStageResult,
   type PreviewResult,
@@ -119,6 +121,56 @@ export async function previewStagedBatch(
     rowsSkippedPriorBatch: outcome.counts.rowsSkippedPriorBatch,
     unmatchedNames: outcome.unmatchedNames,
   };
+}
+
+// ---------------------------------------------------------------------------
+// cancelStaged
+// ---------------------------------------------------------------------------
+
+export async function cancelStaged(input: { orgId: string; sessionId: string }): Promise<void> {
+  const session = await loadSessionOrThrow(input.orgId, input.sessionId);
+  if (session.status !== 'staged') {
+    throw new ConflictError('Session is not in staged status and cannot be cancelled', {
+      code: ERR_SESSION_NOT_STAGED,
+      sessionId: input.sessionId,
+      currentStatus: session.status,
+    });
+  }
+  await db
+    .delete(importSessions)
+    .where(
+      and(eq(importSessions.id, input.sessionId), eq(importSessions.organizationId, input.orgId)),
+    );
+}
+
+// ---------------------------------------------------------------------------
+// listBatches
+// ---------------------------------------------------------------------------
+
+export async function listBatches(input: {
+  orgId: string;
+  limit?: number;
+}): Promise<ImportBatch[]> {
+  const rows = await db
+    .select({
+      id: importBatches.id,
+      importSessionId: importBatches.importSessionId,
+      fileName: importBatches.fileName,
+      committedBy: importBatches.committedBy,
+      committedAt: importBatches.committedAt,
+      rowsInserted: importBatches.rowsInserted,
+      rowsUpdated: importBatches.rowsUpdated,
+      rowsSkippedManual: importBatches.rowsSkippedManual,
+      rowsSkippedPriorBatch: importBatches.rowsSkippedPriorBatch,
+      rolledBackAt: importBatches.rolledBackAt,
+      supersededAt: importBatches.supersededAt,
+    })
+    .from(importBatches)
+    .where(eq(importBatches.organizationId, input.orgId))
+    .orderBy(desc(importBatches.committedAt))
+    .limit(input.limit ?? 50);
+
+  return rows;
 }
 
 // ---------------------------------------------------------------------------

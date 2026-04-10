@@ -4,7 +4,7 @@
 // Reused by Phase 40 PlanVsActualCell. Mirrors ProposalCellEditor logic but
 // without any ag-grid coupling so it can be embedded in arbitrary timelines.
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { useCreateProposal } from '../use-proposals';
 
@@ -23,6 +23,23 @@ export function ProposalCell(props: ProposalCellProps) {
   const [note, setNote] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const createProposal = useCreateProposal();
+
+  // TC-UI-002d: guard against navigating away with unsaved proposal draft.
+  const isDirty = hours !== props.initialHours || note.trim().length > 0;
+
+  useEffect(() => {
+    if (!isDirty) return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [isDirty]);
+
+  const handleCancel = useCallback(() => {
+    if (isDirty && !window.confirm('Discard unsaved proposal?')) return;
+    props.onCancelled?.();
+  }, [isDirty, props]);
 
   async function handleSubmit() {
     setError(null);
@@ -80,11 +97,7 @@ export function ProposalCell(props: ProposalCellProps) {
         >
           {createProposal.isPending ? '…' : 'Submit wish'}
         </button>
-        <button
-          type="button"
-          onClick={() => props.onCancelled?.()}
-          className="rounded border px-2 py-1 text-xs"
-        >
+        <button type="button" onClick={handleCancel} className="rounded border px-2 py-1 text-xs">
           Cancel
         </button>
       </div>
