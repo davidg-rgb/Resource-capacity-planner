@@ -34,7 +34,7 @@ beforeAll(async () => {
     DO $$ BEGIN
       CREATE TYPE change_log_entity AS ENUM (
         'allocation','proposal','actual_entry','person','project',
-        'department','discipline','import_batch'
+        'department','discipline','import_batch','program'
       );
     EXCEPTION WHEN duplicate_object THEN null; END $$;
   `);
@@ -45,7 +45,8 @@ beforeAll(async () => {
         'PROPOSAL_SUBMITTED','PROPOSAL_APPROVED','PROPOSAL_REJECTED',
         'PROPOSAL_WITHDRAWN','PROPOSAL_EDITED',
         'ACTUALS_BATCH_COMMITTED','ACTUALS_BATCH_ROLLED_BACK',
-        'REGISTER_ROW_CREATED','REGISTER_ROW_UPDATED','REGISTER_ROW_DELETED'
+        'REGISTER_ROW_CREATED','REGISTER_ROW_UPDATED','REGISTER_ROW_DELETED',
+        'ACTUAL_UPSERTED'
       );
     EXCEPTION WHEN duplicate_object THEN null; END $$;
   `);

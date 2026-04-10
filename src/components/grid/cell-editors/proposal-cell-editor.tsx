@@ -50,7 +50,7 @@ export const ProposalCellEditor = forwardRef(function ProposalCellEditor(
     // TC-UI-002d: confirm discard if the user has unsaved changes.
     isCancelAfterEnd: () => {
       if (isDirty) {
-        return window.confirm('Discard unsaved proposal?');
+        return window.confirm(t('editor.discardConfirm'));
       }
       return true;
     },
@@ -118,7 +118,7 @@ export const ProposalCellEditor = forwardRef(function ProposalCellEditor(
         <button
           type="button"
           onClick={() => {
-            if (isDirty && !window.confirm('Discard unsaved proposal?')) return;
+            if (isDirty && !window.confirm(t('editor.discardConfirm'))) return;
             props.api.stopEditing(true);
           }}
           className="rounded border px-2 py-1 text-xs"

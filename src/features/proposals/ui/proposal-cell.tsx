@@ -5,6 +5,7 @@
 // without any ag-grid coupling so it can be embedded in arbitrary timelines.
 
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 import { useCreateProposal } from '../use-proposals';
 
@@ -23,6 +24,7 @@ export function ProposalCell(props: ProposalCellProps) {
   const [note, setNote] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
   const createProposal = useCreateProposal();
+  const t = useTranslations('v5.proposals');
 
   // TC-UI-002d: guard against navigating away with unsaved proposal draft.
   const isDirty = hours !== props.initialHours || note.trim().length > 0;
@@ -37,9 +39,9 @@ export function ProposalCell(props: ProposalCellProps) {
   }, [isDirty]);
 
   const handleCancel = useCallback(() => {
-    if (isDirty && !window.confirm('Discard unsaved proposal?')) return;
+    if (isDirty && !window.confirm(t('editor.discardConfirm'))) return;
     props.onCancelled?.();
-  }, [isDirty, props]);
+  }, [isDirty, props, t]);
 
   async function handleSubmit() {
     setError(null);
@@ -53,7 +55,7 @@ export function ProposalCell(props: ProposalCellProps) {
       });
       props.onSubmitted?.();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Submit wish failed';
+      const msg = err instanceof Error ? err.message : t('editor.submitFailed');
       setError(msg);
     }
   }

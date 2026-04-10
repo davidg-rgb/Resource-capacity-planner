@@ -838,7 +838,8 @@
         "hoursAria": "Föreslagna timmar",
         "noteAria": "Notering",
         "missingProject": "Saknar projektId",
-        "submitFailed": "Det gick inte att skicka önskemålet"
+        "submitFailed": "Det gick inte att skicka önskemålet",
+        "discardConfirm": "Vill du kassera det osparade önskemålet?"
       },
       "rejectModal": {
         "title": "Avvisa önskemål",

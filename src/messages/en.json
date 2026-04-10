@@ -773,7 +773,8 @@
         "hoursAria": "Proposed hours",
         "noteAria": "Note",
         "missingProject": "Missing projectId",
-        "submitFailed": "Submit wish failed"
+        "submitFailed": "Submit wish failed",
+        "discardConfirm": "Discard unsaved proposal?"
       },
       "rejectModal": {
         "title": "Reject proposal",
