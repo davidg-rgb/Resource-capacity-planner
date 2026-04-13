@@ -6,7 +6,7 @@
 - **v2.0 Visibility & Insights** -- Phases 11-17 (shipped 2026-03-28) | [Archive](v2.0-ROADMAP.md)
 - **v3.0 Switch from Excel** -- Phases 18-22 (shipped 2026-03-30)
 - **v4.0 Dashboard Visualizations & Customization** -- Phases 23-32 (shipped 2026-04-01)
-- **v5.0 Plan vs Actual + Approval Workflow** -- Phases 33-45 (in progress)
+- **v5.0 Plan vs Actual + Approval Workflow** -- Phases 33-47 (shipped 2026-04-10) | 3-round architecture review
 
 ## Phases
 
@@ -80,7 +80,8 @@
 - [x] **Phase 44: API hardening + test contract fill** — Every TC-* assertion from §15 has a passing automated test; AppError taxonomy coverage (completed 2026-04-09, APPROVED-WITH-DEFERRALS; TC-E2E Playwright infra deferred to Phase 46)
 - [x] **Phase 45: Launch gate — PDF export bug fix** — Swapped html2canvas for html-to-image@^1.11.13; 7/9 widget families fixed; 2 residuals (Department Capacity Gauges, Availability Finder) deferred to Phase 46 (completed 2026-04-09 LAUNCH-01-WITH-DEFERRALS)
 - [x] **Phase 46: PDF widget rendering polish** — Capacity Gauges (button-filter preservation) + Availability Finder (capture height cap + chartImage maxHeight 350→600). All 9/9 widgets render correctly. Playwright E2E split to Phase 47. (completed 2026-04-09 APPROVED)
-- [x] **Phase 47: Playwright E2E infrastructure** — @playwright/test installed, NODE_ENV=test Clerk bypass, nc_e2e database bootstrap, /api/test/seed triple-gated route, persona harness, 12 TC-E2E-* spec files, CI extended with Vitest + Playwright jobs, TC-E2E deferral closed. (completed 2026-04-09, APPROVED)
+- [x] **Phase 47: Playwright E2E infrastructure** — @playwright/test installed, NODE_ENV=test Clerk bypass, nc_e2e database bootstrap, /api/test/seed triple-gated route, persona harness, 12 TC-E2E-* spec files, CI extended with Vitest + Playwright jobs, TC-E2E deferral closed. (completed 2026-04-09 APPROVED)
+- [x] **v5.0 Architecture Review** — 3-round conformance review (iter 1: 6 blockers, iter 2: 5 bugs, iter 3: doc drift + final fixes). All findings closed. (completed 2026-04-10)
 
 ## Phase Details
 
@@ -271,7 +272,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 33 -> 34 -> ... -> 45
+Phases execute in numeric order: 33 -> 34 -> ... -> 47
 
 | Phase | Milestone | Plans | Status | Completed |
 |-------|-----------|-------|--------|-----------|
@@ -286,13 +287,16 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 45
 | 36. v5.0 schema migrations | v5.0 | 1/1 | Complete    | 2026-04-07 |
 | 37. Actuals layer | v5.0 | 2/2 | Complete    | 2026-04-07 |
 | 38. Excel import pipeline | v5.0 | 3/3 | Complete    | 2026-04-07 |
-| 39. Proposal / approval workflow | v5.0 | 8/10 | In Progress|  |
-| 40. Persona views Part 1 — PM | v5.0 | 5/5 | Complete   | 2026-04-08 |
-| 41. Persona views Part 2 — Line Manager | v5.0 | 5/5 | Complete   | 2026-04-08 |
-| 42. Persona views Part 3 — Staff/R&D/zoom | v5.0 | 4/4 | Complete   | 2026-04-08 |
-| 43. Admin register maintenance | v5.0 | 3/4 | In Progress|  |
-| 44. API hardening + test contract fill | v5.0 | 10/14 | In Progress|  |
+| 39. Proposal / approval workflow | v5.0 | 10/10 | Complete | 2026-04-08 |
+| 40. Persona views Part 1 — PM | v5.0 | 5/5 | Complete | 2026-04-08 |
+| 41. Persona views Part 2 — Line Manager | v5.0 | 5/5 | Complete | 2026-04-08 |
+| 42. Persona views Part 3 — Staff/R&D/zoom | v5.0 | 4/4 | Complete | 2026-04-08 |
+| 43. Admin register maintenance | v5.0 | 4/4 | Complete | 2026-04-08 |
+| 44. API hardening + test contract fill | v5.0 | 14/14 | Complete (with deferrals) | 2026-04-09 |
 | 45. Launch gate — PDF export bug fix | v5.0 | 1/1 | Complete (with deferrals) | 2026-04-09 |
+| 46. PDF widget rendering polish | v5.0 | 1/1 | Complete | 2026-04-09 |
+| 47. Playwright E2E infrastructure | v5.0 | 10/10 | Complete | 2026-04-09 |
+| v5.0 Architecture Review | v5.0 | — | Complete (3 iterations) | 2026-04-10 |
 
 ---
 
@@ -300,6 +304,6 @@ _60 v1 requirements shipped across 10 phases, 26 plans._
 _38 v2 requirements across 7 phases. Coverage: 38/38._
 _15 v3 requirements across 5 phases. Coverage: 15/15._
 _v4.0 dashboard visualizations shipped across phases 23-32._
-_38 v5.0 requirements + 1 launch gate across 13 phases (33-45). Coverage: 39/39 mapped._
+_38 v5.0 requirements + 1 launch gate across 15 phases (33-47) + 3-round arch review. Coverage: 39/39 mapped._
 
-_Last updated: 2026-04-07 — v5.0 roadmap created_
+_Last updated: 2026-04-13 — v5.0 milestone closed_

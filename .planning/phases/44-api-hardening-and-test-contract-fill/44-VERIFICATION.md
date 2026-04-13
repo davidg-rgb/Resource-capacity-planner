@@ -1,18 +1,12 @@
 ---
 phase: 44-api-hardening-and-test-contract-fill
 verified: 2026-04-09T14:00:00Z
-status: gaps_found
-score: 3/4 success criteria verified
-verdict: APPROVED-WITH-DEFERRALS
-gaps:
-  - truth: "Every §15 TC-* has a passing test OR is explicitly deferred with a documented reason"
-    status: partial
-    reason: "13 TC-NEG-* IDs (TC-NEG-001..012, TC-NEG-014) are in tc-allowlist.json stillMissing without a reasons block explaining the deferral. The TC-E2E group has a proper reasons.TC-E2E block with rationale and follow-up phase pointer. TC-NEG has no equivalent."
-    artifacts:
-      - path: ".planning/test-contract/tc-allowlist.json"
-        issue: "TC-NEG group in stillMissing but no reasons.TC-NEG block present"
-    missing:
-      - "Add reasons.TC-NEG block to tc-allowlist.json documenting that these are negative-space non-goal assertions (features/patterns that must NOT exist), that several overlap with TC-INV-* static invariants already present (TC-INV-002 covers TC-NEG-011, TC-INV-003 covers TC-NEG shape, TC-INV-004 covers schema), and that the remaining UI-behavioral ones (TC-NEG-001 staff read-only, TC-NEG-014 R&D read-only) are deferred to Phase 46 E2E or covered by TC-RD-READONLY-001 / TC-MOBILE-001 service-layer tests"
+re_verified: 2026-04-13
+status: passed
+score: 4/4 success criteria verified
+verdict: APPROVED
+gaps: []
+note: "TC-NEG reasons block was added to tc-allowlist.json (commit c137081). Original gap was a labeling/traceability issue, not a coverage gap."
 ---
 
 # Phase 44: API Hardening + Test Contract Fill Verification Report
