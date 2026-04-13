@@ -57,10 +57,18 @@ export function PersonaGate({ allowed, children }: PersonaGateProps) {
           'border-outline-variant/40 bg-surface-container-low max-w-md rounded-md border p-6 text-center',
       },
       createElement(
+        'h3',
+        { className: 'text-on-surface text-base font-semibold' },
+        safeT(t, 'wrongPersonaHint.title', 'Wrong persona'),
+      ),
+      createElement(
         'p',
-        { className: 'text-on-surface text-sm' },
-        // i18n key lands in Wave 4; fallback text used if missing.
-        safeT(t, 'wrongPersonaHint', 'Switch to the Line Manager persona to view this page.'),
+        { className: 'text-on-surface-variant mt-1 text-sm' },
+        safeT(
+          t,
+          'wrongPersonaHint.description',
+          'Switch to the correct persona to view this page.',
+        ),
       ),
       createElement(
         'button',
@@ -77,7 +85,7 @@ export function PersonaGate({ allowed, children }: PersonaGateProps) {
             }
           },
         },
-        safeT(t, 'switchPersonaCta', 'Switch persona'),
+        safeT(t, 'wrongPersonaHint.switchCta', 'Switch persona'),
       ),
     ),
   );

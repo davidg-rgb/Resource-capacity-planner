@@ -119,14 +119,11 @@ describe('PM Home page (TC-UI-001)', () => {
 
     render(<PmHomePage />, { wrapper: makeWrapper() });
 
-    // en bundle: v5.screens.pmHome.empty = "" (intentionally blank scaffold).
-    // Fall back to asserting the project grid is absent.
+    // Wait for load, then verify no project link exists.
     await waitFor(() => {
-      // After load, no project link should exist.
       expect(screen.queryByRole('link', { name: /alpha/i })).not.toBeInTheDocument();
     });
-    // The "Mina projekt" heading (v5.pm.home.title) is only rendered when
-    // there are projects — so its absence proves we hit the empty branch.
-    expect(screen.queryByRole('heading', { name: /mina projekt/i })).not.toBeInTheDocument();
+    // The "Mina projekt" heading is now rendered even in the empty state.
+    expect(screen.getByRole('heading', { name: /mina projekt/i })).toBeInTheDocument();
   });
 });

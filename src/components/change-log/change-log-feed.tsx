@@ -11,6 +11,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 
 import type {
   ChangeLogAction,
@@ -102,6 +103,7 @@ export function ChangeLogFeed(props: ChangeLogFeedProps) {
   const { initialFilter } = props;
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations('v5.changeLog');
 
   // Seed filter from URL on first render, falling back to initialFilter.
   const [filter, setFilter] = useState<FeedFilter>(() => {
@@ -141,7 +143,7 @@ export function ChangeLogFeed(props: ChangeLogFeedProps) {
     <div className="space-y-3" data-testid="change-log-feed">
       <div className="flex flex-wrap gap-2" data-testid="change-log-filter-bar">
         <label className="text-xs">
-          Entity
+          {t('columns.entity')}
           <select
             data-testid="change-log-filter-entity"
             className="ml-1 rounded border px-1 py-0.5 text-xs"
@@ -160,7 +162,7 @@ export function ChangeLogFeed(props: ChangeLogFeedProps) {
           </select>
         </label>
         <label className="text-xs">
-          From
+          {t('filters.period')}
           <input
             type="date"
             data-testid="change-log-filter-from"
@@ -175,19 +177,23 @@ export function ChangeLogFeed(props: ChangeLogFeedProps) {
         </label>
       </div>
 
-      {isLoading && <div className="text-muted-foreground text-sm">Loading…</div>}
-      {isError && <div className="text-destructive text-sm">Failed to load change log.</div>}
+      {isLoading && <div className="text-muted-foreground text-sm">{t('loading')}</div>}
+      {isError && (
+        <div className="border-error/30 bg-error/5 flex items-center justify-between rounded-md border-l-4 px-4 py-3 text-sm text-red-700">
+          <span>{t('error')}</span>
+        </div>
+      )}
 
       {!isLoading && !isError && (
         <table className="w-full text-xs" data-testid="change-log-table">
           <thead>
             <tr className="text-left">
-              <th>Time</th>
-              <th>Actor</th>
-              <th>Entity</th>
-              <th>Action</th>
-              <th>Target</th>
-              <th>Summary</th>
+              <th>{t('columns.time')}</th>
+              <th>{t('columns.actor')}</th>
+              <th>{t('columns.entity')}</th>
+              <th>{t('columns.action')}</th>
+              <th>{t('columns.target')}</th>
+              <th>{t('columns.summary')}</th>
             </tr>
           </thead>
           <tbody>
@@ -256,7 +262,7 @@ export function ChangeLogFeed(props: ChangeLogFeedProps) {
           disabled={isFetchingNextPage}
           className="rounded border px-2 py-1 text-xs disabled:opacity-50"
         >
-          Load more
+          {t('loadMore')}
         </button>
       )}
     </div>

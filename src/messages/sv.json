@@ -440,6 +440,8 @@
     },
     "changeLog": {
       "title": "Ändringslogg",
+      "loading": "Laddar ändringslogg…",
+      "error": "Kunde inte ladda ändringsloggen.",
       "columns": {
         "time": "Tid",
         "actor": "Utförd av",

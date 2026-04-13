@@ -67,7 +67,10 @@ function AllocationBar({
         }}
       />
       {widthPercent > 30 && (
-        <span className="absolute inset-0 flex items-center truncate px-1.5 text-[9px] font-bold text-white">
+        <span
+          className="absolute inset-0 flex items-center truncate px-1.5 text-[9px] font-bold text-white"
+          style={{ textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}
+        >
           {projectName}
         </span>
       )}

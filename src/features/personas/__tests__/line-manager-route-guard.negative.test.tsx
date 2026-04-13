@@ -17,8 +17,11 @@ import type { Persona } from '@/features/personas/persona.types';
 const messages = {
   v5: {
     lineManager: {
-      wrongPersonaHint: 'Switch to the Line Manager persona to view this page.',
-      switchPersonaCta: 'Switch persona',
+      wrongPersonaHint: {
+        title: 'Wrong persona',
+        description: 'Switch to the Line Manager persona to view this page.',
+        switchCta: 'Switch persona',
+      },
       desktopOnlyMessage: 'Desktop only',
     },
   },

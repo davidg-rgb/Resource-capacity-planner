@@ -70,7 +70,7 @@ export function ImportWizard({ fetcher, now }: ImportWizardProps) {
 
   return (
     <div data-testid="import-wizard" data-step={state.step}>
-      <h2>{t('upload.title')}</h2>
+      <h2 className="font-headline mb-4 text-2xl font-bold">{t('upload.title')}</h2>
 
       {state.step === 'upload' && (
         <section data-testid="step-upload">

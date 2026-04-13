@@ -440,6 +440,8 @@
     },
     "changeLog": {
       "title": "Change log",
+      "loading": "Loading change log…",
+      "error": "Failed to load change log.",
       "columns": {
         "time": "Time",
         "actor": "Actor",

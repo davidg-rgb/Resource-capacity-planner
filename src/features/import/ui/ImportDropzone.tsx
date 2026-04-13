@@ -74,8 +74,12 @@ export function ImportDropzone({ onFile, disabled }: ImportDropzoneProps) {
           data-testid="import-dropzone-input"
         />
       </div>
-      <p>
-        <a href="/templates/template_row_per_entry.xlsx" download>
+      <p className="mt-2">
+        <a
+          href="/templates/template_row_per_entry.xlsx"
+          download
+          className="text-primary inline-flex items-center gap-1 text-sm underline hover:opacity-80"
+        >
           {t('templateLink')}
         </a>
       </p>

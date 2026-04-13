@@ -10,10 +10,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { NextIntlClientProvider } from 'next-intl';
 import type { ReactNode } from 'react';
 
 import { ChangeLogFeed } from '../change-log-feed';
 import type { FeedFilter } from '@/features/change-log/change-log.types';
+import sv from '@/messages/sv.json';
 
 // Mock next/navigation — jsdom has no Next router.
 const routerReplace = vi.fn();
@@ -27,7 +29,11 @@ function makeWrapper() {
     defaultOptions: { queries: { retry: false, gcTime: 0 }, mutations: { retry: false } },
   });
   return function Wrapper({ children }: { children: ReactNode }) {
-    return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+    return (
+      <NextIntlClientProvider locale="sv" messages={sv as Record<string, unknown>}>
+        <QueryClientProvider client={client}>{children}</QueryClientProvider>
+      </NextIntlClientProvider>
+    );
   };
 }
 
