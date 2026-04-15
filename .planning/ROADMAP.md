@@ -6,7 +6,8 @@
 - **v2.0 Visibility & Insights** -- Phases 11-17 (shipped 2026-03-28) | [Archive](v2.0-ROADMAP.md)
 - **v3.0 Switch from Excel** -- Phases 18-22 (shipped 2026-03-30)
 - **v4.0 Dashboard Visualizations & Customization** -- Phases 23-32 (shipped 2026-04-01)
-- **v5.0 Plan vs Actual + Approval Workflow** -- Phases 33-47 (shipped 2026-04-10) | 3-round architecture review
+- **v5.0 Plan vs Actual + Approval Workflow** -- Phases 33-47 (shipped 2026-04-13) | 3-round architecture review
+- **v6.0 UI Restructure & Journey Frictionless** -- Phases 48-53 + optional 54 (in planning, started 2026-04-15) | [Plan](ui-reviews/UI-RESTRUCTURE-PLAN-v2.md)
 
 ## Phases
 
@@ -82,6 +83,16 @@
 - [x] **Phase 46: PDF widget rendering polish** — Capacity Gauges (button-filter preservation) + Availability Finder (capture height cap + chartImage maxHeight 350→600). All 9/9 widgets render correctly. Playwright E2E split to Phase 47. (completed 2026-04-09 APPROVED)
 - [x] **Phase 47: Playwright E2E infrastructure** — @playwright/test installed, NODE_ENV=test Clerk bypass, nc_e2e database bootstrap, /api/test/seed triple-gated route, persona harness, 12 TC-E2E-* spec files, CI extended with Vitest + Playwright jobs, TC-E2E deferral closed. (completed 2026-04-09 APPROVED)
 - [x] **v5.0 Architecture Review** — 3-round conformance review (iter 1: 6 blockers, iter 2: 5 bugs, iter 3: doc drift + final fixes). All findings closed. (completed 2026-04-10)
+
+### v6.0 UI Restructure & Journey Frictionless
+
+- [ ] **Phase 48: Pre-flight verification** — Grep/SQL-verify 9 assumptions (getLandingRoute exists, queue-count endpoint, Phase 41 picker, admin API root causes, custom-dashboard widget references via corrected SQL, existing Playwright spec inventory, sidebar i18n collisions, v5.persona.kinds keys, plan-vs-actual cell reuse). Produces `pre-flight-report.md`.
+- [ ] **Phase 49: Unbreak broken persona surfaces** — LM department picker (`/line-manager` + `/line-manager/timeline`), PM Home empty-state, `/admin` + `/admin/people` API 500s, PersonaGate error i18n, Playwright spec updates for upcoming nav changes.
+- [ ] **Phase 50: Persona-aware landing & navigation** — Root `/` client redirect to `getLandingRoute(persona)` behind `uiV6.landing` flag; `SECTION_NAV` for all 5 personas; Home breadcrumb; grouped persona switcher; 18 `sidebar.personaSections.*` i18n keys.
+- [ ] **Phase 51: Lean cleanup — duplicate removal** — `next.config.ts` 308 redirects for `/team`, `/projects`, `/wishes`; delete the source pages; remove `/input` duplicate list; delete 3 dead widgets (after custom-layout migration); strip duplicate widgets from project-leader layout; add defensive fallback to `widget-registry`; PDF snapshot regression. Gated behind `uiV6.leanTrim`.
+- [ ] **Phase 52: Per-journey friction fixes** — PM default-project auto-select + pending-wish chip; LM approval-queue badge; historic-edit dialog tests; proposal-state visual snapshots; Staff read-only timeline; R&D long-horizon zoom (ISO 8601 + 53-week); R&D overcommit-drill dialog content; shared drill-down drawer audit; admin archive dependent-row E2E. Gated behind `uiV6.perJourney`.
+- [ ] **Phase 53: Chrome polish** — Persona-scoped notification bell; `NavItemDef.visibleFor` top-nav filtering; merge `discipline-chart` + `discipline-distribution`; delete `bench-report`; move `resource-conflicts` to `/alerts` tab; replace `strategic-alerts` with banner; manager + project-leader dashboards fit 1440×900. Gated behind `uiV6.polish`.
+- [ ] **Phase 54 (optional): Dashboard quadrant redesign** — Deferred unless post-Phase-53 telemetry indicates dashboard confusion. 4-quadrant layouts keyed to user questions (manager) and PM journeys (project-leader), behind `uiV6.dashboardQuadrants` flag.
 
 ## Phase Details
 
@@ -297,6 +308,101 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 47
 | 46. PDF widget rendering polish | v5.0 | 1/1 | Complete | 2026-04-09 |
 | 47. Playwright E2E infrastructure | v5.0 | 10/10 | Complete | 2026-04-09 |
 | v5.0 Architecture Review | v5.0 | — | Complete (3 iterations) | 2026-04-10 |
+| 48. Pre-flight verification | v6.0 | 0/TBD | Planned | — |
+| 49. Unbreak broken persona surfaces | v6.0 | 0/TBD | Planned | — |
+| 50. Persona-aware landing & navigation | v6.0 | 0/TBD | Planned | — |
+| 51. Lean cleanup — duplicate removal | v6.0 | 0/TBD | Planned | — |
+| 52. Per-journey friction fixes | v6.0 | 0/TBD | Planned | — |
+| 53. Chrome polish | v6.0 | 0/TBD | Planned | — |
+| 54. Dashboard quadrant redesign (optional) | v6.0 | 0/TBD | Deferred | — |
+
+---
+
+## Phase 48: Pre-flight verification
+**Goal**: Grep/SQL-verify every assumption in `UI-RESTRUCTURE-PLAN-v2.md` before any code change; produce `pre-flight-report.md` that either passes every gate or re-scopes downstream phases.
+**Depends on**: Nothing (first v6.0 phase)
+**Requirements**: VERIFY-01 … VERIFY-09
+**Success Criteria**:
+  1. `pre-flight-report.md` exists under `.planning/` with pass/fail per VERIFY-0N row; signed-off by one reviewer
+  2. If VERIFY-05 SQL returns >0 rows, Phase 51 scope expands to include a one-shot data migration (explicitly referenced in report)
+  3. If VERIFY-03 shows Phase 41 picker missing, Phase 49 scope expands to include building it
+  4. Every existing Playwright spec in `e2e/` is classified as keep / update / retire with rationale
+**Plans**: TBD (single discovery plan expected)
+
+## Phase 49: Unbreak broken persona surfaces
+**Goal**: Every persona landing page loads with real content; no raw i18n keys render as primary text; no primary content shows an API-error state on hit.
+**Depends on**: Phase 48
+**Requirements**: UNBREAK-01 … UNBREAK-07
+**Success Criteria**:
+  1. `/line-manager` and `/line-manager/timeline` render a functional department picker (raw `v5.lineManager.*.selectDepartment` keys gone)
+  2. `/pm` renders the empty-state translation when the API returns `projects: []`, not the loading spinner
+  3. `/admin` (change-log) and `/admin/people` both return 200 and list entries without the "Kunde inte ladda…" error
+  4. `PersonaGate` error names the correct `allowed` persona in its copy
+  5. Every Playwright spec that navigated through routes being reshaped in Phase 51 has been updated or retired
+**Plans**: TBD
+
+## Phase 50: Persona-aware landing & navigation
+**Goal**: A signed-in user opening the app lands on their persona's primary page — never the admin dashboard by default — with a sidebar and breadcrumb set that matches their persona.
+**Depends on**: Phase 49
+**Requirements**: NAV-01 … NAV-05
+**Success Criteria**:
+  1. Root `/` client-side-redirects to `getLandingRoute(persona)` when `uiV6.landing` is on; signed-out / no-persona users fall back to Clerk `orgRole`-based routing
+  2. `SECTION_NAV` exposes distinct persona-scoped items for `/pm`, `/line-manager`, `/staff`, `/rd`, `/admin` (admin sidebar gains People / Projects / Change-log)
+  3. Breadcrumbs show a "Home" link resolving to `getLandingRoute(persona)`; snapshot tests updated
+  4. Persona switcher collapses kind + person into a single grouped `<select>` with correct edge-case handling for 0 / 1 / >1 Person rows matching the user
+  5. 18 new `sidebar.personaSections.*` i18n keys exist in both `messages/sv.json` and `messages/en.json` with final copy
+**Plans**: TBD
+
+## Phase 51: Lean cleanup — duplicate removal
+**Goal**: Eliminate every duplicate surface and dead widget identified in `WIDGET-INVENTORY.md` without regressing any verified journey or PDF export.
+**Depends on**: Phase 50 (sidebar must exist before removing the top-nav items that lead to the deleted pages)
+**Requirements**: LEAN-01 … LEAN-10
+**Success Criteria**:
+  1. `next.config.ts` contains permanent (308) redirects for `/team → /admin/people`, `/projects → /admin/projects`, `/wishes → /pm/wishes`; the source pages are deleted
+  2. `/input` renders the people list exactly once (left sidebar); the right-side duplicate flat list is gone
+  3. Three dead widget files deleted; `widgets/index.ts` cleaned; any affected tenant layouts migrated first (per VERIFY-05)
+  4. `project-leader:desktop`/`:mobile` layouts no longer contain `kpi-cards` / `capacity-forecast` / `availability-finder`; manager layouts no longer contain the full `utilization-heat-map` (replaced by a summary-card widget)
+  5. `widget-registry` renders a "Widget ej tillgänglig" placeholder for unknown IDs instead of throwing
+  6. `/api/reports/team-heatmap` PDF snapshot matches pre-trim baseline; regression test committed
+  7. Everything gated behind `uiV6.leanTrim` with verified off-state rollback
+**Plans**: TBD
+
+## Phase 52: Per-journey friction fixes
+**Goal**: Every one of the 13 user journeys documented in `v5.0-USER-JOURNEYS.md` reaches its target click-count from `UI-RESTRUCTURE-PLAN-v2.md §1`, verified by Playwright.
+**Depends on**: Phase 51
+**Requirements**: PM-01 … ADMIN-01, SHARED-01, PJ-FLAG
+**Success Criteria**:
+  1. PM: `/pm` auto-routes to default project when applicable; pending-wish chip deep-links to `/pm/wishes`; historic-edit warning fires for past-month edits (4 persona × period combos); 4 proposal-state visual snapshots committed
+  2. LM: approval-queue badge renders count on home + switcher; `/line-manager/timeline` shows project-breakdown cells
+  3. Staff: read-only variant of the timeline verified — edit handles disabled
+  4. R&D: long-horizon zoom supports month / quarter / year across 2026 (53-week), 2027, 2028; overcommit red-cell drill dialog lists contributing projects + most-overbooked people
+  5. Admin: archiving a project with active allocations surfaces the `DEPENDENT_ROWS_EXIST` toast with dependents listed
+  6. Shared drill-down drawer (Screen S11) supports deep-link open, ESC-dismiss, focus trap — exercised from journeys 1A and 4B
+  7. Every Playwright spec in `§1 click-count table` asserts its target; CI fails if exceeded; all gated behind `uiV6.perJourney`
+**Plans**: TBD
+
+## Phase 53: Chrome polish
+**Goal**: Persona signals (notifications, top-nav visibility) and widget surface match the persona's scope; both main dashboards fit on a 1440×900 viewport without scroll.
+**Depends on**: Phase 52
+**Requirements**: POLISH-01 … POLISH-FLAG
+**Success Criteria**:
+  1. Notification bell is persona-scoped (PM: rejected wishes; LM: pending approvals; R&D: new overcommits; Staff: hidden)
+  2. `NavItemDef.visibleFor` filtering applied so Staff sees only Home + Help, PM sees Home + Overview + Projekt, etc.
+  3. `discipline-chart` and `discipline-distribution` merged into one widget with a chart-type toggle; duplicate file deleted
+  4. `bench-report` widget deleted; `resource-conflicts` moved to `/alerts` tab; `strategic-alerts` replaced with inline banner on manager dashboard
+  5. Manager and project-leader dashboards each fit within 1440×900 without scrolling (verified by Playwright viewport test)
+  6. All changes gated behind `uiV6.polish` with verified rollback
+**Plans**: TBD
+
+## Phase 54 (optional): Dashboard quadrant redesign
+**Goal**: If post-Phase-53 telemetry shows continued dashboard confusion, restructure both dashboards into 4 question-keyed quadrants.
+**Depends on**: Phase 53 + user-signal from telemetry
+**Requirements**: QUAD-01, QUAD-02, QUAD-03
+**Success Criteria**:
+  1. Manager dashboard renders 4 quadrants: Health today / Who's free / What's changing / Department deep-dives
+  2. Project-leader dashboard renders 4 PM-journey-keyed quadrants
+  3. Both ship behind `uiV6.dashboardQuadrants` flag with documented A/B telemetry collection
+**Plans**: TBD
 
 ---
 
@@ -305,5 +411,6 @@ _38 v2 requirements across 7 phases. Coverage: 38/38._
 _15 v3 requirements across 5 phases. Coverage: 15/15._
 _v4.0 dashboard visualizations shipped across phases 23-32._
 _38 v5.0 requirements + 1 launch gate across 15 phases (33-47) + 3-round arch review. Coverage: 39/39 mapped._
+_42 v6.0 active requirements + 3 optional across 6+1 phases (48-54). Coverage: 45/45 mapped._
 
-_Last updated: 2026-04-13 — v5.0 milestone closed_
+_Last updated: 2026-04-15 — v6.0 milestone initialized_
