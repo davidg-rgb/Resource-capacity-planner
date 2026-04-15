@@ -22,7 +22,7 @@ Before reviewer-agent sign-off, every verdict below must satisfy:
 | [VERIFY-01](#verify-01-getlandingroute-exists) | `getLandingRoute(persona)` exists in `persona.routes.ts` | `PASS` | NAV-01 (Phase 50) can call `getLandingRoute` directly. |
 | [VERIFY-02](#verify-02-proposalsqueuecount-endpoint) | `/api/v5/proposals/queue/count` endpoint exists | `EXPANDS-SCOPE` | Phase 52 LM-01 scope expands: author the endpoint before the badge can render a count. |
 | [VERIFY-03](#verify-03-phase-41-department-picker) | Phase 41 department-picker component ships | `EXPANDS-SCOPE` | Phase 49 scope expands: build the department picker (UNBREAK-01/02). |
-| [VERIFY-04](#verify-04-admin-api-500-root-causes) | `/api/admin/change-log` + `/api/admin/people` 500 root causes | *TBD* | — |
+| [VERIFY-04](#verify-04-admin-api-500-root-causes) | `/api/admin/change-log` + `/api/admin/people` 500 root causes | `FAIL` | Phase 49 UNBREAK-04/05 planner must repro themselves with an authenticated Clerk session. Static hypothesis captured in detail section. |
 | [VERIFY-05](#verify-05-custom-dashboard-dead-widget-references) | Custom-dashboard layouts reference dead/deletable widget IDs | `EXPANDS-SCOPE` | Phase 51 LEAN-05 scope expands: ship the one-shot `UPDATE dashboard_layouts` migration BEFORE deleting widget files. 1 row affected on dev branch. |
 | [VERIFY-06](#verify-06-playwright-spec-inventory) | Every `e2e/**/*.spec.ts` classified keep/update/retire | `PASS` | 12/12 specs classified `update` (Wave 1 owns root-redirect change). 0 `retire`, 0 `keep`. |
 | [VERIFY-07](#verify-07-sidebar-i18n-collision-check) | `sidebar.staff` / `sidebar.projects` existing meanings | `PASS` | New keys land safely under `sidebar.personaSections.*` — no collision with existing leaf-string section headings. |
@@ -449,3 +449,125 @@ The persona labels DO exist, but at `v5.persona.kind.*` (singular `kind`) with t
 2. Wire PersonaGate to read the existing `v5.persona.kind.*` namespace and translate the `lineManager` discriminator value to the hyphenated key `line-manager` at the lookup site (no locale-file change; PersonaGate spec adjusts).
 
 Plan 02 leaves the choice to the Phase 49 planner; either way, the missing-key finding is documented here.
+
+---
+
+## VERIFY-04: Admin API 500 root causes
+
+**Requirement:** VERIFY-04 — `/api/admin/change-log` and `/api/admin/people` 500 root causes documented from live server logs.
+
+**Path correction (mandatory before invoking commands):** UI-RESTRUCTURE-PLAN-v2.md §Wave −1 names the routes `/api/admin/change-log` and `/api/admin/people`. Those URLs do not exist in the codebase. The actual API routes that the `/admin` (change-log feed) and `/admin/people` (people register) pages call are:
+
+| Page | API actually called | Source file |
+|---|---|---|
+| `/admin` (renders `<ChangeLogFeed>`) | `GET /api/v5/change-log?<filters>` | `src/components/change-log/change-log-feed.tsx:123` (`fetch(\`/api/v5/change-log?${qs}\`)`) |
+| `/admin/people` (renders `<AdminRegisterPageShell entity="person">`) | `GET /api/v5/admin/registers/person` | `src/components/admin/AdminRegisterPageShell.tsx:124` (`useRegisterList(entity, …)`) → `/api/v5/admin/registers/person` |
+
+The verbatim plan command was adapted to hit the actual routes the pages bind to.
+
+### `/api/admin/change-log` (actual path: `/api/v5/change-log`)
+
+**Static hypothesis (D-07 phase 1 — read of route + service):**
+
+The handler at `src/app/api/v5/change-log/route.ts` calls `requireRole('planner')` then `getFeed({ orgId, filter, pagination })`. `getFeed` (in `src/features/change-log/change-log.read.ts`) builds a Drizzle SELECT that:
+1. Filters on `organizationId = orgId` (cannot 500).
+2. Optionally compares the composite cursor with `sql\`(${changeLog.createdAt}, ${changeLog.id}) < (${cur.createdAt}::timestamptz, ${cur.id}::uuid)\`` — passes raw text into Postgres `::timestamptz` / `::uuid` casts. **Likely 500 site #1**: a malformed cursor token that decodes to non-ISO `createdAt` or non-UUID `id` will crash at the Postgres parser, surfacing as a 500.
+3. Optionally filters JSONB `(context->>'projectId') IN (...)` / `(new_value->>'projectId') IN (...)` — uses `sql.join` of raw IDs. **Likely 500 site #2**: if any caller-supplied projectId/personId contains a single-quote or non-printable character the parameterisation could fail.
+4. Reads `changeLog.createdAt instanceof Date ? last.createdAt.toISOString() : (last.createdAt as unknown as string)` — assumes `createdAt` is either a `Date` or a stringifiable. **Likely 500 site #3 (most plausible for an empty-state hit):** if the `change_log` table has zero rows for the tenant on a fresh tenant, `last` is `undefined` (the `entries[entries.length - 1]` access on an empty array). The current code guards with `hasMore && last` — but the more likely production cause is a DB-side issue (missing table on the tenant's branch, missing migration `0008` adding `change_log_entity` enum values, OR the JSONB cast returning a Postgres error on a tenant with malformed legacy `context` rows).
+
+**Most-likely root-cause hypothesis (highest-prior):** Either (a) the dev/prod Neon branch is missing one of the four migrations that landed `change_log` enum values (`0008_*` per ARCHITECTURE/v5.0), making `inArray(changeLog.entity, args.filter.entity)` cast-fail at Postgres; or (b) one of the orgs has malformed JSONB in `change_log.context` or `change_log.new_value` causing the `->>` extraction inside the IN-list to error.
+
+**Live phase (D-07 phase 2 — actual server hit):**
+
+Live commands (worktree had no `node_modules`; ran `pnpm install --prefer-offline --frozen-lockfile` first to enable `pnpm dev`; copied `.env.local` from the parent repo into the worktree for the duration of the test, deleted afterwards):
+```
+pnpm dev   # bound to http://localhost:3001 because port 3000 was already in use
+curl -s -i http://localhost:3001/api/v5/change-log
+```
+
+**HTTP response:**
+
+First hit (cold compile of `_not-found` due to Turbopack startup):
+```
+GET /api/v5/change-log 404 in 13.6s (next.js: 13.1s, proxy.ts: 238ms, application-code: 278ms)
+```
+
+Second hit (after Turbopack settled):
+```
+HTTP/1.1 307 Temporary Redirect
+location: https://adapted-flamingo-24.accounts.dev/sign-in?redirect_url=http%3A%2F%2Flocalhost%3A3001%2Fapi%2Fv5%2Fchange-log
+x-clerk-auth-reason: dev-browser-missing
+x-clerk-auth-status: signed-out
+x-clerk-redirect-to: true
+```
+
+**Server stack trace:**
+```
+(no stack trace captured — Clerk middleware in src/proxy.ts intercepted the request via auth.protect() before the route handler ran. The handler never executed; 500 cannot be triggered without a Clerk session cookie.)
+```
+
+**Confirmed root cause:**
+
+NOT confirmed. The `requireRole('planner')` auth gate fires inside Clerk middleware (`src/proxy.ts:25 — auth.protect()`) and short-circuits the request to 307 → sign-in. The handler at `src/app/api/v5/change-log/route.ts:27` never executes. To reproduce the production 500, an authenticated admin Clerk session cookie must be supplied to curl (or the endpoint must be hit through a signed-in browser). The static hypothesis above is the strongest evidence Phase 48 can produce.
+
+**Phase 49 handoff:**
+
+UNBREAK-04 reproducer must (a) run `pnpm dev` with `.env.local` bound to a Neon branch that has the full migration set including `0008_*` change_log enum migrations, (b) sign in as an admin user via the Clerk dev pane, (c) hit `GET /api/v5/change-log` from the signed-in browser dev tools, (d) read the actual stack trace from the dev server log, (e) decide between fix path A (cursor / projectId input sanitisation), fix path B (catch-and-415 around malformed JSONB rows), or fix path C (run missing migration on the affected Neon branch). The hypothesis-most-likely path is C.
+
+### `/api/admin/people` (actual path: `/api/v5/admin/registers/person`)
+
+**Static hypothesis (D-07 phase 1 — read of route + service):**
+
+The handler at `src/app/api/v5/admin/registers/[entity]/route.ts:35` calls `requireRole('admin')`, validates the dynamic `entity` segment against `REGISTER_ENTITIES = ['person', 'project', 'department', 'discipline', 'program']`, then calls `listRegisterRows({ orgId, entity: 'person', includeArchived })`.
+
+`listRegisterRows` (in `src/features/admin/register.service.ts:422`) does:
+1. `assertEntity(input.entity)` — pure string check; cannot 500 for a known entity.
+2. `tableFor('person')` returns `schema.people`.
+3. Builds conditions `[eq(orgCol, input.orgId), isNull(archCol)]` (when `includeArchived=false`).
+4. **Likely 500 site #1**: `orderForList('person')` returns:
+   ```ts
+   [
+     sql`${schema.people.archivedAt} IS NULL`,
+     desc(schema.people.archivedAt),
+     asc(schema.people.firstName),
+     asc(schema.people.lastName),
+   ]
+   ```
+   This relies on the `people` table having columns `archivedAt`, `firstName`, `lastName`. **If the affected Neon branch is missing the v5.0 person-rename migration that split `name` into `firstName`/`lastName`, the SELECT will fail at Postgres with `column "first_name" does not exist`** — which raises a 500 from `handleApiError(error)`.
+5. The cast `(t as { archivedAt: unknown }).archivedAt as never` and the `db.select().from(t as any)` use `any` deliberately (file header acknowledges the `eslint-disable @typescript-eslint/no-explicit-any`). Runtime correctness depends on the schema matching the Drizzle definitions in `@/db/schema`.
+
+**Most-likely root-cause hypothesis (highest-prior):** Same family as VERIFY-04 change-log: a migration drift between the dev Neon branch the team uses and what the v5.0 schema definitions in `@/db/schema` expect. Specifically, if the dev/prod tenant ran v4.x with `people.name` as a single column and the v5.0 split-name migration wasn't applied, the ORDER BY `firstName, lastName` 500s.
+
+**Live phase (D-07 phase 2 — actual server hit):**
+
+Live command:
+```
+curl -s -o /tmp/people-body.txt -w "HTTP %{http_code}\n" http://localhost:3001/api/v5/admin/registers/person
+```
+
+**HTTP response:**
+
+```
+HTTP 307
+```
+Redirect body (the response body of the 307):
+```
+https://adapted-flamingo-24.accounts.dev/sign-in?redirect_url=http%3A%2F%2Flocalhost%3A3001%2Fapi%2Fv5%2Fadmin%2Fregisters%2Fperson
+```
+
+**Server stack trace:**
+```
+(no stack trace captured — Clerk middleware redirected to sign-in before the handler ran; same constraint as the change-log endpoint.)
+```
+
+**Confirmed root cause:**
+
+NOT confirmed. Same auth-gate constraint as `/api/v5/change-log`. Static hypothesis is the strongest evidence Phase 48 can produce.
+
+**Phase 49 handoff:**
+
+UNBREAK-05 reproducer must follow the same protocol as UNBREAK-04: signed-in admin browser session → hit `GET /api/v5/admin/registers/person` → read stack trace from dev server. Highest-prior hypothesis: schema drift on the affected Neon branch (missing `people` first_name/last_name split, OR `archived_at` missing). Compare `pnpm db:push` output against the actual Neon branch table definitions before assuming the bug is in `register.service.ts`.
+
+### Cross-route observation
+
+Both routes pass the static read with no obvious code-level bug; the most plausible source of both 500s is **environmental / migration drift on the affected Neon branch**, not the code in either handler. This matches the v5.0 era pattern noted in earlier deferred-items and the UI-RESTRUCTURE-PLAN-v2.md §0 finding K9 ("admin API root-causes" listed alongside other unverified assumptions). Phase 49 should plan for: (1) environment audit of the affected branch, (2) migration backfill if drifted, (3) defensive `try/catch` with structured error response and operator-facing telemetry as a long-tail mitigation.
