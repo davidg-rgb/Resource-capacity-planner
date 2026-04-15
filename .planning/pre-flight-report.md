@@ -685,5 +685,56 @@ Header comments confirm the architectural intent (one excerpt per persona):
 
 ## Reviewer-Agent Sign-Off
 
-<!-- Reviewer agent (Plan 02, Task 1) writes here: pass/fail and cites evidence. -->
+**Reviewer:** Claude (second-pass agent per D-03 / D-04)
+**Date:** 2026-04-15
+**Verdict:** `APPROVED`
+
+### Evidence cited per VERIFY-0N
+
+Audit applies the D-03 self-review checklist to each VERIFY-0N section. Five rules per row:
+
+1. **Command verbatim** — the `**Command` block contains the exact §Wave −1 string (or, per CONTEXT.md D-07 for VERIFY-04, the `npm run dev` → `pnpm dev` substitution; or, per the explicit note in the report, the `messages/` → `src/messages/` path adaptation). VERIFY-09 has no §Wave −1 verbatim command (its requirement comes from REQUIREMENTS.md alone, "confirmed by snapshot comparison") so this rule is inapplicable and recorded as `n/a`.
+2. **Raw output present** — a `**Raw output:**` (or `**Server stack trace:**` for VERIFY-04) fenced code block exists AND is non-empty. An explicit `<no matches>` / `<empty>` / parenthetical "(no stack trace captured — …)" counts as non-empty per the rule's intent.
+3. **Verdict valid** — `**Verdict:**` line contains exactly one of `PASS` | `FAIL` | `EXPANDS-SCOPE` (case-sensitive, in backticks).
+4. **Impact cites downstream** — `**Impact:**` line names a specific phase (49 / 50 / 51 / 52 / 53) and what the verdict means for that phase's scope.
+5. **No source-code drift** — see the dedicated `### Source-code drift check` block below.
+
+| ID | Command-verbatim | Raw output present | Verdict valid | Impact cites downstream | Pass? |
+|---|:---:|:---:|:---:|:---:|:---:|
+| VERIFY-01 | ✓ | ✓ | ✓ (`PASS`) | ✓ (Phase 50 NAV-01) | ✓ |
+| VERIFY-02 | ✓ | ✓ | ✓ (`EXPANDS-SCOPE`) | ✓ (Phase 52 LM-01) | ✓ |
+| VERIFY-03 | ✓ | ✓ | ✓ (`EXPANDS-SCOPE`) | ✓ (Phase 49 UNBREAK-01 / UNBREAK-02) | ✓ |
+| VERIFY-04 | ✓ (verbatim plan curl + adapted command both recorded; `pnpm dev` substitution for `npm run dev` per D-07) | ✓ (HTTP 307 captured + explicit "no stack trace — Clerk middleware short-circuits before the handler ran") | ✓ (`FAIL`) | ✓ (Phase 49 UNBREAK-04 / UNBREAK-05 reproducer must use signed-in browser session) | ✓ |
+| VERIFY-05 | ✓ (SQL verbatim from §2.5 Wave 2 with all 7 widget IDs; §Wave −1 row 80 is the abbreviated 7-ID regex which matches the executed query) | ✓ (`ROW_COUNT: 1` + JSON row for tenant `0b200821-…`) | ✓ (`EXPANDS-SCOPE`) | ✓ (Phase 51 LEAN-05 must ship one-shot `UPDATE dashboard_layouts` migration before delete) | ✓ |
+| VERIFY-06 | ✓ (plan brace-glob `ls e2e/{…}/*.spec.ts` recorded; per-persona `ls` recorded as the executed equivalent) | ✓ (12 spec files + per-spec 3-signal rubric output) | ✓ (`PASS`) | ✓ (Phase 50 NAV-01 / NAV-03 owns the root-redirect spec updates) | ✓ |
+| VERIFY-07 | ✓ (verbatim plan grep recorded with literal `messages/: No such file or directory` exit-2 output; supplementary `jq` against actual `src/messages/` paths added per "Path correction" pattern) | ✓ (verbatim grep error + jq output for both locales + side-nav `headingKey` grep) | ✓ (`PASS`) | ✓ (Phase 50 NAV-05 lands `sidebar.personaSections.*` keys safely) | ✓ |
+| VERIFY-08 | ✓ (verbatim `jq '.v5.persona.kinds' messages/sv.json messages/en.json` recorded; adapted `src/messages/` invocation also recorded) | ✓ (`null` from both files + supplementary `jq '.v5.persona'` showing the keys live at `kind.*` singular) | ✓ (`FAIL`) | ✓ (Phase 49 UNBREAK-06 must add `kinds` namespace OR rewire PersonaGate to read `kind`) | ✓ |
+| VERIFY-09 | n/a (no §Wave −1 verbatim command — requirement is "snapshot comparison" per REQUIREMENTS.md only; report cites 3 grep commands + per-persona file-header citations as the static-equivalent evidence) | ✓ (3 grep outputs + per-persona cell-file header comments quoted + usage matrix) | ✓ (`PASS`) | ✓ (Phase 52 STAFF-01 / PM-03 / RD-02 share `PlanVsActualCell`; grid container intentionally not shared per Phase 42 D-19) | ✓ |
+
+**Tally:** 9/9 sections pass all applicable rules. No row has `✗` in the Pass column.
+
+### Source-code drift check
+
+`git status` output at sign-off time (per Rule 5 — only `.planning/` files allowed):
+
+```
+(empty — clean working tree at HEAD = 766034780e3be95ebb23a940857ea691a0f75cf9; the report file is the only artifact wave-1 produced and it was committed in 7660347)
+```
+
+Confirmed: zero source-code drift in Phase 48 wave 1. The report file at `.planning/pre-flight-report.md` is the only artifact wave-1 produced; no `src/`, `messages/`, `e2e/`, or migration file was modified. The phase-out-of-scope guard from CONTEXT.md (`<domain>` block, "Out of scope") held.
+
+(Plan 02 will also touch `.planning/ROADMAP.md` and `.planning/REQUIREMENTS.md` per D-12 / D-13 — those edits land in Task 2 below this sign-off and are scoped exclusively to `.planning/` per the same guard.)
+
+### Justification
+
+All 9 VERIFY-0N sections are backed by (a) a command (verbatim from §Wave −1 where one exists, with adaptations explicitly recorded per D-07 for VERIFY-04 and per the report's "Path correction" pattern for VERIFY-07 / VERIFY-08; n/a for VERIFY-09 which has no §Wave −1 command), (b) raw captured output in fenced code blocks (or an explicit "no output captured because …" note where the command genuinely produced none), (c) a verdict in the allowed set `{PASS, FAIL, EXPANDS-SCOPE}`, and (d) an Impact line that names the specific downstream phase + requirement that consumes the verdict. Source-code drift is zero.
+
+Phase 48 success criteria #1 ("`pre-flight-report.md` exists with pass/fail per VERIFY-0N row; signed-off by one reviewer") is satisfied. Downstream planners are unblocked:
+
+- **Phase 49** (UNBREAK) consumes the VERIFY-03, VERIFY-04, VERIFY-08 sections (department picker build, admin-API 500 reproducer protocol, persona-kinds namespace decision).
+- **Phase 50** (NAV) consumes VERIFY-01, VERIFY-06, VERIFY-07 (landing-route helper exists, all 12 specs flagged for `update`, sidebar key collision check clean).
+- **Phase 51** (LEAN) consumes VERIFY-05 (the 1 dev-Neon row mandates the one-shot migration before any widget delete).
+- **Phase 52** (per-journey) consumes VERIFY-02, VERIFY-09 (queue/count endpoint to author, shared `PlanVsActualCell` to modify in one place for STAFF-01 / PM-03 / RD-02).
+
+Plan 02 Task 2 may proceed to the Scope-Expansion Summary table + ROADMAP / REQUIREMENTS propagation.
 
