@@ -86,7 +86,7 @@
 
 ### v6.0 UI Restructure & Journey Frictionless
 
-- [ ] **Phase 48: Pre-flight verification** — Grep/SQL-verify 9 assumptions (getLandingRoute exists, queue-count endpoint, Phase 41 picker, admin API root causes, custom-dashboard widget references via corrected SQL, existing Playwright spec inventory, sidebar i18n collisions, v5.persona.kinds keys, plan-vs-actual cell reuse). Produces `pre-flight-report.md`.
+- [x] **Phase 48: Pre-flight verification** — Grep/SQL-verify 9 assumptions (getLandingRoute exists, queue-count endpoint, Phase 41 picker, admin API root causes, custom-dashboard widget references via corrected SQL, existing Playwright spec inventory, sidebar i18n collisions, v5.persona.kinds keys, plan-vs-actual cell reuse). Produces `pre-flight-report.md`. (completed 2026-04-15)
 - [ ] **Phase 49: Unbreak broken persona surfaces** — LM department picker (`/line-manager` + `/line-manager/timeline`), PM Home empty-state, `/admin` + `/admin/people` API 500s, PersonaGate error i18n, Playwright spec updates for upcoming nav changes.
 - [ ] **Phase 50: Persona-aware landing & navigation** — Root `/` client redirect to `getLandingRoute(persona)` behind `uiV6.landing` flag; `SECTION_NAV` for all 5 personas; Home breadcrumb; grouped persona switcher; 18 `sidebar.personaSections.*` i18n keys.
 - [ ] **Phase 51: Lean cleanup — duplicate removal** — `next.config.ts` 308 redirects for `/team`, `/projects`, `/wishes`; delete the source pages; remove `/input` duplicate list; delete 3 dead widgets (after custom-layout migration); strip duplicate widgets from project-leader layout; add defensive fallback to `widget-registry`; PDF snapshot regression. Gated behind `uiV6.leanTrim`.
@@ -308,7 +308,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 47
 | 46. PDF widget rendering polish | v5.0 | 1/1 | Complete | 2026-04-09 |
 | 47. Playwright E2E infrastructure | v5.0 | 10/10 | Complete | 2026-04-09 |
 | v5.0 Architecture Review | v5.0 | — | Complete (3 iterations) | 2026-04-10 |
-| 48. Pre-flight verification | v6.0 | 0/TBD | Planned | — |
+| 48. Pre-flight verification | v6.0 | 2/2 | Complete    | 2026-04-15 |
 | 49. Unbreak broken persona surfaces | v6.0 | 0/TBD | Planned | — |
 | 50. Persona-aware landing & navigation | v6.0 | 0/TBD | Planned | — |
 | 51. Lean cleanup — duplicate removal | v6.0 | 0/TBD | Planned | — |
@@ -328,8 +328,8 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 47
   3. If VERIFY-03 shows Phase 41 picker missing, Phase 49 scope expands to include building it
   4. Every existing Playwright spec in `e2e/` is classified as keep / update / retire with rationale
 **Plans**: 2 plans
-  - [ ] 48-01-PLAN.md — Run 9 VERIFY-0N evidence checks (grep/ls/SQL/jq/live-repro/snapshot) and assemble pre-flight-report.md with raw command output per verdict
-  - [ ] 48-02-PLAN.md — Reviewer-agent sign-off pass on report; conditionally propagate VERIFY-03/VERIFY-05 scope expansions into ROADMAP.md + REQUIREMENTS.md atomically
+  - [x] 48-01-PLAN.md — Run 9 VERIFY-0N evidence checks (grep/ls/SQL/jq/live-repro/snapshot) and assemble pre-flight-report.md with raw command output per verdict
+  - [x] 48-02-PLAN.md — Reviewer-agent sign-off pass on report; conditionally propagate VERIFY-03/VERIFY-05 scope expansions into ROADMAP.md + REQUIREMENTS.md atomically
 
 ## Phase 49: Unbreak broken persona surfaces
 **Goal**: Every persona landing page loads with real content; no raw i18n keys render as primary text; no primary content shows an API-error state on hit.
