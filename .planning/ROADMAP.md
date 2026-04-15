@@ -327,7 +327,9 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 47
   2. If VERIFY-05 SQL returns >0 rows, Phase 51 scope expands to include a one-shot data migration (explicitly referenced in report)
   3. If VERIFY-03 shows Phase 41 picker missing, Phase 49 scope expands to include building it
   4. Every existing Playwright spec in `e2e/` is classified as keep / update / retire with rationale
-**Plans**: TBD (single discovery plan expected)
+**Plans**: 2 plans
+  - [ ] 48-01-PLAN.md — Run 9 VERIFY-0N evidence checks (grep/ls/SQL/jq/live-repro/snapshot) and assemble pre-flight-report.md with raw command output per verdict
+  - [ ] 48-02-PLAN.md — Reviewer-agent sign-off pass on report; conditionally propagate VERIFY-03/VERIFY-05 scope expansions into ROADMAP.md + REQUIREMENTS.md atomically
 
 ## Phase 49: Unbreak broken persona surfaces
 **Goal**: Every persona landing page loads with real content; no raw i18n keys render as primary text; no primary content shows an API-error state on hit.
