@@ -336,14 +336,19 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 47
 **Depends on**: Phase 48
 **Expanded by VERIFY-03**: Build the department-picker component before UNBREAK-01 / UNBREAK-02 can wire it. Pre-flight report §VERIFY-03 confirms the component is absent (`grep` returns `<no matches>` under `src/features/personas` and `src/components`); only the two raw i18n call sites at `line-manager/page.tsx:70` and `line-manager/timeline/page.tsx:127` exist today.
 **Expanded by VERIFY-08**: Either add a new `v5.persona.kinds.{pm,lineManager,staff,rd,admin}` namespace to both `src/messages/sv.json` and `src/messages/en.json`, OR rewire PersonaGate to read the existing `v5.persona.kind.*` (singular) namespace and translate the `lineManager` discriminator value to the hyphenated key `line-manager` at the lookup site. Pre-flight report §VERIFY-08 confirms `v5.persona.kinds.*` returns `null` from both locale files; the labels live at `v5.persona.kind.*` instead.
-**Requirements**: UNBREAK-01 … UNBREAK-07
+**Requirements**: UNBREAK-01 … UNBREAK-09
 **Success Criteria**:
   1. `/line-manager` and `/line-manager/timeline` render a functional department picker (raw `v5.lineManager.*.selectDepartment` keys gone)
   2. `/pm` renders the empty-state translation when the API returns `projects: []`, not the loading spinner
   3. `/admin` (change-log) and `/admin/people` both return 200 and list entries without the "Kunde inte ladda…" error
   4. `PersonaGate` error names the correct `allowed` persona in its copy
   5. Every Playwright spec that navigated through routes being reshaped in Phase 51 has been updated or retired
-**Plans**: TBD
+**Plans:** 4 plans
+Plans:
+- [ ] 49-01-PLAN.md — Persona-switcher cluster: department picker (UNBREAK-01/02/08), PersonaGate rewire to v5.persona.kind.* + allowed-prop interpolation (UNBREAK-06/09); removes dead LM page fallbacks
+- [ ] 49-02-PLAN.md — PM Home guard reorder so !personaId falls through to empty state (UNBREAK-03)
+- [ ] 49-03-PLAN.md — Run pnpm db:migrate against dev Neon branch; fix admin 500s for /admin, /admin/people, /admin/departments, /admin/disciplines, /admin/programs (UNBREAK-04/05); author prod deploy checklist (do NOT execute against prod)
+- [ ] 49-04-PLAN.md — Update 12 existing Playwright specs to survive post-Wave-1 code path (UNBREAK-07); no new specs
 
 ## Phase 50: Persona-aware landing & navigation
 **Goal**: A signed-in user opening the app lands on their persona's primary page — never the admin dashboard by default — with a sidebar and breadcrumb set that matches their persona.
