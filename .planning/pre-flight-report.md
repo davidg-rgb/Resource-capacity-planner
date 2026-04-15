@@ -23,10 +23,10 @@ Before reviewer-agent sign-off, every verdict below must satisfy:
 | [VERIFY-02](#verify-02-proposalsqueuecount-endpoint) | `/api/v5/proposals/queue/count` endpoint exists | `EXPANDS-SCOPE` | Phase 52 LM-01 scope expands: author the endpoint before the badge can render a count. |
 | [VERIFY-03](#verify-03-phase-41-department-picker) | Phase 41 department-picker component ships | `EXPANDS-SCOPE` | Phase 49 scope expands: build the department picker (UNBREAK-01/02). |
 | [VERIFY-04](#verify-04-admin-api-500-root-causes) | `/api/admin/change-log` + `/api/admin/people` 500 root causes | *TBD* | — |
-| [VERIFY-05](#verify-05-custom-dashboard-dead-widget-references) | Custom-dashboard layouts reference dead/deletable widget IDs | *TBD* | — |
+| [VERIFY-05](#verify-05-custom-dashboard-dead-widget-references) | Custom-dashboard layouts reference dead/deletable widget IDs | `EXPANDS-SCOPE` | Phase 51 LEAN-05 scope expands: ship the one-shot `UPDATE dashboard_layouts` migration BEFORE deleting widget files. 1 row affected on dev branch. |
 | [VERIFY-06](#verify-06-playwright-spec-inventory) | Every `e2e/**/*.spec.ts` classified keep/update/retire | `PASS` | 12/12 specs classified `update` (Wave 1 owns root-redirect change). 0 `retire`, 0 `keep`. |
 | [VERIFY-07](#verify-07-sidebar-i18n-collision-check) | `sidebar.staff` / `sidebar.projects` existing meanings | `PASS` | New keys land safely under `sidebar.personaSections.*` — no collision with existing leaf-string section headings. |
-| [VERIFY-08](#verify-08-v5personakinds-keys-present) | `v5.persona.kinds.*` keys present in both locales | *TBD* | — |
+| [VERIFY-08](#verify-08-v5personakinds-keys-present) | `v5.persona.kinds.*` keys present in both locales | `FAIL` | Phase 49 UNBREAK-06 scope expands: keys live at `v5.persona.kind.*` (singular). UNBREAK-06 must add `kinds` namespace OR wire PersonaGate to read `kind`. |
 | [VERIFY-09](#verify-09-plan-vs-actual-cell-reuse) | Plan-vs-actual cell + timeline-grid reused across PM/Staff/R&D | *TBD* | — |
 
 <!-- Detail sections follow; Tasks 2-6 fill them. -->
@@ -328,3 +328,124 @@ No spec targets a deleted route → no `retire` classifications.
 **Verdict:** `PASS`
 
 **Impact:** All 12 specs classified. Summary counts: **0 keep, 12 update, 0 retire**. Every spec hits the root path `/` in its setup (`page.goto('/')` after `personaAs(page, 'persona)`). The root-path redirect behavior changes in Phase 50 NAV-01 (`/` → `getLandingRoute(persona)` via the new `PersonaRedirect` wrapper, gated behind `uiV6.landing`), so all 12 specs need the same minimal update: replace `await page.goto('/')` with `await page.goto(getLandingRoute(persona))` (or rely on the redirect — but only after Phase 50 ships and `uiV6.landing` is on for the test environment). The follow-up belongs to Phase 50 NAV-01 / NAV-03 acceptance criteria. No `keep` rows (every spec is route-touched). No `retire` rows (no spec targets `/team`, `/projects`, `/wishes`). `e2e/admin/` directory absent — admin specs are net-new work for the wave that fixes admin (Phase 49 UNBREAK-04/05) and not part of this inventory.
+
+---
+
+## VERIFY-05: Custom-dashboard dead-widget references
+
+**Requirement:** VERIFY-05 — Tenant custom-dashboard audit run via the corrected SQL; report lists affected layouts with strip/migrate decision per row.
+
+**SQL (verbatim from UI-RESTRUCTURE-PLAN-v2.md §2.5 Wave 2, regex covers all 7 widget IDs flagged for deletion: `discipline-progress`, `discipline-demand`, `project-impact`, `utilization-heat-map`, `bench-report`, `strategic-alerts`, `resource-conflicts`):**
+```sql
+SELECT organization_id, clerk_user_id, dashboard_id
+FROM dashboard_layouts
+WHERE layout::text ~* 'discipline-progress|discipline-demand|project-impact|utilization-heat-map|bench-report|strategic-alerts|resource-conflicts';
+```
+
+**Execution environment (per D-05):** Dev Neon branch (`ep-raspy-sea-al5kxh7j-pooler.c-3.eu-central-1.aws.neon.tech/neondb`, identifier `pk_test`/`sk_test` Clerk, NOT production). DATABASE_URL sourced from `.env.local` at the repository root.
+
+**Command actually invoked (psql is not on PATH; used Node `pg`-equivalent via the project's already-installed `@neondatabase/serverless` driver in a one-shot `tmp/verify-05-query.mjs` script that ran SELECT only and was deleted after capture). The DATABASE_URL connection string is redacted (password replaced with `***`):**
+```
+DATABASE_URL='postgresql://neondb_owner:***@ep-raspy-sea-al5kxh7j-pooler.c-3.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require' \
+  node tmp/verify-05-query.mjs
+```
+
+(SAFETY: per D-06 / threat T-48-04, only the SELECT was executed. No `UPDATE dashboard_layouts` was issued. The scratch script and the local copy of `.env.local` were deleted immediately after capturing the output.)
+
+**Raw output:**
+```
+ROW_COUNT: 1
+[
+  {
+    "organization_id": "0b200821-c78c-4717-9099-696c8520d2d3",
+    "clerk_user_id": "__tenant_default__",
+    "dashboard_id": "manager"
+  }
+]
+```
+
+**Verdict:** `EXPANDS-SCOPE`
+
+**Impact:** 1 row returned on the dev Neon branch. The default `manager` dashboard layout for tenant `0b200821-c78c-4717-9099-696c8520d2d3` (clerk_user_id sentinel `__tenant_default__` indicating the tenant-wide default, not a per-user override) references at least one of the 7 dead/deletable widget IDs in its stored `layout` JSONB. Phase 51 LEAN-05 scope expands: ship the one-shot `UPDATE dashboard_layouts SET layout = (SELECT jsonb_agg(placement) FROM jsonb_array_elements(layout) placement WHERE placement->>'widgetId' NOT IN (...))` migration drafted in UI-RESTRUCTURE-PLAN-v2.md §2.5 Wave 2 BEFORE deleting any of the dead widget files. Note: Plan 02 records this expansion in ROADMAP.md / REQUIREMENTS.md per D-12. Production Neon branch was NOT touched in this verification — the authoritative production-row count must be re-run at Phase 51 kick-off (still behind `uiV6.leanTrim`, no rollout risk per D-05).
+
+---
+
+## VERIFY-08: `v5.persona.kinds` keys present
+
+**Requirement:** VERIFY-08 — `v5.persona.kinds.*` keys present in both `messages/sv.json` and `messages/en.json` (verified by `jq`).
+
+**Command (verbatim from UI-RESTRUCTURE-PLAN-v2.md §Wave −1; locale files actually live at `src/messages/`, the verbatim path `messages/` from the plan does not exist):**
+```
+jq '.v5.persona.kinds' messages/sv.json messages/en.json
+```
+
+Verbatim invocation against the actual locale paths used by the project:
+```
+jq '.v5.persona.kinds' src/messages/sv.json src/messages/en.json
+```
+
+**Raw output (`sv.json`):**
+```
+null
+```
+
+**Raw output (`en.json`):**
+```
+null
+```
+
+Both files return `null` — the path `.v5.persona.kinds` does not exist in either locale file.
+
+**Supplementary inspection (the keys exist, but at a different namespace):**
+```
+jq '.v5.persona' src/messages/sv.json
+```
+Raw output:
+```json
+{
+  "label": "Roll",
+  "kind": {
+    "pm": "Projektledare",
+    "line-manager": "Linjechef",
+    "staff": "Medarbetare",
+    "rd": "FoU-chef",
+    "admin": "Administratör"
+  }
+}
+```
+```
+jq '.v5.persona' src/messages/en.json
+```
+Raw output:
+```json
+{
+  "label": "Role",
+  "kind": {
+    "pm": "Project Manager",
+    "line-manager": "Line Manager",
+    "staff": "Staff",
+    "rd": "R&D Manager",
+    "admin": "Admin"
+  }
+}
+```
+
+The persona labels DO exist, but at `v5.persona.kind.*` (singular `kind`) with the hyphenated key `line-manager`, NOT at `v5.persona.kinds.*` (plural `kinds`) with camelCase `lineManager` as the plan assumes.
+
+**Presence table (per persona × locale, evaluated at the namespace the plan calls for, `v5.persona.kinds.*`):**
+
+| Persona kind | sv.json `v5.persona.kinds.*` | en.json `v5.persona.kinds.*` | sv.json fallback at `v5.persona.kind.*` | en.json fallback at `v5.persona.kind.*` |
+|---|:---:|:---:|:---:|:---:|
+| `pm`          | missing | missing | present (`Projektledare`) | present (`Project Manager`) |
+| `lineManager` | missing | missing | present at `kind["line-manager"]` (`Linjechef`)    | present at `kind["line-manager"]` (`Line Manager`) |
+| `staff`       | missing | missing | present (`Medarbetare`)   | present (`Staff`) |
+| `rd`          | missing | missing | present (`FoU-chef`)      | present (`R&D Manager`) |
+| `admin`       | missing | missing | present (`Administratör`) | present (`Admin`) |
+
+**Verdict:** `FAIL`
+
+**Impact:** Phase 49 UNBREAK-06 scope expands — PersonaGate cannot read from `v5.persona.kinds.*` because the namespace does not exist. Two equivalent fixes are open:
+1. Add `v5.persona.kinds.{pm,lineManager,staff,rd,admin}` to both `src/messages/sv.json` and `src/messages/en.json` mirroring the existing `v5.persona.kind.*` values (preserves the plan's casing convention; PersonaGate ships unchanged from the v6.0 spec).
+2. Wire PersonaGate to read the existing `v5.persona.kind.*` namespace and translate the `lineManager` discriminator value to the hyphenated key `line-manager` at the lookup site (no locale-file change; PersonaGate spec adjusts).
+
+Plan 02 leaves the choice to the Phase 49 planner; either way, the missing-key finding is documented here.
