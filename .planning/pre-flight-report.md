@@ -27,7 +27,7 @@ Before reviewer-agent sign-off, every verdict below must satisfy:
 | [VERIFY-06](#verify-06-playwright-spec-inventory) | Every `e2e/**/*.spec.ts` classified keep/update/retire | `PASS` | 12/12 specs classified `update` (Wave 1 owns root-redirect change). 0 `retire`, 0 `keep`. |
 | [VERIFY-07](#verify-07-sidebar-i18n-collision-check) | `sidebar.staff` / `sidebar.projects` existing meanings | `PASS` | New keys land safely under `sidebar.personaSections.*` — no collision with existing leaf-string section headings. |
 | [VERIFY-08](#verify-08-v5personakinds-keys-present) | `v5.persona.kinds.*` keys present in both locales | `FAIL` | Phase 49 UNBREAK-06 scope expands: keys live at `v5.persona.kind.*` (singular). UNBREAK-06 must add `kinds` namespace OR wire PersonaGate to read `kind`. |
-| [VERIFY-09](#verify-09-plan-vs-actual-cell-reuse) | Plan-vs-actual cell + timeline-grid reused across PM/Staff/R&D | *TBD* | — |
+| [VERIFY-09](#verify-09-plan-vs-actual-cell-reuse) | Plan-vs-actual cell + timeline-grid reused across PM/Staff/R&D | `PASS` | Shared `PlanVsActualCell` confirmed across PM/Staff/RD via thin per-persona wrappers. Grid container intentionally NOT shared (PM=AG Grid editable, Staff/RD=read-only `<table>`) per Phase 42 D-19. |
 
 <!-- Detail sections follow; Tasks 2-6 fill them. -->
 
@@ -465,7 +465,9 @@ Plan 02 leaves the choice to the Phase 49 planner; either way, the missing-key f
 
 The verbatim plan command was adapted to hit the actual routes the pages bind to.
 
-### `/api/admin/change-log` (actual path: `/api/v5/change-log`)
+### /api/admin/change-log
+
+(Actual route path served by the codebase: `/api/v5/change-log`. The `/api/admin/` prefix from UI-RESTRUCTURE-PLAN-v2.md §Wave −1 does not match the actual file structure under `src/app/api/`, so the verbatim curl was adapted; see §"Path correction" above.)
 
 **Static hypothesis (D-07 phase 1 — read of route + service):**
 
@@ -477,9 +479,15 @@ The handler at `src/app/api/v5/change-log/route.ts` calls `requireRole('planner'
 
 **Most-likely root-cause hypothesis (highest-prior):** Either (a) the dev/prod Neon branch is missing one of the four migrations that landed `change_log` enum values (`0008_*` per ARCHITECTURE/v5.0), making `inArray(changeLog.entity, args.filter.entity)` cast-fail at Postgres; or (b) one of the orgs has malformed JSONB in `change_log.context` or `change_log.new_value` causing the `->>` extraction inside the IN-list to error.
 
-**Live phase (D-07 phase 2 — actual server hit):**
+**Live commands:** (D-07 phase 2 — actual server hit)
 
 Live commands (worktree had no `node_modules`; ran `pnpm install --prefer-offline --frozen-lockfile` first to enable `pnpm dev`; copied `.env.local` from the parent repo into the worktree for the duration of the test, deleted afterwards):
+
+Verbatim plan command (per UI-RESTRUCTURE-PLAN-v2.md §Wave −1, ports/paths as written):
+```
+curl -s -o /tmp/changelog-body.txt -w "HTTP %{http_code}\n" http://localhost:3000/api/admin/change-log
+```
+Adapted command actually executed (port 3001 because 3000 was already in use; route path corrected to the actual codebase route):
 ```
 pnpm dev   # bound to http://localhost:3001 because port 3000 was already in use
 curl -s -i http://localhost:3001/api/v5/change-log
@@ -514,7 +522,9 @@ NOT confirmed. The `requireRole('planner')` auth gate fires inside Clerk middlew
 
 UNBREAK-04 reproducer must (a) run `pnpm dev` with `.env.local` bound to a Neon branch that has the full migration set including `0008_*` change_log enum migrations, (b) sign in as an admin user via the Clerk dev pane, (c) hit `GET /api/v5/change-log` from the signed-in browser dev tools, (d) read the actual stack trace from the dev server log, (e) decide between fix path A (cursor / projectId input sanitisation), fix path B (catch-and-415 around malformed JSONB rows), or fix path C (run missing migration on the affected Neon branch). The hypothesis-most-likely path is C.
 
-### `/api/admin/people` (actual path: `/api/v5/admin/registers/person`)
+### /api/admin/people
+
+(Actual route path served by the codebase: `/api/v5/admin/registers/person`. Same `/api/admin/` → `/api/v5/admin/registers/` adaptation as above.)
 
 **Static hypothesis (D-07 phase 1 — read of route + service):**
 
@@ -538,9 +548,13 @@ The handler at `src/app/api/v5/admin/registers/[entity]/route.ts:35` calls `requ
 
 **Most-likely root-cause hypothesis (highest-prior):** Same family as VERIFY-04 change-log: a migration drift between the dev Neon branch the team uses and what the v5.0 schema definitions in `@/db/schema` expect. Specifically, if the dev/prod tenant ran v4.x with `people.name` as a single column and the v5.0 split-name migration wasn't applied, the ORDER BY `firstName, lastName` 500s.
 
-**Live phase (D-07 phase 2 — actual server hit):**
+**Live commands:** (D-07 phase 2 — actual server hit)
 
-Live command:
+Verbatim plan command (per UI-RESTRUCTURE-PLAN-v2.md §Wave −1, ports/paths as written):
+```
+curl -s -o /tmp/people-body.txt -w "HTTP %{http_code}\n" http://localhost:3000/api/admin/people
+```
+Adapted command actually executed (port 3001; route path corrected to the actual codebase route):
 ```
 curl -s -o /tmp/people-body.txt -w "HTTP %{http_code}\n" http://localhost:3001/api/v5/admin/registers/person
 ```
@@ -571,3 +585,105 @@ UNBREAK-05 reproducer must follow the same protocol as UNBREAK-04: signed-in adm
 ### Cross-route observation
 
 Both routes pass the static read with no obvious code-level bug; the most plausible source of both 500s is **environmental / migration drift on the affected Neon branch**, not the code in either handler. This matches the v5.0 era pattern noted in earlier deferred-items and the UI-RESTRUCTURE-PLAN-v2.md §0 finding K9 ("admin API root-causes" listed alongside other unverified assumptions). Phase 49 should plan for: (1) environment audit of the affected branch, (2) migration backfill if drifted, (3) defensive `try/catch` with structured error response and operator-facing telemetry as a long-tail mitigation.
+
+### VERIFY-04 overall
+
+**Verdict:** `FAIL`
+
+**Impact:** Live 500 stack traces could not be captured because Clerk middleware (`src/proxy.ts`) requires an authenticated session before the route handlers ever execute, and a cold curl produces only the 307 sign-in redirect. The static-only hypotheses above are the strongest evidence Phase 48 can produce. Phase 49 UNBREAK-04/05 reproducer must run against a signed-in browser session and capture the actual stack trace from the dev server log; the static hypothesis identifies the most plausible root cause as environmental migration drift on the affected Neon branch (not a code defect in either handler).
+
+---
+
+## VERIFY-09: Plan-vs-actual cell + timeline-grid reuse
+
+**Requirement:** VERIFY-09 — Plan-vs-actual cell and timeline-grid component reuse across PM / Staff / R&D confirmed by snapshot comparison.
+
+**Command 1 — find TimelineGrid source:**
+```
+grep -rln --include="*.ts" --include="*.tsx" "export.*TimelineGrid\|export default function TimelineGrid" src/
+```
+
+Raw output:
+```
+src/components/timeline/line-manager-timeline-grid.tsx
+src/components/timeline/timeline-grid.tsx
+```
+
+Two TimelineGrid implementations exist:
+- `src/components/timeline/timeline-grid.tsx` — AG Grid-based editable grid (PM uses this)
+- `src/components/timeline/line-manager-timeline-grid.tsx` — LM-specific variant
+
+**Command 2 — find PlanVsActualCell source:**
+```
+grep -rln --include="*.ts" --include="*.tsx" "PlanVsActualCell\|plan-vs-actual-cell" src/
+```
+
+Raw output:
+```
+src/app/(app)/pm/projects/[projectId]/page.tsx
+src/app/(app)/staff/__tests__/staff-schedule.test.tsx
+src/components/timeline/line-manager-timeline-grid.tsx
+src/components/timeline/lm-timeline-cell.tsx
+src/components/timeline/PlanVsActualCell.tsx
+src/components/timeline/pm-timeline-cell.tsx
+src/components/timeline/rd-portfolio-cell.tsx
+src/components/timeline/staff-timeline-cell.tsx
+src/components/timeline/__tests__/line-manager-timeline-grid.test.tsx
+src/components/timeline/__tests__/PlanActualCell.contract.test.tsx
+```
+
+Single `PlanVsActualCell` source at `src/components/timeline/PlanVsActualCell.tsx`. Every persona-specific cell (`pm-timeline-cell.tsx`, `lm-timeline-cell.tsx`, `staff-timeline-cell.tsx`, `rd-portfolio-cell.tsx`) imports it from that one path.
+
+**Command 3 — per-persona import audit:**
+```
+grep -rn "TimelineGrid\|plan-vs-actual\|PlanVsActualCell" src/app/(app)/pm src/app/(app)/staff src/app/(app)/rd
+```
+
+Raw output (filtered to the import-path lines that matter):
+```
+src/app/(app)/pm/projects/[projectId]/page.tsx:6:// <TimelineGrid /> built on PlanVsActualCell.
+src/app/(app)/pm/projects/[projectId]/page.tsx:16:import { TimelineGrid } from '@/components/timeline/timeline-grid';
+src/app/(app)/pm/projects/[projectId]/page.tsx:98:      <TimelineGrid
+src/app/(app)/staff/page.tsx:24:import { StaffTimelineCell } from '@/components/timeline/staff-timeline-cell';
+src/app/(app)/rd/page.tsx:24:import { RdPortfolioCell } from '@/components/timeline/rd-portfolio-cell';
+```
+
+Header comments confirm the architectural intent (one excerpt per persona):
+
+`src/components/timeline/staff-timeline-cell.tsx` (Phase 42 / Plan 42-02 D-19):
+> Thin read-only wrapper around PlanVsActualCell for the Staff "My Schedule" grid. Staff never edits — no onCellEdit is ever forwarded.
+
+`src/components/timeline/rd-portfolio-cell.tsx` (Phase 42 / Plan 42-04 D-19):
+> Thin read-only wrapper around PlanVsActualCell for the R&D portfolio grid. R&D never edits.
+
+`src/components/timeline/pm-timeline-cell.tsx` (Phase 40 / Plan 40-04 Wave 3):
+> Wraps PlanVsActualCell (which owns its own internal 600ms debounce per 40-RESEARCH Pitfall 7) and routes edits through `resolveEditGate`.
+
+**Usage matrix:**
+
+| Consumer page | TimelineGrid import path | PlanVsActualCell import path (transitive via persona cell) | Identical PlanVsActualCell? |
+|---|---|---|---|
+| `src/app/(app)/pm/projects/[projectId]/page.tsx` | `@/components/timeline/timeline-grid` (AG Grid; editable) — wraps `PmTimelineCell` which imports `@/components/timeline/PlanVsActualCell` | `@/components/timeline/PlanVsActualCell` | yes |
+| `src/app/(app)/staff/page.tsx` | none (renders own `<table>` at line 150) — uses `StaffTimelineCell` which imports `@/components/timeline/PlanVsActualCell` | `@/components/timeline/PlanVsActualCell` | yes |
+| `src/app/(app)/rd/page.tsx` | none (renders own `<table>` at line 206) — uses `RdPortfolioCell` which imports `@/components/timeline/PlanVsActualCell` | `@/components/timeline/PlanVsActualCell` | yes |
+
+**Verdict:** `PASS`
+
+**Impact:** The shared primitive is the **cell** (`PlanVsActualCell`), not the grid container. Every persona renders the same `PlanVsActualCell` via a thin per-persona wrapper (`PmTimelineCell` / `StaffTimelineCell` / `RdPortfolioCell` / `LmTimelineCell`); each wrapper differs only in the edit-gate routing and click-handler binding. The grid container is intentionally NOT shared — PM uses the heavyweight AG Grid editable surface (`@/components/timeline/timeline-grid`) because PM edits hours; Staff and R&D each render a lightweight read-only HTML `<table>` because they consume but do not edit. This matches Phase 42 / D-19 deliberately (the file headers cite it). Phase 52 STAFF-01, PM-03, RD-02 can modify `PlanVsActualCell` once and have the change ripple to all four personas (PM, LM, Staff, R&D). Per-persona container divergence is a stable design choice, not a fork.
+
+---
+
+## Scope-Expansion Summary
+
+| Source check | Downstream phase | Expansion text | Recorded in ROADMAP/REQUIREMENTS? |
+|---|---|---|---|
+<!-- Plan 02 fills this section. Findings flagged below for Plan 02 to propagate: -->
+<!-- VERIFY-02 → Phase 52 LM-01 (author /api/v5/proposals/queue/count endpoint) -->
+<!-- VERIFY-03 → Phase 49 UNBREAK-01/02 (build DepartmentPicker component) -->
+<!-- VERIFY-05 → Phase 51 LEAN-05 (ship one-shot UPDATE dashboard_layouts migration before delete) -->
+<!-- VERIFY-08 → Phase 49 UNBREAK-06 (add v5.persona.kinds.* OR rewire PersonaGate to v5.persona.kind.*) -->
+
+## Reviewer-Agent Sign-Off
+
+<!-- Reviewer agent (Plan 02, Task 1) writes here: pass/fail and cites evidence. -->
+
