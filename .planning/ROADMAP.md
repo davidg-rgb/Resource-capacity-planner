@@ -334,6 +334,8 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 47
 ## Phase 49: Unbreak broken persona surfaces
 **Goal**: Every persona landing page loads with real content; no raw i18n keys render as primary text; no primary content shows an API-error state on hit.
 **Depends on**: Phase 48
+**Expanded by VERIFY-03**: Build the department-picker component before UNBREAK-01 / UNBREAK-02 can wire it. Pre-flight report §VERIFY-03 confirms the component is absent (`grep` returns `<no matches>` under `src/features/personas` and `src/components`); only the two raw i18n call sites at `line-manager/page.tsx:70` and `line-manager/timeline/page.tsx:127` exist today.
+**Expanded by VERIFY-08**: Either add a new `v5.persona.kinds.{pm,lineManager,staff,rd,admin}` namespace to both `src/messages/sv.json` and `src/messages/en.json`, OR rewire PersonaGate to read the existing `v5.persona.kind.*` (singular) namespace and translate the `lineManager` discriminator value to the hyphenated key `line-manager` at the lookup site. Pre-flight report §VERIFY-08 confirms `v5.persona.kinds.*` returns `null` from both locale files; the labels live at `v5.persona.kind.*` instead.
 **Requirements**: UNBREAK-01 … UNBREAK-07
 **Success Criteria**:
   1. `/line-manager` and `/line-manager/timeline` render a functional department picker (raw `v5.lineManager.*.selectDepartment` keys gone)
@@ -358,6 +360,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 47
 ## Phase 51: Lean cleanup — duplicate removal
 **Goal**: Eliminate every duplicate surface and dead widget identified in `WIDGET-INVENTORY.md` without regressing any verified journey or PDF export.
 **Depends on**: Phase 50 (sidebar must exist before removing the top-nav items that lead to the deleted pages)
+**Expanded by VERIFY-05**: Ship a one-shot `UPDATE dashboard_layouts SET layout = (SELECT jsonb_agg(placement) FROM jsonb_array_elements(layout) placement WHERE placement->>'widgetId' NOT IN (...))` migration BEFORE deleting any of the 7 dead widget files (`discipline-progress`, `discipline-demand`, `project-impact`, `utilization-heat-map`, `bench-report`, `strategic-alerts`, `resource-conflicts`). Migration draft lives in `UI-RESTRUCTURE-PLAN-v2.md` §2.5 Wave 2. Pre-flight report §VERIFY-05 returned 1 affected `dashboard_layouts` row on the dev Neon branch (`manager` dashboard for tenant `0b200821-c78c-4717-9099-696c8520d2d3`); the authoritative production-row count must be re-run at Phase 51 kick-off.
 **Requirements**: LEAN-01 … LEAN-10
 **Success Criteria**:
   1. `next.config.ts` contains permanent (308) redirects for `/team → /admin/people`, `/projects → /admin/projects`, `/wishes → /pm/wishes`; the source pages are deleted
@@ -372,6 +375,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 47
 ## Phase 52: Per-journey friction fixes
 **Goal**: Every one of the 13 user journeys documented in `v5.0-USER-JOURNEYS.md` reaches its target click-count from `UI-RESTRUCTURE-PLAN-v2.md §1`, verified by Playwright.
 **Depends on**: Phase 51
+**Expanded by VERIFY-02**: Ship `src/app/api/v5/proposals/queue/count/route.ts` (server route + service function + unit test) so LM-01's approval-queue badge can render a real count (and so the persona-switcher reflection of the same count, LM-01 second clause, has a backing endpoint). Pre-flight report §VERIFY-02 confirms the endpoint does not exist (`ls src/app/api/v5/proposals/queue/count` → "No such file"; cross-check grep `proposals/queue/count` → `<no matches>`).
 **Requirements**: PM-01 … ADMIN-01, SHARED-01, PJ-FLAG
 **Success Criteria**:
   1. PM: `/pm` auto-routes to default project when applicable; pending-wish chip deep-links to `/pm/wishes`; historic-edit warning fires for past-month edits (4 persona × period combos); 4 proposal-state visual snapshots committed

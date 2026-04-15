@@ -675,13 +675,18 @@ Header comments confirm the architectural intent (one excerpt per persona):
 
 ## Scope-Expansion Summary
 
-| Source check | Downstream phase | Expansion text | Recorded in ROADMAP/REQUIREMENTS? |
-|---|---|---|---|
-<!-- Plan 02 fills this section. Findings flagged below for Plan 02 to propagate: -->
-<!-- VERIFY-02 → Phase 52 LM-01 (author /api/v5/proposals/queue/count endpoint) -->
-<!-- VERIFY-03 → Phase 49 UNBREAK-01/02 (build DepartmentPicker component) -->
-<!-- VERIFY-05 → Phase 51 LEAN-05 (ship one-shot UPDATE dashboard_layouts migration before delete) -->
-<!-- VERIFY-08 → Phase 49 UNBREAK-06 (add v5.persona.kinds.* OR rewire PersonaGate to v5.persona.kind.*) -->
+Per CONTEXT.md D-12 / D-13, Plan 02 records every EXPANDS-SCOPE verdict (and any FAIL whose Impact line names a downstream-scope-expanding requirement) here, and propagates the expansion to `.planning/ROADMAP.md` (per affected phase entry) and `.planning/REQUIREMENTS.md` (per affected phase requirements block). All three files are written in a single atomic commit.
+
+| Source check | Verdict | Downstream phase | Expansion text | Recorded in ROADMAP | Recorded in REQUIREMENTS |
+|---|---|---|---|:---:|:---:|
+| [VERIFY-02](#verify-02-apiv5proposalsqueuecount-endpoint) | `EXPANDS-SCOPE` | Phase 52 (LM-01) | Author `src/app/api/v5/proposals/queue/count/route.ts` (server route + service function + unit test) before LM-01's approval-queue badge can render a real count. The persona-switcher reflection of the same count (LM-01 second clause) also depends on this. | ✓ | ✓ |
+| [VERIFY-03](#verify-03-phase-41-department-picker) | `EXPANDS-SCOPE` | Phase 49 (UNBREAK-01 / UNBREAK-02) | Build the department-picker component before UNBREAK-01 / UNBREAK-02 can wire it. The two i18n call sites (`line-manager/page.tsx:70`, `line-manager/timeline/page.tsx:127`) currently render the placeholder copy "Select a department in the persona switcher" because the upstream switcher control does not exist. | ✓ | ✓ |
+| [VERIFY-05](#verify-05-custom-dashboard-dead-widget-references) | `EXPANDS-SCOPE` | Phase 51 (LEAN-05) | Ship the one-shot `UPDATE dashboard_layouts SET layout = (SELECT jsonb_agg(placement) FROM jsonb_array_elements(layout) placement WHERE placement->>'widgetId' NOT IN (...))` migration drafted in UI-RESTRUCTURE-PLAN-v2.md §2.5 Wave 2 BEFORE deleting any of the 7 dead widget files. The dev Neon branch returned 1 affected row (`manager` dashboard for tenant `0b200821-c78c-4717-9099-696c8520d2d3`); the authoritative production-row count must be re-run at Phase 51 kick-off. | ✓ | ✓ |
+| [VERIFY-08](#verify-08-v5personakinds-keys-present) | `FAIL` (Impact line designates Phase 49 scope expansion) | Phase 49 (UNBREAK-06) | Either add `v5.persona.kinds.{pm,lineManager,staff,rd,admin}` to both `src/messages/sv.json` and `src/messages/en.json` mirroring the existing `v5.persona.kind.*` values, OR rewire PersonaGate to read the existing `v5.persona.kind.*` namespace and translate `lineManager` → `line-manager` at the lookup site. | ✓ | ✓ |
+
+**Note on VERIFY-04** (`FAIL`): VERIFY-04 does NOT appear in this Summary because its Impact line does not add a new requirement — it clarifies that Phase 49 UNBREAK-04 / UNBREAK-05 must reproduce the 500 from a signed-in browser session, which is already within UNBREAK-04 / UNBREAK-05's original scope. The static hypothesis (environmental migration drift on the affected Neon branch) lives in §VERIFY-04 above; Phase 49 planner reads it directly.
+
+**Note on the plan's expected expansion set:** CONTEXT.md D-12 anticipated only VERIFY-03 and VERIFY-05 as scope expanders. Plan 02 Task 2 Step 1 explicitly handles the case of an unplanned EXPANDS-SCOPE verdict ("record it in the Scope-Expansion Summary anyway and note in the row that it is an unplanned expansion requiring user decision"). VERIFY-02 (EXPANDS-SCOPE → Phase 52 LM-01) and VERIFY-08 (FAIL → Phase 49 UNBREAK-06) both have well-formed Impact lines naming a specific downstream requirement, so per the orchestrator-confirmed propagation list both are recorded here and in ROADMAP / REQUIREMENTS as routine expansions (no user decision required — the expansions are simple sub-bullets under existing phase requirement blocks).
 
 ## Reviewer-Agent Sign-Off
 
