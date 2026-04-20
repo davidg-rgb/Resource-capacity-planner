@@ -512,6 +512,7 @@
       "label": "Role",
       "departmentLabel": "Department",
       "noDepartmentHint": "An admin must link your user account to a department first",
+      "noPersonMatch": "No person linked",
       "kind": {
         "pm": "Project Manager",
         "line-manager": "Line Manager",
