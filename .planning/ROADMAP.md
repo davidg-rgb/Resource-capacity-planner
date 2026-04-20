@@ -89,7 +89,7 @@
 - [x] **Phase 48: Pre-flight verification** — Grep/SQL-verify 9 assumptions (getLandingRoute exists, queue-count endpoint, Phase 41 picker, admin API root causes, custom-dashboard widget references via corrected SQL, existing Playwright spec inventory, sidebar i18n collisions, v5.persona.kinds keys, plan-vs-actual cell reuse). Produces `pre-flight-report.md`. (completed 2026-04-15)
 - [x] **Phase 49: Unbreak broken persona surfaces** — LM department picker (`/line-manager` + `/line-manager/timeline`), PM Home empty-state, `/admin` + `/admin/people` API 500s, PersonaGate error i18n, Playwright spec updates for upcoming nav changes. (completed 2026-04-20)
 - [x] **Phase 50: Persona-aware landing & navigation** — Root `/` client redirect to `getLandingRoute(persona)` behind `uiV6.landing` flag; `SECTION_NAV` for all 5 personas; Home breadcrumb; grouped persona switcher; 18 `sidebar.personaSections.*` i18n keys. (completed 2026-04-20)
-- [ ] **Phase 51: Lean cleanup — duplicate removal** — `next.config.ts` 308 redirects for `/team`, `/projects`, `/wishes`; delete the source pages; remove `/input` duplicate list; delete 3 dead widgets (after custom-layout migration); strip duplicate widgets from project-leader layout; add defensive fallback to `widget-registry`; PDF snapshot regression. Gated behind `uiV6.leanTrim`.
+- [x] **Phase 51: Lean cleanup — duplicate removal** — `next.config.ts` 308 redirects for `/team`, `/projects`, `/wishes`; delete the source pages; remove `/input` duplicate list; delete 3 dead widgets (after custom-layout migration); strip duplicate widgets from project-leader layout; add defensive fallback to `widget-registry`; PDF snapshot regression. Gated behind `uiV6.leanTrim`. (completed 2026-04-20)
 - [ ] **Phase 52: Per-journey friction fixes** — PM default-project auto-select + pending-wish chip; LM approval-queue badge; historic-edit dialog tests; proposal-state visual snapshots; Staff read-only timeline; R&D long-horizon zoom (ISO 8601 + 53-week); R&D overcommit-drill dialog content; shared drill-down drawer audit; admin archive dependent-row E2E. Gated behind `uiV6.perJourney`.
 - [ ] **Phase 53: Chrome polish** — Persona-scoped notification bell; `NavItemDef.visibleFor` top-nav filtering; merge `discipline-chart` + `discipline-distribution`; delete `bench-report`; move `resource-conflicts` to `/alerts` tab; replace `strategic-alerts` with banner; manager + project-leader dashboards fit 1440×900. Gated behind `uiV6.polish`.
 - [ ] **Phase 54 (optional): Dashboard quadrant redesign** — Deferred unless post-Phase-53 telemetry indicates dashboard confusion. 4-quadrant layouts keyed to user questions (manager) and PM journeys (project-leader), behind `uiV6.dashboardQuadrants` flag.
@@ -311,7 +311,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 47
 | 48. Pre-flight verification | v6.0 | 2/2 | Complete    | 2026-04-15 |
 | 49. Unbreak broken persona surfaces | v6.0 | 4/4 | Complete    | 2026-04-20 |
 | 50. Persona-aware landing & navigation | v6.0 | 3/3 | Complete    | 2026-04-20 |
-| 51. Lean cleanup — duplicate removal | v6.0 | 0/3 | Planned | — |
+| 51. Lean cleanup — duplicate removal | v6.0 | 3/3 | Complete    | 2026-04-20 |
 | 52. Per-journey friction fixes | v6.0 | 0/TBD | Planned | — |
 | 53. Chrome polish | v6.0 | 0/TBD | Planned | — |
 | 54. Dashboard quadrant redesign (optional) | v6.0 | 0/TBD | Deferred | — |
@@ -379,11 +379,11 @@ Plans:
   5. `widget-registry` renders a "Widget ej tillgänglig" placeholder for unknown IDs instead of throwing
   6. `/api/reports/team-heatmap` PDF snapshot matches pre-trim baseline; regression test committed
   7. Everything gated behind `uiV6.leanTrim` with verified off-state rollback
-**Plans:** 3 plans
+**Plans:** 3/3 plans complete
 Plans:
-- [ ] 51-01-PLAN.md -- Feature flag + 308 redirects + widget fallback + /input cleanup (LEAN-01..04, LEAN-09)
-- [ ] 51-02-PLAN.md -- DB migration + layout trimming + summary-card widget (LEAN-05..08)
-- [ ] 51-03-PLAN.md -- PDF regression test + integration tests (LEAN-10)
+- [x] 51-01-PLAN.md -- Feature flag + 308 redirects + widget fallback + /input cleanup (LEAN-01..04, LEAN-09)
+- [x] 51-02-PLAN.md -- DB migration + layout trimming + summary-card widget (LEAN-05..08)
+- [x] 51-03-PLAN.md -- PDF regression test + integration tests (LEAN-10)
 
 ## Phase 52: Per-journey friction fixes
 **Goal**: Every one of the 13 user journeys documented in `v5.0-USER-JOURNEYS.md` reaches its target click-count from `UI-RESTRUCTURE-PLAN-v2.md §1`, verified by Playwright.
