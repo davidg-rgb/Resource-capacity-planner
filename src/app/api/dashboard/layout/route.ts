@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { db } from '@/db';
 import { dashboardLayouts } from '@/db/schema';
 import { getDefaultLayout } from '@/features/dashboard/default-layouts';
+import { getOrgFlags } from '@/features/flags/flag.service';
 import { getWidget } from '@/features/dashboard/widget-registry';
 import type {
   DashboardLayoutData,
@@ -147,7 +148,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Tier 4: built-in persona default
-    const builtInWidgets = filterValidWidgets(getDefaultLayout(dashboardId, deviceClass));
+    const flags = await getOrgFlags(orgId);
+    const useLegacy = !flags.uiV6LeanTrim;
+    const builtInWidgets = filterValidWidgets(getDefaultLayout(dashboardId, deviceClass, useLegacy));
     const data: DashboardLayoutData = {
       dashboardId,
       deviceClass,
