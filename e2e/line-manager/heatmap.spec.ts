@@ -20,6 +20,11 @@ test.describe('Line Manager heatmap', () => {
     await personaAs(page, 'line-manager');
     await page.goto('/');
 
+    // Phase 49 UNBREAK-08: department picker is now in the switcher; select first dept
+    const deptSelect = page.getByTestId('persona-switcher-department');
+    await expect(deptSelect).toBeVisible({ timeout: 5_000 });
+    await deptSelect.selectOption({ index: 0 });
+
     const redCells = page.locator(
       '[data-capacity="over"], [class*="bg-red"], [data-status="over"]',
     );
