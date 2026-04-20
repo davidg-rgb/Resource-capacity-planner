@@ -88,7 +88,7 @@
 
 - [x] **Phase 48: Pre-flight verification** — Grep/SQL-verify 9 assumptions (getLandingRoute exists, queue-count endpoint, Phase 41 picker, admin API root causes, custom-dashboard widget references via corrected SQL, existing Playwright spec inventory, sidebar i18n collisions, v5.persona.kinds keys, plan-vs-actual cell reuse). Produces `pre-flight-report.md`. (completed 2026-04-15)
 - [x] **Phase 49: Unbreak broken persona surfaces** — LM department picker (`/line-manager` + `/line-manager/timeline`), PM Home empty-state, `/admin` + `/admin/people` API 500s, PersonaGate error i18n, Playwright spec updates for upcoming nav changes. (completed 2026-04-20)
-- [ ] **Phase 50: Persona-aware landing & navigation** — Root `/` client redirect to `getLandingRoute(persona)` behind `uiV6.landing` flag; `SECTION_NAV` for all 5 personas; Home breadcrumb; grouped persona switcher; 18 `sidebar.personaSections.*` i18n keys.
+- [x] **Phase 50: Persona-aware landing & navigation** — Root `/` client redirect to `getLandingRoute(persona)` behind `uiV6.landing` flag; `SECTION_NAV` for all 5 personas; Home breadcrumb; grouped persona switcher; 18 `sidebar.personaSections.*` i18n keys. (completed 2026-04-20)
 - [ ] **Phase 51: Lean cleanup — duplicate removal** — `next.config.ts` 308 redirects for `/team`, `/projects`, `/wishes`; delete the source pages; remove `/input` duplicate list; delete 3 dead widgets (after custom-layout migration); strip duplicate widgets from project-leader layout; add defensive fallback to `widget-registry`; PDF snapshot regression. Gated behind `uiV6.leanTrim`.
 - [ ] **Phase 52: Per-journey friction fixes** — PM default-project auto-select + pending-wish chip; LM approval-queue badge; historic-edit dialog tests; proposal-state visual snapshots; Staff read-only timeline; R&D long-horizon zoom (ISO 8601 + 53-week); R&D overcommit-drill dialog content; shared drill-down drawer audit; admin archive dependent-row E2E. Gated behind `uiV6.perJourney`.
 - [ ] **Phase 53: Chrome polish** — Persona-scoped notification bell; `NavItemDef.visibleFor` top-nav filtering; merge `discipline-chart` + `discipline-distribution`; delete `bench-report`; move `resource-conflicts` to `/alerts` tab; replace `strategic-alerts` with banner; manager + project-leader dashboards fit 1440×900. Gated behind `uiV6.polish`.
@@ -310,7 +310,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 47
 | v5.0 Architecture Review | v5.0 | — | Complete (3 iterations) | 2026-04-10 |
 | 48. Pre-flight verification | v6.0 | 2/2 | Complete    | 2026-04-15 |
 | 49. Unbreak broken persona surfaces | v6.0 | 4/4 | Complete    | 2026-04-20 |
-| 50. Persona-aware landing & navigation | v6.0 | 1/3 | In Progress|  |
+| 50. Persona-aware landing & navigation | v6.0 | 3/3 | Complete    | 2026-04-20 |
 | 51. Lean cleanup — duplicate removal | v6.0 | 0/TBD | Planned | — |
 | 52. Per-journey friction fixes | v6.0 | 0/TBD | Planned | — |
 | 53. Chrome polish | v6.0 | 0/TBD | Planned | — |
@@ -360,11 +360,11 @@ Plans:
   3. Breadcrumbs show a "Home" link resolving to `getLandingRoute(persona)`; snapshot tests updated
   4. Persona switcher collapses kind + person into a single grouped `<select>` with correct edge-case handling for 0 / 1 / >1 Person rows matching the user
   5. 18 new `sidebar.personaSections.*` i18n keys exist in both `messages/sv.json` and `messages/en.json` with final copy
-**Plans:** 1/3 plans executed
+**Plans:** 3/3 plans complete
 Plans:
 - [x] 50-01-PLAN.md — uiV6Landing feature flag + persona-aware root redirect (NAV-01)
-- [ ] 50-02-PLAN.md — Persona-keyed sidebar + i18n keys + Home breadcrumb (NAV-02, NAV-03, NAV-05)
-- [ ] 50-03-PLAN.md — Persona switcher grouped select refactor (NAV-04)
+- [x] 50-02-PLAN.md — Persona-keyed sidebar + i18n keys + Home breadcrumb (NAV-02, NAV-03, NAV-05)
+- [x] 50-03-PLAN.md — Persona switcher grouped select refactor (NAV-04)
 
 ## Phase 51: Lean cleanup — duplicate removal
 **Goal**: Eliminate every duplicate surface and dead widget identified in `WIDGET-INVENTORY.md` without regressing any verified journey or PDF export.
