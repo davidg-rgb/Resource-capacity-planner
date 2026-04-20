@@ -144,6 +144,117 @@ CREATE INDEX "change_log_actor_idx" ON "change_log" USING btree ("actor_persona_
 
 **Go/no-go:** Manual change_log + enums seeded; safe to proceed with `pnpm db:migrate`.
 
+## Migration execution
+
+**Command:** `pnpm db:migrate` (via temporary `.env` copy from `.env.local`)
+**Exit code:** 0
+
+**Verbatim stdout:**
+```
+No config path provided, using default 'drizzle.config.ts'
+Reading config file '...\drizzle.config.ts'
+Using '@neondatabase/serverless' driver for database querying
+ Warning  '@neondatabase/serverless' can only connect to remote Neon/Vercel Postgres/Supabase instances through a websocket
+[✓] migrations applied successfully!
+```
+
+**Note:** `drizzle.config.ts` uses `import 'dotenv/config'` which reads `.env` (not `.env.local`). Temporarily copied `.env.local` to `.env` for the migration run, then removed `.env` immediately after. The `.env.local` file was NOT modified.
+
+## Post-migration snapshot
+
+### drizzle.__drizzle_migrations (9 rows -- CORRECT)
+
+```json
+[
+  { "id": 1, "hash": "6221cce3...", "created_at": "1774518414872" },
+  { "id": 2, "hash": "5ba054ac...", "created_at": "1775573609283" },
+  { "id": 3, "hash": "0ad79bd0...", "created_at": "1775573609411" },
+  { "id": 4, "hash": "bd5d5976...", "created_at": "1775573609470" },
+  { "id": 5, "hash": "52ef4d20...", "created_at": "1775573609530" },
+  { "id": 6, "hash": "dac84677...", "created_at": "1775575413153" },
+  { "id": 7, "hash": "a5317c33...", "created_at": "1775580352132" },
+  { "id": 8, "hash": "0764ac2d...", "created_at": "1775944800000" },
+  { "id": 9, "hash": "0807c443...", "created_at": "1775944800001" }
+]
+```
+
+Row count: **9** (matches `_journal.json` -- all 9 migrations now tracked)
+
+### departments columns (archived_at PRESENT -- FIXED)
+
+```json
+[
+  { "column_name": "id" },
+  { "column_name": "organization_id" },
+  { "column_name": "name" },
+  { "column_name": "created_at" },
+  { "column_name": "archived_at" }
+]
+```
+
+### disciplines columns (archived_at PRESENT -- FIXED)
+
+```json
+[
+  { "column_name": "id" },
+  { "column_name": "organization_id" },
+  { "column_name": "name" },
+  { "column_name": "abbreviation" },
+  { "column_name": "created_at" },
+  { "column_name": "archived_at" }
+]
+```
+
+### programs columns (archived_at PRESENT -- FIXED)
+
+```json
+[
+  { "column_name": "id" },
+  { "column_name": "organization_id" },
+  { "column_name": "name" },
+  { "column_name": "description" },
+  { "column_name": "created_at" },
+  { "column_name": "updated_at" },
+  { "column_name": "archived_at" }
+]
+```
+
+### change_log table presence (PRESENT -- FIXED)
+
+```json
+[{ "table_name": "change_log" }]
+```
+
+### change_log_action enum (14 values -- includes ACTUAL_UPSERTED from 0005)
+
+```
+ALLOCATION_EDITED, ALLOCATION_HISTORIC_EDITED, ALLOCATION_BULK_COPIED,
+PROPOSAL_SUBMITTED, PROPOSAL_APPROVED, PROPOSAL_REJECTED, PROPOSAL_WITHDRAWN,
+PROPOSAL_EDITED, ACTUALS_BATCH_COMMITTED, ACTUALS_BATCH_ROLLED_BACK,
+REGISTER_ROW_CREATED, REGISTER_ROW_UPDATED, REGISTER_ROW_DELETED,
+ACTUAL_UPSERTED
+```
+
+### change_log_entity enum (9 values -- includes 'program' from 0008)
+
+```
+allocation, proposal, actual_entry, person, project, department, discipline,
+import_batch, program
+```
+
+## Post-migration verification summary
+
+| Check | Expected | Actual | Status |
+|-------|----------|--------|--------|
+| `__drizzle_migrations` row count | 9 | 9 | PASS |
+| `departments.archived_at` | PRESENT | PRESENT | PASS |
+| `disciplines.archived_at` | PRESENT | PRESENT | PASS |
+| `programs.archived_at` | PRESENT | PRESENT | PASS |
+| `change_log` table | PRESENT | PRESENT | PASS |
+| `change_log_action` includes `ACTUAL_UPSERTED` | YES | YES | PASS |
+| `change_log_entity` includes `program` | YES | YES | PASS |
+| `pnpm db:migrate` exit code | 0 | 0 | PASS |
+
 ## Rollback branch
 
 Neon CLI not available locally -- rollback via Neon dashboard's branch-restore feature using the `created_at` timestamp captured above (earliest migration: `1774518414872`). Manual `psql` revert of 0005-0008 is the fallback. The Neon dashboard supports point-in-time restore on the dev branch `ep-raspy-sea-al5kxh7j-pooler` to any timestamp before the migration run.
