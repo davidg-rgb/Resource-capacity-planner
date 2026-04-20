@@ -311,7 +311,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 47
 | 48. Pre-flight verification | v6.0 | 2/2 | Complete    | 2026-04-15 |
 | 49. Unbreak broken persona surfaces | v6.0 | 4/4 | Complete    | 2026-04-20 |
 | 50. Persona-aware landing & navigation | v6.0 | 3/3 | Complete    | 2026-04-20 |
-| 51. Lean cleanup — duplicate removal | v6.0 | 0/TBD | Planned | — |
+| 51. Lean cleanup — duplicate removal | v6.0 | 0/3 | Planned | — |
 | 52. Per-journey friction fixes | v6.0 | 0/TBD | Planned | — |
 | 53. Chrome polish | v6.0 | 0/TBD | Planned | — |
 | 54. Dashboard quadrant redesign (optional) | v6.0 | 0/TBD | Deferred | — |
@@ -379,7 +379,11 @@ Plans:
   5. `widget-registry` renders a "Widget ej tillgänglig" placeholder for unknown IDs instead of throwing
   6. `/api/reports/team-heatmap` PDF snapshot matches pre-trim baseline; regression test committed
   7. Everything gated behind `uiV6.leanTrim` with verified off-state rollback
-**Plans**: TBD
+**Plans:** 3 plans
+Plans:
+- [ ] 51-01-PLAN.md -- Feature flag + 308 redirects + widget fallback + /input cleanup (LEAN-01..04, LEAN-09)
+- [ ] 51-02-PLAN.md -- DB migration + layout trimming + summary-card widget (LEAN-05..08)
+- [ ] 51-03-PLAN.md -- PDF regression test + integration tests (LEAN-10)
 
 ## Phase 52: Per-journey friction fixes
 **Goal**: Every one of the 13 user journeys documented in `v5.0-USER-JOURNEYS.md` reaches its target click-count from `UI-RESTRUCTURE-PLAN-v2.md §1`, verified by Playwright.
