@@ -38,11 +38,18 @@ export interface PersonaGateProps {
 export function PersonaGate({ allowed, children }: PersonaGateProps) {
   const { persona } = usePersona();
   const result = assertPersonaOrRedirect(persona, allowed);
-  const t = useTranslations('v5.lineManager');
+  const tHint = useTranslations('v5.lineManager');
+  const tPersona = useTranslations('v5.persona');
 
   if (result.allowed) {
     return createElement('div', { 'data-testid': 'persona-gate-allowed' }, children);
   }
+
+  // Phase 49 UNBREAK-06/09: derive the allowed persona label from the
+  // singular v5.persona.kind.* namespace. No camelCase→hyphen transform
+  // needed — PersonaKind is already hyphenated.
+  const firstAllowed = allowed[0];
+  const allowedLabel = firstAllowed ? safeT(tPersona, `kind.${firstAllowed}`, '') : '';
 
   return createElement(
     'div',
@@ -59,16 +66,14 @@ export function PersonaGate({ allowed, children }: PersonaGateProps) {
       createElement(
         'h3',
         { className: 'text-on-surface text-base font-semibold' },
-        safeT(t, 'wrongPersonaHint.title', 'Wrong persona'),
+        safeT(tHint, 'wrongPersonaHint.title', 'Wrong persona'),
       ),
       createElement(
         'p',
         { className: 'text-on-surface-variant mt-1 text-sm' },
-        safeT(
-          t,
-          'wrongPersonaHint.description',
-          'Switch to the correct persona to view this page.',
-        ),
+        allowedLabel
+          ? `Kunde inte ladda \u2014 denna sida \u00e4r f\u00f6r ${allowedLabel}-personan`
+          : safeT(tHint, 'wrongPersonaHint.description', 'Switch to the correct persona to view this page.'),
       ),
       createElement(
         'button',
@@ -85,7 +90,7 @@ export function PersonaGate({ allowed, children }: PersonaGateProps) {
             }
           },
         },
-        safeT(t, 'wrongPersonaHint.switchCta', 'Switch persona'),
+        safeT(tHint, 'wrongPersonaHint.switchCta', 'Switch persona'),
       ),
     ),
   );
