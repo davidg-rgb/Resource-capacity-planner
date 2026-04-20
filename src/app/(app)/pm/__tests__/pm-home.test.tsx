@@ -27,25 +27,27 @@ import { NextIntlClientProvider } from 'next-intl';
 import type { ReactNode } from 'react';
 
 import sv from '@/messages/sv.json';
+import type { Persona } from '@/features/personas/persona.types';
 
 /* ── controllable mocks ─────────────────────────────────────────── */
 
-const mockUseAuth = vi.fn(() => ({ isLoaded: true, userId: 'clerk-anna' }));
+const mockUseAuth = vi.fn().mockReturnValue({ isLoaded: true, userId: 'clerk-anna' });
 vi.mock('@clerk/nextjs', () => ({
-  useAuth: (...args: unknown[]) => mockUseAuth(...args),
+  useAuth: () => mockUseAuth(),
 }));
 
-const mockUsePersona = vi.fn(() => ({
-  persona: {
-    kind: 'pm' as const,
-    personId: 'p-anna',
-    displayName: 'Anna',
-    homeDepartmentId: 'dept-A',
-  },
+const defaultPmPersona: Persona = {
+  kind: 'pm',
+  personId: 'p-anna',
+  displayName: 'Anna',
+  homeDepartmentId: 'dept-A',
+};
+const mockUsePersona = vi.fn().mockReturnValue({
+  persona: defaultPmPersona,
   setPersona: vi.fn(),
-}));
+});
 vi.mock('@/features/personas/persona.context', () => ({
-  usePersona: (...args: unknown[]) => mockUsePersona(...args),
+  usePersona: () => mockUsePersona(),
 }));
 
 // Import after vi.mock so the page picks them up.
@@ -177,11 +179,9 @@ describe('PM Home guard reorder (UNBREAK-03)', () => {
   });
 
   it('Test 1: no PM selected (admin persona) → renders empty state, NOT loading', async () => {
+    const adminPersona: Persona = { kind: 'admin', displayName: 'Administratör' };
     mockUsePersona.mockReturnValue({
-      persona: {
-        kind: 'admin' as const,
-        displayName: 'Administratör',
-      },
+      persona: adminPersona,
       setPersona: vi.fn(),
     });
 
