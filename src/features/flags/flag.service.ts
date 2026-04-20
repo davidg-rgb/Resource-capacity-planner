@@ -14,6 +14,7 @@ const DEFAULT_FLAGS: FeatureFlags = {
   onboarding: false,
   scenarios: false,
   uiV6Landing: false,
+  uiV6LeanTrim: false,
 };
 
 /**
