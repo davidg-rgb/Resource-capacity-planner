@@ -164,7 +164,7 @@ export default function ProjectDetailPage() {
       )}
 
       <div className="mt-6">
-        <Link href="/admin/projects" className="text-primary text-sm hover:underline">
+        <Link href="/projects" className="text-primary text-sm hover:underline">
           Tillbaka till projekt
         </Link>
       </div>

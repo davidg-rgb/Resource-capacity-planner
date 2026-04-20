@@ -250,17 +250,7 @@ function DashboardGridInner({ dashboardId = 'manager' }: { dashboardId?: string 
           <div className="grid grid-cols-12 gap-6">
             {widgets.map((placement) => {
               const def = getWidget(placement.widgetId);
-              if (!def) {
-                return (
-                  <div
-                    key={placement.widgetId}
-                    className={`col-span-${placement.colSpan} rounded-lg border border-dashed border-outline-variant bg-surface-container p-4 text-center`}
-                  >
-                    <p className="text-on-surface-variant text-sm">Widget ej tillganglig</p>
-                    <p className="text-on-surface-variant/60 mt-1 text-xs">{placement.widgetId}</p>
-                  </div>
-                );
-              }
+              if (!def) return null;
               return (
                 <SortableWidget
                   key={placement.widgetId}

@@ -4,10 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
-import { usePersona } from '@/features/personas/persona.context';
-import { useFlags } from '@/features/flags/flag.context';
-import type { PersonaKind } from '@/features/personas/persona.types';
-
 interface NavItemDef {
   labelKey: string;
   href: string;
@@ -23,9 +19,7 @@ function MaterialIcon({ name, className = '' }: { name: string; className?: stri
   return <span className={`material-symbols-outlined text-lg ${className}`}>{name}</span>;
 }
 
-/* ── Legacy route-based nav (flag off) ───────────────────────────── */
-
-const LEGACY_SECTION_NAV: Record<string, NavSectionDef[]> = {
+const SECTION_NAV: Record<string, NavSectionDef[]> = {
   '/input': [
     {
       headingKey: 'staff',
@@ -78,62 +72,6 @@ const LEGACY_SECTION_NAV: Record<string, NavSectionDef[]> = {
   ],
 };
 
-/* ── Persona-keyed nav (uiV6Landing flag on) ─────────────────────── */
-
-export const PERSONA_SECTION_NAV: Record<PersonaKind, NavSectionDef[]> = {
-  pm: [
-    {
-      headingKey: 'personaSections.pm',
-      items: [
-        { labelKey: 'personaSections.pmHome', href: '/pm', icon: 'home' },
-        { labelKey: 'personaSections.pmProjects', href: '/pm/projects', icon: 'folder_open' },
-        { labelKey: 'personaSections.pmWishes', href: '/pm/wishes', icon: 'star' },
-      ],
-    },
-  ],
-  'line-manager': [
-    {
-      headingKey: 'personaSections.lineManager',
-      items: [
-        { labelKey: 'personaSections.lmOverview', href: '/line-manager', icon: 'dashboard' },
-        { labelKey: 'personaSections.lmTimeline', href: '/line-manager/timeline', icon: 'calendar_month' },
-        { labelKey: 'personaSections.lmApprovalQueue', href: '/line-manager/approval-queue', icon: 'task_alt' },
-        { labelKey: 'personaSections.lmImportActuals', href: '/line-manager/import-actuals', icon: 'upload_file' },
-      ],
-    },
-  ],
-  staff: [
-    {
-      headingKey: 'personaSections.staff',
-      items: [
-        { labelKey: 'personaSections.staffSchedule', href: '/staff', icon: 'event_note' },
-      ],
-    },
-  ],
-  rd: [
-    {
-      headingKey: 'personaSections.rd',
-      items: [
-        { labelKey: 'personaSections.rdPortfolio', href: '/rd', icon: 'analytics' },
-        { labelKey: 'personaSections.rdAlerts', href: '/alerts', icon: 'warning' },
-      ],
-    },
-  ],
-  admin: [
-    {
-      headingKey: 'personaSections.adminMain',
-      items: [
-        { labelKey: 'personaSections.changeLog', href: '/admin', icon: 'history' },
-        { labelKey: 'personaSections.adminPeople', href: '/admin/people', icon: 'group' },
-        { labelKey: 'personaSections.adminProjects', href: '/admin/projects', icon: 'flag' },
-        { labelKey: 'referenceData', href: '/admin/disciplines', icon: 'category' },
-        { labelKey: 'departments', href: '/admin/departments', icon: 'corporate_fare' },
-        { labelKey: 'programs', href: '/admin/programs', icon: 'flag' },
-      ],
-    },
-  ],
-};
-
 function getSectionKey(pathname: string): string {
   const match = pathname.match(/^\/([^/]+)/);
   return match ? `/${match[1]}` : '/dashboard';
@@ -142,17 +80,8 @@ function getSectionKey(pathname: string): string {
 export function SideNav() {
   const pathname = usePathname();
   const t = useTranslations('sidebar');
-  const flags = useFlags();
-  const { persona } = usePersona();
-
-  // Dual-mode: persona-keyed when flag on, route-based when off (per D-04)
-  let sections: NavSectionDef[];
-  if (flags.uiV6Landing) {
-    sections = PERSONA_SECTION_NAV[persona.kind] ?? PERSONA_SECTION_NAV['admin'];
-  } else {
-    const sectionKey = getSectionKey(pathname);
-    sections = LEGACY_SECTION_NAV[sectionKey] ?? LEGACY_SECTION_NAV['/dashboard']!;
-  }
+  const sectionKey = getSectionKey(pathname);
+  const sections = SECTION_NAV[sectionKey] ?? SECTION_NAV['/dashboard']!;
 
   return (
     <aside className="border-outline-variant/15 bg-surface-container-low fixed top-14 left-0 z-40 flex h-[calc(100vh-3.5rem)] w-64 flex-col border-r">
@@ -181,8 +110,11 @@ export function SideNav() {
             <ul className="space-y-0.5">
               {section.items.map((item) => {
                 const isActive =
-                  pathname === item.href ||
-                  (item.href !== '/' && pathname.startsWith(item.href + '/'));
+                  item.href === '/dashboard/team'
+                    ? pathname.startsWith('/dashboard/team')
+                    : item.href === '/dashboard/projects'
+                      ? pathname.startsWith('/dashboard/projects')
+                      : pathname === item.href;
                 return (
                   <li key={item.href}>
                     <Link

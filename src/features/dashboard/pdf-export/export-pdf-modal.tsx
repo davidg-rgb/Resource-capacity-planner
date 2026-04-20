@@ -59,23 +59,19 @@ export function ExportPdfModal({
       widgets
         .map((placement) => {
           const def = getWidget(placement.widgetId);
-          if (!def) return {
-            id: placement.widgetId,
-            name: `Widget ej tillganglig (${placement.widgetId})`,
-            colSpan: placement.colSpan,
-            Icon: null,
-          };
+          if (!def) return null;
           return {
             id: placement.widgetId,
             name: def.name,
             colSpan: placement.colSpan,
             Icon: def.icon,
           };
-        }) as Array<{
+        })
+        .filter(Boolean) as Array<{
         id: string;
         name: string;
         colSpan: 4 | 6 | 12;
-        Icon: React.ComponentType<{ className?: string }> | null;
+        Icon: React.ComponentType<{ className?: string }>;
       }>,
     [widgets],
   );
@@ -250,7 +246,7 @@ export function ExportPdfModal({
                     onChange={() => toggleWidget(item.id)}
                     className="accent-primary h-4 w-4 rounded"
                   />
-                  {item.Icon && <item.Icon className="text-muted-foreground h-4 w-4 shrink-0" />}
+                  <item.Icon className="text-muted-foreground h-4 w-4 shrink-0" />
                   <span className="text-sm">{item.name}</span>
                   <span className="text-muted-foreground ml-auto text-[10px]">
                     {item.colSpan}/12
