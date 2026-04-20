@@ -13,6 +13,12 @@ test.describe('PM historic edit', () => {
     await personaAs(page, 'pm');
     await page.goto('/');
 
+    // Phase 49 UNBREAK-03: PM Home falls through to empty state when no person
+    // selected; explicitly pick the first seeded PM person via the person picker.
+    const personSelect = page.locator('select[aria-label="Project Manager"]');
+    await expect(personSelect).toBeVisible({ timeout: 5_000 });
+    await personSelect.selectOption({ index: 0 });
+
     // Locate a historic allocation cell. We use 2026-01 as the anchor
     // because it's the earliest seeded month and is guaranteed to be in
     // the past relative to any realistic test clock.
