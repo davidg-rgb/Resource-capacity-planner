@@ -310,7 +310,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 47
 | v5.0 Architecture Review | v5.0 | — | Complete (3 iterations) | 2026-04-10 |
 | 48. Pre-flight verification | v6.0 | 2/2 | Complete    | 2026-04-15 |
 | 49. Unbreak broken persona surfaces | v6.0 | 4/4 | Complete    | 2026-04-20 |
-| 50. Persona-aware landing & navigation | v6.0 | 0/3 | Planned | — |
+| 50. Persona-aware landing & navigation | v6.0 | 1/3 | In Progress|  |
 | 51. Lean cleanup — duplicate removal | v6.0 | 0/TBD | Planned | — |
 | 52. Per-journey friction fixes | v6.0 | 0/TBD | Planned | — |
 | 53. Chrome polish | v6.0 | 0/TBD | Planned | — |
@@ -360,9 +360,9 @@ Plans:
   3. Breadcrumbs show a "Home" link resolving to `getLandingRoute(persona)`; snapshot tests updated
   4. Persona switcher collapses kind + person into a single grouped `<select>` with correct edge-case handling for 0 / 1 / >1 Person rows matching the user
   5. 18 new `sidebar.personaSections.*` i18n keys exist in both `messages/sv.json` and `messages/en.json` with final copy
-**Plans:** 3 plans
+**Plans:** 1/3 plans executed
 Plans:
-- [ ] 50-01-PLAN.md — uiV6Landing feature flag + persona-aware root redirect (NAV-01)
+- [x] 50-01-PLAN.md — uiV6Landing feature flag + persona-aware root redirect (NAV-01)
 - [ ] 50-02-PLAN.md — Persona-keyed sidebar + i18n keys + Home breadcrumb (NAV-02, NAV-03, NAV-05)
 - [ ] 50-03-PLAN.md — Persona switcher grouped select refactor (NAV-04)
 
