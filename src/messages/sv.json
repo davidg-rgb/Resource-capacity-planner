@@ -492,6 +492,7 @@
       "label": "Roll",
       "departmentLabel": "Avdelning",
       "noDepartmentHint": "Admin måste koppla ditt användarkonto till en avdelning först",
+      "noPersonMatch": "Ingen person kopplad",
       "kind": {
         "pm": "Projektledare",
         "line-manager": "Linjechef",

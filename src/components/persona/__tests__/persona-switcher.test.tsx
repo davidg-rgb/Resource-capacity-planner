@@ -397,14 +397,14 @@ describe('PersonaSwitcher', () => {
       expect(rdGroup.getAttribute('label')).toBe('FoU-chef');
       const rdOptions = rdGroup.querySelectorAll('option:not([disabled])');
       expect(rdOptions).toHaveLength(1);
-      expect(rdOptions[0].value).toBe('rd:');
+      expect((rdOptions[0] as HTMLOptionElement).value).toBe('rd:');
 
       // Admin optgroup (fifth)
       const adminGroup = optgroups[4];
       expect(adminGroup.getAttribute('label')).toBe('Administratör');
       const adminOptions = adminGroup.querySelectorAll('option:not([disabled])');
       expect(adminOptions).toHaveLength(1);
-      expect(adminOptions[0].value).toBe('admin:');
+      expect((adminOptions[0] as HTMLOptionElement).value).toBe('admin:');
     });
 
     it('Test 5: PM and Staff optgroups disabled when 0 people returned', async () => {

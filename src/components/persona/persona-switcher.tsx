@@ -1,20 +1,12 @@
 'use client';
 
 /**
- * Persona switcher (FOUND-V5-03 + Phase 40 D-19/D-20 + Phase 49 UNBREAK-01/02/08).
+ * Persona switcher (FOUND-V5-03 + Phase 40 D-19/D-20 + Phase 49 UNBREAK-01/02/08 + Phase 50 NAV-04).
  *
- * Header dropdown listing all 5 v5.0 personas. Selecting one calls
- * setPersona() and routes to that persona's landing page.
- *
- * Phase 40 replaces the old hardcoded placeholder entity IDs from the
- * Phase 34 scaffold with a real person picker backed by GET /api/people. When the user
- * selects the PM or Staff persona, a second dropdown appears listing the
- * real people in the authenticated tenant's org; their UUID is plumbed
- * through as `persona.personId` and consumed by downstream queries
- * (e.g. `/api/v5/planning/pm-home?personId=...`).
- *
- * Phase 49: line-manager kind now shows a department sub-picker sourced
- * from usePersona().departments with auto-select + localStorage persistence.
+ * Phase 50: When uiV6Landing flag is ON, renders a single grouped `<select>`
+ * with `<optgroup>` per PersonaKind. Composite value pattern encodes
+ * `kind:entityId` for each option. When flag is OFF, renders the legacy
+ * two-select approach (persona kind + person/department picker).
  *
  * This file is INSIDE the v5 no-literals eslint guard scope. All
  * user-visible strings route through useTranslations('v5.persona').
@@ -28,8 +20,11 @@ import { useEffect, useState, type ChangeEvent } from 'react';
 import { usePersona } from '@/features/personas/persona.context';
 import { PERSONA_KINDS, getLandingRoute } from '@/features/personas/persona.routes';
 import type { Persona, PersonaKind } from '@/features/personas/persona.types';
+import { useFlags } from '@/features/flags/flag.context';
 
 const LM_DEPT_STORAGE_KEY = 'persona.line-manager.departmentId';
+const PM_PERSON_STORAGE_KEY = 'persona.pm.personId';
+const STAFF_PERSON_STORAGE_KEY = 'persona.staff.personId';
 
 interface PersonRowLite {
   id: string;
@@ -76,7 +71,150 @@ function currentPersonId(persona: Persona): string | null {
   return null;
 }
 
-export function PersonaSwitcher() {
+// ── Grouped Select (v6 landing) ─────────────────────────────────────────
+
+function getCompositeValue(p: Persona): string {
+  switch (p.kind) {
+    case 'pm':
+      return `pm:${p.personId}`;
+    case 'staff':
+      return `staff:${p.personId}`;
+    case 'line-manager':
+      return `line-manager:${p.departmentId}`;
+    case 'rd':
+      return 'rd:';
+    case 'admin':
+      return 'admin:';
+  }
+}
+
+function GroupedPersonaSwitcher() {
+  const t = useTranslations('v5.persona');
+  const { persona, setPersona, departments } = usePersona();
+  const router = useRouter();
+
+  const { data: people = [] } = useQuery({
+    queryKey: ['personas-people-picker'],
+    queryFn: fetchPeople,
+    staleTime: 60_000,
+  });
+
+  const hasPeople = people.length > 0;
+  const hasDepts = departments.length > 0;
+  const compositeValue = getCompositeValue(persona);
+
+  function handleChange(e: ChangeEvent<HTMLSelectElement>) {
+    const val = e.target.value;
+    const colonIdx = val.indexOf(':');
+    const kind = val.slice(0, colonIdx) as PersonaKind;
+    const entityId = val.slice(colonIdx + 1);
+    const label = t(`kind.${kind}`);
+
+    let next: Persona | null = null;
+    switch (kind) {
+      case 'pm':
+        if (!entityId) return;
+        next = { kind: 'pm', personId: entityId, displayName: label };
+        try {
+          localStorage.setItem(PM_PERSON_STORAGE_KEY, entityId);
+        } catch {
+          /* ignore */
+        }
+        break;
+      case 'staff':
+        if (!entityId) return;
+        next = { kind: 'staff', personId: entityId, displayName: label };
+        try {
+          localStorage.setItem(STAFF_PERSON_STORAGE_KEY, entityId);
+        } catch {
+          /* ignore */
+        }
+        break;
+      case 'line-manager':
+        if (!entityId) return;
+        next = { kind: 'line-manager', departmentId: entityId, displayName: label };
+        try {
+          localStorage.setItem(LM_DEPT_STORAGE_KEY, entityId);
+        } catch {
+          /* ignore */
+        }
+        break;
+      case 'rd':
+        next = { kind: 'rd', displayName: label };
+        break;
+      case 'admin':
+        next = { kind: 'admin', displayName: label };
+        break;
+    }
+    if (!next) return;
+    setPersona(next);
+    router.push(getLandingRoute(next));
+  }
+
+  return (
+    <div className="text-on-surface-variant flex items-center gap-2 text-xs">
+      <label className="flex items-center gap-2">
+        <span className="hidden sm:inline">{t('label')}</span>
+        <select
+          aria-label={t('label')}
+          value={compositeValue}
+          onChange={handleChange}
+          className="bg-surface-container-low text-on-surface rounded-sm px-2 py-1 text-xs"
+        >
+          <optgroup label={t('kind.pm')} disabled={!hasPeople}>
+            {hasPeople ? (
+              people.map((p) => (
+                <option key={`pm:${p.id}`} value={`pm:${p.id}`}>
+                  {`${p.firstName} ${p.lastName}`.trim()}
+                </option>
+              ))
+            ) : (
+              <option disabled value="">
+                {t('noPersonMatch')}
+              </option>
+            )}
+          </optgroup>
+          <optgroup label={t('kind.line-manager')} disabled={!hasDepts}>
+            {hasDepts ? (
+              departments.map((d) => (
+                <option key={`lm:${d.id}`} value={`line-manager:${d.id}`}>
+                  {d.name}
+                </option>
+              ))
+            ) : (
+              <option disabled value="">
+                {t('noDepartmentHint')}
+              </option>
+            )}
+          </optgroup>
+          <optgroup label={t('kind.staff')} disabled={!hasPeople}>
+            {hasPeople ? (
+              people.map((p) => (
+                <option key={`staff:${p.id}`} value={`staff:${p.id}`}>
+                  {`${p.firstName} ${p.lastName}`.trim()}
+                </option>
+              ))
+            ) : (
+              <option disabled value="">
+                {t('noPersonMatch')}
+              </option>
+            )}
+          </optgroup>
+          <optgroup label={t('kind.rd')}>
+            <option value="rd:">{t('kind.rd')}</option>
+          </optgroup>
+          <optgroup label={t('kind.admin')}>
+            <option value="admin:">{t('kind.admin')}</option>
+          </optgroup>
+        </select>
+      </label>
+    </div>
+  );
+}
+
+// ── Legacy Two-Select (flag off) ────────────────────────────────────────
+
+function LegacyPersonaSwitcher() {
   const t = useTranslations('v5.persona');
   const { persona, setPersona, departments } = usePersona();
   const router = useRouter();
@@ -207,4 +345,16 @@ export function PersonaSwitcher() {
       )}
     </div>
   );
+}
+
+// ── Exported switcher ───────────────────────────────────────────────────
+
+export function PersonaSwitcher() {
+  const flags = useFlags();
+
+  if (flags.uiV6Landing) {
+    return <GroupedPersonaSwitcher />;
+  }
+
+  return <LegacyPersonaSwitcher />;
 }
