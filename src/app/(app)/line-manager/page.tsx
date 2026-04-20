@@ -65,11 +65,6 @@ function LineManagerHomeInner() {
         <h1 className="font-headline text-2xl font-bold">{title}</h1>
         <CapacityHeatmapLegend />
       </div>
-      {!departmentId && (
-        <div className="text-on-surface-variant p-4 text-sm">
-          {safeT(t, 'home.selectDepartment', 'Select a department in the persona switcher.')}
-        </div>
-      )}
       {isLoading && (
         <div
           data-testid="lm-home-skeleton"
