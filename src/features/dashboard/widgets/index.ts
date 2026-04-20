@@ -3,8 +3,6 @@
 
 import './kpi-cards-widget';
 import './utilization-heatmap-widget';
-import './discipline-progress-widget';
-import './project-impact-widget';
 import './strategic-alerts-widget';
 import './department-bar-widget';
 import './discipline-chart-widget';
@@ -13,7 +11,6 @@ import './utilization-sparklines-widget';
 import './capacity-forecast-widget';
 import './capacity-distribution-widget';
 import './bench-report-widget';
-import './discipline-demand-widget';
 import './availability-finder-widget';
 import './resource-conflict-widget';
 import './availability-timeline-widget';
@@ -21,3 +18,4 @@ import './program-rollup-widget';
 import './period-comparison-widget';
 import './allocation-trends-widget';
 import './discipline-distribution-widget';
+import './heat-map-summary-card-widget';
