@@ -271,7 +271,7 @@ const PERSONA_SECTION_NAV: Record<PersonaKind, NavSectionDef[]> = {
 **Edge cases per D-03:**
 - 0 person matches for a kind: Disable the optgroup's options or show a disabled placeholder
 - 1 person match: Auto-select (pre-selected in the dropdown)
-- &gt;1 matches: Show all; persist last selection to localStorage
+- >1 matches: Show all; persist last selection to localStorage
 - Impersonation (admin as PM): No auto-select, require manual pick
 
 **Note on `<optgroup>` disabled:** HTML `<optgroup>` does not support a `disabled` attribute that grays out the group. Individual `<option disabled>` elements work. For kinds with 0 matches, add a single `<option disabled>` saying "No matches" inside the optgroup. [VERIFIED: HTML spec]
@@ -419,22 +419,19 @@ Note: Actual Swedish characters (a-ring, a-umlaut, o-umlaut) from the plan doc m
 - [ ] `tests/unit/i18n-persona-sections.test.ts` -- covers NAV-05
 - [ ] Shared test fixtures: mock PersonaProvider + FlagProvider wrappers
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Route conflict for PersonaRedirect**
+1. **Route conflict for PersonaRedirect** -- RESOLVED in Plan 50-01
    - What we know: `src/app/page.tsx` and `src/app/(app)/page.tsx` both resolve to `/`. The non-grouped page wins.
-   - What's unclear: Whether the user intended the server page to be modified or the persona redirect to live elsewhere.
-   - Recommendation: Modify `src/app/page.tsx` to check `uiV6.landing` flag server-side (using `getOrgFlags(orgId)`) and when enabled, redirect to a known path (e.g., the user's persona landing directly -- but we can't know persona server-side). Best: redirect to `/home` which hosts the client PersonaRedirect. The planner should decide the exact approach.
+   - Resolution: Server `page.tsx` checks `uiV6Landing` flag and redirects to `/home` when enabled. The PersonaRedirect lives at `src/app/(app)/home/page.tsx` (not `(app)/page.tsx`), avoiding the route conflict entirely.
 
-2. **Flag naming convention (dot vs camelCase)**
+2. **Flag naming convention (dot vs camelCase)** -- RESOLVED in Plan 50-01
    - What we know: CONTEXT.md and STATE.md both reference `uiV6.landing` with a dot. Existing flags use camelCase without dots.
-   - What's unclear: Whether the dot is intentional as a namespace separator or just notation in the planning docs.
-   - Recommendation: Use `uiV6Landing` (camelCase) in code for consistency with existing flags. Document that this corresponds to the `uiV6.landing` discussed in planning.
+   - Resolution: Using `uiV6Landing` (camelCase) in code for consistency with existing flags (`dashboards`, `pdfExport`, etc.). Avoids bracket-access issues and aligns with `if (row.flagName in flags)` pattern in flag.service.ts.
 
-3. **Persona routes for sidebar items**
-   - What we know: PM has `/pm`, `/pm/projects/[id]`, `/pm/wishes`. LM has `/line-manager`, `/line-manager/timeline`, `/line-manager/approval-queue`, `/line-manager/import-actuals`. Staff has `/staff`. RD has `/rd`. Admin has `/admin`, `/admin/people`, `/admin/projects`, `/admin/departments`, etc.
-   - What's unclear: Whether "PM Projects" sidebar item should link to `/pm` (the home which IS a project list) or to a separate `/pm/projects` route that doesn't exist.
-   - Recommendation: Use existing routes only. PM home at `/pm` already shows projects. The sidebar "My Projects" link points to `/pm`.
+3. **Persona routes for sidebar items** -- RESOLVED in Plan 50-02
+   - What we know: PM has `/pm`, `/pm/projects/[id]`, `/pm/wishes`. No separate `/pm/projects` list route exists.
+   - Resolution: Using existing routes only. PM "My Projects" sidebar item links to `/pm` (the home page which IS the project list). No new routes created.
 
 ## Sources
 
@@ -459,7 +456,7 @@ Note: Actual Swedish characters (a-ring, a-umlaut, o-umlaut) from the plan doc m
 
 **Confidence breakdown:**
 - Standard stack: HIGH -- all libraries already in project, no new deps
-- Architecture: HIGH -- patterns derived from reading actual source code; one open question on route conflict
+- Architecture: HIGH -- patterns derived from reading actual source code; all open questions resolved
 - Pitfalls: HIGH -- identified from concrete code analysis (route conflict, flag naming, hydration)
 
 **Research date:** 2026-04-20
