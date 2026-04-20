@@ -10,6 +10,7 @@ const DEFAULT_FLAGS: FeatureFlags = {
   alerts: false,
   onboarding: false,
   scenarios: false,
+  uiV6Landing: false,
 };
 
 const FlagContext = createContext<FeatureFlags>(DEFAULT_FLAGS);

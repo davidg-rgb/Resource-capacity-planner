@@ -1,172 +1,145 @@
-# v5.0 Requirements — Plan vs Actual + Approval Workflow
+# v6.0 Requirements — UI Restructure & Journey Frictionless
 
-**Milestone:** v5.0
-**Date:** 2026-04-07
-**Source of truth:** `.planning/v5.0-ARCHITECTURE.md` (§14 roadmap, §15 testable contract), `.planning/v5.0-USER-JOURNEYS.md`, `.planning/v5.0-FEEDBACK.md`
+**Milestone:** v6.0
+**Plan source of truth:** [.planning/ui-reviews/UI-RESTRUCTURE-PLAN-v2.md](ui-reviews/UI-RESTRUCTURE-PLAN-v2.md)
+**Derived from:** `UX-AUDIT-PERSONAS.md`, `WIDGET-INVENTORY.md`, `v5.0-USER-JOURNEYS.md`
+**v5.0 requirements archived at:** `.planning/milestones/v5.0-REQUIREMENTS.md`
 
-Architecture frozen — each requirement traces to architecture sections and the §15 testable assertions (TC-* IDs) that verify it. Previous milestone (v4.0) requirements archived in `.planning/v2.0-REQUIREMENTS.md` / MILESTONES.md history.
-
----
-
-## v5.0 Requirements
-
-### Foundations (FOUND-V5)
-
-- [x] **FOUND-V5-01**: `lib/time/iso-calendar.ts` provides ISO 8601 week math (Monday start, `getISOWeek`, `getISOWeekYear`, `getISOWeeksInYear`) and 53-week year detection; no other module may import `date-fns` week APIs or rely on native `Date` locale defaults — verified by TC-CAL-*
-- [x] **FOUND-V5-02**: Swedish holidays for 2026–2030 hardcoded (New Year, Epiphany, Good Friday, Easter Monday, May 1, Ascension, National Day, Midsummer Eve, Christmas Eve, Christmas, Boxing Day, New Year's Eve); `isSwedishHoliday(date)` and `workingDaysInRange(start, end)` helpers exposed
-- [x] **FOUND-V5-03**: Role switcher header component with 5 roles (PM, Line Mgr, Staff, R&D Mgr, Admin) backed by a React context; selection persists in localStorage; no server enforcement (ADR-004)
-- [x] **FOUND-V5-04**: Universal `change_log` table + `recordChange()` service used by every mutating service; enforcement via (a) eslint rule `no-direct-mutation-without-change-log`, (b) `scripts/generate-mutations-manifest.ts` codegen, (c) runtime test TC-CL-005
-- [x] **FOUND-V5-05**: i18n key catalog for v5.0 strings (SV primary, EN fallback) seeded under `messages/sv/v5/*` and `messages/en/v5/*` before UI phases begin
-- [x] **FOUND-V5-06**: `getServerNowMonthKey(tx)` per-request cached helper for historic-edit checks (ADR-009)
-
-### Actuals Layer (ACT)
-
-- [x] **ACT-01**: `actual_entries` table — columns `(id, organization_id, person_id, project_id, date, hours numeric(5,2), source enum('import'|'manual'), import_batch_id nullable, created_at, updated_at)`, unique index on `(organization_id, person_id, project_id, date)`
-- [x] **ACT-02**: `actuals.service.upsertActuals(input, { grain: 'day'|'week'|'month' })` — distributes week/month input across working days via largest-remainder algorithm (ADR-010), stores daily rows, writes change_log
-- [x] **ACT-03**: Plan-vs-actual cell component renders planned, actual, and delta with color coding (green under, red over, neutral on plan); reused in PM timeline, Line Mgr group view, Staff schedule, R&D portfolio
-- [x] **ACT-04**: Drill-down drawer shows daily plan vs actual breakdown for a person-project-period, callable from any timeline cell
-- [x] **ACT-05**: Monthly aggregation of day-grain actuals matches input totals within ±0.01h (largest-remainder preserves sums) — verified by TC-AC-*
-
-### Excel Import Pipeline (IMP)
-
-- [x] **IMP-01**: `import_batches` table — `(id, organization_id, uploaded_by, filename, row_count, state enum('parsing'|'preview'|'committed'|'rolled_back'|'superseded'), override_manual bool, reversal_payload jsonb, created_at, committed_at, rolled_back_at)`
-- [x] **IMP-02**: SheetJS-based parser accepts two layouts (row-per-entry canonical: `person_name, project_name, date, hours`; pivoted: dates across / projects down); US `WEEKNUM()` headers raise ValidationError code `ERR_US_WEEK_HEADERS`
-- [x] **IMP-03**: Two-stage import flow — (a) parse → preview with row diff counts (new / updated / warnings), (b) explicit commit writes actuals + change_log
-- [x] **IMP-04**: Idempotent re-import on unique key `(org, person, project, date)`; override checkbox "Skriv över manuella ändringar" unchecked by default; manual edits preserved unless override is checked
-- [x] **IMP-05**: Rollback endpoint `POST /api/v5/imports/{id}/rollback` restores pre-batch state via `reversal_payload`; supersession tracking prevents reversal corruption on a second import over the same rows
-- [x] **IMP-06**: Downloadable Excel template (`template_row_per_entry.xlsx`) linked from import wizard
-- [x] **IMP-07**: Import preview shows unmatched person/project names with fuzzy suggestions before commit
-
-### Proposal / Approval Workflow (PROP)
-
-- [x] **PROP-01**: `allocation_proposals` table — `(id, organization_id, proposer_id, target_person_id, target_project_id, target_department_id, period_start, period_end, proposed_hours numeric(5,2), note, state enum('proposed'|'approved'|'rejected'|'withdrawn'|'superseded'), rejection_reason, decided_by, decided_at, created_at, updated_at)`
-- [x] **PROP-02**: `projects.lead_pm_person_id` column added (only v4.0 schema mutation); determines which PM owns a project's planning
-- [x] **PROP-03**: PM inline cell edit on an out-of-department person triggers proposal mode (dashed border, Pending badge) instead of auto-save; explicit "Submit wish" button required (ADR-008b)
-- [x] **PROP-04**: Line Manager approval queue lists pending proposals for their department with impact preview ("Sara's June utilization 40% → 90%") and Approve / Reject actions; rejection requires a reason
-- [x] **PROP-05**: Approved proposals write through to `allocations`, mark proposal `approved`, record change_log; rejected proposals persist with reason and can be edited + resubmitted by proposer
-- [x] **PROP-06**: PM "My Wishes" panel filterable by state (proposed/approved/rejected) with resubmit from rejected card
-- [x] **PROP-07**: `target_department_id` stays in sync with `target_person.department_id` — if a person moves departments while a proposal is pending, re-route to the new department's line manager
-- [x] **PROP-08**: Line Mgr direct edits within own department bypass the approval gate; still audited via change_log
-
-### Persona Views & Screens (UX-V5)
-
-- [x] **UX-V5-01** (S1): Role switcher header globally available; switching role changes default landing + scope without page reload
-- [x] **UX-V5-02** (S2, S3): PM Home + project timeline — overview card, horizontal month-column timeline with plan-vs-actual cells, inline edit with approval gate
-- [x] **UX-V5-03** (S4): PM "My Wishes" panel (proposed / approved / rejected tabs, resubmit)
-- [x] **UX-V5-04** (S5): Line Mgr Home capacity heatmap — rows = people, cols = months, thresholds: green 60–90%, red >100%, yellow <60%, grey absence
-- [x] **UX-V5-05** (S6): Line Mgr group timeline with project breakdown, direct edit, change log visible
-- [x] **UX-V5-06** (S7): Approval queue with impact preview, approve/reject; counter-proposal explicitly out of scope
-- [x] **UX-V5-07** (S9): Staff "My Schedule" read-only (projects × months, plan-vs-actual split, month summary strip)
-- [x] **UX-V5-08** (S10): R&D Manager portfolio grid — projects × months aggregate, project/group row toggle, drill-into-PM-view, long-horizon zoom (20–30 months forward) with 53-week handling
-- [x] **UX-V5-09** (S11): Shared drill-down drawer component reused across personas
-- [x] **UX-V5-10** (S12): Change log feed filterable by project/person/period/author with persona-scoped defaults
-- [x] **UX-V5-11** (S13): Historic edit confirmation dialog on any edit to a period before `getServerNowMonthKey()`
-- [x] **UX-V5-12**: Long-horizon timeline zoom levels (month/quarter/year) handle ISO 8601 and 53-week years correctly — week 53 gets its own column in 2026
-
-### Import Actuals Wizard (WIZ)
-
-- [x] **WIZ-01** (S8): Import Actuals wizard accessible from Line Mgr + Admin menus — entry description, template download, drop zone, preview table, override checkbox, confirmation, rollback button (available 24h or until next import)
-
-### Admin Register Maintenance (ADM)
-
-- [x] **ADM-01** (S14): Admin register tables for People, Projects, Departments, Disciplines, Programs with list view (active default, archived toggle) + side-sheet create/edit form
-- [x] **ADM-02**: Archive with dependent-row blocking — archiving a project with active allocations raises `ConflictError` code `DEPENDENT_ROWS_EXIST`; archived rows hidden from default views
-- [x] **ADM-03**: Every register mutation writes `change_log` entries (`REGISTER_ROW_CREATED` / `REGISTER_ROW_UPDATED` / `REGISTER_ROW_DELETED`)
-- [ ] **ADM-04**: Admin landing view is the change_log feed (scoped to all entities)
-
-### Historic Edit Guardrails (HIST)
-
-- [x] **HIST-01**: Any edit (direct or via proposal) targeting a period before the current month triggers a soft warning dialog; confirmation required; no hard lock even when actuals exist
-
-### API Contract (API-V5)
-
-- [x] **API-V5-01**: All new endpoints live under `/api/v5/*` (proposals, actuals, imports, change-log, register) and return AppError hierarchy with consistent error codes
-- [x] **API-V5-02**: Every mutating endpoint tenant-scoped via existing `withTenant()` ORM wrapper; no cross-tenant reads
-
-### Testable Functional Contract (TEST-V5)
-
-- [x] **TEST-V5-01**: ~280 assertions from ARCHITECTURE.md §15 (TC-CAL-*, TC-PS-*, TC-PR-*, TC-AC-*, TC-IMP-*, TC-API-*, TC-UI-*, TC-E2E-*, TC-NEG-*, TC-PERF-*, TC-REG-*, TC-PSN-*, TC-ZOOM-*, TC-CL-*) have corresponding automated tests that pass before launch — each phase's DoD points at its test IDs
-- [x] **TEST-V5-02**: Deterministic UUID v5 seed data (ARCHITECTURE.md §16) produces identical fixtures across runs for integration tests
-
-### Launch Gate (LAUNCH) — separate from v5.0 feature work
-
-- [ ] **LAUNCH-01**: PDF export captures all dashboard widget types (html2canvas currently blank for non-SVG widgets) — swap to `html-to-image` or `modern-screenshot`; last attempt commit `9e19794`. Tracked as Phase 7.1 in ARCHITECTURE roadmap. **Must ship before v5.0 launch**
+Every requirement is traceable to (a) a user-journey click-count target and/or (b) a specific duplicate or broken surface identified in the audit. Waves are implementation phasing; REQ-IDs are persistent.
 
 ---
 
-## Future Requirements (deferred)
+## v6.0 Requirements
 
-- **Counter-proposal flow** — line mgr counters a wish with an alternative value. Flagged nice-to-have in Journey 2B; deferred unless client pushes.
-- **Email / Slack notifications** — in-app only for v5.0
-- **Staff actuals self-entry** — staff read-only in v5.0; competes with time-tracking tools
-- **Hidden-row persistence / user filter prefs** — noted for v6.0
-- **Drag-reorder of project/people rows** — drag-to-copy hours IS in scope, reorder is not
+### Pre-Flight Verification (Wave −1 → Phase 48)
 
-## Out of Scope (explicit exclusions)
+- [ ] **VERIFY-01**: `pre-flight-report.md` documents whether `getLandingRoute(persona)` exists in `src/features/personas/persona.routes.ts`
+- [ ] **VERIFY-02**: `pre-flight-report.md` documents whether `/api/v5/proposals/queue/count` endpoint exists; if missing, add to Wave 3.2 scope
+- [ ] **VERIFY-03**: `pre-flight-report.md` documents Phase 41 department-picker status (component exists / needs build) and scopes the fix in Wave 0 if needed
+- [ ] **VERIFY-04**: `/api/admin/change-log` and `/api/admin/people` 500 root causes documented from live server logs
+- [ ] **VERIFY-05**: Tenant custom-dashboard audit run via corrected SQL (`SELECT organization_id, clerk_user_id, dashboard_id FROM dashboard_layouts WHERE layout::text ~* 'discipline-progress|discipline-demand|project-impact|utilization-heat-map|bench-report|strategic-alerts|resource-conflicts'`) — report lists affected layouts with strip/migrate decision per row
+- [ ] **VERIFY-06**: All 12 existing Playwright specs from Phase 47 inventoried with classification (keep / update / retire) per spec
+- [ ] **VERIFY-07**: `sidebar.staff` and `sidebar.projects` existing meanings documented to prevent i18n key collision
+- [ ] **VERIFY-08**: `v5.persona.kinds.*` keys present in both `messages/sv.json` and `messages/en.json` (verified by `jq`)
+- [ ] **VERIFY-09**: Plan-vs-actual cell and timeline-grid component reuse across PM / Staff / R&D confirmed by snapshot comparison
 
-- **Real authentication for personas** — ADR-004 locked personas as UX shortcuts
-- **Task/activity sub-dimension under projects** — Q3 locked project-level grain
-- **Multi-entry-per-day preservation** — sums on import, lossy by design
-- **Mobile-first design** — desktop primary, mobile degrades gracefully
-- **Hard locks on historic edits** — Q6 locked; soft warning only
-- **Migrations touching existing tables** — only `projects.lead_pm_person_id` added; everything else additive
+### Unbreak Broken Surfaces (Wave 0 → Phase 49)
+
+- [ ] **UNBREAK-01**: `/line-manager` renders a functional department picker; the raw i18n key `v5.lineManager.home.selectDepartment` no longer appears
+- [ ] **UNBREAK-02**: `/line-manager/timeline` renders a functional department picker; raw `v5.lineManager.timeline.selectDepartment` no longer appears
+- [ ] **UNBREAK-03**: PM Home at `src/app/(app)/pm/page.tsx:60` falls through to the empty-state translation when `data.projects.length === 0` instead of remaining on the loading spinner
+- [ ] **UNBREAK-04**: `/admin` landing (Ändringslogg) loads without rendering the "Kunde inte ladda ändringsloggen" error; change-log entries populate
+- [ ] **UNBREAK-05**: `/admin/people` loads without rendering "Kunde inte ladda listan"; person rows populate
+- [ ] **UNBREAK-06**: `PersonaGate` error message reads the persona kind from the `allowed` prop; no hardcoded "linjechefs-personan" when the actual allowed persona is admin or another kind
+- [ ] **UNBREAK-07**: Playwright spec inventory complete with updates applied (specs that navigate through `/team`, `/projects`, `/wishes` updated to use new paths / redirects)
+- [ ] **UNBREAK-08**: Department-picker component authored (location + props to be decided by Phase 49 planner from VERIFY-03 evidence — the two existing call sites at `src/app/(app)/line-manager/page.tsx:70` and `src/app/(app)/line-manager/timeline/page.tsx:127` show the placeholder copy "Select a department in the persona switcher" today); `/line-manager` and `/line-manager/timeline` consume the new picker so the raw `v5.lineManager.*.selectDepartment` keys stop rendering as primary text. Replaces VERIFY-03's EXPANDS-SCOPE note (pre-flight report §VERIFY-03).
+- [ ] **UNBREAK-09**: PersonaGate persona-kinds namespace resolved — either (a) add `v5.persona.kinds.{pm,lineManager,staff,rd,admin}` to both `src/messages/sv.json` and `src/messages/en.json` mirroring the existing `v5.persona.kind.*` values (preserves the v6.0 spec's casing convention, PersonaGate ships unchanged), OR (b) rewire PersonaGate to read the existing `v5.persona.kind.*` (singular) namespace and translate the `lineManager` discriminator value to the hyphenated key `line-manager` at the lookup site (no locale-file change, PersonaGate spec adjusts). Replaces VERIFY-08's FAIL note (pre-flight report §VERIFY-08).
+
+### Persona-Aware Landing & Navigation (Wave 1 → Phase 50)
+
+- [ ] **NAV-01**: Root path (`/`) redirects to `getLandingRoute(persona)` via a client-side `PersonaRedirect` in `(app)/page.tsx`; signed-out users keep the existing Clerk `orgRole`-based routing; behavior gated behind `uiV6.landing` flag
+- [ ] **NAV-02**: `SECTION_NAV` in `src/components/layout/side-nav.tsx` exposes persona-scoped items for `/pm`, `/line-manager`, `/staff`, `/rd`, and an expanded `/admin` (people / projects / change-log promoted alongside reference data)
+- [ ] **NAV-03**: Breadcrumbs include a "Home" link that resolves to `getLandingRoute(persona)`; snapshot tests refreshed
+- [ ] **NAV-04**: Persona switcher collapses kind + person into a single grouped `<select>` (`<optgroup>` per kind); auto-picks the signed-in user's Person row when exactly one match; disables PM/Staff options when zero matches; persists last-selected Person to `localStorage` when >1 match; impersonation (admin viewing as PM) requires explicit manual pick
+- [ ] **NAV-05**: 18 new i18n keys under `sidebar.personaSections.*` added to both `messages/sv.json` and `messages/en.json` with exact strings per `UI-RESTRUCTURE-PLAN-v2.md` §6
+
+### Lean Cleanup — Duplicate Removal (Wave 2 → Phase 51)
+
+- [ ] **LEAN-01**: `next.config.ts.redirects[]` contains permanent (308) redirect from `/team` → `/admin/people` (and `/team/:path*` → `/admin/people/:path*`); the source page `src/app/(app)/team/page.tsx` is deleted
+- [ ] **LEAN-02**: Permanent redirect from `/projects` → `/admin/projects`; `src/app/(app)/projects/page.tsx` is deleted; `/projects/[projectId]` detail page preserved at its current URL; hard-coded `<Link href="/projects">` at `projects/[projectId]/page.tsx:167` updated
+- [ ] **LEAN-03**: Permanent redirect from `/wishes` → `/pm/wishes`; `src/app/(app)/wishes/page.tsx` is deleted
+- [ ] **LEAN-04**: `/input` renders the people list only once (left-sidebar picker); main area shows a single "Välj en person…" empty-state prompt instead of a second flat list
+- [ ] **LEAN-05**: Three dead widget files deleted — `discipline-progress-widget.tsx`, `discipline-demand-widget.tsx`, `project-impact-widget.tsx` — only after the VERIFY-05 SQL query returns 0 rows **or** the one-shot migration strips these IDs from affected `dashboard_layouts.layout` values; `widgets/index.ts` updated
+- [ ] **LEAN-06**: `project-leader:desktop` and `project-leader:mobile` layouts in `default-layouts.ts` no longer place `kpi-cards`, `capacity-forecast`, `availability-finder` (byte-for-byte duplicates of manager dashboard)
+- [ ] **LEAN-07**: `manager:desktop` and `manager:mobile` layouts no longer place the full `utilization-heat-map` widget; replaced by a new lightweight `heat-map-summary-card` widget that links to `/dashboard/team`
+- [ ] **LEAN-08**: `widget-registry.ts` renders a "Widget ej tillgänglig" placeholder when a saved layout references an unknown widget ID, instead of throwing
+- [ ] **LEAN-09**: PDF export (`/api/reports/team-heatmap`) snapshot matches pre-trim baseline — Wave 2 ships a regression test that fails if the trim breaks the PDF
+- [ ] **LEAN-10**: All changes gated behind `uiV6.leanTrim` flag; with the flag off, deleted routes still 308-redirect (files physically removed only post-stable rollout)
+- [ ] **LEAN-11**: One-shot migration strips dead widget IDs (`discipline-progress`, `discipline-demand`, `project-impact`, `utilization-heat-map`, `bench-report`, `strategic-alerts`, `resource-conflicts`) from `dashboard_layouts.layout` for the rows identified at Phase 51 kick-off (pre-flight report §VERIFY-05 returned 1 affected row on the dev Neon branch — `manager` dashboard for tenant `0b200821-c78c-4717-9099-696c8520d2d3`; production must be re-audited at Phase 51 kick-off because Phase 48's SQL deliberately ran against dev Neon only per CONTEXT D-05). LEAN-05 widget file deletion blocks on this migration's successful run. SQL draft: `UI-RESTRUCTURE-PLAN-v2.md` §2.5 Wave 2.
+
+### Per-Journey Friction Fixes (Wave 3 → Phase 52)
+
+- [ ] **PM-01**: `/pm` auto-redirects to `/pm/projects/<defaultProjectId>` when the API returns exactly one project or a `defaultProjectId`; renders project-cards grid otherwise (journey 1A target: 2 clicks)
+- [ ] **PM-02**: PM persona surfaces a "Pending wishes" status chip in the top-bar; deep-linkable to `/pm/wishes?tab=rejected|proposed` (journey 1C target: 2 clicks)
+- [ ] **PM-03**: Historic-edit warning dialog fires for any edit to a period before the current month; verified by Playwright spec for all 4 persona × period combinations (journey 1D target: 3 clicks including confirm)
+- [ ] **PM-04**: Visual-snapshot test covers each of 4 proposal cell states — draft / proposed / approved / rejected — with correct dashed-border, muted color, and Pending badge dual-value rendering (journey 1B)
+- [ ] **LM-01**: `/line-manager` renders an approval-queue count badge linking to `/line-manager/approval-queue`; same count reflected on the persona switcher (journey 2B target: 2 clicks)
+- [ ] **LM-02**: `/line-manager/timeline` renders project-breakdown cells (one cell per person × project × month) — Playwright spec asserts breakdown visibility (journey 2C)
+- [ ] **LM-03**: `src/app/api/v5/proposals/queue/count/route.ts` exists (server route + service function + unit test) and returns the per-tenant pending-approval count consumed by LM-01's badge and the persona-switcher count reflection. Pre-flight report §VERIFY-02 confirmed the endpoint did not exist as of Phase 48 (`ls src/app/api/v5/proposals/queue/count` → "No such file"; cross-check grep → `<no matches>`); Phase 52 LM-01 implementation blocks on this endpoint shipping first.
+- [ ] **STAFF-01**: `/staff` timeline component renders with `readOnly` variant; cell edit is disabled; verified by Playwright spec (journey 3A target: 0 clicks)
+- [ ] **RD-01**: `/rd` supports long-horizon zoom at month / quarter / year levels, including ISO 8601 week rollover and 53-week-year math (reuse `lib/time/iso-calendar.ts`); spec matrix covers 2026 (53-week), 2027, 2028 (journey 4A target: 0 clicks with zoom)
+- [ ] **RD-02**: Clicking a red overcommit cell opens the breakdown dialog; dialog lists contributing projects and most-overbooked people with navigation affordance; Playwright spec asserts content (journey 4B target: 1 click)
+- [ ] **SHARED-01**: Drill-down drawer (Screen S11) exists, supports deep-link open, ESC-dismiss, focus trap on open; Playwright specs exercise it from journeys 1A and 4B
+- [ ] **ADMIN-01**: Archiving a project with active allocations shows the `ConflictError DEPENDENT_ROWS_EXIST` toast listing dependents; Playwright spec asserts the error UI (journey 5B target: 2 clicks)
+- [ ] **PJ-FLAG**: All per-journey changes gated behind `uiV6.perJourney` flag
+
+### Chrome Polish (Wave 4 → Phase 53)
+
+- [ ] **POLISH-01**: Notification bell is persona-scoped — PM shows rejected-wish count, LM shows pending-approval count, R&D shows new-overcommit count, Staff hides the bell
+- [ ] **POLISH-02**: `NavItemDef` interface in `top-nav.tsx:32-38` extended with `visibleFor?: PersonaKind[]`; Staff persona sees only Home + Help; PM persona sees Home + Overview + Projekt; other personas get appropriate subsets
+- [ ] **POLISH-03**: `discipline-chart` and `discipline-distribution` widgets merged into a single widget with a chart-type toggle (bar / donut); the redundant widget file deleted
+- [ ] **POLISH-04**: `bench-report` widget deleted — `availability-finder` covers the same data
+- [ ] **POLISH-05**: `resource-conflicts` widget moved to `/alerts` as a tab; removed from all dashboard layouts
+- [ ] **POLISH-06**: `strategic-alerts` widget replaced with an inline banner linking to `/alerts`; removed from `manager:mobile` layout
+- [ ] **POLISH-07**: Manager dashboard and project-leader dashboard fit within a 1440×900 viewport without scrolling
+- [ ] **POLISH-FLAG**: All chrome changes gated behind `uiV6.polish` flag
+
+### Optional — Dashboard Quadrant Redesign (Wave 5 → Phase 54)
+
+*Deferred unless Wave 4 telemetry indicates continued user confusion on either dashboard.*
+
+- [ ] **QUAD-01** (deferred): Manager dashboard restructured into 4 question-keyed quadrants — Health today / Who's free / What's changing / Department deep-dives
+- [ ] **QUAD-02** (deferred): Project-leader dashboard restructured into 4 PM-journey-keyed quadrants
+- [ ] **QUAD-03** (deferred): Quadrant layouts ship behind `uiV6.dashboardQuadrants` flag with A/B against current layouts
+
+---
+
+## Future Requirements (post-v6.0)
+
+- Counter-proposal flow for LM approval (still deferred from v5.0)
+- Mobile-first responsive pass
+- Email/Slack notification channel (currently in-app only)
+- Real role-based permissions replacing the persona "UX shortcut"
+
+---
+
+## Out of Scope (v6.0)
+
+- **New widgets** — v6.0 is pure restructure; widget count decreases
+- **AG Grid planning editor** — `/input/[personId]` is aligned to its job; untouched
+- **Dashboard scope redesign** — deferred to optional Wave 5
+- **Backend refactors** — only the 2 known admin API 500s are fixed (UNBREAK-04/05); deeper refactor deferred
+- **i18n for new languages** — Swedish + English only, matching existing support
+- **Accessibility overhaul** — incremental a11y acceptance criteria per wave (axe, keyboard tab-order); full WCAG audit deferred
 
 ---
 
 ## Traceability
 
-Filled by roadmapper — maps each REQ-ID to its phase.
+Populated by `/gsd-plan-phase` during phase planning. Each REQ-ID will be linked to its implementing phase and to the Playwright spec(s) that verify it.
 
-| REQ-ID | Phase |
-|--------|-------|
-| FOUND-V5-01 | Phase 33 |
-| FOUND-V5-02 | Phase 33 |
-| FOUND-V5-03 | Phase 34 |
-| FOUND-V5-05 | Phase 34 |
-| FOUND-V5-06 | Phase 34 |
-| FOUND-V5-04 | Phase 35 |
-| ACT-01 | Phase 36 |
-| IMP-01 | Phase 36 |
-| PROP-01 | Phase 36 |
-| PROP-02 | Phase 36 |
-| ACT-02 | Phase 37 |
-| ACT-03 | Phase 37 |
-| ACT-04 | Phase 37 |
-| ACT-05 | Phase 37 |
-| IMP-02 | Phase 38 |
-| IMP-03 | Phase 38 |
-| IMP-04 | Phase 38 |
-| IMP-05 | Phase 38 |
-| IMP-06 | Phase 38 |
-| IMP-07 | Phase 38 |
-| WIZ-01 | Phase 38 |
-| PROP-03 | Phase 39 |
-| PROP-04 | Phase 39 |
-| PROP-05 | Phase 39 |
-| PROP-06 | Phase 39 |
-| PROP-07 | Phase 39 |
-| PROP-08 | Phase 39 |
-| UX-V5-01 | Phase 40 |
-| UX-V5-02 | Phase 40 |
-| UX-V5-03 | Phase 40 |
-| UX-V5-11 | Phase 40 |
-| HIST-01 | Phase 40 |
-| UX-V5-04 | Phase 41 |
-| UX-V5-05 | Phase 41 |
-| UX-V5-06 | Phase 41 |
-| UX-V5-10 | Phase 41 |
-| UX-V5-07 | Phase 42 |
-| UX-V5-08 | Phase 42 |
-| UX-V5-09 | Phase 42 |
-| UX-V5-12 | Phase 42 |
-| ADM-01 | Phase 43 |
-| ADM-02 | Phase 43 |
-| ADM-03 | Phase 43 |
-| ADM-04 | Phase 43 |
-| API-V5-01 | Phase 44 |
-| API-V5-02 | Phase 44 |
-| TEST-V5-01 | Phase 44 |
-| TEST-V5-02 | Phase 44 |
-| LAUNCH-01 | Phase 45 |
+| REQ-ID | Phase | Verifying spec | Status |
+|---|---|---|---|
+| VERIFY-01 … VERIFY-09 | 48 | (pre-flight — no runtime spec) | pending |
+| UNBREAK-01 … UNBREAK-09 | 49 | TBD | pending |
+| NAV-01 … NAV-05 | 50 | TBD | pending |
+| LEAN-01 … LEAN-11 | 51 | TBD | pending |
+| PM-01 … ADMIN-01, PJ-FLAG | 52 | TBD | pending |
+| POLISH-01 … POLISH-FLAG | 53 | TBD | pending |
+| QUAD-01 … QUAD-03 | 54 (optional) | TBD | pending |
 
-**Coverage:** 38/38 v5.0 requirements + 1 launch gate = 39/39 mapped (100%). No orphans, no duplicates.
+**Total:** 42 active requirements (9 verify + 7 unbreak + 5 nav + 10 lean + 12 per-journey + 8 polish) across 6 phases; +3 optional in Wave 5.
+
+**Phase 48 scope-expansion delta (added 2026-04-15 by Plan 48-02 per CONTEXT.md D-12 / D-13):** +4 requirements net (`UNBREAK-08` from VERIFY-03 → DepartmentPicker build; `UNBREAK-09` from VERIFY-08 → persona-kinds namespace decision; `LEAN-11` from VERIFY-05 → one-shot `dashboard_layouts` migration; `LM-03` from VERIFY-02 → `/api/v5/proposals/queue/count` endpoint). VERIFY-04 stays as a static-only hypothesis under UNBREAK-04 / UNBREAK-05's existing scope and adds no new requirement. The block-level counts above (9 verify / 7 unbreak / 5 nav / 10 lean / 12 per-journey / 8 polish = 51) and the headline "42 active" are preserved verbatim from v6.0 init for change-tracking; updated counts are: 9 unbreak (was 7), 11 lean (was 10), 13 per-journey (was 12). Authoritative requirement IDs live in the per-block lists above.
+
+---
+
+## Quality Gate
+
+Each phase's exit criteria:
+
+1. Every REQ-ID in its scope is checked off.
+2. Playwright specs assert the journey click-count target (§1 of the plan).
+3. `@axe-core/playwright` reports zero violations on the affected pages.
+4. The wave's feature flag can be toggled off without error (rollback verified).
+5. If Wave 2: the PDF snapshot regression passes.

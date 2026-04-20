@@ -2,93 +2,58 @@
 gsd_state_version: 1.0
 milestone: v5.0
 milestone_name: Plan vs Actual + Approval Workflow
-status: ready
-stopped_at: Completed phase 47 (10/10 plans, APPROVED, 12 TC-E2E specs + CI + allowlist closed)
-last_updated: "2026-04-09T22:30:00.000Z"
-last_activity: 2026-04-09
+status: Ready to execute
+stopped_at: Phase 51 context gathered
+last_updated: "2026-04-20T17:42:22.185Z"
+last_activity: 2026-04-20 -- Phase 51 planning complete
 progress:
-  total_phases: 3
-  completed_phases: 3
-  total_plans: 4
-  completed_plans: 4
+  total_phases: 46
+  completed_phases: 45
+  total_plans: 130
+  completed_plans: 127
+  percent: 98
 ---
 
 # Nordic Capacity -- Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-07)
-Planning artifacts (frozen):
+See: .planning/PROJECT.md (updated 2026-04-15 — v6.0 milestone added)
+Planning artifacts (frozen, authoritative for v6.0):
+
+- .planning/ui-reviews/UX-AUDIT-PERSONAS.md — click-count audit per journey
+- .planning/ui-reviews/WIDGET-INVENTORY.md — widget duplication matrix + page-fit scores
+- .planning/ui-reviews/UI-RESTRUCTURE-PLAN-v2.md — **source of truth** (supersedes v1); 6 waves + optional Wave 5, with 3-agent review findings integrated
+
+v5.0 artifacts (completed, do not re-review):
 
 - .planning/v5.0-FEEDBACK.md
-- .planning/v5.0-USER-JOURNEYS.md
+- .planning/v5.0-USER-JOURNEYS.md (journey source of truth — still authoritative)
 - .planning/v5.0-ARCHITECTURE.md
 - .planning/v5.0-HANDOFF.md
-- .planning/ROADMAP.md (v5.0 phases 33-45)
+- .planning/milestones/v5.0-REQUIREMENTS.md (archived)
 
-**Core value:** Plan vs actual comparison + proposal/approval workflow + persona-scoped views — stop being a fancier Excel, start being a workflow tool.
-**Current focus:** v5.0 fully shipped + hardened + deployed; no next phase scheduled
-
-Last deploy fix (2026-04-10, commit 67a9878): moved /api/test/seed prod-mode throw from module scope into POST handler body. Vercel `next build` was failing during page-data collection because Next instantiates route modules at build time; the throw was meant only as a tripwire for runtime invocations. Build now green, no-test-routes-in-prod invariant still passes.
+**Core value:** Every user journey at its target click-count — remove persona-blind chrome, delete duplicate surfaces, unblock the Line Manager / PM / Admin pages that regress today. No new features.
+**Current focus:** Phase 48 — Pre-flight verification
 
 ## Current Position
 
-Phase: 47 (playwright-e2e-infra) — COMPLETE, APPROVED on 2026-04-09
-Last shipped: Phase 47 (10 plans, full Playwright E2E infra + 12 TC-E2E specs + CI extension + allowlist cleanup)
-Last activity: 2026-04-09
+Phase: 50
+Plan: Not started
+Next command: `/gsd-discuss-phase 48` or `/gsd-plan-phase 48`
+Last activity: 2026-04-20 -- Phase 51 planning complete
 
-Phase 47-10 results:
-- scripts/generate-tc-manifest.ts widened: added `e2e` to ROOTS, regex now accepts alphanumeric prefix segments and `-approve`/`-reject` tail suffixes (TC-E2E-* grammar)
-- tc-manifest.json regenerated: 280 → 292 entries, all 12 canonical TC-E2E-* IDs present with e2e/**/*.spec.ts sources
-- tc-allowlist.json: removed 12 TC-E2E entries, dropped groups.TC-E2E and reasons.TC-E2E (TC-NEG deferral preserved)
-- tc-id-coverage invariant 3/3 green; full vitest suite 714/714 green; typecheck clean
-- Commits: 159b457, 81abdbe
-- Phase 44-12's remaining deferral is now closed
-
-Phase 46 results:
-- Department Capacity Gauges FIXED: button-preservation filter (preserve buttons containing recharts/svg)
-- Availability Finder FIXED: capture height cap (1200px) + dashboard PDF document chartImage maxHeight 350→600
-- Live DOM inspection via chrome devtools disproved both research hypotheses; corrected after 2 rounds
-- 11/11 pdf-export tests passing (8 baseline + TC-PDF-004 gauge filter + TC-PDF-005 height cap × 2)
-- Playwright E2E infrastructure SPLIT to Phase 47 (was originally bundled here)
-- 11/11 pdf-export tests green, 707/707 full vitest suite green, pnpm typecheck clean, pnpm build success
-- Commits: 1ed32a2, 535526f, ddbd9c3
-
-Phase 45 results:
-- html2canvas → html-to-image@^1.11.13 swap in src/features/dashboard/pdf-export/svg-snapshot.ts
-- 7/9 widget families fully fixed in PDF export (KPI cards, heat map, sparklines, bench report + 3 Recharts fast-path widgets already working)
-- 2 residuals deferred to Phase 46: Department Capacity Gauges (empty frame — strictly better than pre-phase hijacked arc), Availability Finder (shrunken ~20% — unchanged pre/post phase)
-- 8 new tests (5 capture-path + 3 dependency invariant), all green
-- Rule 4 scope limit: shipped 7/9 fix now rather than block launch on deeper widget-specific rendering quirks
-- v5.0 is UNBLOCKED for launch
-
-Phase 44 results:
-- 696/696 tests passing (+229 since baseline 467/473; 6 pre-existing TC-CL-005 failures now green)
-- AppError taxonomy: 8 codes, 7 subclasses, ESLint guard active, TC-INV-ERRTAX + TC-INV-ERRWIRE passing
-- Tenant isolation: static audit + runtime prober. Wave 2 surfaced and fixed 2 real security bugs (proposals 409→404 leak, register cross-tenant FK poisoning)
-- TC-ID coverage gate green (3/3 invariants). 285 canonical TC-IDs; Wave 4 landed service/component tests
-- Deferred: TC-E2E-* (12 IDs) → Phase 46 (Playwright infra). TC-NEG-* (13 IDs) → labeling-only gap, mitigating coverage already in place
-- Latent bugs fixed in scripts/generate-tc-manifest.ts and scripts/extract-tc-ids-from-architecture.ts regex
-
-## v5.0 Phase Status
+## v6.0 Phase Status
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 33 | Foundations — ISO calendar + Swedish holidays | Not started |
-| 34 | Foundations — Personas, i18n catalog, historic-edit helper | Not started |
-| 35 | Foundations — Universal change_log infrastructure | Not started |
-| 36 | Data model — v5.0 schema migrations | Not started |
-| 37 | Actuals layer — services, distribution, plan-vs-actual cell | Not started |
-| 38 | Excel import pipeline | Not started |
-| 39 | Proposal / approval workflow | Not started |
-| 40 | Persona views Part 1 — PM | Not started |
-| 41 | Persona views Part 2 — Line Manager | Not started |
-| 42 | Persona views Part 3 — Staff, R&D, drill-down, zoom | Not started |
-| 43 | Admin register maintenance | Not started |
-| 44 | API hardening + test contract fill | Complete (APPROVED-WITH-DEFERRALS, 2026-04-09) |
-| 45 | Launch gate — PDF export bug fix | Complete (LAUNCH-01-WITH-DEFERRALS, 2026-04-09) |
-| 46 | Playwright E2E infra + widget rendering polish | In progress (46-01 complete 2026-04-09, widget polish shipped) |
-| 47 | Playwright E2E infrastructure (TC-E2E-* coverage) | Complete (APPROVED, 2026-04-09) |
+| 48 | Pre-flight verification | Not started |
+| 49 | Unbreak broken persona surfaces | Not started |
+| 50 | Persona-aware landing & navigation | Not started |
+| 51 | Lean cleanup — duplicate removal | Not started |
+| 52 | Per-journey friction fixes | Not started |
+| 53 | Chrome polish | Not started |
+| 54 | Dashboard quadrant redesign (optional) | Deferred |
 
 ## Previous Milestones
 
@@ -98,21 +63,27 @@ Phase 44 results:
 | v2.0 Visibility & Insights | 11-17 | Complete | 2026-03-28 |
 | v3.0 Switch from Excel | 18-22 | Complete | 2026-03-30 |
 | v4.0 Dashboard Visualizations | 23-32 | Complete | 2026-04-01 |
+| v5.0 Plan vs Actual + Approval | 33-47 | Complete | 2026-04-13 |
 
 ## Accumulated Context
 
-### v5.0 Locked Decisions (from FEEDBACK.md Q1–Q6 + ARCHITECTURE.md ADRs)
+### v6.0 Locked Decisions (from UI-RESTRUCTURE-PLAN-v2.md §0 review response)
+
+- **Feature-flag gating** mandatory for every wave. New flags: `uiV6.landing`, `uiV6.leanTrim`, `uiV6.perJourney`, `uiV6.polish`. Each acts as an independent kill-switch.
+- **Wave ordering corrected** — Wave 1 (Landing) strictly precedes Wave 2 (Lean trim); they are not parallelizable. Prior v1 plan's parallel claim is obsolete.
+- **Counter-proposal flow stays deferred** (from v5.0 non-goals) — not in any v6.0 phase.
+- **DB schema corrected** — custom-dashboard audit uses `dashboard_layouts(layout jsonb)`, not the fictional `layout_versions.placements`. Audit SQL and migration scripted in LEAN-05 requirement.
+- **`next.config.redirects[]`** is the chosen mechanism for deleted-route redirects (308 permanent, preserves query strings for deep-links like `/pm/wishes?tab=rejected`).
+- **i18n keys land under `sidebar.personaSections.*`** to avoid collision with existing `sidebar.staff` / `sidebar.projects` section headings.
+- **Widget-registry defensive fallback** — unknown widget IDs render a "Widget ej tillgänglig" placeholder, never throw. Protects tenant custom layouts during widget deletion rollout.
+
+### v5.0 Locked Decisions (inherited, still binding)
 
 - **ADR-004** Personas are UX shortcuts, not security boundaries. Role switcher in header, no real auth.
-- **Q2** Store actuals at day grain; accept input at day/week/month; default display monthly.
-- **Q3** Excel (.xlsx) primary format. Unique key `(org, person, project, date)`. Override checkbox unchecked by default.
-- **Q4** Hybrid: PM→line mgr approval for wishes, universal change_log for all edits. States: proposed/approved/rejected/withdrawn/superseded.
 - **Q5** Staff read-only "My Schedule" only.
 - **Q6** Historic edits allowed with soft warning, no hard locks, no mandatory reasons.
 - **ISO 8601** + 53-week year first-class. 2026 is a 53-week year. Swedish holidays 2026–2030 hardcoded in `lib/time/iso-calendar.ts`.
-- **Largest-remainder** distribution for week/month → daily expansion (ADR-010).
 - **Universal change_log** enforced via eslint + codegen + runtime test (TC-CL-005).
-- **Strictly additive** to v4.0 — only existing-table change is `projects.lead_pm_person_id`.
 
 ### Pending Todos
 
@@ -120,13 +91,13 @@ None.
 
 ### Blockers/Concerns
 
-- **PDF export residuals RESOLVED (Phase 46-01, 2026-04-09):** Department Capacity Gauges (WIDGET-01) and Availability Finder (WIDGET-02) both fixed in `svg-snapshot.ts` via narrowed button filter and parent-width fallback. Awaiting orchestrator browser smoke re-run to record 9/9 PDF widget family result. Original Phase 45 hypotheses (nested-SVG, react-window) were disproved; actual causes were a wholesale `<button>` denylist and intrinsic-content-width `getBoundingClientRect()`, both documented in `46-01-SUMMARY.md`.
+- **Phase 48 must complete before any code change.** 3-agent review surfaced 9 unverified assumptions (getLandingRoute existence, `/api/v5/proposals/queue/count` existence, Phase 41 department picker status, admin API 500 root causes, custom-dashboard widget references, existing Playwright spec classification, sidebar i18n collision map, `v5.persona.kinds.*` key presence, plan-vs-actual cell reuse). Pre-flight report resolves each or expands downstream phase scope.
 
 ## Session Continuity
 
-Last session: 2026-04-09T22:30:00.000Z
-Stopped at: Completed 47-10-PLAN.md (TC-E2E deferral closed, tc-manifest generator widened for e2e specs, 714/714 vitest green, tc-id-coverage 3/3 green)
+Last session: 2026-04-20T17:15:56.552Z
+Stopped at: Phase 51 context gathered
 
 ---
 
-_Last updated: 2026-04-07_
+_Last updated: 2026-04-15 — v6.0 initialized_

@@ -44,7 +44,27 @@
     "allScenarios": "Alla scenarier",
     "newEntry": "Ny post",
     "help": "Hjälp",
-    "archive": "Arkiv"
+    "archive": "Arkiv",
+    "personaSections": {
+      "pm": "Projektledare",
+      "pmHome": "Hem",
+      "pmProjects": "Mina projekt",
+      "pmWishes": "Mina önskemål",
+      "lineManager": "Linjechef",
+      "lmOverview": "Översikt",
+      "lmTimeline": "Gruppschema",
+      "lmApprovalQueue": "Godkännandekö",
+      "lmImportActuals": "Importera utfall",
+      "staff": "Medarbetare",
+      "staffSchedule": "Mitt schema",
+      "rd": "FoU",
+      "rdPortfolio": "Portfölj",
+      "rdAlerts": "Varningar",
+      "adminMain": "Administration",
+      "changeLog": "Ändringslogg",
+      "adminPeople": "Personer",
+      "adminProjects": "Projekt"
+    }
   },
   "heatMap": {
     "title": "Teambelastning",
@@ -490,6 +510,9 @@
     },
     "persona": {
       "label": "Roll",
+      "departmentLabel": "Avdelning",
+      "noDepartmentHint": "Admin måste koppla ditt användarkonto till en avdelning först",
+      "noPersonMatch": "Ingen person kopplad",
       "kind": {
         "pm": "Projektledare",
         "line-manager": "Linjechef",
