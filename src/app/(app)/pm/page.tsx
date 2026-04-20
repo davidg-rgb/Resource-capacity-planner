@@ -43,21 +43,7 @@ function PmHomeInner() {
     enabled: !!personaId,
   });
 
-  if (!isLoaded)
-    return (
-      <div className="space-y-4 p-8">
-        <h1 className="font-headline text-2xl font-bold">{t('title')}</h1>
-        <p className="text-on-surface-variant text-sm">{tScreens('loading')}</p>
-      </div>
-    );
-  if (!personaId || (data && data.projects.length === 0))
-    return (
-      <div className="space-y-4 p-8">
-        <h1 className="font-headline text-2xl font-bold">{t('title')}</h1>
-        <p className="text-on-surface-variant text-sm">{tScreens('empty')}</p>
-      </div>
-    );
-  if (isLoading)
+  if (!isLoaded || isLoading)
     return (
       <div className="space-y-4 p-8">
         <h1 className="font-headline text-2xl font-bold">{t('title')}</h1>
@@ -71,7 +57,13 @@ function PmHomeInner() {
         <p className="text-error text-sm">{tScreens('error')}</p>
       </div>
     );
-  if (!data) return null;
+  if (!data || data.projects.length === 0)
+    return (
+      <div className="space-y-4 p-8">
+        <h1 className="font-headline text-2xl font-bold">{t('title')}</h1>
+        <p className="text-on-surface-variant text-sm">{tScreens('empty')}</p>
+      </div>
+    );
 
   return (
     <div className="space-y-4 p-8">

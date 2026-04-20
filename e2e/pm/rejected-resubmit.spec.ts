@@ -15,12 +15,6 @@ test.describe('PM My Wishes — rejected proposal', () => {
     await personaAs(page, 'pm');
     await page.goto('/');
 
-    // Phase 49 UNBREAK-03: PM Home falls through to empty state when no person
-    // selected; explicitly pick the first seeded PM person via the person picker.
-    const personSelect = page.locator('select[aria-label="Project Manager"]');
-    await expect(personSelect).toBeVisible({ timeout: 5_000 });
-    await personSelect.selectOption({ index: 0 });
-
     // The rejection reason is a strong, near-unique string in the seed;
     // asserting it verifies both (a) the row rendered and (b) the reason
     // text is exposed to the PM.

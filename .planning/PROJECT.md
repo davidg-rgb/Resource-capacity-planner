@@ -150,40 +150,10 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - **v2.0 Visibility & Insights** (2026-03-28) — Heat map, dashboards, alerts, project view, PDF export
 - **v3.0 Switch from Excel** (2026-03-30) — UX polish to make the app self-explanatory
 - **v4.0 Dashboard Visualizations & Customization** (2026-04-01) — 13 widgets, custom dashboards, scenarios
-- **v5.0 Plan vs Actual + Approval Workflow** (2026-04-13) — 15 phases, personas, actuals, proposals, admin register
 
 See [MILESTONES.md](MILESTONES.md) for details.
 
-## Current Milestone: v6.0 — UI Restructure & Journey Frictionless
-
-**Goal:** Make every documented user journey achievable at its target click-count. Delete persona-blind chrome, remove duplicate surfaces, unblock the Line Manager / PM / Admin pages that regress today. No new features — pure restructure.
-
-**Target features:**
-- Persona-aware landing — every user lands on `getLandingRoute(persona)`, never the admin dashboard by default
-- Persona-aware sidebar — `SECTION_NAV` entries for `/pm`, `/line-manager`, `/staff`, `/rd`, expanded `/admin`
-- Delete duplicate surfaces — `/team`, `/projects`, `/wishes` routes removed behind permanent redirects; 3 dead widgets deleted; duplicate widgets stripped from project-leader dashboard
-- Unbreak Line Manager — ship Phase 41 department picker, stop raw i18n keys rendering
-- Unbreak PM Home — empty-state fires on `data.projects.length === 0`
-- Unbreak Admin — `/admin` change-log + `/admin/people` API 500s fixed; admin sidebar exposes people/projects/change-log
-- Per-journey friction fixes — PM default-project auto-select, pending-wish status chip, LM approval-queue badge, R&D long-horizon zoom, drill-down drawer audit
-- Chrome polish — persona-scoped notification badge, top-nav `visibleFor` filtering, widget consolidation
-- Feature-flag-gated rollout — `uiV6.landing` / `uiV6.leanTrim` / `uiV6.perJourney` / `uiV6.polish` with per-wave kill-switch
-
-**Planning artifacts (frozen, do not re-review):**
-- [.planning/ui-reviews/UX-AUDIT-PERSONAS.md](ui-reviews/UX-AUDIT-PERSONAS.md) — click-count audit per journey
-- [.planning/ui-reviews/WIDGET-INVENTORY.md](ui-reviews/WIDGET-INVENTORY.md) — widget duplication matrix + page-fit scores
-- [.planning/ui-reviews/UI-RESTRUCTURE-PLAN-v2.md](ui-reviews/UI-RESTRUCTURE-PLAN-v2.md) — **authoritative plan** (supersedes v1); 6 waves + optional Wave 5, with review findings integrated
-
-### v6.0 Non-Goals
-
-- No new features — pure restructure
-- No counter-proposal flow (still deferred from v5.0)
-- No email/Slack notifications — in-app only
-- No mobile-first redesign — desktop primary
-- No AG Grid planning editor changes — `/input/[personId]` is out of scope
-- No dashboard quadrant redesign unless Wave 5 telemetry justifies it
-
-## Previous Milestone: v5.0 — Plan vs Actual + Approval Workflow
+## Current Milestone: v5.0 — Plan vs Actual + Approval Workflow
 
 **Goal:** Transform Nordic Capacity from a "fancier Excel" into a workflow tool by introducing a plan-vs-actual layer (day-grain actuals), a PM→line-manager proposal/approval flow, and persona-scoped views. Strictly additive to the v4.0 schema.
 

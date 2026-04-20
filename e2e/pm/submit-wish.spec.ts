@@ -16,12 +16,6 @@ test.describe('PM submit wish', () => {
     await personaAs(page, 'pm');
     await page.goto('/');
 
-    // Phase 49 UNBREAK-03: PM Home falls through to empty state when no person
-    // selected; explicitly pick the first seeded PM person via the person picker.
-    const personSelect = page.locator('select[aria-label="Project Manager"]');
-    await expect(personSelect).toBeVisible({ timeout: 5_000 });
-    await personSelect.selectOption({ index: 0 });
-
     // Open the "submit wish" form. The PM UI exposes this via a button
     // labelled something like "Submit wish" / "Ny önskan" / "Propose".
     const submitTrigger = page

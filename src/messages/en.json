@@ -44,7 +44,27 @@
     "allScenarios": "All Scenarios",
     "newEntry": "New Entry",
     "help": "Help",
-    "archive": "Archive"
+    "archive": "Archive",
+    "personaSections": {
+      "pm": "Project Manager",
+      "pmHome": "Home",
+      "pmProjects": "My Projects",
+      "pmWishes": "My Wishes",
+      "lineManager": "Line Manager",
+      "lmOverview": "Overview",
+      "lmTimeline": "Group Schedule",
+      "lmApprovalQueue": "Approval Queue",
+      "lmImportActuals": "Import Actuals",
+      "staff": "Staff",
+      "staffSchedule": "My Schedule",
+      "rd": "R&D",
+      "rdPortfolio": "Portfolio",
+      "rdAlerts": "Alerts",
+      "adminMain": "Administration",
+      "changeLog": "Change Log",
+      "adminPeople": "People",
+      "adminProjects": "Projects"
+    }
   },
   "heatMap": {
     "title": "Team Load",

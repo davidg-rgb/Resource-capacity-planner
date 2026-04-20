@@ -10,11 +10,6 @@ test.describe('Line Manager reject proposal', () => {
     await personaAs(page, 'line-manager');
     await page.goto('/');
 
-    // Phase 49 UNBREAK-08: department picker is now in the switcher; select first dept
-    const deptSelect = page.getByTestId('persona-switcher-department');
-    await expect(deptSelect).toBeVisible({ timeout: 5_000 });
-    await deptSelect.selectOption({ index: 0 });
-
     const proposalRow = page.getByText(/Sara.*Aurora.*2026-08|Sara.*20/i).first();
     await proposalRow.getByRole('button', { name: /reject|avslå/i }).click();
 

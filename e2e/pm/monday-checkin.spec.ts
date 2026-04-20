@@ -18,14 +18,6 @@ test.describe('PM Monday check-in', () => {
     await personaAs(page, 'pm');
     await page.goto('/');
 
-    // Phase 49 UNBREAK-03: PM Home falls through to empty state when no person
-    // selected; explicitly pick the first seeded PM person via the person picker.
-    const personSelect = page.locator('select[aria-label="Project Manager"]');
-    await expect(personSelect).toBeVisible({ timeout: 5_000 });
-    await personSelect.selectOption({ index: 0 });
-    // Wait for project list to render after selection
-    await expect(page.getByText(/Nordlys/i).first()).toBeVisible({ timeout: 5_000 });
-
     // Project overview — Nordlys is Anna's lead project and should be
     // prominent somewhere on the PM landing page.
     await expect(page.getByText(/Nordlys/i).first()).toBeVisible();

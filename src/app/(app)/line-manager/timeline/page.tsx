@@ -122,6 +122,11 @@ function LineManagerTimelineInner() {
         <h1 className="font-headline text-2xl font-bold">{title}</h1>
         <ZoomControls value={zoom} onChange={setZoom} />
       </div>
+      {!departmentId && (
+        <div className="text-on-surface-variant p-4 text-sm">
+          {safeT(t, 'timeline.selectDepartment', 'Select a department in the persona switcher.')}
+        </div>
+      )}
       {isLoading && (
         <div
           data-testid="lm-timeline-skeleton"
