@@ -87,7 +87,7 @@
 ### v6.0 UI Restructure & Journey Frictionless
 
 - [x] **Phase 48: Pre-flight verification** — Grep/SQL-verify 9 assumptions (getLandingRoute exists, queue-count endpoint, Phase 41 picker, admin API root causes, custom-dashboard widget references via corrected SQL, existing Playwright spec inventory, sidebar i18n collisions, v5.persona.kinds keys, plan-vs-actual cell reuse). Produces `pre-flight-report.md`. (completed 2026-04-15)
-- [ ] **Phase 49: Unbreak broken persona surfaces** — LM department picker (`/line-manager` + `/line-manager/timeline`), PM Home empty-state, `/admin` + `/admin/people` API 500s, PersonaGate error i18n, Playwright spec updates for upcoming nav changes.
+- [x] **Phase 49: Unbreak broken persona surfaces** — LM department picker (`/line-manager` + `/line-manager/timeline`), PM Home empty-state, `/admin` + `/admin/people` API 500s, PersonaGate error i18n, Playwright spec updates for upcoming nav changes. (completed 2026-04-20)
 - [ ] **Phase 50: Persona-aware landing & navigation** — Root `/` client redirect to `getLandingRoute(persona)` behind `uiV6.landing` flag; `SECTION_NAV` for all 5 personas; Home breadcrumb; grouped persona switcher; 18 `sidebar.personaSections.*` i18n keys.
 - [ ] **Phase 51: Lean cleanup — duplicate removal** — `next.config.ts` 308 redirects for `/team`, `/projects`, `/wishes`; delete the source pages; remove `/input` duplicate list; delete 3 dead widgets (after custom-layout migration); strip duplicate widgets from project-leader layout; add defensive fallback to `widget-registry`; PDF snapshot regression. Gated behind `uiV6.leanTrim`.
 - [ ] **Phase 52: Per-journey friction fixes** — PM default-project auto-select + pending-wish chip; LM approval-queue badge; historic-edit dialog tests; proposal-state visual snapshots; Staff read-only timeline; R&D long-horizon zoom (ISO 8601 + 53-week); R&D overcommit-drill dialog content; shared drill-down drawer audit; admin archive dependent-row E2E. Gated behind `uiV6.perJourney`.
@@ -309,7 +309,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 47
 | 47. Playwright E2E infrastructure | v5.0 | 10/10 | Complete | 2026-04-09 |
 | v5.0 Architecture Review | v5.0 | — | Complete (3 iterations) | 2026-04-10 |
 | 48. Pre-flight verification | v6.0 | 2/2 | Complete    | 2026-04-15 |
-| 49. Unbreak broken persona surfaces | v6.0 | 0/TBD | Planned | — |
+| 49. Unbreak broken persona surfaces | v6.0 | 4/4 | Complete    | 2026-04-20 |
 | 50. Persona-aware landing & navigation | v6.0 | 0/TBD | Planned | — |
 | 51. Lean cleanup — duplicate removal | v6.0 | 0/TBD | Planned | — |
 | 52. Per-journey friction fixes | v6.0 | 0/TBD | Planned | — |
@@ -343,12 +343,12 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 47
   3. `/admin` (change-log) and `/admin/people` both return 200 and list entries without the "Kunde inte ladda…" error
   4. `PersonaGate` error names the correct `allowed` persona in its copy
   5. Every Playwright spec that navigated through routes being reshaped in Phase 51 has been updated or retired
-**Plans:** 4 plans
+**Plans:** 4/4 plans complete
 Plans:
-- [ ] 49-01-PLAN.md — Persona-switcher cluster: department picker (UNBREAK-01/02/08), PersonaGate rewire to v5.persona.kind.* + allowed-prop interpolation (UNBREAK-06/09); removes dead LM page fallbacks
-- [ ] 49-02-PLAN.md — PM Home guard reorder so !personaId falls through to empty state (UNBREAK-03)
-- [ ] 49-03-PLAN.md — Run pnpm db:migrate against dev Neon branch; fix admin 500s for /admin, /admin/people, /admin/departments, /admin/disciplines, /admin/programs (UNBREAK-04/05); author prod deploy checklist (do NOT execute against prod)
-- [ ] 49-04-PLAN.md — Update 12 existing Playwright specs to survive post-Wave-1 code path (UNBREAK-07); no new specs
+- [x] 49-01-PLAN.md — Persona-switcher cluster: department picker (UNBREAK-01/02/08), PersonaGate rewire to v5.persona.kind.* + allowed-prop interpolation (UNBREAK-06/09); removes dead LM page fallbacks
+- [x] 49-02-PLAN.md — PM Home guard reorder so !personaId falls through to empty state (UNBREAK-03)
+- [x] 49-03-PLAN.md — Run pnpm db:migrate against dev Neon branch; fix admin 500s for /admin, /admin/people, /admin/departments, /admin/disciplines, /admin/programs (UNBREAK-04/05); author prod deploy checklist (do NOT execute against prod)
+- [x] 49-04-PLAN.md — Update 12 existing Playwright specs to survive post-Wave-1 code path (UNBREAK-07); no new specs
 
 ## Phase 50: Persona-aware landing & navigation
 **Goal**: A signed-in user opening the app lands on their persona's primary page — never the admin dashboard by default — with a sidebar and breadcrumb set that matches their persona.

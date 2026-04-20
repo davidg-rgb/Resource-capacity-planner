@@ -258,3 +258,19 @@ import_batch, program
 ## Rollback branch
 
 Neon CLI not available locally -- rollback via Neon dashboard's branch-restore feature using the `created_at` timestamp captured above (earliest migration: `1774518414872`). Manual `psql` revert of 0005-0008 is the fallback. The Neon dashboard supports point-in-time restore on the dev branch `ep-raspy-sea-al5kxh7j-pooler` to any timestamp before the migration run.
+
+## Smoke test evidence
+
+**Verified:** 2026-04-20 via `claude-in-chrome` browser automation (GIF: `phase-49-admin-verification.gif`)
+
+| Page | Verdict | Notes |
+|------|---------|-------|
+| `/admin` (Ändringslogg) | PASS | Change log with filter controls + data table renders. No error banner. |
+| `/admin/people` | PASS | Person register table populates with rows. No error banner. |
+| `/admin/departments` | PASS | 5 departments listed with Edit/Archive actions. |
+| `/admin/disciplines` | PASS | 6 disciplines with abbreviations render correctly. |
+| `/admin/programs` | PASS | 3 programs with descriptions render correctly. |
+
+## Dev log tail
+
+Console errors during smoke window: **0 NeonDbError or 500 errors**. Only message was a harmless React hydration mismatch from a browser extension (`cz-shortcut-listen` attribute).
