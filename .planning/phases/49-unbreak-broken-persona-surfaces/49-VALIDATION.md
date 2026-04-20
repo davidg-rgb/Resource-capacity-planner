@@ -2,8 +2,8 @@
 phase: 49
 slug: unbreak-broken-persona-surfaces
 status: draft
-nyquist_compliant: false
-wave_0_complete: false
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-04-15
 ---
 
@@ -43,10 +43,10 @@ created: 2026-04-15
 | UNBREAK-03 | PM Home falls through to empty state (guard order fix) | unit + E2E | `pnpm test src/app/(app)/pm/__tests__/page.test.tsx` + `pnpm playwright test e2e/pm/submit-wish.spec.ts` | ❌ W0 (unit) + ✅ (E2E) | ⬜ pending |
 | UNBREAK-04 | `/admin` (Ändringslogg) loads without error banner | manual smoke + dev-log | No spec (CONTEXT D-06 forbids new) — planner records smoke evidence | ❌ — manual | ⬜ pending |
 | UNBREAK-05 | `/admin/people` register rows populate | manual smoke + dev-log | Same as UNBREAK-04 | ❌ — manual | ⬜ pending |
-| UNBREAK-06 | PersonaGate reads `allowed` prop | unit | `pnpm test src/features/personas/__tests__/persona-route-guard.test.tsx` | ⚠ verify first | ⬜ pending |
+| UNBREAK-06 | PersonaGate reads `allowed` prop | unit | `pnpm test src/features/personas/__tests__/persona-route-guard.test.tsx` | ✅ (existing) | ⬜ pending |
 | UNBREAK-07 | 12 specs pass against unbroken path | E2E | `pnpm playwright test` (whole suite) | ✅ all 12 exist | ⬜ pending |
-| UNBREAK-08 | Department picker in persona-switcher | unit | `pnpm test src/components/persona/__tests__/persona-switcher.test.tsx` | ⚠ verify first | ⬜ pending |
-| UNBREAK-09 | PersonaGate uses `v5.persona.kind.*` namespace | unit | Same as UNBREAK-06 | ⚠ verify first | ⬜ pending |
+| UNBREAK-08 | Department picker in persona-switcher | unit | `pnpm test src/components/persona/__tests__/persona-switcher.test.tsx` | ✅ (existing) | ⬜ pending |
+| UNBREAK-09 | PersonaGate uses `v5.persona.kind.*` namespace | unit | Same as UNBREAK-06 | ✅ (existing) | ⬜ pending |
 
 *Status: ⬜ pending · ✅ green · ❌ red · ⚠️ flaky*
 
@@ -54,9 +54,9 @@ created: 2026-04-15
 
 ## Wave 0 Requirements
 
-- [ ] Verify `src/features/personas/__tests__/persona-route-guard.test.tsx` exists — if missing, add covering `allowed` prop (UNBREAK-06) + namespace (UNBREAK-09)
-- [ ] Verify `src/components/persona/__tests__/persona-switcher.test.tsx` exists — if missing, add covering department dropdown edge cases (0/1/>1 depts) for UNBREAK-08
-- [ ] Confirm `package.json` migrate script name (`pnpm db:migrate` vs `pnpm db:push`) before UNBREAK-04/05 cluster runs
+- [x] Verify `src/features/personas/__tests__/persona-route-guard.test.tsx` exists — CONFIRMED (3570 bytes, last modified 2026-04-08)
+- [x] Verify `src/components/persona/__tests__/persona-switcher.test.tsx` exists — CONFIRMED (3467 bytes, last modified 2026-04-08)
+- [x] Confirm `package.json` migrate script name (`pnpm db:migrate` vs `pnpm db:push`) before UNBREAK-04/05 cluster runs — RESOLVED in 49-03-PLAN.md (`pnpm db:migrate` confirmed in `package.json:23`)
 
 ---
 

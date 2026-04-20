@@ -778,22 +778,25 @@ const setPersona = useCallback((next: Persona) => {
 | A4 | `src/components/persona/__tests__/persona-switcher.test.tsx` exists | Wave 0 Gaps | Low — same as A3. |
 | A5 | Production Neon branch has the same migration drift | Admin fix — production implication | Medium — if prod is NOT drifted, the production deploy checklist note is unnecessary but harmless. If prod IS drifted and the deploy note is missed, users see the same 500s post-Phase-49 release. Planner flags explicitly. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **`pnpm db:migrate` vs `pnpm db:push` — exact script name?**
    - What we know: `drizzle/migrations/` dir + `meta/_journal.json` strongly imply a migrate-based workflow.
    - What's unclear: The exact script name. Research did not read `package.json.scripts` in full.
    - Recommendation: Planner's first task under the UNBREAK-04/05 cluster reads `package.json`, confirms script name, tests on dev branch.
+   - **RESOLVED:** `pnpm db:migrate` confirmed in `package.json:23` — addressed in `49-03-PLAN.md`.
 
 2. **Should production Neon branch re-migration be a Phase 49 subtask or a post-phase deploy note?**
    - What we know: Fix is the same as dev; risk is different (live users).
    - What's unclear: Which Neon branch the prod deployment binds to, and whether the team has a deploy runbook for prod migrations.
    - Recommendation: Record the requirement in Phase 49 evidence but keep execution outside the Phase 49 scope boundary. CONTEXT `<domain>` already separates dev-branch fix from prod rollout (the `uiV6.leanTrim`-style gating for the rest of v6.0 isolates blast radius; Phase 49 has no flag gate yet because it's Wave 0 unbreak, so prod migration is a direct dependency of the Phase 49 release, not a separate wave).
+   - **RESOLVED:** Kept as post-phase deploy checklist in `49-03-PLAN.md` Task 5 (`PROD-NEON-MIGRATION-CHECKLIST.md`), not a Phase 49 subtask.
 
 3. **UNBREAK-03 — is "no PM selected" the same UX as "no projects"?**
    - What we know: pm/page.tsx:60-66 renders `{tScreens('empty')}` for both cases if the guard order is fixed.
    - What's unclear: Product intent — does the user need a distinct prompt to pick a PM, or is "empty" acceptable?
    - Recommendation: Planner asks user OR defaults to "same empty state" (simplest; consistent with LM's single "pick dept" prompt).
+   - **RESOLVED:** Collapsed to the same empty-state branch per research recommendation — addressed in `49-02-PLAN.md`.
 
 ## Risk / Pitfall Matrix (planner-specific)
 
