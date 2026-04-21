@@ -1,0 +1,50 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`MyWishesPanel — rejected wish-card snapshot (PM-04 Q2 split) > renders a single rejected wish card that matches snapshot 1`] = `
+<div
+  class="bg-surface rounded-lg border p-3"
+  data-status="rejected"
+  data-testid="wish-card"
+>
+  <div
+    class="flex items-start justify-between gap-3"
+  >
+    <div
+      class="min-w-0"
+    >
+      <div
+        class="text-sm font-medium"
+      >
+        80h · 2026-06
+      </div>
+      <div
+        class="text-muted-foreground text-xs"
+      >
+        Status: rejected
+      </div>
+      <div
+        class="mt-1 text-xs"
+      >
+        "
+        Need Sara for Alpha
+        "
+      </div>
+      <div
+        class="text-destructive mt-1 text-xs"
+      >
+        Avvisad: Not enough evidence
+      </div>
+    </div>
+    <div
+      class="flex shrink-0 gap-2"
+    >
+      <button
+        class="rounded border px-2 py-1 text-xs disabled:opacity-50"
+        type="button"
+      >
+        Redigera & skicka igen
+      </button>
+    </div>
+  </div>
+</div>
+`;

@@ -506,6 +506,11 @@
       },
       "wishes": {
         "title": "My wishes"
+      },
+      "pendingWishChip": {
+        "label": "Pending wishes: {rejected} rejected · {pending} pending",
+        "rejected": "{count, plural, one {1 rejected} other {# rejected}}",
+        "pending": "{count, plural, one {1 pending} other {# pending}}"
       }
     },
     "persona": {

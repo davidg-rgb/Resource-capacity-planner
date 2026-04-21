@@ -26,6 +26,7 @@ import { useTranslations } from 'next-intl';
 
 import { AlertBadge } from '@/components/alerts/alert-badge';
 import { PersonaSwitcher } from '@/components/persona/persona-switcher';
+import { PendingWishChip } from '@/components/persona/pending-wish-chip';
 import { useFlags } from '@/features/flags/flag.context';
 import type { FlagName } from '@/features/flags/flag.types';
 
@@ -161,6 +162,9 @@ export function TopNav() {
               <AlertBadge />
             </Link>
           )}
+          {/* v6.0 Phase 52 Plan 03 (PM-02): chip renders itself conditionally
+              on uiV6PerJourney + PM persona + pending|rejected counts > 0. */}
+          <PendingWishChip />
           <button
             type="button"
             aria-label={tc('settings')}

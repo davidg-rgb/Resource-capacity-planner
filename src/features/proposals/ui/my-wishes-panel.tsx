@@ -4,8 +4,12 @@
 // Tabs: proposed / approved / rejected. Rejected cards expose an
 // edit-and-resubmit modal that POSTs to /api/v5/proposals/[id]/resubmit
 // via useResubmitProposal. i18n via useTranslations('v5.proposals') (Plan 39-09 sweep).
+//
+// v6.0 Phase 52 Plan 03 (PM-02 / Q4): reads `?tab=` from the URL so the
+// PendingWishChip can deep-link into a specific tab (proposed | rejected).
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 import { useListProposals, useResubmitProposal } from '../use-proposals';
@@ -15,13 +19,21 @@ import { WishCard } from './wish-card';
 type Tab = Extract<ProposalStatus, 'proposed' | 'approved' | 'rejected'>;
 
 const TABS: Tab[] = ['proposed', 'approved', 'rejected'];
+const VALID_TABS: readonly Tab[] = TABS;
+
+function isValidTab(value: string | null): value is Tab {
+  return value !== null && (VALID_TABS as readonly string[]).includes(value);
+}
 
 interface MyWishesPanelProps {
   proposerId: string;
 }
 
 export function MyWishesPanel({ proposerId }: MyWishesPanelProps) {
-  const [tab, setTab] = useState<Tab>('proposed');
+  const searchParams = useSearchParams();
+  const tabParam = searchParams?.get('tab') ?? null;
+  const initialTab: Tab = isValidTab(tabParam) ? tabParam : 'proposed';
+  const [tab, setTab] = useState<Tab>(initialTab);
   const { data, isLoading } = useListProposals({ status: tab, proposerId });
   const resubmit = useResubmitProposal();
   const t = useTranslations('v5.proposals');

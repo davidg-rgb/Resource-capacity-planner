@@ -506,6 +506,11 @@
       },
       "wishes": {
         "title": "Mina önskemål"
+      },
+      "pendingWishChip": {
+        "label": "Väntande önskemål: {rejected} avvisade · {pending} väntande",
+        "rejected": "{count, plural, one {1 avvisat} other {# avvisade}}",
+        "pending": "{count, plural, one {1 väntande} other {# väntande}}"
       }
     },
     "persona": {
