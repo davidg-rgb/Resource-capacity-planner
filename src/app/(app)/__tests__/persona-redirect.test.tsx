@@ -59,6 +59,8 @@ const DEFAULT_FLAGS: FeatureFlags = {
   onboarding: false,
   scenarios: false,
   uiV6Landing: true,
+  uiV6LeanTrim: false,
+  uiV6PerJourney: false,
 };
 
 const mockUseFlags = vi.fn().mockReturnValue(DEFAULT_FLAGS);

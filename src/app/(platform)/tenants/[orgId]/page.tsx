@@ -12,6 +12,9 @@ const FLAG_LABELS: Record<FlagName, string> = {
   alerts: 'Alerts',
   onboarding: 'Onboarding Wizard',
   scenarios: 'What-If Scenarios',
+  uiV6Landing: 'v6 Persona Landing',
+  uiV6LeanTrim: 'v6 Lean Trim',
+  uiV6PerJourney: 'v6 Per-journey Friction Fixes',
 };
 
 interface ImpersonateUser {

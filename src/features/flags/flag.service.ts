@@ -15,6 +15,7 @@ const DEFAULT_FLAGS: FeatureFlags = {
   scenarios: false,
   uiV6Landing: false,
   uiV6LeanTrim: false,
+  uiV6PerJourney: false,
 };
 
 /**
