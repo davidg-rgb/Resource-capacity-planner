@@ -20,6 +20,7 @@ import { ProposalCell } from '@/features/proposals/ui/proposal-cell';
 import { HistoricEditDialog } from '@/components/dialogs/historic-edit-dialog';
 import { resolveEditGate } from '@/features/proposals/edit-gate';
 import { usePersona } from '@/features/personas/persona.context';
+import { useFlags } from '@/features/flags/flag.context';
 import type { CellView } from '@/features/planning/planning.read';
 
 export interface PmTimelineCellProps {
@@ -40,6 +41,7 @@ type ShowProposal = { hours: number } | null;
 
 export function PmTimelineCell(props: PmTimelineCellProps) {
   const { persona } = usePersona();
+  const { uiV6PerJourney } = useFlags();
   const [pendingHistoric, setPendingHistoric] = useState<PendingHistoric>(null);
   const [showProposalPopover, setShowProposalPopover] = useState<ShowProposal>(null);
 
@@ -75,11 +77,22 @@ export function PmTimelineCell(props: PmTimelineCellProps) {
       setShowProposalPopover({ hours: nextHours });
       return;
     }
+    // v6.0 Phase 52 Plan 03 (PM-03 / D-03): historic-warn branches only fire
+    // when uiV6PerJourney is ON. Flag-OFF skips the dialog and falls through
+    // to the underlying direct/proposal path for Phase 51 parity.
     if (decision === 'historic-warn-direct') {
+      if (!uiV6PerJourney) {
+        await runDirectPatch(nextHours, false);
+        return;
+      }
       setPendingHistoric({ hours: nextHours, nextStep: 'direct' });
       return;
     }
     if (decision === 'historic-warn-proposal') {
+      if (!uiV6PerJourney) {
+        setShowProposalPopover({ hours: nextHours });
+        return;
+      }
       setPendingHistoric({ hours: nextHours, nextStep: 'proposal' });
       return;
     }

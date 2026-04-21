@@ -272,57 +272,7 @@ describe('PmTimelineCell — PM-03 historic-edit gating (Phase 52 Plan 03)', () 
   });
 });
 
-// ---------------------------------------------------------------------------
-// v6.0 Phase 52 Plan 03 (PM-04 / Q2 split): proposal-state snapshots.
-// 3 cell states live here: draft / proposed / approved. The 4th state
-// (rejected) has no cell visual — pendingProposal is cleared on reject —
-// and its snapshot lives in src/components/wishes/__tests__/my-wishes-panel.test.tsx.
-// ---------------------------------------------------------------------------
-
-describe('PmTimelineCell — PM-04 proposal states (Phase 52 Plan 03)', () => {
-  beforeEach(() => {
-    flagState.uiV6PerJourney = false;
-  });
-  afterEach(() => {
-    cleanup();
-  });
-
-  function renderState(cell: CellView) {
-    return render(
-      <NextIntlClientProvider locale="sv" messages={sv as Record<string, unknown>}>
-        <PmTimelineCell
-          cell={cell}
-          projectId="proj-1"
-          currentMonth="2026-06"
-          targetPerson={{ id: 'p-sara', departmentId: 'dept-A' }}
-          onAllocationPatch={vi.fn()}
-        />
-      </NextIntlClientProvider>,
-    );
-  }
-
-  it('Snap 1: draft (plannedHours=40, no pendingProposal) matches snapshot', () => {
-    const { container } = renderState(
-      baseCell({ plannedHours: 40, pendingProposal: null, allocationId: 'alloc-1' }),
-    );
-    expect(container.innerHTML).toMatchSnapshot();
-  });
-
-  it('Snap 2: proposed (plannedHours=40, pendingProposal present) matches snapshot', () => {
-    const { container } = renderState(
-      baseCell({
-        plannedHours: 40,
-        pendingProposal: { id: 'p1', proposedHours: 60, proposerId: 'u1' },
-        allocationId: 'alloc-1',
-      }),
-    );
-    expect(container.innerHTML).toMatchSnapshot();
-  });
-
-  it('Snap 3: approved (plannedHours=60, no pendingProposal — approved merged) matches snapshot', () => {
-    const { container } = renderState(
-      baseCell({ plannedHours: 60, pendingProposal: null, allocationId: 'alloc-1' }),
-    );
-    expect(container.innerHTML).toMatchSnapshot();
-  });
-});
+// PM-04 snapshot tests live in pm-timeline-cell.snapshots.test.tsx
+// (separate file — cannot share the PlanVsActualCell stub mock with the
+// other tests in this file, because snapshots require the real component's
+// visual output, not the "trigger-edit" stub).

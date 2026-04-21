@@ -187,6 +187,22 @@ vi.mock('@/features/personas/persona.context', () => ({
   }),
 }));
 
+// v6.0 Phase 52 Plan 03 (PM-03): lm-timeline-cell now reads useFlags() to
+// gate the historic-warn dialog on uiV6PerJourney. TC-PS-005/006 assume the
+// dialog fires, so mock the flag as ON here.
+vi.mock('@/features/flags/flag.context', () => ({
+  useFlags: () => ({
+    dashboards: false,
+    pdfExport: false,
+    alerts: false,
+    onboarding: false,
+    scenarios: false,
+    uiV6Landing: false,
+    uiV6LeanTrim: false,
+    uiV6PerJourney: true,
+  }),
+}));
+
 const { LineManagerTimelineGrid, buildLmRows } = await import('../line-manager-timeline-grid');
 
 // ---------------------------------------------------------------------------

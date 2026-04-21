@@ -20,6 +20,7 @@ import { PlanVsActualCell } from '@/components/timeline/PlanVsActualCell';
 import { HistoricEditDialog } from '@/components/dialogs/historic-edit-dialog';
 import { resolveEditGate } from '@/features/proposals/edit-gate';
 import { usePersona } from '@/features/personas/persona.context';
+import { useFlags } from '@/features/flags/flag.context';
 
 import type { LmPersonRow, LmProjectRow, LmRow } from './line-manager-timeline-grid';
 
@@ -86,6 +87,7 @@ type PendingHistoric = { hours: number; projectId: string; allocationId: string 
 export function LmTimelineCell(props: LmTimelineCellProps) {
   const { row, monthKey, currentMonth, onPatchAllocation } = props;
   const { persona } = usePersona();
+  const { uiV6PerJourney } = useFlags();
   const [pendingHistoric, setPendingHistoric] = useState<PendingHistoric>(null);
 
   // Project (child) rows render the per-project value read-only.
@@ -150,6 +152,12 @@ export function LmTimelineCell(props: LmTimelineCellProps) {
       return;
     }
     if (decision === 'historic-warn-direct') {
+      // v6.0 Phase 52 Plan 03 (PM-03 / D-03): flag-off skips the dialog and
+      // falls through to a direct patch (Phase 51 parity).
+      if (!uiV6PerJourney) {
+        await runDirectPatch(nextHours, false, editProjectId, editAllocationId);
+        return;
+      }
       setPendingHistoric({
         hours: nextHours,
         projectId: editProjectId,
