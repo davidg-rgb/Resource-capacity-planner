@@ -89,10 +89,33 @@ vi.mock('@/features/proposals/ui/proposal-cell', () => ({
   ),
 }));
 
-// HistoricEditDialog is not exercised on the non-historic path but the
-// orchestrator imports it — a harmless stub avoids pulling in its i18n hook.
+// HistoricEditDialog stub — replaced with a visible marker so PM-03 tests can
+// assert presence/absence. The non-historic PR-001 test already expected this
+// to render null; since the non-historic branch never triggers the dialog in
+// the orchestrator, switching the stub to a visible marker is safe.
 vi.mock('@/components/dialogs/historic-edit-dialog', () => ({
-  HistoricEditDialog: () => null,
+  HistoricEditDialog: (props: { open: boolean; targetMonthKey: string }) =>
+    props.open ? (
+      <div data-testid="historic-edit-dialog-stub" data-month={props.targetMonthKey}>
+        historic
+      </div>
+    ) : null,
+}));
+
+// v6.0 Phase 52 Plan 03 (PM-03): mutable flag state — individual tests flip
+// uiV6PerJourney to exercise flag-on vs flag-off gating of the historic path.
+const flagState: { uiV6PerJourney: boolean } = { uiV6PerJourney: true };
+vi.mock('@/features/flags/flag.context', () => ({
+  useFlags: () => ({
+    dashboards: false,
+    pdfExport: false,
+    alerts: false,
+    onboarding: false,
+    scenarios: false,
+    uiV6Landing: false,
+    uiV6LeanTrim: false,
+    uiV6PerJourney: flagState.uiV6PerJourney,
+  }),
 }));
 
 const { PmTimelineCell } = await import('../pm-timeline-cell');
@@ -112,6 +135,7 @@ function baseCell(overrides: Partial<CellView> = {}): CellView {
 describe('PmTimelineCell (TC-PR-001)', () => {
   beforeEach(() => {
     proposalSubmitSpy.mockReset();
+    flagState.uiV6PerJourney = true;
   });
   afterEach(() => {
     cleanup();
@@ -158,5 +182,147 @@ describe('PmTimelineCell (TC-PR-001)', () => {
 
     // Direct PATCH path must NOT have fired.
     expect(onAllocationPatch).not.toHaveBeenCalled();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// v6.0 Phase 52 Plan 03 (PM-03): historic-edit-dialog gating by server-month
+// + uiV6PerJourney flag. For direct-dept edits (dept-A == dept-A), the
+// orchestrator takes the 'direct' branch when month >= currentMonth, and
+// 'historic-warn-direct' when month < currentMonth.
+// ---------------------------------------------------------------------------
+
+describe('PmTimelineCell — PM-03 historic-edit gating (Phase 52 Plan 03)', () => {
+  beforeEach(() => {
+    flagState.uiV6PerJourney = true;
+  });
+  afterEach(() => {
+    cleanup();
+  });
+
+  function renderCell(args: {
+    monthKey: string;
+    currentMonth: string;
+    flagOn: boolean;
+  }) {
+    flagState.uiV6PerJourney = args.flagOn;
+    const onAllocationPatch = vi.fn().mockResolvedValue(undefined);
+    render(
+      <NextIntlClientProvider locale="sv" messages={sv as Record<string, unknown>}>
+        <PmTimelineCell
+          cell={{ ...baseCell({ monthKey: args.monthKey }), allocationId: 'alloc-1' }}
+          projectId="proj-1"
+          currentMonth={args.currentMonth}
+          // dept-A matches mocked PM's homeDepartmentId (direct branch eligible).
+          targetPerson={{ id: 'p-sara', departmentId: 'dept-A' }}
+          onAllocationPatch={onAllocationPatch}
+        />
+      </NextIntlClientProvider>,
+    );
+    return { onAllocationPatch };
+  }
+
+  it('Test 1 — past month + flag ON: HistoricEditDialog renders', async () => {
+    const user = userEvent.setup();
+    renderCell({ monthKey: '2025-11', currentMonth: '2026-06', flagOn: true });
+    await user.click(screen.getByTestId('trigger-edit'));
+    expect(screen.getByTestId('historic-edit-dialog-stub')).toBeInTheDocument();
+    expect(screen.getByTestId('historic-edit-dialog-stub').getAttribute('data-month')).toBe(
+      '2025-11',
+    );
+  });
+
+  it('Test 2 — current month + flag ON: dialog NOT rendered', async () => {
+    const user = userEvent.setup();
+    const { onAllocationPatch } = renderCell({
+      monthKey: '2026-06',
+      currentMonth: '2026-06',
+      flagOn: true,
+    });
+    await user.click(screen.getByTestId('trigger-edit'));
+    expect(screen.queryByTestId('historic-edit-dialog-stub')).toBeNull();
+    // Direct patch was invoked (month not historic).
+    expect(onAllocationPatch).toHaveBeenCalledTimes(1);
+  });
+
+  it('Test 3 — future month + flag ON: dialog NOT rendered', async () => {
+    const user = userEvent.setup();
+    const { onAllocationPatch } = renderCell({
+      monthKey: '2026-07',
+      currentMonth: '2026-06',
+      flagOn: true,
+    });
+    await user.click(screen.getByTestId('trigger-edit'));
+    expect(screen.queryByTestId('historic-edit-dialog-stub')).toBeNull();
+    expect(onAllocationPatch).toHaveBeenCalledTimes(1);
+  });
+
+  it('Test 4 — past month + flag OFF: dialog NOT rendered (Phase 51 parity)', async () => {
+    const user = userEvent.setup();
+    const { onAllocationPatch } = renderCell({
+      monthKey: '2025-11',
+      currentMonth: '2026-06',
+      flagOn: false,
+    });
+    await user.click(screen.getByTestId('trigger-edit'));
+    expect(screen.queryByTestId('historic-edit-dialog-stub')).toBeNull();
+    // With flag off, the historic check is skipped; the direct-dept branch
+    // falls through to a direct patch (Phase 51 parity for dept-matched edits).
+    expect(onAllocationPatch).toHaveBeenCalledTimes(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// v6.0 Phase 52 Plan 03 (PM-04 / Q2 split): proposal-state snapshots.
+// 3 cell states live here: draft / proposed / approved. The 4th state
+// (rejected) has no cell visual — pendingProposal is cleared on reject —
+// and its snapshot lives in src/components/wishes/__tests__/my-wishes-panel.test.tsx.
+// ---------------------------------------------------------------------------
+
+describe('PmTimelineCell — PM-04 proposal states (Phase 52 Plan 03)', () => {
+  beforeEach(() => {
+    flagState.uiV6PerJourney = false;
+  });
+  afterEach(() => {
+    cleanup();
+  });
+
+  function renderState(cell: CellView) {
+    return render(
+      <NextIntlClientProvider locale="sv" messages={sv as Record<string, unknown>}>
+        <PmTimelineCell
+          cell={cell}
+          projectId="proj-1"
+          currentMonth="2026-06"
+          targetPerson={{ id: 'p-sara', departmentId: 'dept-A' }}
+          onAllocationPatch={vi.fn()}
+        />
+      </NextIntlClientProvider>,
+    );
+  }
+
+  it('Snap 1: draft (plannedHours=40, no pendingProposal) matches snapshot', () => {
+    const { container } = renderState(
+      baseCell({ plannedHours: 40, pendingProposal: null, allocationId: 'alloc-1' }),
+    );
+    expect(container.innerHTML).toMatchSnapshot();
+  });
+
+  it('Snap 2: proposed (plannedHours=40, pendingProposal present) matches snapshot', () => {
+    const { container } = renderState(
+      baseCell({
+        plannedHours: 40,
+        pendingProposal: { id: 'p1', proposedHours: 60, proposerId: 'u1' },
+        allocationId: 'alloc-1',
+      }),
+    );
+    expect(container.innerHTML).toMatchSnapshot();
+  });
+
+  it('Snap 3: approved (plannedHours=60, no pendingProposal — approved merged) matches snapshot', () => {
+    const { container } = renderState(
+      baseCell({ plannedHours: 60, pendingProposal: null, allocationId: 'alloc-1' }),
+    );
+    expect(container.innerHTML).toMatchSnapshot();
   });
 });

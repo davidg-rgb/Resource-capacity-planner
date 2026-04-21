@@ -1,0 +1,7 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`PmTimelineCell — PM-04 proposal states (Phase 52 Plan 03) > Snap 1: draft (plannedHours=40, no pendingProposal) matches snapshot 1`] = `"<div class="relative"><button type="button" data-testid="trigger-edit">trigger</button></div>"`;
+
+exports[`PmTimelineCell — PM-04 proposal states (Phase 52 Plan 03) > Snap 2: proposed (plannedHours=40, pendingProposal present) matches snapshot 1`] = `"<div class="relative"><button type="button" data-testid="trigger-edit">trigger</button></div>"`;
+
+exports[`PmTimelineCell — PM-04 proposal states (Phase 52 Plan 03) > Snap 3: approved (plannedHours=60, no pendingProposal — approved merged) matches snapshot 1`] = `"<div class="relative"><button type="button" data-testid="trigger-edit">trigger</button></div>"`;
