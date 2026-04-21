@@ -7,7 +7,7 @@
 //
 // Approve / reject / resubmit arrive in Plans 39-03 and 39-04.
 
-import { and, desc, eq, inArray, ne } from 'drizzle-orm';
+import { and, desc, eq, inArray, ne, sql } from 'drizzle-orm';
 
 import { db } from '@/db';
 import * as schema from '@/db/schema';
@@ -383,6 +383,41 @@ export async function resubmitProposal(input: ResubmitProposalInput): Promise<Pr
 
     return toProposalDTO(row, person.departmentId);
   });
+}
+
+// ---------------------------------------------------------------------------
+// v6.0 — Phase 52 / Plan 52-02 (LM-03 / D-05): getQueueCount
+// ---------------------------------------------------------------------------
+
+/**
+ * LM-03: count proposals awaiting this department's line-manager approval.
+ *
+ * Filter contract:
+ *   - organization_id  = orgId                  (T-52-04 tenant isolation)
+ *   - status           = 'proposed' (single)    (Pitfall #7 — no counter_proposed)
+ *   - people.department_id = departmentId       (PROP-07 live-dept routing)
+ *
+ * Cross-tenant callers (orgId of tenant A, departmentId belongs to tenant B)
+ * receive 0 naturally — people in dept B are scoped to org B, so the org
+ * predicate eliminates them. Verified by the `tenant isolation` test.
+ *
+ * The JOIN on people (live department) mirrors `listProposals` — the
+ * snapshot column `allocation_proposals.target_department_id` is NOT used
+ * for routing (PROP-07).
+ */
+export async function getQueueCount(orgId: string, departmentId: string): Promise<number> {
+  const [row] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(schema.allocationProposals)
+    .innerJoin(schema.people, eq(schema.allocationProposals.personId, schema.people.id))
+    .where(
+      and(
+        eq(schema.allocationProposals.organizationId, orgId),
+        eq(schema.allocationProposals.status, 'proposed'),
+        eq(schema.people.departmentId, departmentId),
+      ),
+    );
+  return Number(row?.count ?? 0);
 }
 
 // ---------------------------------------------------------------------------
