@@ -5,8 +5,14 @@
 // currently selected PM persona's personId. Renders a grid of project
 // overview cards with planned/actual hours and pending-wish counts.
 // Wave 3 will plug in the project drill-in timeline.
+//
+// v6.0 Phase 52 Plan 03 (PM-01 / D-01): when `uiV6PerJourney` is ON and the
+// API returns `defaultProjectId !== null` (exactly-one-project rule), fire
+// `router.replace('/pm/projects/<id>')` to collapse journey 1A to 2 clicks.
 
+import { useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
@@ -14,6 +20,7 @@ import { useQuery } from '@tanstack/react-query';
 import { usePersona } from '@/features/personas/persona.context';
 import { PersonaGate } from '@/features/personas/persona-route-guard';
 import type { PmOverviewResult } from '@/features/planning/planning.read';
+import { useFlags } from '@/features/flags/flag.context';
 
 async function fetchPmHome(personId: string): Promise<PmOverviewResult> {
   const res = await fetch(`/api/v5/planning/pm-home?personId=${encodeURIComponent(personId)}`);
@@ -34,6 +41,9 @@ function PmHomeInner() {
   const { persona } = usePersona();
   const t = useTranslations('v5.pm.home');
   const tScreens = useTranslations('v5.screens.pmHome');
+  const router = useRouter();
+  const pathname = usePathname();
+  const { uiV6PerJourney } = useFlags();
 
   const personaId = persona.kind === 'pm' ? persona.personId : null;
 
@@ -42,6 +52,17 @@ function PmHomeInner() {
     queryFn: () => fetchPmHome(personaId as string),
     enabled: !!personaId,
   });
+
+  // v6.0 Phase 52 Plan 03 (PM-01 / D-01 + Pitfall #2): when flag is ON and the
+  // API returned exactly one project (defaultProjectId !== null), redirect to
+  // the project drill. Pathname guard prevents clobbering a later user
+  // navigation away from `/pm` while this effect's dependencies re-settle.
+  useEffect(() => {
+    if (!uiV6PerJourney) return;
+    if (pathname !== '/pm') return;
+    if (!data?.defaultProjectId) return;
+    router.replace(`/pm/projects/${data.defaultProjectId}`);
+  }, [uiV6PerJourney, pathname, data?.defaultProjectId, router]);
 
   if (!isLoaded || isLoading)
     return (

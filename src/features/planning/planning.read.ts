@@ -16,6 +16,7 @@ import { aggregateByMonth, getProjectBurn } from '@/features/actuals/actuals.rea
 import { listProposals } from '@/features/proposals/proposal.service';
 import { NotFoundError } from '@/lib/errors';
 import { generateMonthRange, normalizeMonth } from '@/lib/date-utils';
+import { getServerNowMonthKey } from '@/lib/server/get-server-now-month-key';
 
 // ---------------------------------------------------------------------------
 // PM Home — overview cards
@@ -29,7 +30,18 @@ export interface PmOverviewCard {
 
 export interface PmOverviewResult {
   projects: PmOverviewCard[];
+  /**
+   * v6.0 Phase 52 Plan 03 (PM-01 / D-01): ONLY set when the PM leads exactly
+   * one project. `null` for 0 or 2+ projects. The `/pm` page uses this to
+   * `router.replace('/pm/projects/<id>')` when `uiV6PerJourney` is ON.
+   */
   defaultProjectId: string | null;
+  /**
+   * v6.0 Phase 52 Plan 03 (PM-03): server-sourced "now" month key ('YYYY-MM')
+   * from `getServerNowMonthKey`. Threaded through to `pm-timeline-cell` so
+   * historic-edit gating uses the DB clock (not the client clock).
+   */
+  currentMonth: string;
 }
 
 /**
@@ -106,9 +118,21 @@ export async function getPmOverview(args: {
     }),
   );
 
+  // v6.0 Phase 52 Plan 03 (PM-03 / D-03, Pitfall #6): server-sourced "now"
+  // month keyed from the DB clock (not Node/Node). The helper accepts any
+  // tx-like object exposing `.execute()`; the top-level `db` qualifies.
+  const currentMonth = await getServerNowMonthKey(
+    db as unknown as Parameters<typeof getServerNowMonthKey>[0],
+  );
+
+  // v6.0 Phase 52 Plan 03 (PM-01 / D-01): only auto-redirect when exactly one
+  // project. Multi-project PMs see the cards grid; zero-project shows empty state.
+  const defaultProjectId = cards.length === 1 ? cards[0]!.project.id : null;
+
   return {
     projects: cards,
-    defaultProjectId: cards[0]?.project.id ?? null,
+    defaultProjectId,
+    currentMonth,
   };
 }
 
