@@ -34,10 +34,12 @@ import {
   allocations,
   departments,
   disciplines,
+  featureFlags,
   importBatches,
   importSessions,
   organizations,
   people,
+  platformAdmins,
   projects,
 } from '@/db/schema';
 
@@ -53,6 +55,10 @@ export const dynamic = 'force-dynamic';
 // buildSeed(), so repeated POSTs produce byte-identical rows.
 const E2E_ORG_ID = uuidv5('seed:e2e:organization', FIXTURE_NS);
 const E2E_CLERK_ORG_ID = 'org_e2e_nordic_capacity';
+// Phase 52-01 Task 3: deterministic platform-admin / feature-flag IDs so the
+// E2E tenant starts with `uiV6PerJourney` enabled. `featureFlags.setByAdminId`
+// is NOT NULL + FK → platform_admins(id), so we seed both atomically.
+const E2E_PLATFORM_ADMIN_ID = uuidv5('seed:e2e:platform_admin', FIXTURE_NS);
 
 // Discipline names used by PEOPLE in the seed bundle — we create one row
 // per distinct disciplineName and index by name.
@@ -90,6 +96,8 @@ export async function POST(): Promise<Response> {
     // Truncate every application table in a single statement. RESTART
     // IDENTITY is a no-op on uuid PKs but cheap; CASCADE takes care of any
     // table the bundle does not touch (e.g. change_log, scenarios).
+    // Phase 52-01: also truncate feature_flags + platform_admins so the
+    // `uiV6PerJourney` flag re-seeds deterministically on every call.
     await tx.execute(/* sql */ `
       TRUNCATE TABLE
         "change_log",
@@ -107,6 +115,8 @@ export async function POST(): Promise<Response> {
         "scenario_temp_entities",
         "scenarios",
         "dashboard_layouts",
+        "feature_flags",
+        "platform_admins",
         "organizations"
       RESTART IDENTITY CASCADE
     `);
@@ -244,6 +254,23 @@ export async function POST(): Promise<Response> {
         })),
       );
     }
+
+    // Phase 52-01 Task 3: platform admin + feature flag (`uiV6PerJourney` on).
+    // Written BEFORE proposals so other forthcoming flag-gated seeds can key
+    // off it. The admin row is test-only (hashed password intentionally
+    // unusable — the row exists solely to satisfy the featureFlags FK).
+    await tx.insert(platformAdmins).values({
+      id: E2E_PLATFORM_ADMIN_ID,
+      email: 'e2e-system@nordic-capacity.test',
+      passwordHash: 'e2e-no-login',
+      name: 'E2E System',
+    });
+    await tx.insert(featureFlags).values({
+      organizationId: E2E_ORG_ID,
+      flagName: 'uiV6PerJourney',
+      enabled: true,
+      setByAdminId: E2E_PLATFORM_ADMIN_ID,
+    });
 
     // Allocation proposals. targetDepartmentId is required by schema but
     // not in the bundle — derive from the target person's department.

@@ -10,6 +10,14 @@
 // webServer Playwright manages (which has the real drizzle connection
 // to the nc_e2e database). Does NOT hit e2e/lib/db.ts — that module is
 // for globalSetup (migrate + top-level reset), this one is per-spec.
+//
+// Phase 52-01 Task 3: the seed route also inserts a platform admin row
+// and `{ organization_id: E2E_ORG_ID, flag_name: 'uiV6PerJourney',
+// enabled: true }` into `feature_flags` so every journey spec starts
+// with the Phase 52 flag ON. Toggling the flag off mid-spec (for the
+// flag-off parity invariant) is done via direct `UPDATE feature_flags`
+// — that DB helper is added in Plan 05 when the parity spec gets its
+// richer assertions.
 
 import type { APIRequestContext, Page } from '@playwright/test';
 
