@@ -24,8 +24,12 @@ import { PlanVsActualDrawer } from '@/components/drawer/PlanVsActualDrawer';
 import { RdPortfolioCell } from '@/components/timeline/rd-portfolio-cell';
 import { ZoomControls } from '@/components/timeline/zoom-controls';
 import { useZoom } from '@/components/timeline/useZoom';
+import type { TimelineZoom } from '@/components/timeline/timeline-columns';
+import { useFlags } from '@/features/flags/flag.context';
 import { generateMonthRange, getCurrentMonth } from '@/lib/date-utils';
+import { formatQuarter, formatYear } from '@/lib/time/formatters';
 import type { PortfolioGridResult } from '@/features/planning/planning.read';
+import { aggregateRdRowMonths, rdColumnKeys } from './rd-aggregation';
 
 const MONTH_HORIZON = 12;
 
@@ -65,6 +69,12 @@ function RdPageInner() {
   const [zoom, setZoom] = useZoom({ persona: 'rd', screen: 'portfolio' });
   const [groupBy, setGroupBy] = useState<GroupBy>('project');
   const [overcommitOpen, setOvercommitOpen] = useState(false);
+  const flags = useFlags();
+  // v6.0 — Phase 52 / Plan 52-04 (RD-01 / D-08): flag-OFF pins zoom to
+  // 'month' at render time so the HTML-table aggregator is a no-op and
+  // Phase 51's visible behavior is preserved (zoom control still toggles
+  // local state — it just doesn't affect the grid until flag-ON).
+  const effectiveZoom: TimelineZoom = flags.uiV6PerJourney ? zoom : 'month';
 
   const months = useMemo(() => generateMonthRange(getCurrentMonth(), MONTH_HORIZON), []);
   const startMonth = months[0]!;
@@ -150,6 +160,7 @@ function RdPageInner() {
       {data && (
         <RdPortfolioGrid
           data={data}
+          zoom={effectiveZoom}
           onCellClick={(rowId, rowLabel, monthKey) => handleCellClick(rowId, rowLabel, monthKey)}
         />
       )}
@@ -186,12 +197,25 @@ function RdPageInner() {
 
 interface RdPortfolioGridProps {
   data: PortfolioGridResult;
+  zoom: TimelineZoom;
   onCellClick: (rowId: string, rowLabel: string, monthKey: string) => void;
 }
 
-function RdPortfolioGrid({ data, onCellClick }: RdPortfolioGridProps) {
+function formatColumnHeader(columnKey: string, zoom: TimelineZoom): string {
+  if (zoom === 'month') return columnKey;
+  if (zoom === 'quarter') return formatQuarter(columnKey, 'sv');
+  return formatYear(columnKey, 'sv');
+}
+
+function RdPortfolioGrid({ data, zoom, onCellClick }: RdPortfolioGridProps) {
   const t = useTranslations('v5.rd');
   const { monthRange, rows } = data;
+
+  // v6.0 — Phase 52 / Plan 52-04 (RD-01 / D-08): enumerate columns + aggregate
+  // cell data by the active zoom level. flag-OFF pins zoom='month' at the page
+  // level so this path is a no-op structural copy and Phase 51 layout is
+  // preserved.
+  const columns = useMemo(() => rdColumnKeys(monthRange, zoom), [monthRange, zoom]);
 
   if (rows.length === 0) {
     return (
@@ -202,38 +226,41 @@ function RdPortfolioGrid({ data, onCellClick }: RdPortfolioGridProps) {
   }
 
   return (
-    <div data-testid="rd-grid" className="overflow-x-auto">
+    <div data-testid="rd-grid" data-zoom={zoom} className="overflow-x-auto">
       <table className="min-w-full border-collapse text-sm">
         <thead>
           <tr>
             <th className="bg-surface sticky left-0 p-2 text-left" />
-            {monthRange.map((mk) => (
-              <th key={mk} className="p-2 text-left font-medium">
-                {mk}
+            {columns.map((ck) => (
+              <th key={ck} data-testid={`rd-col-${ck}`} className="p-2 text-left font-medium">
+                {formatColumnHeader(ck, zoom)}
               </th>
             ))}
           </tr>
         </thead>
         <tbody>
-          {rows.map((row) => (
-            <tr key={row.id} data-testid={`rd-row-${row.id}`}>
-              <td className="bg-surface sticky left-0 p-2 font-medium">{row.label}</td>
-              {monthRange.map((mk) => {
-                const cell = row.months[mk]!;
-                return (
-                  <td key={mk} className="p-1 align-top">
-                    <RdPortfolioCell
-                      rowId={row.id}
-                      monthKey={mk}
-                      plannedHours={cell.plannedHours}
-                      actualHours={cell.actualHours}
-                      onCellClick={({ rowId, monthKey }) => onCellClick(rowId, row.label, monthKey)}
-                    />
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
+          {rows.map((row) => {
+            const aggregated = aggregateRdRowMonths(row.months, columns, zoom);
+            return (
+              <tr key={row.id} data-testid={`rd-row-${row.id}`}>
+                <td className="bg-surface sticky left-0 p-2 font-medium">{row.label}</td>
+                {columns.map((ck) => {
+                  const cell = aggregated[ck];
+                  return (
+                    <td key={ck} className="p-1 align-top">
+                      <RdPortfolioCell
+                        rowId={row.id}
+                        monthKey={ck}
+                        plannedHours={cell.plannedHours}
+                        actualHours={cell.actualHours}
+                        onCellClick={({ rowId, monthKey }) => onCellClick(rowId, row.label, monthKey)}
+                      />
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
