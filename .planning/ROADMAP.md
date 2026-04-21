@@ -76,7 +76,8 @@
  (completed 2026-04-08)
 - [x] **Phase 41: Persona views Part 2 — Line Manager** — Line Mgr Home heatmap, group timeline, approval queue, change log feed
  (completed 2026-04-08)
-- [x] **Phase 42: Persona views Part 3 — Staff, R&D, drill-down, long-horizon zoom** — Staff schedule, R&D portfolio, shared drill-down drawer, zoom levels (completed 2026-04-08)
+- [x] **Phase 42: Persona views Part 3 — Staff, R&D, drill-down, long-horizon zoom** — Staff schedule, R&D portfolio, shared drill-down drawer, zoom levels
+ (completed 2026-04-08)
 - [x] **Phase 43: Admin register maintenance** — Self-service CRUD with archive, dependent-row blocking, change-log feed landing (completed 2026-04-08)
 - [x] **Phase 44: API hardening + test contract fill** — Every TC-* assertion from §15 has a passing automated test; AppError taxonomy coverage (completed 2026-04-09, APPROVED-WITH-DEFERRALS; TC-E2E Playwright infra deferred to Phase 46)
 - [x] **Phase 45: Launch gate — PDF export bug fix** — Swapped html2canvas for html-to-image@^1.11.13; 7/9 widget families fixed; 2 residuals (Department Capacity Gauges, Availability Finder) deferred to Phase 46 (completed 2026-04-09 LAUNCH-01-WITH-DEFERRALS)
@@ -86,8 +87,10 @@
 
 ### v6.0 UI Restructure & Journey Frictionless
 
-- [x] **Phase 48: Pre-flight verification** — Grep/SQL-verify 9 assumptions (getLandingRoute exists, queue-count endpoint, Phase 41 picker, admin API root causes, custom-dashboard widget references via corrected SQL, existing Playwright spec inventory, sidebar i18n collisions, v5.persona.kinds keys, plan-vs-actual cell reuse). Produces `pre-flight-report.md`. (completed 2026-04-15)
-- [x] **Phase 49: Unbreak broken persona surfaces** — LM department picker (`/line-manager` + `/line-manager/timeline`), PM Home empty-state, `/admin` + `/admin/people` API 500s, PersonaGate error i18n, Playwright spec updates for upcoming nav changes. (completed 2026-04-20)
+- [x] **Phase 48: Pre-flight verification** — Grep/SQL-verify 9 assumptions (getLandingRoute exists, queue-count endpoint, Phase 41 picker, admin API root causes, custom-dashboard widget references via corrected SQL, existing Playwright spec inventory, sidebar i18n collisions, v5.persona.kinds keys, plan-vs-actual cell reuse). Produces `pre-flight-report.md`.
+ (completed 2026-04-15)
+- [x] **Phase 49: Unbreak broken persona surfaces** — LM department picker (`/line-manager` + `/line-manager/timeline`), PM Home empty-state, `/admin` + `/admin/people` API 500s, PersonaGate error i18n, Playwright spec updates for upcoming nav changes.
+ (completed 2026-04-20)
 - [x] **Phase 50: Persona-aware landing & navigation** — Root `/` client redirect to `getLandingRoute(persona)` behind `uiV6.landing` flag; `SECTION_NAV` for all 5 personas; Home breadcrumb; grouped persona switcher; 18 `sidebar.personaSections.*` i18n keys. (completed 2026-04-20)
 - [x] **Phase 51: Lean cleanup — duplicate removal** — `next.config.ts` 308 redirects for `/team`, `/projects`, `/wishes`; delete the source pages; remove `/input` duplicate list; delete 3 dead widgets (after custom-layout migration); strip duplicate widgets from project-leader layout; add defensive fallback to `widget-registry`; PDF snapshot regression. Gated behind `uiV6.leanTrim`. (completed 2026-04-20)
 - [ ] **Phase 52: Per-journey friction fixes** — PM default-project auto-select + pending-wish chip; LM approval-queue badge; historic-edit dialog tests; proposal-state visual snapshots; Staff read-only timeline; R&D long-horizon zoom (ISO 8601 + 53-week); R&D overcommit-drill dialog content; shared drill-down drawer audit; admin archive dependent-row E2E. Gated behind `uiV6.perJourney`.
@@ -398,7 +401,13 @@ Plans:
   5. Admin: archiving a project with active allocations surfaces the `DEPENDENT_ROWS_EXIST` toast with dependents listed
   6. Shared drill-down drawer (Screen S11) supports deep-link open, ESC-dismiss, focus trap — exercised from journeys 1A and 4B
   7. Every Playwright spec in `§1 click-count table` asserts its target; CI fails if exceeded; all gated behind `uiV6.perJourney`
-**Plans**: TBD
+**Plans:** 5/5 plans planned
+Plans:
+- [ ] 52-01-PLAN.md -- Flag + click-tracker + axe install + seed extension + flag-off parity scaffold (Wave 0, PJ-FLAG)
+- [ ] 52-02-PLAN.md -- LM-03 endpoint: /api/v5/proposals/queue/count + service fn + integration tests (Wave 1, LM-03)
+- [ ] 52-03-PLAN.md -- PM cluster: PM-01 auto-redirect, PM-02 chip + tab plumbing, PM-03 historic-edit server-month, PM-04 snapshots (Wave 2, PM-01..PM-04)
+- [ ] 52-04-PLAN.md -- LM+Staff+RD cluster: LM-01 badge+switcher, STAFF-01 readOnly, RD-01 zoom aggregation, RD-02 OvercommitDialog (Wave 3, LM-01/STAFF-01/RD-01/RD-02)
+- [ ] 52-05-PLAN.md -- SHARED-01 deep-link + focus trap, ADMIN-01 toast details, 11 Playwright journey specs + flag-off parity invariant (Wave 4, SHARED-01/ADMIN-01/LM-02)
 
 ## Phase 53: Chrome polish
 **Goal**: Persona signals (notifications, top-nav visibility) and widget surface match the persona's scope; both main dashboards fit on a 1440×900 viewport without scroll.
