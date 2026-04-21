@@ -436,7 +436,10 @@
     "lineManager": {
       "desktopOnlyMessage": "This view requires a screen at least 768px wide. Please open it on a desktop.",
       "home": {
-        "title": "Line Manager home"
+        "title": "Line Manager home",
+        "approvalQueueBadge": {
+          "label": "{count, plural, one {1 pending approval} other {# pending approvals}}"
+        }
       },
       "heatmap": {
         "legend": {

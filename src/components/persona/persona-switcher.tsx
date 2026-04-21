@@ -25,6 +25,8 @@ import type { ChangeEvent } from 'react';
 import { usePersona } from '@/features/personas/persona.context';
 import { PERSONA_KINDS, getLandingRoute } from '@/features/personas/persona.routes';
 import type { Persona, PersonaKind } from '@/features/personas/persona.types';
+import { useFlags } from '@/features/flags/flag.context';
+import { useLmQueueCount } from '@/features/proposals/use-lm-queue-count';
 
 interface PersonRowLite {
   id: string;
@@ -72,6 +74,7 @@ export function PersonaSwitcher() {
   const t = useTranslations('v5.persona');
   const { persona, setPersona } = usePersona();
   const router = useRouter();
+  const flags = useFlags();
 
   const needsPerson = persona.kind === 'pm' || persona.kind === 'staff';
 
@@ -80,6 +83,18 @@ export function PersonaSwitcher() {
     queryFn: fetchPeople,
     staleTime: 60_000,
   });
+
+  // v6.0 — Phase 52 / Plan 52-04 (LM-01 / D-06): suffix LM option with `(N)` when
+  // the active persona is line-manager and the flag is on. Hook called at
+  // component root per React rules (Pitfall #6). `enabled` is false when the
+  // active persona isn't LM — no fetch for non-LM personas.
+  const activeLmDepartmentId =
+    persona.kind === 'line-manager' && persona.departmentId ? persona.departmentId : null;
+  const { data: lmCount = 0 } = useLmQueueCount(
+    activeLmDepartmentId,
+    flags.uiV6PerJourney && !!activeLmDepartmentId,
+  );
+  const lmSuffixOn = flags.uiV6PerJourney && lmCount > 0;
 
   function handleKindChange(e: ChangeEvent<HTMLSelectElement>) {
     const nextKind = e.target.value as PersonaKind;
@@ -113,11 +128,16 @@ export function PersonaSwitcher() {
           onChange={handleKindChange}
           className="bg-surface-container-low text-on-surface rounded-sm px-2 py-1 text-xs"
         >
-          {PERSONA_KINDS.map((kind) => (
-            <option key={kind} value={kind}>
-              {t(`kind.${kind}`)}
-            </option>
-          ))}
+          {PERSONA_KINDS.map((kind) => {
+            const base = t(`kind.${kind}`);
+            const label =
+              kind === 'line-manager' && lmSuffixOn ? `${base} (${lmCount})` : base;
+            return (
+              <option key={kind} value={kind}>
+                {label}
+              </option>
+            );
+          })}
         </select>
       </label>
       {needsPerson && people.length > 0 && (
