@@ -83,10 +83,16 @@ export function PlanVsActualCell(props: PlanVsActualCellProps) {
     aggregate,
     onCellEdit,
     onCellClick,
+    editable: editableProp,
   } = props;
 
   const t = useTranslations('v5.cell');
-  const editable = !!onCellEdit;
+  // v6.0 — Phase 52 / Plan 52-04 (STAFF-01 / D-10): if caller supplied an
+  // explicit `editable` prop, honor it; else infer from `onCellEdit` presence
+  // (original Phase 37 contract). Staff/RD surfaces pass `editable={false}`
+  // so the cell renders with `data-editable="false"` + as a static <button>
+  // (no inline input) for journey 3A/4A read-only assertions.
+  const editable = editableProp !== undefined ? editableProp : !!onCellEdit;
   const state = useMemo(() => computeState(planned, actual), [planned, actual]);
 
   const [draft, setDraft] = useState<string>(formatHours(planned));
@@ -186,6 +192,7 @@ export function PlanVsActualCell(props: PlanVsActualCellProps) {
         className={styles.cell}
         data-state={state}
         data-testid="plan-vs-actual-cell"
+        data-editable="true"
         data-person={personId}
         data-project={projectId}
         data-month={monthKey}
@@ -201,6 +208,7 @@ export function PlanVsActualCell(props: PlanVsActualCellProps) {
       className={styles.cell}
       data-state={state}
       data-testid="plan-vs-actual-cell"
+      data-editable="false"
       data-person={personId}
       data-project={projectId}
       data-month={monthKey}

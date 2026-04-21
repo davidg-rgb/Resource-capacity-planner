@@ -16,6 +16,7 @@ import { AgGridReact } from 'ag-grid-react';
 
 import type { CellView, PmTimelineView } from '@/features/planning/planning.read';
 import { PmTimelineCell } from './pm-timeline-cell';
+import { PlanVsActualCell } from './PlanVsActualCell';
 import { buildTimelineColumns, type TimelineZoom } from './timeline-columns';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -34,6 +35,19 @@ export interface TimelineGridProps {
   /** v5.0 Phase 42 Plan 42-03: month (default) | quarter | year. Re-renders columns
    *  client-side by re-aggregating month-grain data from row state. */
   zoom?: TimelineZoom;
+  /**
+   * v6.0 — Phase 52 / Plan 52-04 (STAFF-01 / D-10): defensive read-only variant.
+   * When true:
+   *   - no cell `onClick` handler wired
+   *   - no hover edit affordances (no `cursor-pointer`, no hover border)
+   *   - cells render as a static `<div>` (no inline input, no `<button>`)
+   *   - plan/actual values still display
+   * Default: false (current behavior preserved).
+   * /staff currently uses its own HTML <table> (see `src/app/(app)/staff/page.tsx`)
+   * so this prop is a defensive hook for a future migration; the E2E assertion
+   * surface for STAFF-01 today is `data-editable="false"` on PlanVsActualCell.
+   */
+  readOnly?: boolean;
 }
 
 interface TimelineRow {
@@ -48,6 +62,7 @@ interface TimelineGridContext {
   projectId: string;
   currentMonth: string;
   onAllocationPatch: TimelineGridProps['onAllocationPatch'];
+  readOnly: boolean;
 }
 
 function PmTimelineCellRenderer(params: ICellRendererParams<TimelineRow, CellView>) {
@@ -55,6 +70,25 @@ function PmTimelineCellRenderer(params: ICellRendererParams<TimelineRow, CellVie
   const row = params.data;
   const ctx = params.context as TimelineGridContext | undefined;
   if (!cell || !row || !ctx) return null;
+  // v6.0 — Phase 52 / Plan 52-04 (STAFF-01 / D-10): when readOnly,
+  // render PlanVsActualCell directly (no PmTimelineCell wrapper → no
+  // edit-gate wiring, no proposal popover, no historic dialog). The cell
+  // surfaces `data-editable="false"` via PlanVsActualCell's read-only
+  // branch because no `onCellEdit` prop is passed.
+  if (ctx.readOnly) {
+    const delta = cell.actualHours === null ? null : cell.actualHours - cell.plannedHours;
+    return (
+      <PlanVsActualCell
+        planned={cell.plannedHours}
+        actual={cell.actualHours}
+        delta={delta}
+        personId={row.personId}
+        projectId={ctx.projectId}
+        monthKey={cell.monthKey}
+        aggregate={cell.aggregate}
+      />
+    );
+  }
   return (
     <PmTimelineCell
       cell={cell}
@@ -67,7 +101,7 @@ function PmTimelineCellRenderer(params: ICellRendererParams<TimelineRow, CellVie
 }
 
 export function TimelineGrid(props: TimelineGridProps) {
-  const { view, currentMonth, onAllocationPatch, zoom = 'month' } = props;
+  const { view, currentMonth, onAllocationPatch, zoom = 'month', readOnly = false } = props;
 
   const columnDefs = useMemo(
     () => buildTimelineColumns(view.monthRange, zoom),
@@ -96,8 +130,8 @@ export function TimelineGrid(props: TimelineGridProps) {
   const components = useMemo(() => ({ pmTimelineCellRenderer: PmTimelineCellRenderer }), []);
 
   const gridContext = useMemo<TimelineGridContext>(
-    () => ({ projectId: view.project.id, currentMonth, onAllocationPatch }),
-    [view.project.id, currentMonth, onAllocationPatch],
+    () => ({ projectId: view.project.id, currentMonth, onAllocationPatch, readOnly }),
+    [view.project.id, currentMonth, onAllocationPatch, readOnly],
   );
 
   /** TC-UI-007: scroll the current month column into view on first render. */

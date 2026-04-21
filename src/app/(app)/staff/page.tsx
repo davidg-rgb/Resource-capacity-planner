@@ -8,6 +8,14 @@
 // Drawer: PlanVsActualDrawer imported from '@/components/drawer/PlanVsActualDrawer'
 // (EXACT path — load-bearing for Phase 42 Wave 4 TC-UI shared drawer test).
 // Zoom: TODO — 42-03 will mount <ZoomControls> here.
+//
+// v6.0 — Phase 52 / Plan 52-04 (STAFF-01 / D-10): this page uses a hand-rolled
+// <table> + StaffTimelineCell today. StaffTimelineCell passes no `onCellEdit`
+// to PlanVsActualCell, so cells render with `data-editable="false"` (the E2E
+// assertion surface for journey 3A: no edit affordances). If this page is
+// later migrated to <TimelineGrid />, pass `readOnly={true}` to preserve the
+// contract — TimelineGrid's read-only path renders cells via PlanVsActualCell
+// directly (no PmTimelineCell wrapper → no edit-gate, no proposal popover).
 
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
