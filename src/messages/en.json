@@ -746,6 +746,8 @@
         "cancel": "Cancel",
         "dependentRowsExist": {
           "title": "Cannot archive — the row is in use elsewhere.",
+          "toastTitle": "Cannot archive — {total} active dependencies",
+          "expand": "Show details",
           "allocations": "{count} active allocations",
           "proposals": "{count} active proposals",
           "people": "{count} people",

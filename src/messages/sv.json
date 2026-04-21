@@ -811,6 +811,8 @@
         "cancel": "Avbryt",
         "dependentRowsExist": {
           "title": "Kan inte arkivera — raden används på andra ställen.",
+          "toastTitle": "Kan inte arkivera — {total} aktiva beroenden",
+          "expand": "Visa detaljer",
           "allocations": "{count} aktiva allokeringar",
           "proposals": "{count} aktiva önskemål",
           "people": "{count} personer",

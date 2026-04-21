@@ -18,6 +18,7 @@ import { useAuth } from '@clerk/nextjs';
 import { ShieldAlert } from 'lucide-react';
 import { useState, type ComponentType } from 'react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import {
   DependentRowsError,
@@ -57,6 +58,59 @@ export function useBlockerFormatter() {
     }
     return `${t('title')} ${parts.join(', ')}`;
   };
+}
+
+// ---------------------------------------------------------------------------
+// v6.0 — Phase 52 / Plan 52-05 (ADMIN-01 / D-12 / Q1 reinterpretation):
+// sonner toast body with expandable <details> listing kind-counts from
+// DependentRowsError.blockers (Record<string, number>).
+//
+// Q1 resolution: blockers shape stays Record<string, number> — no backend
+// change. Per Q1 the <details> block lists kind-counts (e.g. "Allokeringar:
+// 12", "Aktuella önskemål: 3"), NOT per-row identifiers.
+// ---------------------------------------------------------------------------
+
+const KNOWN_BLOCKER_KINDS = [
+  'allocations',
+  'proposals',
+  'people',
+  'projects',
+  'leadPm',
+] as const;
+type KnownBlockerKind = (typeof KNOWN_BLOCKER_KINDS)[number];
+
+export interface DependentRowsToastContentProps {
+  blockers: Record<string, number>;
+  /** Test hook — allows mocking the translator; defaults to live hook. */
+  translator?: ReturnType<typeof useTranslations<string>>;
+}
+
+export function DependentRowsToastContent({ blockers }: DependentRowsToastContentProps) {
+  const t = useTranslations('v5.admin.register.dependentRowsExist');
+  const total = Object.values(blockers).reduce((a, b) => a + (b ?? 0), 0);
+  const entries = Object.entries(blockers).filter(([, n]) => n > 0);
+  return (
+    <div data-testid="admin-dependent-rows-toast">
+      <p>{t('toastTitle', { total })}</p>
+      <details data-testid="admin-dependent-rows-details">
+        <summary>{t('expand')}</summary>
+        <ul>
+          {entries.map(([kind, count]) => {
+            const known = (KNOWN_BLOCKER_KINDS as readonly string[]).includes(kind);
+            const label = known
+              ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                t(kind as KnownBlockerKind, { count } as any)
+              : `${kind}: ${count}`;
+            return (
+              <li key={kind} data-kind={kind}>
+                {label}
+              </li>
+            );
+          })}
+        </ul>
+      </details>
+    </div>
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -148,6 +202,17 @@ function AdminRegisterInner<TRow extends RegisterRowLike, TValues>(
       setBanner(null);
     } catch (err) {
       if (err instanceof DependentRowsError) {
+        // v6.0 — Phase 52 / Plan 52-05 (ADMIN-01 / D-12 + Q1):
+        // surface the dependent-row block as a sonner toast with an
+        // expandable <details> list of kind-counts. The banner path is
+        // kept as a fallback + non-regression until a polish PR removes
+        // it — both render the same text via formatBlockers.
+        toast.error(<DependentRowsToastContent blockers={err.blockers} />, {
+          duration: Infinity,
+          dismissible: true,
+        });
+        // Preserve banner for readability / screen-readers that may not
+        // announce sonner updates — documented via formatBlockers reuse.
         setBanner({
           tone: 'error',
           message: formatBlockers(err.blockers),
