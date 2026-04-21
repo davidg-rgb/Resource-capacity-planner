@@ -38,6 +38,30 @@ vi.mock('@/features/personas/persona.context', () => ({
   }),
 }));
 
+// v6.0 Phase 52 Plan 03 — PM-01: stub router + pathname for redirect tests.
+const routerReplaceSpy = vi.fn();
+let mockPathname = '/pm';
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ replace: routerReplaceSpy, push: vi.fn(), prefetch: vi.fn() }),
+  usePathname: () => mockPathname,
+}));
+
+// Mutable flag mock so individual tests flip uiV6PerJourney.
+const flagState: { uiV6PerJourney: boolean } = { uiV6PerJourney: false };
+vi.mock('@/features/flags/flag.context', () => ({
+  useFlags: () => ({
+    dashboards: false,
+    pdfExport: false,
+    alerts: false,
+    onboarding: false,
+    scenarios: false,
+    uiV6Landing: false,
+    uiV6LeanTrim: false,
+    uiV6PerJourney: flagState.uiV6PerJourney,
+  }),
+  FlagProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
+}));
+
 // Import after vi.mock so the page picks them up.
 const { default: PmHomePage } = await import('../page');
 
@@ -112,7 +136,7 @@ describe('PM Home page (TC-UI-001)', () => {
   it('renders empty state when projects: []', async () => {
     fetchMock.mockImplementation(async (url: string) => {
       if (typeof url === 'string' && url.startsWith('/api/v5/planning/pm-home')) {
-        return ok({ projects: [], defaultProjectId: null });
+        return ok({ projects: [], defaultProjectId: null, currentMonth: '2026-05' });
       }
       throw new Error(`Unexpected fetch: ${url}`);
     });
@@ -125,5 +149,114 @@ describe('PM Home page (TC-UI-001)', () => {
     });
     // The "Mina projekt" heading is now rendered even in the empty state.
     expect(screen.getByRole('heading', { name: /mina projekt/i })).toBeInTheDocument();
+  });
+});
+
+// v6.0 Phase 52 Plan 03 — PM-01 (D-01): `/pm` auto-redirect tests.
+describe('PM Home page — PM-01 auto-redirect (Phase 52 Plan 03)', () => {
+  const fetchMock = vi.fn();
+
+  beforeEach(() => {
+    fetchMock.mockReset();
+    routerReplaceSpy.mockReset();
+    flagState.uiV6PerJourney = false;
+    mockPathname = '/pm';
+    vi.stubGlobal('fetch', fetchMock);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('Test E — flag on + exactly 1 project: router.replace called once with /pm/projects/<id>', async () => {
+    flagState.uiV6PerJourney = true;
+    fetchMock.mockImplementation(async (url: string) => {
+      if (typeof url === 'string' && url.startsWith('/api/v5/planning/pm-home')) {
+        return ok({
+          projects: [
+            {
+              project: { id: 'p-solo', name: 'Solo Project', code: null },
+              burn: { plannedTotalHours: 10, actualTotalHours: 5, deltaHours: -5 },
+              pendingWishes: 0,
+            },
+          ],
+          defaultProjectId: 'p-solo',
+          currentMonth: '2026-05',
+        });
+      }
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+
+    render(<PmHomePage />, { wrapper: makeWrapper() });
+
+    await waitFor(() => {
+      expect(routerReplaceSpy).toHaveBeenCalledWith('/pm/projects/p-solo');
+    });
+    // Called exactly once (Pitfall #2 guard — no double-fire).
+    expect(routerReplaceSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('Test F — flag off: no redirect, grid renders', async () => {
+    flagState.uiV6PerJourney = false;
+    fetchMock.mockImplementation(async (url: string) => {
+      if (typeof url === 'string' && url.startsWith('/api/v5/planning/pm-home')) {
+        return ok({
+          projects: [
+            {
+              project: { id: 'p-solo', name: 'Solo Project', code: null },
+              burn: { plannedTotalHours: 10, actualTotalHours: 5, deltaHours: -5 },
+              pendingWishes: 0,
+            },
+          ],
+          defaultProjectId: 'p-solo',
+          currentMonth: '2026-05',
+        });
+      }
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+
+    render(<PmHomePage />, { wrapper: makeWrapper() });
+
+    await waitFor(() =>
+      expect(screen.getByRole('link', { name: /solo project/i })).toBeInTheDocument(),
+    );
+    expect(routerReplaceSpy).not.toHaveBeenCalled();
+  });
+
+  it('Test G — flag on + 3 projects (defaultProjectId null): no redirect, grid renders', async () => {
+    flagState.uiV6PerJourney = true;
+    fetchMock.mockImplementation(async (url: string) => {
+      if (typeof url === 'string' && url.startsWith('/api/v5/planning/pm-home')) {
+        return ok({
+          projects: [
+            {
+              project: { id: 'p1', name: 'Alpha', code: null },
+              burn: { plannedTotalHours: 10, actualTotalHours: 0, deltaHours: -10 },
+              pendingWishes: 0,
+            },
+            {
+              project: { id: 'p2', name: 'Beta', code: null },
+              burn: { plannedTotalHours: 10, actualTotalHours: 0, deltaHours: -10 },
+              pendingWishes: 0,
+            },
+            {
+              project: { id: 'p3', name: 'Gamma', code: null },
+              burn: { plannedTotalHours: 10, actualTotalHours: 0, deltaHours: -10 },
+              pendingWishes: 0,
+            },
+          ],
+          defaultProjectId: null,
+          currentMonth: '2026-05',
+        });
+      }
+      throw new Error(`Unexpected fetch: ${url}`);
+    });
+
+    render(<PmHomePage />, { wrapper: makeWrapper() });
+
+    await waitFor(() =>
+      expect(screen.getByRole('link', { name: /alpha/i })).toBeInTheDocument(),
+    );
+    expect(routerReplaceSpy).not.toHaveBeenCalled();
   });
 });

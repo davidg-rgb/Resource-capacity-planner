@@ -147,7 +147,9 @@ describe('Phase 40 / Plan 40-02: planning.read', () => {
       });
 
       expect(result.projects).toHaveLength(2);
-      expect(result.defaultProjectId).toBe(result.projects[0]!.project.id);
+      // v6.0 Phase 52 Plan 03 (PM-01 / D-01): "exactly one project" rule —
+      // 2 projects ⇒ defaultProjectId is null (redirect must NOT fire).
+      expect(result.defaultProjectId).toBeNull();
 
       const atlas = result.projects.find((c) => c.project.id === PROJ_ATLAS)!;
       expect(atlas.burn.plannedTotalHours).toBe(40);
@@ -167,6 +169,58 @@ describe('Phase 40 / Plan 40-02: planning.read', () => {
       });
       expect(result.projects).toEqual([]);
       expect(result.defaultProjectId).toBeNull();
+    });
+
+    // v6.0 Phase 52 Plan 03 — PM-01 / D-01 tests.
+    describe('defaultProjectId rule (D-01) + currentMonth threading', () => {
+      test('returns defaultProjectId === projects[0].id when exactly one project (Test B)', async () => {
+        // Stranger owns exactly one project (PROJ_STRANGER) — ideal single-project fixture.
+        const result = await getPmOverview({
+          orgId: ORG_ID,
+          leadPmPersonId: STRANGER_ID,
+          monthRange: { from: '2026-05', to: '2027-05' },
+        });
+        expect(result.projects).toHaveLength(1);
+        expect(result.defaultProjectId).toBe(PROJ_STRANGER);
+      });
+
+      test('returns defaultProjectId === null when zero projects (Test A)', async () => {
+        const result = await getPmOverview({
+          orgId: ORG_ID,
+          leadPmPersonId: SARA_ID, // owns 0 projects
+          monthRange: { from: '2026-05', to: '2027-05' },
+        });
+        expect(result.projects).toHaveLength(0);
+        expect(result.defaultProjectId).toBeNull();
+      });
+
+      test('returns defaultProjectId === null when multiple projects (Test C — regression)', async () => {
+        // Anna owns 2 projects → defaultProjectId MUST be null, NOT cards[0].project.id.
+        const result = await getPmOverview({
+          orgId: ORG_ID,
+          leadPmPersonId: ANNA_ID,
+          monthRange: { from: '2026-05', to: '2027-05' },
+        });
+        expect(result.projects.length).toBeGreaterThanOrEqual(2);
+        expect(result.defaultProjectId).toBeNull();
+      });
+
+      test('returns currentMonth threaded from getServerNowMonthKey (Test D)', async () => {
+        const prevNow = process.env.NC_TEST_NOW;
+        process.env.NC_TEST_NOW = '2026-06';
+        try {
+          const result = await getPmOverview({
+            orgId: ORG_ID,
+            leadPmPersonId: ANNA_ID,
+            monthRange: { from: '2026-05', to: '2027-05' },
+          });
+          // Shape assertion — currentMonth field exists and matches NC_TEST_NOW override.
+          expect(result.currentMonth).toBe('2026-06');
+        } finally {
+          if (prevNow === undefined) delete process.env.NC_TEST_NOW;
+          else process.env.NC_TEST_NOW = prevNow;
+        }
+      });
     });
   });
 
