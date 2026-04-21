@@ -24,6 +24,9 @@ export default defineConfig({
       NODE_ENV: 'test',
       E2E_TEST: '1',
       E2E_SEED_ENABLED: '1',
+      // Phase 52-01 (D-13): enables <ClickTrackerProvider> in (app)/layout.tsx
+      // so journey specs can assert `getClickCount(page) <= journey.target`.
+      NEXT_PUBLIC_E2E_CLICK_TRACKING: 'true',
     },
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
