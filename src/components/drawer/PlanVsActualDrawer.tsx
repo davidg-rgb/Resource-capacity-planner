@@ -16,11 +16,19 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
+import { FocusTrap } from 'focus-trap-react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 import { usePlanVsActualDrawer, type DrawerContext } from './usePlanVsActualDrawer';
 
 import styles from './PlanVsActualDrawer.module.css';
+
+// v6.0 — Phase 52 / Plan 52-05 (SHARED-01 / D-11): the query-param trio that
+// deep-links / strips when the drawer opens/closes. Exported so page-level
+// effects in /pm/projects/[projectId] and /rd can share the same key list
+// without drifting.
+export const DRAWER_DEEP_LINK_PARAMS = ['drawer', 'personId', 'month'] as const;
 
 export type DailyBreakdownRow = {
   date: string;
@@ -98,6 +106,27 @@ export function PlanVsActualDrawer(props: PlanVsActualDrawerProps) {
   const isDaily = context?.mode === 'daily';
   const isProjectPersonBreakdown = context?.mode === 'project-person-breakdown';
 
+  // v6.0 — Phase 52 / Plan 52-05 (SHARED-01 / D-11): when the drawer closes,
+  // strip the deep-link params (drawer, personId, month) so the URL no longer
+  // advertises an "open drawer" state. router.replace keeps the history stack
+  // clean — back-navigation returns to the timeline without re-triggering the
+  // open effect.
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const handleClose = useCallback(() => {
+    store.close();
+    // Only mutate the URL if at least one of the drawer params is present;
+    // this spares flag-OFF / non-deep-link callers from a no-op replace.
+    const current = searchParams ?? new URLSearchParams();
+    const hasAny = DRAWER_DEEP_LINK_PARAMS.some((k) => current.get(k) !== null);
+    if (!hasAny) return;
+    const next = new URLSearchParams(current.toString());
+    for (const key of DRAWER_DEEP_LINK_PARAMS) next.delete(key);
+    const qs = next.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [store, searchParams, router, pathname]);
+
   const query = useQuery({
     queryKey: [
       'drawer-daily',
@@ -132,15 +161,16 @@ export function PlanVsActualDrawer(props: PlanVsActualDrawerProps) {
     enabled: isOpen && isProjectPersonBreakdown,
   });
 
-  // Esc to close.
+  // Esc to close. v6.0 — Plan 52-05: routes through handleClose so the ESC
+  // path also strips the deep-link query params (SHARED-01 / D-11).
   useEffect(() => {
     if (!isOpen) return;
     function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') store.close();
+      if (e.key === 'Escape') handleClose();
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [isOpen, store]);
+  }, [isOpen, handleClose]);
 
   if (!isOpen || !context) return null;
 
@@ -156,27 +186,40 @@ export function PlanVsActualDrawer(props: PlanVsActualDrawerProps) {
   const activeRowsLen = isProjectPersonBreakdown ? personRows.length : dailyRows.length;
   const showEmpty = !activeQuery.isLoading && !activeQuery.error && activeRowsLen === 0;
 
+  // v6.0 — Phase 52 / Plan 52-05 (SHARED-01 / D-11 / Q5): FocusTrap ensures
+  // Tab cycling stays inside the drawer. `allowOutsideClick` lets the
+  // backdrop-click handler fire (otherwise the trap swallows the click and
+  // the drawer never closes). `fallbackFocus` points at the close button so
+  // the trap stays activated even when the body is transiently empty
+  // (loading state has no tabbable element).
   return (
-    <div
-      className={styles.backdrop}
-      data-testid="drawer-backdrop"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) store.close();
+    <FocusTrap
+      focusTrapOptions={{
+        allowOutsideClick: true,
+        clickOutsideDeactivates: false,
+        fallbackFocus: '[data-testid="drawer-close"]',
       }}
     >
-      <aside className={styles.panel} role="dialog" aria-label={titleText}>
-        <header className={styles.header}>
-          <h2 className={styles.title}>{titleText}</h2>
-          <button
-            type="button"
-            className={styles.closeBtn}
-            data-testid="drawer-close"
-            onClick={store.close}
-            aria-label={t('close')}
-          >
-            {t('close')}
-          </button>
-        </header>
+      <div
+        className={styles.backdrop}
+        data-testid="drawer-backdrop"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) handleClose();
+        }}
+      >
+        <aside className={styles.panel} role="dialog" aria-label={titleText}>
+          <header className={styles.header}>
+            <h2 className={styles.title}>{titleText}</h2>
+            <button
+              type="button"
+              className={styles.closeBtn}
+              data-testid="drawer-close"
+              onClick={handleClose}
+              aria-label={t('close')}
+            >
+              {t('close')}
+            </button>
+          </header>
 
         {activeQuery.isLoading && <p className={styles.status}>{t('loading')}</p>}
         {activeQuery.error && <p className={styles.status}>{t('error')}</p>}
@@ -231,7 +274,8 @@ export function PlanVsActualDrawer(props: PlanVsActualDrawerProps) {
             </tbody>
           </table>
         )}
-      </aside>
-    </div>
+        </aside>
+      </div>
+    </FocusTrap>
   );
 }

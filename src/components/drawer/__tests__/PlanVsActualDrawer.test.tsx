@@ -10,6 +10,27 @@ import type { ReactNode } from 'react';
 
 import sv from '@/messages/sv.json';
 
+// v6.0 — Phase 52 / Plan 52-05: PlanVsActualDrawer now reads
+// next/navigation hooks (useRouter/usePathname/useSearchParams) for the
+// SHARED-01 deep-link ESC strip-params. Provide stubs so the existing
+// Phase 37 / 42 behavior tests in this file still run in jsdom.
+vi.mock('next/navigation', () => ({
+  useRouter: () => ({ replace: vi.fn(), push: vi.fn() }),
+  usePathname: () => '/pm/projects/p1',
+  useSearchParams: () => new URLSearchParams(),
+}));
+
+// Focus-trap-react jsdom integration is exercised in the deep-link test
+// (plan-vs-actual-drawer.deeplink.test.tsx). Stub here to keep the legacy
+// behavior tests fast and deterministic.
+vi.mock('focus-trap-react', async () => {
+  const React = await import('react');
+  return {
+    FocusTrap: (props: { children: React.ReactNode }) =>
+      React.createElement(React.Fragment, null, props.children),
+  };
+});
+
 import {
   PlanVsActualDrawer,
   type DailyBreakdownRow,

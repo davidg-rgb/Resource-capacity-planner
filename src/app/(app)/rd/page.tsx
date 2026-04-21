@@ -9,7 +9,8 @@
 // (EXACT path — load-bearing for TC-UI shared drawer test).
 // Zoom: ZoomControls + useZoom mounted in header.
 
-import { useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@clerk/nextjs';
 import { useTranslations } from 'next-intl';
@@ -52,11 +53,16 @@ async function fetchPortfolio(
 }
 
 export default function RdPage() {
+  // v6.0 — Phase 52 / Plan 52-05 (SHARED-01 / D-11, RESEARCH Pitfall #1):
+  // wrap in <Suspense> — RdPageInner now reads `useSearchParams` for the
+  // drawer deep-link effect.
   return (
     <DesktopOnlyScreen>
       <PersonaGate allowed={['rd', 'admin']}>
         <PlanVsActualDrawerProvider>
-          <RdPageInner />
+          <Suspense fallback={null}>
+            <RdPageInner />
+          </Suspense>
         </PlanVsActualDrawerProvider>
       </PersonaGate>
     </DesktopOnlyScreen>
@@ -89,6 +95,32 @@ function RdPageInner() {
   const months = useMemo(() => generateMonthRange(getCurrentMonth(), MONTH_HORIZON), []);
   const startMonth = months[0]!;
   const endMonth = months[months.length - 1]!;
+
+  // v6.0 — Phase 52 / Plan 52-05 (SHARED-01 / D-11): deep-link effect.
+  // When the URL carries `?drawer=person-month&personId=<id>&month=<YYYY-MM>`
+  // plus a `projectId=<id>` param (R&D rows are departments/projects — the
+  // person-month drawer needs a project context), open the drawer on mount.
+  // Guarded by drawer.isOpen to prevent infinite re-open loops (the drawer
+  // store's `value` changes on every open call).
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    if (drawer.isOpen) return;
+    if (!searchParams) return;
+    if (searchParams.get('drawer') !== 'person-month') return;
+    const personId = searchParams.get('personId');
+    const month = searchParams.get('month');
+    const projectIdParam = searchParams.get('projectId');
+    if (!personId || !month || !projectIdParam) return;
+    drawer.open({
+      mode: 'daily',
+      personId,
+      projectId: projectIdParam,
+      monthKey: month,
+      personName: '',
+      projectName: '',
+      monthLabel: month,
+    });
+  }, [searchParams, drawer]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['rd-portfolio', groupBy, startMonth, endMonth],

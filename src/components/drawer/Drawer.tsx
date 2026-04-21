@@ -14,6 +14,7 @@
  */
 
 import { useEffect, type ReactNode } from 'react';
+import { FocusTrap } from 'focus-trap-react';
 
 import styles from './PlanVsActualDrawer.module.css';
 
@@ -41,29 +42,43 @@ export function Drawer(props: DrawerProps) {
 
   if (!open) return null;
 
+  // v6.0 — Phase 52 / Plan 52-05 (SHARED-01 / D-11 / Q5): wrap the panel in
+  // <FocusTrap> so Tab cycling stays inside the drawer while it is open.
+  // `focus-trap-react` auto-focuses the first tabbable on mount and restores
+  // focus to the previously-focused element on unmount. `allowOutsideClick`
+  // is true so the backdrop-click handler above still fires (the trap would
+  // otherwise swallow the click → close would never run).
   return (
-    <div
-      className={styles.backdrop}
-      data-testid="drawer-backdrop"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+    <FocusTrap
+      focusTrapOptions={{
+        allowOutsideClick: true,
+        clickOutsideDeactivates: false,
+        fallbackFocus: '[data-testid="drawer-close"]',
       }}
     >
-      <aside className={styles.panel} role="dialog" aria-label={ariaLabel ?? title}>
-        <header className={styles.header}>
-          <h2 className={styles.title}>{title}</h2>
-          <button
-            type="button"
-            className={styles.closeBtn}
-            data-testid="drawer-close"
-            onClick={onClose}
-            aria-label={closeLabel}
-          >
-            {closeLabel}
-          </button>
-        </header>
-        {children}
-      </aside>
-    </div>
+      <div
+        className={styles.backdrop}
+        data-testid="drawer-backdrop"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
+      >
+        <aside className={styles.panel} role="dialog" aria-label={ariaLabel ?? title}>
+          <header className={styles.header}>
+            <h2 className={styles.title}>{title}</h2>
+            <button
+              type="button"
+              className={styles.closeBtn}
+              data-testid="drawer-close"
+              onClick={onClose}
+              aria-label={closeLabel}
+            >
+              {closeLabel}
+            </button>
+          </header>
+          {children}
+        </aside>
+      </div>
+    </FocusTrap>
   );
 }

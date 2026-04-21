@@ -5,8 +5,8 @@
 // Renders project header + placeholder where Wave 3 will mount
 // <TimelineGrid /> built on PlanVsActualCell.
 
-import { useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { Suspense, useCallback, useEffect } from 'react';
+import { useParams, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -17,7 +17,10 @@ import { TimelineGrid } from '@/components/timeline/timeline-grid';
 import { ZoomControls } from '@/components/timeline/zoom-controls';
 import { useZoom } from '@/components/timeline/useZoom';
 import { PlanVsActualDrawer } from '@/components/drawer/PlanVsActualDrawer';
-import { PlanVsActualDrawerProvider } from '@/components/drawer/usePlanVsActualDrawer';
+import {
+  PlanVsActualDrawerProvider,
+  usePlanVsActualDrawer,
+} from '@/components/drawer/usePlanVsActualDrawer';
 import { useAuth } from '@clerk/nextjs';
 import type { PmTimelineView } from '@/features/planning/planning.read';
 
@@ -41,10 +44,16 @@ async function fetchPmTimeline(
 }
 
 export default function PmProjectTimelinePage() {
+  // v6.0 — Phase 52 / Plan 52-05 (SHARED-01 / D-11, RESEARCH Pitfall #1):
+  // wrap in <Suspense> because PmProjectTimelinePageInner now calls
+  // `useSearchParams` for the deep-link effect. Next 16 requires Suspense
+  // around any component that reads search params in App Router.
   return (
     <PersonaGate allowed={['pm', 'admin']}>
       <PlanVsActualDrawerProvider>
-        <PmProjectTimelinePageInner />
+        <Suspense fallback={null}>
+          <PmProjectTimelinePageInner />
+        </Suspense>
       </PlanVsActualDrawerProvider>
     </PersonaGate>
   );
@@ -57,6 +66,32 @@ function PmProjectTimelinePageInner() {
   const { persona } = usePersona();
   const t = useTranslations('v5.pm.timeline');
   const tScreens = useTranslations('v5.screens.pmTimeline');
+
+  // v6.0 — Phase 52 / Plan 52-05 (SHARED-01 / D-11): deep-link effect.
+  // When the URL carries `?drawer=person-month&personId=<id>&month=<YYYY-MM>`,
+  // open the drawer on mount with the corresponding (person, project, month)
+  // payload. Guarded by `isOpen` to prevent an infinite open→re-render loop
+  // (the drawer store's `value` changes on every open call, which would
+  // re-fire the effect if the whole `drawer` object were in the dep array).
+  const searchParams = useSearchParams();
+  const { isOpen: drawerOpen, open: openDrawer } = usePlanVsActualDrawer();
+  useEffect(() => {
+    if (drawerOpen) return;
+    if (!searchParams) return;
+    if (searchParams.get('drawer') !== 'person-month') return;
+    const personId = searchParams.get('personId');
+    const month = searchParams.get('month');
+    if (!personId || !month || !projectId) return;
+    openDrawer({
+      mode: 'daily',
+      personId,
+      projectId,
+      monthKey: month,
+      personName: '',
+      projectName: '',
+      monthLabel: month,
+    });
+  }, [searchParams, drawerOpen, openDrawer, projectId]);
 
   const { from, to } = defaultMonthWindow();
   const [zoom, setZoom] = useZoom({ persona: 'pm', screen: 'project' });
