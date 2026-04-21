@@ -93,7 +93,7 @@
  (completed 2026-04-20)
 - [x] **Phase 50: Persona-aware landing & navigation** — Root `/` client redirect to `getLandingRoute(persona)` behind `uiV6.landing` flag; `SECTION_NAV` for all 5 personas; Home breadcrumb; grouped persona switcher; 18 `sidebar.personaSections.*` i18n keys. (completed 2026-04-20)
 - [x] **Phase 51: Lean cleanup — duplicate removal** — `next.config.ts` 308 redirects for `/team`, `/projects`, `/wishes`; delete the source pages; remove `/input` duplicate list; delete 3 dead widgets (after custom-layout migration); strip duplicate widgets from project-leader layout; add defensive fallback to `widget-registry`; PDF snapshot regression. Gated behind `uiV6.leanTrim`. (completed 2026-04-20)
-- [ ] **Phase 52: Per-journey friction fixes** — PM default-project auto-select + pending-wish chip; LM approval-queue badge; historic-edit dialog tests; proposal-state visual snapshots; Staff read-only timeline; R&D long-horizon zoom (ISO 8601 + 53-week); R&D overcommit-drill dialog content; shared drill-down drawer audit; admin archive dependent-row E2E. Gated behind `uiV6.perJourney`.
+- [x] **Phase 52: Per-journey friction fixes** — PM default-project auto-select + pending-wish chip; LM approval-queue badge; historic-edit dialog tests; proposal-state visual snapshots; Staff read-only timeline; R&D long-horizon zoom (ISO 8601 + 53-week); R&D overcommit-drill dialog content; shared drill-down drawer audit; admin archive dependent-row E2E. Gated behind `uiV6.perJourney`. (completed 2026-04-21)
 - [ ] **Phase 53: Chrome polish** — Persona-scoped notification bell; `NavItemDef.visibleFor` top-nav filtering; merge `discipline-chart` + `discipline-distribution`; delete `bench-report`; move `resource-conflicts` to `/alerts` tab; replace `strategic-alerts` with banner; manager + project-leader dashboards fit 1440×900. Gated behind `uiV6.polish`.
 - [ ] **Phase 54 (optional): Dashboard quadrant redesign** — Deferred unless post-Phase-53 telemetry indicates dashboard confusion. 4-quadrant layouts keyed to user questions (manager) and PM journeys (project-leader), behind `uiV6.dashboardQuadrants` flag.
 
@@ -315,7 +315,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 47
 | 49. Unbreak broken persona surfaces | v6.0 | 4/4 | Complete    | 2026-04-20 |
 | 50. Persona-aware landing & navigation | v6.0 | 3/3 | Complete    | 2026-04-20 |
 | 51. Lean cleanup — duplicate removal | v6.0 | 3/3 | Complete    | 2026-04-20 |
-| 52. Per-journey friction fixes | v6.0 | 0/TBD | Planned | — |
+| 52. Per-journey friction fixes | v6.0 | 5/5 | Complete    | 2026-04-21 |
 | 53. Chrome polish | v6.0 | 0/TBD | Planned | — |
 | 54. Dashboard quadrant redesign (optional) | v6.0 | 0/TBD | Deferred | — |
 
@@ -401,13 +401,13 @@ Plans:
   5. Admin: archiving a project with active allocations surfaces the `DEPENDENT_ROWS_EXIST` toast with dependents listed
   6. Shared drill-down drawer (Screen S11) supports deep-link open, ESC-dismiss, focus trap — exercised from journeys 1A and 4B
   7. Every Playwright spec in `§1 click-count table` asserts its target; CI fails if exceeded; all gated behind `uiV6.perJourney`
-**Plans:** 5/5 plans planned
+**Plans:** 5/5 plans complete
 Plans:
-- [ ] 52-01-PLAN.md -- Flag + click-tracker + axe install + seed extension + flag-off parity scaffold (Wave 0, PJ-FLAG)
-- [ ] 52-02-PLAN.md -- LM-03 endpoint: /api/v5/proposals/queue/count + service fn + integration tests (Wave 1, LM-03)
-- [ ] 52-03-PLAN.md -- PM cluster: PM-01 auto-redirect, PM-02 chip + tab plumbing, PM-03 historic-edit server-month, PM-04 snapshots (Wave 2, PM-01..PM-04)
-- [ ] 52-04-PLAN.md -- LM+Staff+RD cluster: LM-01 badge+switcher, STAFF-01 readOnly, RD-01 zoom aggregation, RD-02 OvercommitDialog (Wave 3, LM-01/STAFF-01/RD-01/RD-02)
-- [ ] 52-05-PLAN.md -- SHARED-01 deep-link + focus trap, ADMIN-01 toast details, 11 Playwright journey specs + flag-off parity invariant (Wave 4, SHARED-01/ADMIN-01/LM-02)
+- [x] 52-01-PLAN.md -- Flag + click-tracker + axe install + seed extension + flag-off parity scaffold (Wave 0, PJ-FLAG)
+- [x] 52-02-PLAN.md -- LM-03 endpoint: /api/v5/proposals/queue/count + service fn + integration tests (Wave 1, LM-03)
+- [x] 52-03-PLAN.md -- PM cluster: PM-01 auto-redirect, PM-02 chip + tab plumbing, PM-03 historic-edit server-month, PM-04 snapshots (Wave 2, PM-01..PM-04)
+- [x] 52-04-PLAN.md -- LM+Staff+RD cluster: LM-01 badge+switcher, STAFF-01 readOnly, RD-01 zoom aggregation, RD-02 OvercommitDialog (Wave 3, LM-01/STAFF-01/RD-01/RD-02)
+- [x] 52-05-PLAN.md -- SHARED-01 deep-link + focus trap, ADMIN-01 toast details, 11 Playwright journey specs + flag-off parity invariant (Wave 4, SHARED-01/ADMIN-01/LM-02)
 
 ## Phase 53: Chrome polish
 **Goal**: Persona signals (notifications, top-nav visibility) and widget surface match the persona's scope; both main dashboards fit on a 1440×900 viewport without scroll.
