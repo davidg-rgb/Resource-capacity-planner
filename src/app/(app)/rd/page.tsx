@@ -30,6 +30,7 @@ import { generateMonthRange, getCurrentMonth } from '@/lib/date-utils';
 import { formatQuarter, formatYear } from '@/lib/time/formatters';
 import type { PortfolioGridResult } from '@/features/planning/planning.read';
 import { aggregateRdRowMonths, rdColumnKeys } from './rd-aggregation';
+import { OvercommitDialog } from '@/components/dialogs/overcommit-dialog';
 
 const MONTH_HORIZON = 12;
 
@@ -62,13 +63,22 @@ export default function RdPage() {
   );
 }
 
+interface OvercommitContext {
+  scope: 'department';
+  scopeId: string;
+  monthKey: string;
+}
+
 function RdPageInner() {
   const { orgId } = useAuth();
   const t = useTranslations('v5.rd');
   const drawer = usePlanVsActualDrawer();
   const [zoom, setZoom] = useZoom({ persona: 'rd', screen: 'portfolio' });
   const [groupBy, setGroupBy] = useState<GroupBy>('project');
-  const [overcommitOpen, setOvercommitOpen] = useState(false);
+  // v6.0 — Phase 52 / Plan 52-04 (RD-02 / D-09): overcommit dialog state.
+  // Tracks the red-cell's dept + month so the dialog can fetch the right
+  // capacity/breakdown payload. `null` → closed.
+  const [overcommit, setOvercommit] = useState<OvercommitContext | null>(null);
   const flags = useFlags();
   // v6.0 — Phase 52 / Plan 52-04 (RD-01 / D-08): flag-OFF pins zoom to
   // 'month' at render time so the HTML-table aggregator is a no-op and
@@ -85,7 +95,24 @@ function RdPageInner() {
     queryFn: () => fetchPortfolio(groupBy, startMonth, endMonth),
   });
 
-  function handleCellClick(rowId: string, rowLabel: string, monthKey: string) {
+  function handleCellClick(
+    rowId: string,
+    rowLabel: string,
+    monthKey: string,
+    isOver: boolean,
+  ) {
+    // v6.0 — Phase 52 / Plan 52-04 (RD-02 / D-09):
+    // Red overcommit cells (cell.state === 'over') open the OvercommitDialog
+    // INSTEAD of the drawer when the flag is on AND we have a department
+    // scope (groupBy='department'). Otherwise preserve Phase 51 drawer flow.
+    if (
+      flags.uiV6PerJourney &&
+      isOver &&
+      groupBy === 'department'
+    ) {
+      setOvercommit({ scope: 'department', scopeId: rowId, monthKey });
+      return;
+    }
     // Only project rows can drill into per-person breakdown; department rows
     // open the drawer aimed at the row's projectId column key — but in
     // groupBy='department' mode the row id is a departmentId, which the
@@ -107,14 +134,19 @@ function RdPageInner() {
       <div className="flex items-start justify-between gap-4">
         <h1 className="font-headline text-2xl font-bold">{t('title')}</h1>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            data-testid="rd-overcommit-drill-btn"
-            className="border-outline-variant rounded-sm border px-3 py-1.5 text-sm"
-            onClick={() => setOvercommitOpen(true)}
-          >
-            {t('overcommitDrill')}
-          </button>
+          {!flags.uiV6PerJourney && (
+            // Phase 51 parity — the button opens a placeholder modal. In flag-ON
+            // mode the primary entry point is clicking a red overcommit cell
+            // (RD-02 / D-09), which supplies dept + month context to the dialog.
+            <button
+              type="button"
+              data-testid="rd-overcommit-drill-btn"
+              className="border-outline-variant rounded-sm border px-3 py-1.5 text-sm"
+              onClick={() => setOvercommit({ scope: 'department', scopeId: '', monthKey: startMonth })}
+            >
+              {t('overcommitDrill')}
+            </button>
+          )}
           <ZoomControls value={zoom} onChange={setZoom} />
         </div>
       </div>
@@ -161,35 +193,28 @@ function RdPageInner() {
         <RdPortfolioGrid
           data={data}
           zoom={effectiveZoom}
-          onCellClick={(rowId, rowLabel, monthKey) => handleCellClick(rowId, rowLabel, monthKey)}
+          onCellClick={(rowId, rowLabel, monthKey, isOver) =>
+            handleCellClick(rowId, rowLabel, monthKey, isOver)
+          }
         />
       )}
 
       <PlanVsActualDrawer orgId={orgId ?? ''} />
 
-      {overcommitOpen && (
-        <div
-          data-testid="rd-overcommit-modal"
-          role="dialog"
-          aria-label={t('overcommitDrill')}
-          className="bg-surface fixed inset-0 z-40 flex items-center justify-center bg-black/40"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setOvercommitOpen(false);
-          }}
-        >
-          <div className="bg-surface max-w-lg rounded-md p-6 shadow-lg">
-            <h2 className="font-headline text-lg font-bold">{t('overcommitDrill')}</h2>
-            <p className="text-on-surface-variant mt-2 text-sm">{t('overcommitHint')}</p>
-            <button
-              type="button"
-              className="bg-primary text-on-primary mt-4 rounded-sm px-3 py-1.5 text-sm"
-              data-testid="rd-overcommit-close"
-              onClick={() => setOvercommitOpen(false)}
-            >
-              {t('close')}
-            </button>
-          </div>
-        </div>
+      {/* v6.0 — Phase 52 / Plan 52-04 (RD-02 / D-09): OvercommitDialog replaces
+          the Phase 51 placeholder modal. In flag-ON mode the dialog opens
+          when a red cell is clicked (cell.state === 'over') with the row's
+          departmentId + monthKey. Flag-OFF: the legacy button still opens the
+          dialog but with an empty scopeId → the breakdown query stays disabled
+          (no fetch fires) and only the two empty sections render. */}
+      {overcommit && (
+        <OvercommitDialog
+          open
+          scope={overcommit.scope}
+          scopeId={overcommit.scopeId}
+          monthKey={overcommit.monthKey}
+          onClose={() => setOvercommit(null)}
+        />
       )}
     </div>
   );
@@ -198,7 +223,7 @@ function RdPageInner() {
 interface RdPortfolioGridProps {
   data: PortfolioGridResult;
   zoom: TimelineZoom;
-  onCellClick: (rowId: string, rowLabel: string, monthKey: string) => void;
+  onCellClick: (rowId: string, rowLabel: string, monthKey: string, isOver: boolean) => void;
 }
 
 function formatColumnHeader(columnKey: string, zoom: TimelineZoom): string {
@@ -253,7 +278,9 @@ function RdPortfolioGrid({ data, zoom, onCellClick }: RdPortfolioGridProps) {
                         monthKey={ck}
                         plannedHours={cell.plannedHours}
                         actualHours={cell.actualHours}
-                        onCellClick={({ rowId, monthKey }) => onCellClick(rowId, row.label, monthKey)}
+                        onCellClick={({ rowId, monthKey, state }) =>
+                          onCellClick(rowId, row.label, monthKey, state === 'over')
+                        }
                       />
                     </td>
                   );

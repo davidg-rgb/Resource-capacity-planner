@@ -156,6 +156,75 @@ describe('GET /api/v5/capacity/breakdown — scope=department', () => {
   });
 });
 
+describe('GET /api/v5/capacity/breakdown — scope=department overcommit fields (RD-02 / D-09 / Q3)', () => {
+  it('additively returns projects[] + people[] alongside rows[] (back-compat preserved)', async () => {
+    await testDb.execute(
+      sql`INSERT INTO allocations (organization_id, person_id, project_id, month, hours) VALUES
+          (${ORG_ID}, ${P1_ID}, ${PROJ1_ID}, '2026-06-01', 120),
+          (${ORG_ID}, ${P2_ID}, ${PROJ2_ID}, '2026-06-01', 80)`,
+    );
+    const res = await GET(makeReq(`scope=department&scopeId=${DEPT_ID}&monthKey=2026-06`) as never);
+    expect(res.status).toBe(200);
+    const json = (await res.json()) as {
+      rows: unknown[];
+      projects: Array<{ id: string; name: string; plannedHours: number; pctOfOvercommit: number }>;
+      people: Array<{
+        id: string;
+        name: string;
+        plannedHours: number;
+        capacityHours: number;
+        deltaHours: number;
+      }>;
+    };
+
+    // Back-compat: rows[] still present
+    expect(Array.isArray(json.rows)).toBe(true);
+    expect(json.rows).toHaveLength(2);
+
+    // projects[]: 2 projects, sorted by plannedHours desc (Atlas=120 before Bravo=80)
+    expect(json.projects).toHaveLength(2);
+    expect(json.projects[0].name).toBe('Atlas');
+    expect(json.projects[0].plannedHours).toBe(120);
+    // pct: 120/200 = 0.6
+    expect(json.projects[0].pctOfOvercommit).toBeCloseTo(0.6, 5);
+    expect(json.projects[1].pctOfOvercommit).toBeCloseTo(0.4, 5);
+
+    // people[]: 2 people, Anna (120h planned, 100h capacity → +20 delta) tops,
+    // Bob (80h planned, 160h capacity → -80 delta) second.
+    expect(json.people).toHaveLength(2);
+    expect(json.people[0].name).toBe('Anna Tester');
+    expect(json.people[0].plannedHours).toBe(120);
+    expect(json.people[0].capacityHours).toBe(100);
+    expect(json.people[0].deltaHours).toBe(20);
+    expect(json.people[1].name).toBe('Bob Builder');
+    expect(json.people[1].deltaHours).toBe(-80);
+  });
+
+  it('returns empty projects[] + people[] when no allocations', async () => {
+    const res = await GET(makeReq(`scope=department&scopeId=${DEPT_ID}&monthKey=2026-06`) as never);
+    expect(res.status).toBe(200);
+    const json = (await res.json()) as {
+      projects: unknown[];
+      people: unknown[];
+    };
+    expect(json.projects).toHaveLength(0);
+    expect(json.people).toHaveLength(0);
+  });
+
+  it('does NOT add projects[]/people[] to scope=person response (back-compat)', async () => {
+    await testDb.execute(
+      sql`INSERT INTO allocations (organization_id, person_id, project_id, month, hours) VALUES
+          (${ORG_ID}, ${P1_ID}, ${PROJ1_ID}, '2026-06-01', 40)`,
+    );
+    const res = await GET(makeReq(`scope=person&scopeId=${P1_ID}&monthKey=2026-06`) as never);
+    expect(res.status).toBe(200);
+    const json = (await res.json()) as Record<string, unknown>;
+    expect(json.projects).toBeUndefined();
+    expect(json.people).toBeUndefined();
+    expect(Array.isArray(json.rows)).toBe(true);
+  });
+});
+
 describe('GET /api/v5/capacity/breakdown — validation', () => {
   it('400 when scope is invalid', async () => {
     const res = await GET(makeReq(`scope=invalid&scopeId=${P1_ID}&monthKey=2026-06`) as never);

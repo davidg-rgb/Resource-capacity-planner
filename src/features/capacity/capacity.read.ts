@@ -18,6 +18,8 @@ import {
   DEFAULT_TARGET_HOURS_PER_MONTH,
   type BreakdownRow,
   type CapacityStatus,
+  type OvercommitPerson,
+  type OvercommitProject,
   type UtilizationCell,
   type UtilizationMap,
 } from './capacity.types';
@@ -273,4 +275,145 @@ export async function getCapacityBreakdown(
     }
   }
   return Array.from(merged.values()).sort((a, b) => b.hours - a.hours);
+}
+
+// ---------------------------------------------------------------------------
+// v6.0 — Phase 52 / Plan 52-04 (RD-02 / D-09 / Q3): OvercommitDialog data.
+//
+// Two sections consumed by `src/components/dialogs/overcommit-dialog.tsx`:
+//   1. projects[]: contributing projects (name, planned hours, % of total)
+//   2. people[]:   most-overbooked people (planned vs capacity, delta)
+//
+// ADDITIVE: the existing `getCapacityBreakdown` stays untouched; the /api/v5/capacity/breakdown
+// route response is extended with two new optional arrays (no field renames,
+// no shape changes to `rows`). Back-compat preserved — callers that only read
+// `rows` are unaffected.
+//
+// Scope support is restricted to 'department' for now; the dialog's only
+// caller is /rd overcommit (cell.state === 'over'), which sources from the
+// department scope. Project scope is out of the dialog's UX narrative.
+// ---------------------------------------------------------------------------
+
+export interface GetOvercommitBreakdownArgs {
+  orgId: string;
+  departmentId: string;
+  monthKey: string; // 'YYYY-MM'
+}
+
+export interface OvercommitBreakdownResult {
+  projects: OvercommitProject[];
+  people: OvercommitPerson[];
+}
+
+export async function getOvercommitBreakdown(
+  args: GetOvercommitBreakdownArgs,
+): Promise<OvercommitBreakdownResult> {
+  const monthFirstDay = `${args.monthKey}-01`;
+
+  // 1. projects[] — sum approved allocations per project whose person sits
+  //    in the target department; compute share of overcommit as plannedHours
+  //    / totalDeptPlanned.
+  const projectRows = await db
+    .select({
+      projectId: schema.allocations.projectId,
+      projectName: schema.projects.name,
+      hours: schema.allocations.hours,
+    })
+    .from(schema.allocations)
+    .innerJoin(schema.people, eq(schema.people.id, schema.allocations.personId))
+    .innerJoin(schema.projects, eq(schema.projects.id, schema.allocations.projectId))
+    .where(
+      and(
+        eq(schema.allocations.organizationId, args.orgId),
+        eq(schema.people.departmentId, args.departmentId),
+        eq(schema.allocations.month, monthFirstDay),
+      ),
+    );
+
+  const projectByKey = new Map<string, OvercommitProject>();
+  let totalPlanned = 0;
+  for (const r of projectRows) {
+    const hours = Number(r.hours);
+    totalPlanned += hours;
+    const existing = projectByKey.get(r.projectId);
+    if (existing) {
+      existing.plannedHours += hours;
+    } else {
+      projectByKey.set(r.projectId, {
+        id: r.projectId,
+        name: r.projectName,
+        plannedHours: hours,
+        pctOfOvercommit: 0, // fill after loop
+      });
+    }
+  }
+  for (const p of projectByKey.values()) {
+    p.pctOfOvercommit = totalPlanned === 0 ? 0 : p.plannedHours / totalPlanned;
+  }
+  const projects = Array.from(projectByKey.values()).sort(
+    (a, b) => b.plannedHours - a.plannedHours,
+  );
+
+  // 2. people[] — planned vs capacity per person in the dept; sorted by
+  //    overbook delta desc (most overbooked first). Capacity falls back to
+  //    DEFAULT_TARGET_HOURS_PER_MONTH per people.target_hours_per_month.
+  const deptPeople = await db
+    .select({
+      id: schema.people.id,
+      firstName: schema.people.firstName,
+      lastName: schema.people.lastName,
+      targetHoursPerMonth: schema.people.targetHoursPerMonth,
+    })
+    .from(schema.people)
+    .where(
+      and(
+        eq(schema.people.organizationId, args.orgId),
+        eq(schema.people.departmentId, args.departmentId),
+      ),
+    );
+
+  const peoplePlanned = new Map<string, number>();
+  for (const r of projectRows) {
+    // projectRows contains personId implicitly via the join result? No — we
+    // need a separate people-planned query since the project projection drops
+    // personId. Accumulate via a dedicated query.
+  }
+  const personRows = await db
+    .select({
+      personId: schema.allocations.personId,
+      hours: schema.allocations.hours,
+    })
+    .from(schema.allocations)
+    .innerJoin(schema.people, eq(schema.people.id, schema.allocations.personId))
+    .where(
+      and(
+        eq(schema.allocations.organizationId, args.orgId),
+        eq(schema.people.departmentId, args.departmentId),
+        eq(schema.allocations.month, monthFirstDay),
+      ),
+    );
+  for (const r of personRows) {
+    peoplePlanned.set(r.personId, (peoplePlanned.get(r.personId) ?? 0) + Number(r.hours));
+  }
+
+  const people: OvercommitPerson[] = deptPeople
+    .map((p) => {
+      const planned = peoplePlanned.get(p.id) ?? 0;
+      const capacity = p.targetHoursPerMonth == null
+        ? DEFAULT_TARGET_HOURS_PER_MONTH
+        : Number(p.targetHoursPerMonth);
+      return {
+        id: p.id,
+        name: `${p.firstName} ${p.lastName}`.trim(),
+        plannedHours: planned,
+        capacityHours: capacity,
+        deltaHours: planned - capacity,
+      };
+    })
+    // Only show people with some planned hours — dept members with zero
+    // allocations aren't contributing to overcommit.
+    .filter((p) => p.plannedHours > 0)
+    .sort((a, b) => b.deltaHours - a.deltaHours);
+
+  return { projects, people };
 }

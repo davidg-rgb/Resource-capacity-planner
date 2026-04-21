@@ -38,4 +38,24 @@ export interface BreakdownRow {
   hours: number;
 }
 
+// v6.0 — Phase 52 / Plan 52-04 (RD-02 / D-09 / Q3): additive response fields
+// for the OvercommitDialog's two sections. Populated only when scope='department'
+// (the only RD-02 caller). Rows[] is preserved for back-compat.
+export interface OvercommitProject {
+  id: string;
+  name: string;
+  plannedHours: number;
+  /** Fraction 0..1 of this dept/month's total planned that lands on this project. */
+  pctOfOvercommit: number;
+}
+
+export interface OvercommitPerson {
+  id: string;
+  name: string;
+  plannedHours: number;
+  capacityHours: number;
+  /** plannedHours - capacityHours. Positive when overbooked. */
+  deltaHours: number;
+}
+
 export const DEFAULT_TARGET_HOURS_PER_MONTH = 160;

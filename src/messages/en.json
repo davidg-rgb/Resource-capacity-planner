@@ -431,7 +431,17 @@
       },
       "overcommitDrill": "Overcommit drill",
       "overcommitHint": "Show people overcommitted in the selected range.",
-      "close": "Close"
+      "close": "Close",
+      "overcommitDialog": {
+        "title": "Overcommit breakdown",
+        "projects": "Contributing projects",
+        "people": "Most overbooked people",
+        "close": "Close",
+        "noProjects": "No projects in this range.",
+        "noPeople": "No overbooked people in this range.",
+        "projectRowLabel": "{name} — {hours}h ({pct}%)",
+        "personRowLabel": "{name} — {planned}/{capacity}h (Δ {delta}h)"
+      }
     },
     "lineManager": {
       "desktopOnlyMessage": "This view requires a screen at least 768px wide. Please open it on a desktop.",

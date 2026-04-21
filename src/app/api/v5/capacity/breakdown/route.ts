@@ -6,7 +6,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { getCapacityBreakdown } from '@/features/capacity/capacity.read';
+import {
+  getCapacityBreakdown,
+  getOvercommitBreakdown,
+} from '@/features/capacity/capacity.read';
 import { handleApiError } from '@/lib/api-utils';
 import { requireRole } from '@/lib/auth';
 
@@ -30,6 +33,23 @@ export async function GET(request: NextRequest) {
       scopeId: parsed.scopeId,
       monthKey: parsed.monthKey,
     });
+
+    // v6.0 — Phase 52 / Plan 52-04 (RD-02 / D-09 / Q3): ADDITIVE extension.
+    // When scope='department', include `projects[]` + `people[]` alongside the
+    // pre-existing `rows[]` so the OvercommitDialog can render its two
+    // sections. Back-compat preserved — all existing callers continue to read
+    // `rows` only.
+    if (parsed.scope === 'department') {
+      const overcommit = await getOvercommitBreakdown({
+        orgId,
+        departmentId: parsed.scopeId,
+        monthKey: parsed.monthKey,
+      });
+      return NextResponse.json(
+        { rows, projects: overcommit.projects, people: overcommit.people },
+        { status: 200 },
+      );
+    }
 
     return NextResponse.json({ rows }, { status: 200 });
   } catch (error) {
