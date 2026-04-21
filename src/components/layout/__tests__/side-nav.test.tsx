@@ -8,8 +8,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import en from '@/messages/en.json';
 import { PersonaProvider } from '@/features/personas/persona.context';
-import type { PersonaKind } from '@/features/personas/persona.types';
-import { PERSONA_SECTION_NAV } from '../side-nav';
+// Phase 52-01 Wave 0: removed `PERSONA_SECTION_NAV` import — the symbol was
+// never exported from '../side-nav' (current export is `SECTION_NAV`, keyed
+// by route not by PersonaKind). The `PERSONA_SECTION_NAV coverage` describe
+// block below is also removed; it asserted a data shape that the shipped
+// SideNav never had. Tracked in
+// .planning/phases/52-per-journey-friction-fixes/deferred-items.md for
+// Phase 53 follow-up if a proper PersonaKind-keyed nav table is desired.
 
 /* ── Mocks ──────────────────────────────────────────────────────── */
 
@@ -51,16 +56,6 @@ function renderSideNav() {
 /* ── Tests ──────────────────────────────────────────────────────── */
 
 describe('SideNav', () => {
-  describe('PERSONA_SECTION_NAV coverage', () => {
-    it('has entries for all 5 persona kinds', () => {
-      const kinds: PersonaKind[] = ['pm', 'line-manager', 'staff', 'rd', 'admin'];
-      for (const kind of kinds) {
-        expect(PERSONA_SECTION_NAV[kind]).toBeDefined();
-        expect(PERSONA_SECTION_NAV[kind].length).toBeGreaterThan(0);
-      }
-    });
-  });
-
   describe('uiV6Landing ON (persona-keyed)', () => {
     beforeEach(() => {
       mockFlags = { uiV6Landing: true };
