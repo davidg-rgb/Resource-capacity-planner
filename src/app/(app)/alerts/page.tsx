@@ -29,12 +29,19 @@ import { useFlags } from '@/features/flags/flag.context';
 import { useAlerts } from '@/hooks/use-alerts';
 import { generateMonthRange, getCurrentMonth } from '@/lib/date-utils';
 
-type AlertsTab = 'warnings' | 'conflicts';
+// Phase 53 REVIEW-FIX WR-03: single source of truth for the tab allowlist.
+// Deriving the AlertsTab type from the tuple keeps parseTab() + setTab()
+// call sites in lock-step — adding a tab is one line here and TypeScript
+// enforces the rest.
+const ALERTS_TABS = ['warnings', 'conflicts'] as const;
+type AlertsTab = (typeof ALERTS_TABS)[number];
 
 function parseTab(raw: string | null): AlertsTab {
   // T-53-21: narrow client-controlled tab param to the allowlist; any
   // other value falls through to the default 'warnings' tab.
-  return raw === 'conflicts' ? 'conflicts' : 'warnings';
+  return (ALERTS_TABS as readonly string[]).includes(raw ?? '')
+    ? (raw as AlertsTab)
+    : 'warnings';
 }
 
 export default function AlertsPage() {
