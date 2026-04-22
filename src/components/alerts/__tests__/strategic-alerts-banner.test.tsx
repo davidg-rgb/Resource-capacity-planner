@@ -193,11 +193,15 @@ describe('DashboardContent — StrategicAlertsBanner mount point (POLISH-06)', (
     expect(banner).toBeTruthy();
     expect(grid).toBeTruthy();
 
-    // Banner appears BEFORE grid in document order
+    // Banner appears BEFORE grid in document order.
+    // Phase 53 REVIEW-FIX WR-05: assert the exact bit instead of .toBeTruthy().
+    // The bitwise `&` returns 0 or DOCUMENT_POSITION_FOLLOWING (4), and a
+    // loose truthiness check would also pass if the result accidentally
+    // captured other bits (e.g. DOCUMENT_POSITION_CONTAINED_BY = 16).
     const bannerEl = container.querySelector('[role="alert"]');
     expect(bannerEl).not.toBeNull();
     expect(
       bannerEl!.compareDocumentPosition(grid) & Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
+    ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
 });
