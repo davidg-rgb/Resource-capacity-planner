@@ -14,19 +14,13 @@
 // stay conservative. Flag-OFF path ignores `state` and preserves Phase 51
 // drawer routing — handled at the /rd page level, not here.
 
-import { PlanVsActualCell } from './PlanVsActualCell';
+import { PlanVsActualCell, computeState, type CellState } from './PlanVsActualCell';
 
-export type RdPortfolioCellState = 'no-actual' | 'on-plan' | 'under' | 'over' | 'unplanned';
-
-function computeRdState(planned: number, actual: number): RdPortfolioCellState {
-  if (planned === 0 && actual > 0) return 'unplanned';
-  if (planned === 0) return 'on-plan';
-  const ratio = (actual - planned) / planned;
-  if (Math.abs(ratio) < 0.1) return 'on-plan';
-  if (ratio > 0) return 'over';
-  if (ratio <= -0.2) return 'under';
-  return 'on-plan';
-}
+// v6.0 — Phase 52 / REVIEW-FIX WR-03: reuse PlanVsActualCell#computeState as
+// the single source of truth for plan/actual state thresholds. Previously
+// `computeRdState` duplicated the thresholding logic and silently diverged
+// when PlanVsActualCell's rules changed.
+export type RdPortfolioCellState = CellState;
 
 export interface RdPortfolioCellProps {
   rowId: string;
@@ -44,7 +38,7 @@ export function RdPortfolioCell({
   onCellClick,
 }: RdPortfolioCellProps) {
   const delta = actualHours - plannedHours;
-  const state = computeRdState(plannedHours, actualHours);
+  const state = computeState(plannedHours, actualHours);
   return (
     // Wrap in span so `data-clicks="true"` is a stable target for journey 4B's
     // click-tracker regardless of whether PlanVsActualCell renders a <button>

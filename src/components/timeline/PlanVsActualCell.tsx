@@ -45,7 +45,7 @@ export interface PlanVsActualCellProps {
   onCellClick?: (ctx: { personId: string; projectId: string; monthKey: string }) => void;
 }
 
-type CellState = 'no-actual' | 'on-plan' | 'under' | 'over' | 'unplanned';
+export type CellState = 'no-actual' | 'on-plan' | 'under' | 'over' | 'unplanned';
 
 /**
  * Delta color rules per §6.14:
@@ -54,8 +54,12 @@ type CellState = 'no-actual' | 'on-plan' | 'under' | 'over' | 'unplanned';
  *   - under by >20%           → yellow ('under')
  *   - under by 10-20%         → green ('on-plan')
  *   - no approved but actual  → red ('unplanned')
+ *
+ * v6.0 — Phase 52 / REVIEW-FIX WR-03: exported so downstream cell wrappers
+ * (e.g. `RdPortfolioCell`) can share a single source of truth and stay in
+ * lockstep when thresholds change.
  */
-function computeState(planned: number, actual: number | null): CellState {
+export function computeState(planned: number, actual: number | null): CellState {
   if (actual === null) return 'no-actual';
   if (planned === 0 && actual > 0) return 'unplanned';
   if (planned === 0) return 'on-plan';
