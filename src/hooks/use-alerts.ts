@@ -25,8 +25,18 @@ export function useAlerts(monthFrom: string, monthTo: string): UseQueryResult<Ca
 /**
  * TanStack Query hook for fetching the count of active capacity alerts.
  * Used by AlertBadge in TopNav for lightweight polling.
+ *
+ * Phase 53 REVIEW-FIX WR-02: added `enabled` parameter so non-admin personas
+ * in `NotificationBell` skip the fetch entirely (prevents PM/LM/RD from
+ * polling /api/analytics/alerts/count when only admin reads the result).
+ * Defaults to `true` so pre-existing callers (AlertBadge etc.) are
+ * unaffected.
  */
-export function useAlertCount(monthFrom: string, monthTo: string): UseQueryResult<number> {
+export function useAlertCount(
+  monthFrom: string,
+  monthTo: string,
+  enabled: boolean = true,
+): UseQueryResult<number> {
   return useQuery<number>({
     queryKey: ['alert-count', monthFrom, monthTo],
     queryFn: async () => {
@@ -39,5 +49,6 @@ export function useAlertCount(monthFrom: string, monthTo: string): UseQueryResul
     },
     staleTime: 30_000,
     refetchOnWindowFocus: true,
+    enabled,
   });
 }

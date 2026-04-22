@@ -60,13 +60,12 @@ export function NotificationBell() {
     lmEnabled,
   );
   const { data: rdCount } = useRdOvercommitCount(rdEnabled);
-  // useAlertCount has no explicit `enabled` parameter — it fetches when
-  // mounted. Gate indirectly via the early returns below so the hook is
-  // not called for non-admin personas. (Hooks must be invoked
-  // unconditionally, so we always call it here — TanStack de-dupes by
-  // key; the fetch itself is cheap + caches per window.)
-  const { data: alertCount } = useAlertCount(monthFrom, monthTo);
-  void adminEnabled; // marker: admin branch consumes alertCount below
+  // Phase 53 REVIEW-FIX WR-02: pass `adminEnabled` so non-admin personas
+  // skip the fetch. Prior to this, PM/LM/RD users polled
+  // /api/analytics/alerts/count continuously even though the returned
+  // count was only consumed inside the admin branch below — which
+  // defeated the T-53-11 DoS mitigation the header comment claims.
+  const { data: alertCount } = useAlertCount(monthFrom, monthTo, adminEnabled);
 
   if (!uiV6Polish) return null; // legacy bell renders in top-nav.tsx when OFF
   if (persona.kind === 'staff') return null; // POLISH-01: Staff hides bell
