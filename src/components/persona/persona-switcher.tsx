@@ -103,7 +103,16 @@ export function PersonaSwitcher() {
     const preservedPersonId = currentPersonId(persona);
     const defaultPersonId = preservedPersonId ?? people[0]?.id ?? null;
     const next = buildPersona(nextKind, label, defaultPersonId);
-    if (!next) return; // waiting for people to load
+    if (!next) {
+      // v6.0 — Phase 52 / REVIEW-FIX WR-05: buildPersona returns null when
+      // PM / Staff are selected before `fetchPeople()` resolves. Previously
+      // we silently returned, leaving the <select> DOM reflecting the new
+      // kind while React state still held the old value — the dropdown
+      // lied. Restore the select to the currently-active kind so the UI
+      // stays consistent until people load and a re-selection succeeds.
+      e.target.value = persona.kind;
+      return;
+    }
     setPersona(next);
     router.push(getLandingRoute(next));
   }
@@ -130,8 +139,7 @@ export function PersonaSwitcher() {
         >
           {PERSONA_KINDS.map((kind) => {
             const base = t(`kind.${kind}`);
-            const label =
-              kind === 'line-manager' && lmSuffixOn ? `${base} (${lmCount})` : base;
+            const label = kind === 'line-manager' && lmSuffixOn ? `${base} (${lmCount})` : base;
             return (
               <option key={kind} value={kind}>
                 {label}
