@@ -641,42 +641,42 @@ test.describe('POLISH-07 — manager dashboard viewport', () => {
 | A9 | "Home" and "Help" in REQ POLISH-02 refer to persona landing + a help link that does NOT currently exist in top-nav | POLISH-02 / Q4 | HIGH — if they refer to items not yet implemented, Phase 53 scope expands to add them. |
 | A10 | Notification bell for admin persona falls through to capacity alert count (no persona-specific concept) | POLISH-01 | LOW — REQ only specifies PM/LM/R&D/Staff; admin behavior is undefined. |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Q1 — R&D overcommit count data source.**
    - **What we know:** `/api/v5/capacity/breakdown` exists (used by `OvercommitDialog` in Phase 52); returns `{ projects, people }`.
    - **What's unclear:** Is there a lightweight count endpoint for "number of new overcommits this month" scoped to R&D persona? If not, we'd call `/api/v5/capacity/breakdown` with `scope='department' | 'org-wide'` and sum. That's heavier than a dedicated `/count` endpoint.
-   - **Recommendation:** Planner to add `/api/v5/capacity/overcommits/count?scope=rd` — service fn + unit test (mirrors Phase 52 LM-03 pattern). OR reuse existing `useAlertCount` scoped differently (cheaper but less precise). User confirms in discuss-phase.
+   - **RESOLVED:** D-01 — new `/api/v5/capacity/overcommit/count` endpoint added, mirroring the Phase 52 LM-03 `requireRole`+service-fn pattern. Dedicated `/count` route chosen over reusing `useAlertCount` for precision and polling cost.
 
 2. **Q2 — `discipline-distribution` → `discipline-chart` data normalization.**
    - **What we know:** Two different data shapes: org-wide (hours per discipline) vs per-project (people × months × discipline hours).
    - **What's unclear:** Can they be unified behind one widget rendering the same chart? If the per-project version needs "people detail", a donut can't render that — we'd need to fall back to progress bars (current `DisciplineDistribution` component behavior).
-   - **Recommendation:** Merge = **one widget ID, two code paths**. Chart-type toggle only applies in org scope. Project scope renders progress bars unconditionally (matches current `DisciplineDistribution` UX). User confirms.
+   - **RESOLVED:** D-02 — unified widget with scope inference via `config.projectId` + chart-type toggle (bar/donut) available in BOTH org and project scope; per-project with < 3 disciplines falls back to the existing `<DisciplineDistribution>` progress-bar list. Default chart type per scope is locked by D-07 (see Q7).
 
 3. **Q3 — Viewport test: real rendered height vs. hand-measured.**
    - **What we know:** My ~2200px estimate for `manager:desktop` is derived from source reading.
    - **What's unclear:** The actual browser-rendered height at 1440 width.
-   - **Recommendation:** Planner runs a diagnostic Playwright spec (part of Wave 0) that measures `scrollHeight` on each dashboard with `uiV6Polish=OFF` and `uiV6Polish=ON` (midway through Phase 53) to gate whether the widget trim alone achieves 900px or additional re-slotting is needed.
+   - **RESOLVED:** D-05 — Wave 0 diagnostic spec (`e2e/_viewport/_diagnostic.spec.ts`) captures `scrollHeight` at 1440×900 with `uiV6Polish=OFF` as a Playwright artifact (`test.info().attach` + console.log). Pure diagnostic; it never fails the suite. Wave 3 soft gate (D-04) captures the `uiV6Polish=ON` number for Phase 54 planning.
 
 4. **Q4 — "Staff sees only Home + Help" interpretation.**
    - **What we know:** No "Home" or "Help" item exists in current `top-nav.tsx` `NAV_ITEMS`. The logo text is a link to `/` and there's no Help link in top-nav (there IS one in `side-nav.tsx:154`).
    - **What's unclear:** Is the REQ's mental model "Staff persona sees only the logo (Home) + a Help affordance (to be added)" — i.e., ZERO items in the center nav?
-   - **Recommendation:** Interpret as **Staff → empty `visibleFor` (no center-nav items)**; verify "Home" = logo link (unchanged) and "Help" = user-menu entry or new top-nav item. Confirm in discuss-phase.
+   - **RESOLVED:** D-03 LITERAL — new `/help` route stub + Help nav item (`visibleFor` undefined = all personas) added to top-nav. Staff nav = Home (logo link, unchanged) + Help (new item). Every other NAV_ITEM excludes `staff` from its `visibleFor` array.
 
 5. **Q5 — POLISH-07 "fit 1440×900" hard or soft.**
    - **What we know:** REQ says "fit within 1440×900 viewport without scrolling, verified by Playwright viewport test".
    - **What's unclear:** Whether "fit" means zero scroll or "primary widgets visible above the fold".
-   - **Recommendation:** Default to strict interpretation (zero scroll); if infeasible without drastic re-slotting, escalate to the Phase 54 quadrant redesign. User confirms priority.
+   - **RESOLVED:** D-04 SOFT gate — Phase 53 viewport specs measure + log + annotate `scrollHeight` WITHOUT asserting (`no expect()` on overflow). Real layout redesign for zero-scroll fit is deferred to Phase 54 with the captured measurements in hand.
 
 6. **Q6 — Widget physical deletion in Phase 53 vs later.**
    - **What we know:** Phase 51 D-07 pattern is "de-register from `widgets/index.ts` behind flag semantics; physical deletion post-stable-rollout".
    - **What's unclear:** Whether Phase 53 closes with physical deletions or defers them (matching Phase 51 precedent).
-   - **Recommendation:** Defer physical deletion to a post-v6.0 cleanup phase (same as Phase 51). Confirm.
+   - **RESOLVED:** D-06 — physical widget-file deletion DEFERRED to a post-rollout cleanup phase. `LEGACY_LAYOUTS` entries and the `widgets/index.ts` registrations for `bench-report-widget`, `strategic-alerts-widget`, `discipline-chart-widget`, `discipline-distribution-widget`, and `resource-conflict-widget` are all preserved so flag-off rendering keeps working.
 
 7. **Q7 — `DisciplineBreakdownWidget` default chart type.**
    - **What we know:** REQ says "chart-type toggle (bar/donut)"; no default specified.
    - **What's unclear:** Which to default to.
-   - **Recommendation:** Default `'bar'` for org scope (matches current `discipline-chart` behavior; no visual regression when migration runs). User confirms.
+   - **RESOLVED:** D-07 — default chart type is `bar` for org-wide scope (no visual regression vs legacy `discipline-chart`) and `donut` for per-project scope. User toggle persists via `config.chartType` in the widget-config JSON.
 
 ## Environment Availability
 
