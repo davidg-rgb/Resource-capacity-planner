@@ -5,6 +5,12 @@
 // unchanged — flag-off / rollback still renders the legacy widgets (D-FLAG).
 // Per D-06 the legacy widget files remain registered; physical deletion is
 // deferred to a post-rollout cleanup phase.
+//
+// v6.0 Phase 53 Plan 04 POLISH-04 + POLISH-06 — bench-report removed from
+// manager:desktop (availability-finder slides 8 -> 7); strategic-alerts removed
+// from manager:mobile (replaced by inline <StrategicAlertsBanner> above the
+// manager dashboard grid). LEGACY_LAYOUTS preserved verbatim for flag-off
+// rollback; physical widget files stay on disk per D-06.
 import type { WidgetPlacement } from './widget-registry.types';
 
 // ---------------------------------------------------------------------------
@@ -85,7 +91,8 @@ export const LEGACY_LAYOUTS: Record<string, WidgetPlacement[]> = {
 export const DEFAULT_LAYOUTS: Record<string, WidgetPlacement[]> = {
   // -----------------------------------------------------------------------
   // Manager — Desktop (trimmed: utilization-heat-map -> heat-map-summary-card;
-  // Phase 53 POLISH-03: discipline-chart -> discipline-breakdown)
+  // Phase 53 POLISH-03: discipline-chart -> discipline-breakdown;
+  // Phase 53 POLISH-04: bench-report removed, availability-finder slid 8 -> 7)
   // -----------------------------------------------------------------------
   'manager:desktop': [
     { widgetId: 'kpi-cards', position: 0, colSpan: 12 },
@@ -95,13 +102,14 @@ export const DEFAULT_LAYOUTS: Record<string, WidgetPlacement[]> = {
     { widgetId: 'utilization-sparklines', position: 4, colSpan: 6 },
     { widgetId: 'discipline-breakdown', position: 5, colSpan: 6 },
     { widgetId: 'capacity-forecast', position: 6, colSpan: 12 },
-    { widgetId: 'bench-report', position: 7, colSpan: 12 },
-    { widgetId: 'availability-finder', position: 8, colSpan: 12 },
+    { widgetId: 'availability-finder', position: 7, colSpan: 12 },
   ],
 
   // -----------------------------------------------------------------------
   // Manager — Mobile (trimmed: utilization-heat-map -> heat-map-summary-card;
-  // Phase 53 POLISH-03: discipline-chart -> discipline-breakdown)
+  // Phase 53 POLISH-03: discipline-chart -> discipline-breakdown;
+  // Phase 53 POLISH-06: strategic-alerts removed — replaced by inline
+  // <StrategicAlertsBanner> above the manager dashboard grid)
   // -----------------------------------------------------------------------
   'manager:mobile': [
     { widgetId: 'kpi-cards', position: 0, colSpan: 12 },
@@ -111,7 +119,6 @@ export const DEFAULT_LAYOUTS: Record<string, WidgetPlacement[]> = {
     { widgetId: 'resource-conflicts', position: 4, colSpan: 12 },
     { widgetId: 'department-bar-chart', position: 5, colSpan: 12 },
     { widgetId: 'discipline-breakdown', position: 6, colSpan: 12 },
-    { widgetId: 'strategic-alerts', position: 7, colSpan: 12 },
   ],
 
   // -----------------------------------------------------------------------

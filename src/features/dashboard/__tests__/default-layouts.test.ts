@@ -178,6 +178,50 @@ describe('LEGACY_LAYOUTS (POLISH-03 — legacy preserved for flag-off rollback)'
   });
 });
 
+// ---------------------------------------------------------------------------
+// v6.0 Phase 53 Plan 04 POLISH-04 + POLISH-06 — bench-report + strategic-alerts
+// ---------------------------------------------------------------------------
+
+describe('DEFAULT_LAYOUTS (POLISH-04 — bench-report removed from manager:desktop)', () => {
+  const layout = DEFAULT_LAYOUTS['manager:desktop'];
+
+  it('manager:desktop does NOT contain bench-report', () => {
+    expect(layout.find((w) => w.widgetId === 'bench-report')).toBeUndefined();
+  });
+
+  it('manager:desktop has availability-finder at position 7 (slid from 8)', () => {
+    const af = layout.find((w) => w.widgetId === 'availability-finder');
+    expect(af).toBeDefined();
+    expect(af!.position).toBe(7);
+  });
+
+  it('manager:desktop length is 8 (was 9 post-Plan-03)', () => {
+    expect(layout).toHaveLength(8);
+  });
+});
+
+describe('DEFAULT_LAYOUTS (POLISH-06 — strategic-alerts removed from manager:mobile)', () => {
+  const layout = DEFAULT_LAYOUTS['manager:mobile'];
+
+  it('manager:mobile does NOT contain strategic-alerts', () => {
+    expect(layout.find((w) => w.widgetId === 'strategic-alerts')).toBeUndefined();
+  });
+
+  it('manager:mobile length is 7 (was 8 post-Plan-03)', () => {
+    expect(layout).toHaveLength(7);
+  });
+});
+
+describe('LEGACY_LAYOUTS (POLISH-04 + POLISH-06 — flag-off rollback preserved)', () => {
+  it('manager:desktop position 7 still references bench-report (LEGACY)', () => {
+    expect(LEGACY_LAYOUTS['manager:desktop'][7].widgetId).toBe('bench-report');
+  });
+
+  it('manager:mobile position 7 still references strategic-alerts (LEGACY)', () => {
+    expect(LEGACY_LAYOUTS['manager:mobile'][7].widgetId).toBe('strategic-alerts');
+  });
+});
+
 describe('getDefaultLayout()', () => {
   it('useLegacy=true returns layout WITH utilization-heat-map (legacy mode)', () => {
     const layout = getDefaultLayout('manager', 'desktop', true);
