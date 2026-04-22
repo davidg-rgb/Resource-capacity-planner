@@ -22,11 +22,9 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { useQuery } from '@tanstack/react-query';
+import { FocusTrap } from 'focus-trap-react';
 
-import type {
-  OvercommitPerson,
-  OvercommitProject,
-} from '@/features/capacity/capacity.types';
+import type { OvercommitPerson, OvercommitProject } from '@/features/capacity/capacity.types';
 
 export interface OvercommitDialogProps {
   open: boolean;
@@ -84,96 +82,110 @@ export function OvercommitDialog(props: OvercommitDialogProps) {
   const projects = data?.projects ?? [];
   const people = data?.people ?? [];
 
+  // v6.0 — Phase 52 / Plan 52-REVIEW-FIX WR-01: wrap panel in <FocusTrap>
+  // so Tab cycling stays inside the dialog while it is open (mirrors
+  // `Drawer.tsx` / `PlanVsActualDrawer` pattern). `allowOutsideClick` is
+  // true so the backdrop-click handler below still fires (the trap would
+  // otherwise swallow the click → close would never run).
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label={t('title')}
-      data-testid="overcommit-dialog"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+    <FocusTrap
+      focusTrapOptions={{
+        allowOutsideClick: true,
+        clickOutsideDeactivates: false,
+        escapeDeactivates: false,
+        fallbackFocus: '[data-testid="overcommit-close"]',
       }}
     >
-      <div className="bg-surface max-w-2xl w-full rounded-lg p-6 shadow-xl">
-        <h2 className="mb-4 font-headline text-lg font-semibold">{t('title')}</h2>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('title')}
+        data-testid="overcommit-dialog"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
+      >
+        <div className="bg-surface w-full max-w-2xl rounded-lg p-6 shadow-xl">
+          <h2 className="font-headline mb-4 text-lg font-semibold">{t('title')}</h2>
 
-        <section
-          aria-labelledby="overcommit-projects-heading"
-          data-testid="overcommit-section-projects"
-          className="mt-2"
-        >
-          <h3 id="overcommit-projects-heading" className="text-sm font-semibold mb-2">
-            {t('projects')}
-          </h3>
-          {projects.length === 0 ? (
-            <p className="text-on-surface-variant text-sm">{t('noProjects')}</p>
-          ) : (
-            <ul className="space-y-1">
-              {projects.map((p) => (
-                <li key={p.id}>
-                  <Link
-                    href={`/projects/${p.id}`}
-                    data-clicks="true"
-                    data-testid={`overcommit-project-${p.id}`}
-                    className="text-primary hover:underline text-sm"
-                  >
-                    {t('projectRowLabel', {
-                      name: p.name,
-                      hours: p.plannedHours.toFixed(0),
-                      pct: Math.round(p.pctOfOvercommit * 100),
-                    })}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <section
-          aria-labelledby="overcommit-people-heading"
-          data-testid="overcommit-section-people"
-          className="mt-4"
-        >
-          <h3 id="overcommit-people-heading" className="text-sm font-semibold mb-2">
-            {t('people')}
-          </h3>
-          {people.length === 0 ? (
-            <p className="text-on-surface-variant text-sm">{t('noPeople')}</p>
-          ) : (
-            <ul className="space-y-1">
-              {people.map((p) => (
-                <li key={p.id}>
-                  <Link
-                    href={`/staff/${p.id}?month=${monthKey}`}
-                    data-clicks="true"
-                    data-testid={`overcommit-person-${p.id}`}
-                    className="text-primary hover:underline text-sm"
-                  >
-                    {t('personRowLabel', {
-                      name: p.name,
-                      planned: p.plannedHours.toFixed(0),
-                      capacity: p.capacityHours.toFixed(0),
-                      delta: p.deltaHours >= 0 ? `+${p.deltaHours}` : `${p.deltaHours}`,
-                    })}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        <div className="mt-6 flex justify-end">
-          <button
-            type="button"
-            onClick={onClose}
-            data-testid="overcommit-close"
-            className="rounded border px-3 py-1 text-sm"
+          <section
+            aria-labelledby="overcommit-projects-heading"
+            data-testid="overcommit-section-projects"
+            className="mt-2"
           >
-            {t('close')}
-          </button>
+            <h3 id="overcommit-projects-heading" className="mb-2 text-sm font-semibold">
+              {t('projects')}
+            </h3>
+            {projects.length === 0 ? (
+              <p className="text-on-surface-variant text-sm">{t('noProjects')}</p>
+            ) : (
+              <ul className="space-y-1">
+                {projects.map((p) => (
+                  <li key={p.id}>
+                    <Link
+                      href={`/projects/${p.id}`}
+                      data-clicks="true"
+                      data-testid={`overcommit-project-${p.id}`}
+                      className="text-primary text-sm hover:underline"
+                    >
+                      {t('projectRowLabel', {
+                        name: p.name,
+                        hours: p.plannedHours.toFixed(0),
+                        pct: Math.round(p.pctOfOvercommit * 100),
+                      })}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section
+            aria-labelledby="overcommit-people-heading"
+            data-testid="overcommit-section-people"
+            className="mt-4"
+          >
+            <h3 id="overcommit-people-heading" className="mb-2 text-sm font-semibold">
+              {t('people')}
+            </h3>
+            {people.length === 0 ? (
+              <p className="text-on-surface-variant text-sm">{t('noPeople')}</p>
+            ) : (
+              <ul className="space-y-1">
+                {people.map((p) => (
+                  <li key={p.id}>
+                    <Link
+                      href={`/staff/${p.id}?month=${monthKey}`}
+                      data-clicks="true"
+                      data-testid={`overcommit-person-${p.id}`}
+                      className="text-primary text-sm hover:underline"
+                    >
+                      {t('personRowLabel', {
+                        name: p.name,
+                        planned: p.plannedHours.toFixed(0),
+                        capacity: p.capacityHours.toFixed(0),
+                        delta: p.deltaHours >= 0 ? `+${p.deltaHours}` : `${p.deltaHours}`,
+                      })}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <div className="mt-6 flex justify-end">
+            <button
+              type="button"
+              onClick={onClose}
+              data-testid="overcommit-close"
+              className="rounded border px-3 py-1 text-sm"
+            >
+              {t('close')}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </FocusTrap>
   );
 }
