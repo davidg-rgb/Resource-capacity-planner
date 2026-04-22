@@ -10,10 +10,7 @@
 // departmentId filter — the badge calls that endpoint via useLmQueueCount.
 
 import { test, expect } from '../fixtures/test-base';
-import {
-  personaAsLineManager,
-  LM_SEED_DEPARTMENT_ID,
-} from '../helpers/persona-setup';
+import { personaAsLineManager, LM_SEED_DEPARTMENT_ID } from '../helpers/persona-setup';
 import { resetClickCount, getClickCount } from '../helpers/click-counter';
 import { checkA11y } from '../helpers/a11y';
 
@@ -23,24 +20,19 @@ test.describe('Journey 2B — LM approve via badge', () => {
     await page.goto('/line-manager');
     await page.waitForLoadState('networkidle');
 
-    // Badge may be suppressed when count=0. Seed has 2 pending proposals
-    // in Per's department so we expect count >= 1 when flag is on.
+    // v6.0 — Phase 52 / REVIEW-FIX WR-06: seed has 2 pending proposals in
+    // Per's department so the badge MUST be visible with flag ON. Previously
+    // we wrapped the click-count assertion in `if (badgeCount > 0)` and
+    // silently annotated "todo" on missing badge — meaning a real regression
+    // (badge hidden when it should render) would silent-pass. Hard-assert
+    // visibility so any badge breakage surfaces as a test failure.
     const badge = page.locator('[data-testid="lm-approval-queue-badge"]');
-    const badgeCount = await badge.count();
+    await expect(badge).toBeVisible({ timeout: 5000 });
 
     await resetClickCount(page);
-
-    if (badgeCount > 0) {
-      await badge.click();
-      await expect(page).toHaveURL(/\/line-manager\/approval-queue/);
-      expect(await getClickCount(page)).toBeLessThanOrEqual(1);
-    } else {
-      test.info().annotations.push({
-        type: 'todo',
-        description:
-          'Journey 2B: badge not visible (flag OFF or count=0) — click-count assertion skipped',
-      });
-    }
+    await badge.click();
+    await expect(page).toHaveURL(/\/line-manager\/approval-queue/);
+    expect(await getClickCount(page)).toBeLessThanOrEqual(1);
 
     await checkA11y(page);
   });
