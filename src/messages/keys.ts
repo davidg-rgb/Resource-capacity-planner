@@ -8,6 +8,40 @@
  */
 
 export const K = {
+  v6: {
+    polish: {
+      bell: {
+        pmRejectedLabel: 'bell.pmRejectedLabel',
+        lmPendingLabel: 'bell.lmPendingLabel',
+        rdOvercommitsLabel: 'bell.rdOvercommitsLabel',
+        adminAlertsLabel: 'bell.adminAlertsLabel',
+      },
+      help: {
+        title: 'help.title',
+        body: 'help.body',
+        externalDocs: 'help.externalDocs',
+      },
+      alerts: {
+        tabs: {
+          warnings: 'alerts.tabs.warnings',
+          conflicts: 'alerts.tabs.conflicts',
+        },
+      },
+      banner: {
+        title: 'banner.title',
+        cta: 'banner.cta',
+      },
+      discipline: {
+        toggleBar: 'discipline.toggleBar',
+        toggleDonut: 'discipline.toggleDonut',
+      },
+      nav: {
+        home: 'nav.home',
+        help: 'nav.help',
+        helpDesc: 'nav.helpDesc',
+      },
+    },
+  },
   v5: {
     historicEdit: {
       title: 'historicEdit.title',
@@ -519,3 +553,12 @@ export function flattenKeys(obj: Record<string, unknown>, prefix = ''): string[]
 
 /** Flat list of every dotted key under v5.*, prefixed with `v5.`. */
 export const V5_KEYS: readonly string[] = flattenKeys(K.v5).map((k) => `v5.${k}`);
+
+/**
+ * Phase 53-01 POLISH — flat list of every dotted key under v6.polish.*,
+ * prefixed with `v6.polish.`. Enables `keys.test.ts` to extend parity to
+ * the Phase 53 namespace.
+ */
+export const V6_POLISH_KEYS: readonly string[] = flattenKeys(K.v6.polish).map(
+  (k) => `v6.polish.${k}`,
+);

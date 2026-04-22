@@ -927,5 +927,39 @@
         "12": "december"
       }
     }
+  },
+  "v6": {
+    "polish": {
+      "bell": {
+        "pmRejectedLabel": "Avvisade önskemål: {count}",
+        "lmPendingLabel": "Väntande godkännanden: {count}",
+        "rdOvercommitsLabel": "Nya överbokningar: {count}",
+        "adminAlertsLabel": "Varningar: {count}"
+      },
+      "help": {
+        "title": "Hjälp & support",
+        "body": "Här hittar du dokumentation, guider och vanliga frågor.",
+        "externalDocs": "Öppna extern dokumentation"
+      },
+      "alerts": {
+        "tabs": {
+          "warnings": "Varningar",
+          "conflicts": "Konflikter"
+        }
+      },
+      "banner": {
+        "title": "{count} kritiska varningar",
+        "cta": "Se alla →"
+      },
+      "discipline": {
+        "toggleBar": "Stapeldiagram",
+        "toggleDonut": "Ringdiagram"
+      },
+      "nav": {
+        "home": "Hem",
+        "help": "Hjälp",
+        "helpDesc": "Hjälp och support"
+      }
+    }
   }
 }

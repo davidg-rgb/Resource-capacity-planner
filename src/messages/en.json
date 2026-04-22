@@ -862,5 +862,39 @@
         "12": "December"
       }
     }
+  },
+  "v6": {
+    "polish": {
+      "bell": {
+        "pmRejectedLabel": "Rejected wishes: {count}",
+        "lmPendingLabel": "Pending approvals: {count}",
+        "rdOvercommitsLabel": "New overcommits: {count}",
+        "adminAlertsLabel": "Alerts: {count}"
+      },
+      "help": {
+        "title": "Help & support",
+        "body": "Find documentation, guides, and FAQs here.",
+        "externalDocs": "Open external documentation"
+      },
+      "alerts": {
+        "tabs": {
+          "warnings": "Warnings",
+          "conflicts": "Conflicts"
+        }
+      },
+      "banner": {
+        "title": "{count} critical warnings",
+        "cta": "View all →"
+      },
+      "discipline": {
+        "toggleBar": "Bar chart",
+        "toggleDonut": "Donut chart"
+      },
+      "nav": {
+        "home": "Home",
+        "help": "Help",
+        "helpDesc": "Help and support"
+      }
+    }
   }
 }
