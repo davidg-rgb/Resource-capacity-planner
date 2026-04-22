@@ -117,6 +117,67 @@ describe('LEGACY_LAYOUTS (rollback)', () => {
 // getDefaultLayout() flag-gating
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// v6.0 Phase 53 Plan 03 POLISH-03 — discipline-breakdown unified widget
+// ---------------------------------------------------------------------------
+
+describe('DEFAULT_LAYOUTS (POLISH-03 — discipline-breakdown)', () => {
+  it('manager:desktop position 5 references discipline-breakdown', () => {
+    expect(DEFAULT_LAYOUTS['manager:desktop'][5].widgetId).toBe('discipline-breakdown');
+  });
+
+  it('manager:mobile position 6 references discipline-breakdown', () => {
+    expect(DEFAULT_LAYOUTS['manager:mobile'][6].widgetId).toBe('discipline-breakdown');
+  });
+
+  it('project-leader:desktop position 3 references discipline-breakdown', () => {
+    expect(DEFAULT_LAYOUTS['project-leader:desktop'][3].widgetId).toBe('discipline-breakdown');
+  });
+
+  it('no DEFAULT_LAYOUTS slot still references discipline-chart or discipline-distribution', () => {
+    for (const layout of Object.values(DEFAULT_LAYOUTS)) {
+      for (const placement of layout) {
+        expect(placement.widgetId).not.toBe('discipline-chart');
+        expect(placement.widgetId).not.toBe('discipline-distribution');
+      }
+    }
+  });
+
+  it('exactly 3 DEFAULT_LAYOUTS placements reference discipline-breakdown', () => {
+    let count = 0;
+    for (const layout of Object.values(DEFAULT_LAYOUTS)) {
+      for (const placement of layout) {
+        if (placement.widgetId === 'discipline-breakdown') count += 1;
+      }
+    }
+    expect(count).toBe(3);
+  });
+});
+
+describe('LEGACY_LAYOUTS (POLISH-03 — legacy preserved for flag-off rollback)', () => {
+  it('manager:desktop position 5 still references discipline-chart (legacy preserved)', () => {
+    expect(LEGACY_LAYOUTS['manager:desktop'][5].widgetId).toBe('discipline-chart');
+  });
+
+  it('manager:mobile position 6 still references discipline-chart', () => {
+    expect(LEGACY_LAYOUTS['manager:mobile'][6].widgetId).toBe('discipline-chart');
+  });
+
+  it('project-leader:desktop position 5 still references discipline-distribution', () => {
+    // Legacy project-leader:desktop kept its pre-trim ordering — discipline-distribution
+    // sits at position 5 (see default-layouts.ts LEGACY_LAYOUTS definition).
+    expect(LEGACY_LAYOUTS['project-leader:desktop'][5].widgetId).toBe('discipline-distribution');
+  });
+
+  it('no LEGACY_LAYOUTS slot references discipline-breakdown (legacy untouched)', () => {
+    for (const layout of Object.values(LEGACY_LAYOUTS)) {
+      for (const placement of layout) {
+        expect(placement.widgetId).not.toBe('discipline-breakdown');
+      }
+    }
+  });
+});
+
 describe('getDefaultLayout()', () => {
   it('useLegacy=true returns layout WITH utilization-heat-map (legacy mode)', () => {
     const layout = getDefaultLayout('manager', 'desktop', true);
