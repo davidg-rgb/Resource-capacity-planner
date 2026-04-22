@@ -19,3 +19,6 @@ import './period-comparison-widget';
 import './allocation-trends-widget';
 import './discipline-distribution-widget';
 import './heat-map-summary-card-widget';
+// v6.0 Phase 53 Plan 03 POLISH-03 — unified widget replaces discipline-chart + discipline-distribution
+// in DEFAULT_LAYOUTS. Legacy imports above stay for LEGACY_LAYOUTS / uiV6Polish=false (D-06).
+import './discipline-breakdown-widget';
