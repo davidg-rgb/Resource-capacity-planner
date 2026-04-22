@@ -372,12 +372,10 @@ export async function getOvercommitBreakdown(
       ),
     );
 
+  // v6.0 — Phase 52 / REVIEW-FIX WR-04: people-planned totals need their own
+  // query — `projectRows` above projects projectId + projectName + hours, not
+  // personId, so we can't reuse those rows for a per-person roll-up.
   const peoplePlanned = new Map<string, number>();
-  for (const r of projectRows) {
-    // projectRows contains personId implicitly via the join result? No — we
-    // need a separate people-planned query since the project projection drops
-    // personId. Accumulate via a dedicated query.
-  }
   const personRows = await db
     .select({
       personId: schema.allocations.personId,
@@ -399,9 +397,10 @@ export async function getOvercommitBreakdown(
   const people: OvercommitPerson[] = deptPeople
     .map((p) => {
       const planned = peoplePlanned.get(p.id) ?? 0;
-      const capacity = p.targetHoursPerMonth == null
-        ? DEFAULT_TARGET_HOURS_PER_MONTH
-        : Number(p.targetHoursPerMonth);
+      const capacity =
+        p.targetHoursPerMonth == null
+          ? DEFAULT_TARGET_HOURS_PER_MONTH
+          : Number(p.targetHoursPerMonth);
       return {
         id: p.id,
         name: `${p.firstName} ${p.lastName}`.trim(),
