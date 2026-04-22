@@ -126,8 +126,8 @@ describe('DEFAULT_LAYOUTS (POLISH-03 — discipline-breakdown)', () => {
     expect(DEFAULT_LAYOUTS['manager:desktop'][5].widgetId).toBe('discipline-breakdown');
   });
 
-  it('manager:mobile position 6 references discipline-breakdown', () => {
-    expect(DEFAULT_LAYOUTS['manager:mobile'][6].widgetId).toBe('discipline-breakdown');
+  it('manager:mobile position 5 references discipline-breakdown (slid from 6 by Plan 05 POLISH-05 strip of resource-conflicts)', () => {
+    expect(DEFAULT_LAYOUTS['manager:mobile'][5].widgetId).toBe('discipline-breakdown');
   });
 
   it('project-leader:desktop position 3 references discipline-breakdown', () => {
@@ -207,8 +207,8 @@ describe('DEFAULT_LAYOUTS (POLISH-06 — strategic-alerts removed from manager:m
     expect(layout.find((w) => w.widgetId === 'strategic-alerts')).toBeUndefined();
   });
 
-  it('manager:mobile length is 7 (was 8 post-Plan-03)', () => {
-    expect(layout).toHaveLength(7);
+  it('manager:mobile length is 6 (was 7 post-Plan-04; Plan 05 POLISH-05 strip of resource-conflicts drops one more)', () => {
+    expect(layout).toHaveLength(6);
   });
 });
 
@@ -219,6 +219,49 @@ describe('LEGACY_LAYOUTS (POLISH-04 + POLISH-06 — flag-off rollback preserved)
 
   it('manager:mobile position 7 still references strategic-alerts (LEGACY)', () => {
     expect(LEGACY_LAYOUTS['manager:mobile'][7].widgetId).toBe('strategic-alerts');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// v6.0 Phase 53 Plan 05 POLISH-05 — resource-conflicts stripped from 3 slots
+// ---------------------------------------------------------------------------
+
+describe('DEFAULT_LAYOUTS (POLISH-05 — resource-conflicts removed)', () => {
+  it('manager:mobile does NOT contain resource-conflicts', () => {
+    const layout = DEFAULT_LAYOUTS['manager:mobile'];
+    expect(layout.find((w) => w.widgetId === 'resource-conflicts')).toBeUndefined();
+  });
+
+  it('project-leader:desktop does NOT contain resource-conflicts', () => {
+    const layout = DEFAULT_LAYOUTS['project-leader:desktop'];
+    expect(layout.find((w) => w.widgetId === 'resource-conflicts')).toBeUndefined();
+  });
+
+  it('project-leader:mobile does NOT contain resource-conflicts', () => {
+    const layout = DEFAULT_LAYOUTS['project-leader:mobile'];
+    expect(layout.find((w) => w.widgetId === 'resource-conflicts')).toBeUndefined();
+  });
+
+  it('no DEFAULT_LAYOUTS slot still references resource-conflicts', () => {
+    for (const layout of Object.values(DEFAULT_LAYOUTS)) {
+      for (const placement of layout) {
+        expect(placement.widgetId).not.toBe('resource-conflicts');
+      }
+    }
+  });
+});
+
+describe('LEGACY_LAYOUTS (POLISH-05 — resource-conflicts preserved for rollback)', () => {
+  it('manager:mobile[4] still references resource-conflicts (LEGACY)', () => {
+    expect(LEGACY_LAYOUTS['manager:mobile'][4].widgetId).toBe('resource-conflicts');
+  });
+
+  it('project-leader:desktop[7] still references resource-conflicts (LEGACY)', () => {
+    expect(LEGACY_LAYOUTS['project-leader:desktop'][7].widgetId).toBe('resource-conflicts');
+  });
+
+  it('project-leader:mobile[4] still references resource-conflicts (LEGACY)', () => {
+    expect(LEGACY_LAYOUTS['project-leader:mobile'][4].widgetId).toBe('resource-conflicts');
   });
 });
 

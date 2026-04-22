@@ -11,6 +11,11 @@
 // from manager:mobile (replaced by inline <StrategicAlertsBanner> above the
 // manager dashboard grid). LEGACY_LAYOUTS preserved verbatim for flag-off
 // rollback; physical widget files stay on disk per D-06.
+//
+// v6.0 Phase 53 Plan 05 POLISH-05 — resource-conflicts removed from 3 slots
+// (manager:mobile[4], project-leader:desktop[5], project-leader:mobile[2]);
+// moved to /alerts?tab=conflicts. LEGACY_LAYOUTS preserves the 3 placements
+// for flag-off rollback; widget file stays registered per D-06.
 import type { WidgetPlacement } from './widget-registry.types';
 
 // ---------------------------------------------------------------------------
@@ -109,21 +114,24 @@ export const DEFAULT_LAYOUTS: Record<string, WidgetPlacement[]> = {
   // Manager — Mobile (trimmed: utilization-heat-map -> heat-map-summary-card;
   // Phase 53 POLISH-03: discipline-chart -> discipline-breakdown;
   // Phase 53 POLISH-06: strategic-alerts removed — replaced by inline
-  // <StrategicAlertsBanner> above the manager dashboard grid)
+  // <StrategicAlertsBanner> above the manager dashboard grid;
+  // Phase 53 POLISH-05: resource-conflicts removed at position 4 — moved to
+  // /alerts?tab=conflicts; positions re-numbered contiguously)
   // -----------------------------------------------------------------------
   'manager:mobile': [
     { widgetId: 'kpi-cards', position: 0, colSpan: 12 },
     { widgetId: 'heat-map-summary-card', position: 1, colSpan: 12 },
     { widgetId: 'capacity-forecast', position: 2, colSpan: 12 },
     { widgetId: 'capacity-gauges', position: 3, colSpan: 12 },
-    { widgetId: 'resource-conflicts', position: 4, colSpan: 12 },
-    { widgetId: 'department-bar-chart', position: 5, colSpan: 12 },
-    { widgetId: 'discipline-breakdown', position: 6, colSpan: 12 },
+    { widgetId: 'department-bar-chart', position: 4, colSpan: 12 },
+    { widgetId: 'discipline-breakdown', position: 5, colSpan: 12 },
   ],
 
   // -----------------------------------------------------------------------
   // Project Leader — Desktop (trimmed: removed kpi-cards, capacity-forecast, availability-finder;
-  // Phase 53 POLISH-03: discipline-distribution -> discipline-breakdown)
+  // Phase 53 POLISH-03: discipline-distribution -> discipline-breakdown;
+  // Phase 53 POLISH-05: resource-conflicts removed at position 5 — moved to
+  // /alerts?tab=conflicts; period-comparison slides 6 -> 5)
   // -----------------------------------------------------------------------
   'project-leader:desktop': [
     { widgetId: 'capacity-distribution', position: 0, colSpan: 12 },
@@ -131,18 +139,18 @@ export const DEFAULT_LAYOUTS: Record<string, WidgetPlacement[]> = {
     { widgetId: 'allocation-trends', position: 2, colSpan: 6 },
     { widgetId: 'discipline-breakdown', position: 3, colSpan: 6 },
     { widgetId: 'program-rollup', position: 4, colSpan: 12 },
-    { widgetId: 'resource-conflicts', position: 5, colSpan: 12 },
-    { widgetId: 'period-comparison', position: 6, colSpan: 12 },
+    { widgetId: 'period-comparison', position: 5, colSpan: 12 },
   ],
 
   // -----------------------------------------------------------------------
-  // Project Leader — Mobile (trimmed: removed kpi-cards, capacity-forecast, availability-finder)
+  // Project Leader — Mobile (trimmed: removed kpi-cards, capacity-forecast, availability-finder;
+  // Phase 53 POLISH-05: resource-conflicts removed at position 2 — moved to
+  // /alerts?tab=conflicts; program-rollup slides 3 -> 2)
   // -----------------------------------------------------------------------
   'project-leader:mobile': [
     { widgetId: 'capacity-distribution', position: 0, colSpan: 12 },
     { widgetId: 'availability-timeline', position: 1, colSpan: 12 },
-    { widgetId: 'resource-conflicts', position: 2, colSpan: 12 },
-    { widgetId: 'program-rollup', position: 3, colSpan: 12 },
+    { widgetId: 'program-rollup', position: 2, colSpan: 12 },
   ],
 };
 
