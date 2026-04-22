@@ -316,7 +316,7 @@ Phases execute in numeric order: 33 -> 34 -> ... -> 47
 | 50. Persona-aware landing & navigation | v6.0 | 3/3 | Complete    | 2026-04-20 |
 | 51. Lean cleanup — duplicate removal | v6.0 | 3/3 | Complete    | 2026-04-20 |
 | 52. Per-journey friction fixes | v6.0 | 5/5 | Complete    | 2026-04-21 |
-| 53. Chrome polish | v6.0 | 0/TBD | Planned | — |
+| 53. Chrome polish | v6.0 | 0/5 | Planned | — |
 | 54. Dashboard quadrant redesign (optional) | v6.0 | 0/TBD | Deferred | — |
 
 ---
@@ -420,7 +420,13 @@ Plans:
   4. `bench-report` widget deleted; `resource-conflicts` moved to `/alerts` tab; `strategic-alerts` replaced with inline banner on manager dashboard
   5. Manager and project-leader dashboards each fit within 1440×900 without scrolling (verified by Playwright viewport test)
   6. All changes gated behind `uiV6.polish` with verified rollback
-**Plans**: TBD
+**Plans:** 5 plans
+Plans:
+- [ ] 53-01-PLAN.md — Wave 0 flag + i18n + /help stub + viewport diagnostic (POLISH-FLAG)
+- [ ] 53-02-PLAN.md — Wave 1 R&D count endpoint + persona bell + NavItemDef.visibleFor + Help nav item (POLISH-01, POLISH-02)
+- [ ] 53-03-PLAN.md — Wave 2 discipline widget merge (donut chart + unified widget + layout swap + rename migration) (POLISH-03)
+- [ ] 53-04-PLAN.md — Wave 2 bench-report delete + strategic-alerts banner + strip migration (POLISH-04, POLISH-06)
+- [ ] 53-05-PLAN.md — Wave 3 resource-conflicts → /alerts tab + viewport soft gate + flag-off parity (POLISH-05, POLISH-07, POLISH-FLAG)
 
 ## Phase 54 (optional): Dashboard quadrant redesign
 **Goal**: If post-Phase-53 telemetry shows continued dashboard confusion, restructure both dashboards into 4 question-keyed quadrants.
