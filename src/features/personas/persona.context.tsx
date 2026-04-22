@@ -21,6 +21,9 @@ import { PERSONA_KINDS } from './persona.routes';
  * the active persona changes. Listed explicitly so new persona-scoped keys
  * added in later phases have a single source of truth.
  * Phase 40 (D-20): persona change invalidates pm-* keys.
+ * Phase 53 Plan 02 (POLISH-01 / Pitfall 6 + A5): add the 3 bell count keys
+ * so the NotificationBell never renders a stale per-persona count after a
+ * persona switch ('pm-wish-counts', 'lm-queue-count', 'rd-overcommit-count').
  */
 const PERSONA_SCOPED_QUERY_KEYS: readonly string[] = [
   'pm-home',
@@ -29,6 +32,10 @@ const PERSONA_SCOPED_QUERY_KEYS: readonly string[] = [
   'line-manager-timeline',
   'staff-schedule',
   'rd-portfolio',
+  // v6.0 Phase 53-02 (POLISH-01): NotificationBell count hooks
+  'pm-wish-counts',
+  'lm-queue-count',
+  'rd-overcommit-count',
 ];
 
 const STORAGE_KEY = 'nc:persona';
