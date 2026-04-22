@@ -18,6 +18,12 @@
 // flag-off parity invariant) is done via direct `UPDATE feature_flags`
 // — that DB helper is added in Plan 05 when the parity spec gets its
 // richer assertions.
+//
+// Phase 53-01 Task 3: the seed route additionally inserts
+// `{ flag_name: 'uiV6Polish', enabled: true }` so Phase 53 chrome-polish
+// journey behaviour is on by default. Specs that want flag-off behaviour
+// (the _diagnostic spec + Plan 05 flag-off parity) flip it via
+// `setPolishFlag(request, false)` in `e2e/helpers/flag-toggle.ts`.
 
 import type { APIRequestContext, Page } from '@playwright/test';
 

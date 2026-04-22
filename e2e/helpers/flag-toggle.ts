@@ -55,3 +55,20 @@ export function enablePerJourney(r: APIRequestContext | Page) {
 export function disablePerJourney(r: APIRequestContext | Page) {
   return setFlag(r, { flagName: 'uiV6PerJourney', enabled: false });
 }
+
+/**
+ * Phase 53-01 Task 3: flip the chrome-polish flag for the test tenant.
+ *
+ * `uiV6Polish` is seeded ON by /api/test/seed. Specs that want to exercise
+ * flag-off behaviour (the POLISH-07 diagnostic spec + Plan 05's flag-off
+ * parity spec) call `setPolishFlag(false)` before navigation. When the
+ * /api/test/flags endpoint is not wired, the call resolves with
+ * `{ applied: false, reason }` and the caller may choose to skip or
+ * annotate the test.
+ */
+export async function setPolishFlag(
+  requestOrPage: APIRequestContext | Page,
+  enabled: boolean,
+): Promise<{ applied: boolean; reason?: string }> {
+  return setFlag(requestOrPage, { flagName: 'uiV6Polish', enabled });
+}

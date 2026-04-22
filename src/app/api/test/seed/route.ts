@@ -265,12 +265,24 @@ export async function POST(): Promise<Response> {
       passwordHash: 'e2e-no-login',
       name: 'E2E System',
     });
-    await tx.insert(featureFlags).values({
-      organizationId: E2E_ORG_ID,
-      flagName: 'uiV6PerJourney',
-      enabled: true,
-      setByAdminId: E2E_PLATFORM_ADMIN_ID,
-    });
+    await tx.insert(featureFlags).values([
+      {
+        organizationId: E2E_ORG_ID,
+        flagName: 'uiV6PerJourney',
+        enabled: true,
+        setByAdminId: E2E_PLATFORM_ADMIN_ID,
+      },
+      // Phase 53-01 Task 3: seed `uiV6Polish` ON so every journey spec
+      // starts with the Phase 53 chrome-polish flag enabled. Specs that
+      // need the flag OFF flip it explicitly via `setPolishFlag(false)`
+      // from `e2e/helpers/flag-toggle.ts`.
+      {
+        organizationId: E2E_ORG_ID,
+        flagName: 'uiV6Polish',
+        enabled: true,
+        setByAdminId: E2E_PLATFORM_ADMIN_ID,
+      },
+    ]);
 
     // Allocation proposals. targetDepartmentId is required by schema but
     // not in the bundle — derive from the target person's department.
