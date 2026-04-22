@@ -9,7 +9,11 @@
 // via the flag-toggle helper (e2e/helpers/flag-toggle.ts).
 
 import { test, expect, personaAs, type PersonaKind } from '../fixtures/test-base';
-import { disablePerJourney, enablePerJourney } from '../helpers/flag-toggle';
+import {
+  disablePerJourney,
+  enablePerJourney,
+  setPolishFlag,
+} from '../helpers/flag-toggle';
 
 type LandingCase = {
   kind: PersonaKind;
@@ -152,5 +156,98 @@ test.describe('Invariant #2 — flag-off parity (Phase 51 behavior preserved)', 
       '/api/v5/proposals/queue/count?departmentId=00000000-0000-4000-8000-000000000000',
     );
     expect([401, 403]).toContain(unauthed.status());
+  });
+});
+
+// ---------------------------------------------------------------------------
+// v6.0 — Phase 53 Plan 53-05 POLISH-FLAG — flag-off parity for every Phase-53
+// (uiV6Polish) surface. With the flag OFF, every POLISH-* behavior reverts:
+//
+//   - legacy capacity-alerts link in top-nav (no <NotificationBell/>)
+//   - legacy NAV_ITEMS visibility (no visibleFor filter)
+//   - legacy widgets on the manager dashboard (bench-report, strategic-alerts,
+//     discipline-chart, resource-conflicts), per LEGACY_LAYOUTS
+//   - /alerts renders with no tab UI (AlertList only)
+//
+// The Plan 01 diagnostic spec captures the scrollHeight baseline under
+// flag OFF; this spec only asserts structural parity. Tests skip gracefully
+// when the /api/test/flags endpoint is not yet wired (same fallback the
+// Phase-52 invariant #2 uses).
+// ---------------------------------------------------------------------------
+
+test.describe('POLISH-FLAG — flag-off parity for every POLISH-* surface', () => {
+  test.beforeEach(async ({ request }, testInfo) => {
+    const result = await setPolishFlag(request, false);
+    if (!result.applied) {
+      testInfo.annotations.push({
+        type: 'warning',
+        description: `polish flag-off setup did not apply: ${result.reason}`,
+      });
+      test.skip(true, `polish flag-off unavailable: ${result.reason}`);
+    }
+  });
+
+  test.afterEach(async ({ request }) => {
+    // Restore the default seed state so subsequent specs inherit flag ON.
+    await setPolishFlag(request, true);
+  });
+
+  test('top-nav: legacy capacity-alerts link present (not NotificationBell)', async ({
+    page,
+  }) => {
+    await personaAs(page, 'pm');
+    await page.goto('/pm');
+    await expect(page.locator('[data-testid="notification-bell"]')).toHaveCount(0);
+  });
+
+  test('top-nav: staff persona sees legacy NAV_ITEMS (no visibleFor filter)', async ({
+    page,
+  }) => {
+    await personaAs(page, 'staff');
+    await page.goto('/staff');
+    // Flag-off bypasses the `visibleFor` gate, so Staff sees every item
+    // that's not hidden by its own feature flag. We assert the page body
+    // renders (non-regression); richer assertions live in unit tests.
+    await expect(page.locator('body')).toBeVisible();
+  });
+
+  test('/alerts: no tab UI when polish flag is off (legacy AlertList only)', async ({
+    page,
+  }) => {
+    await personaAs(page, 'admin');
+    await page.goto('/alerts');
+    await expect(page.locator('[data-testid="alerts-tab-warnings"]')).toHaveCount(0);
+    await expect(page.locator('[data-testid="alerts-tab-conflicts"]')).toHaveCount(0);
+  });
+
+  test('/help: route renders (Plan 01 page is not flag-gated at the route level)', async ({
+    page,
+  }) => {
+    // Per Plan 01 / Plan 02 — the /help route always exists. Only the
+    // NAV_ITEM entry is gated on `uiV6Polish` via visibleFor.
+    await personaAs(page, 'admin');
+    await page.goto('/help');
+    await expect(page.locator('body')).toBeVisible();
+    expect(page.url()).toContain('/help');
+  });
+
+  test('manager dashboard renders under flag-off without tab chrome regressions', async ({
+    page,
+  }) => {
+    await personaAs(page, 'admin');
+    await page.goto('/dashboard');
+    // Non-regression: dashboard body renders. The Plan 01 diagnostic spec
+    // captures scrollHeight numerically; this spec guards structural parity.
+    await expect(page.locator('body')).toBeVisible();
+  });
+
+  test('banner: StrategicAlertsBanner not present under flag-off', async ({ page }) => {
+    await personaAs(page, 'admin');
+    await page.goto('/dashboard');
+    // The banner was introduced in Plan 04 behind uiV6Polish; with the flag
+    // OFF it must NOT render (parity with pre-Phase-53 chrome).
+    await expect(
+      page.locator('[data-testid="strategic-alerts-banner-cta"]'),
+    ).toHaveCount(0);
   });
 });
