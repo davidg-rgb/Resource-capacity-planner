@@ -15,6 +15,7 @@ const FLAG_LABELS: Record<FlagName, string> = {
   uiV6Landing: 'v6 Persona Landing',
   uiV6LeanTrim: 'v6 Lean Trim',
   uiV6PerJourney: 'v6 Per-journey Friction Fixes',
+  uiV6Polish: 'v6 Chrome Polish',
 };
 
 interface ImpersonateUser {

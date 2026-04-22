@@ -35,6 +35,7 @@ const flagsAllOff: FeatureFlags = {
   uiV6Landing: false,
   uiV6LeanTrim: false,
   uiV6PerJourney: false,
+  uiV6Polish: false,
 };
 
 const LM_PERSONA = JSON.stringify({

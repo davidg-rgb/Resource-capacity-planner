@@ -7,6 +7,7 @@ export const FLAG_NAMES = [
   'uiV6Landing',
   'uiV6LeanTrim',
   'uiV6PerJourney',
+  'uiV6Polish',
 ] as const;
 export type FlagName = (typeof FLAG_NAMES)[number];
 
@@ -19,6 +20,7 @@ export interface FeatureFlags {
   uiV6Landing: boolean;
   uiV6LeanTrim: boolean;
   uiV6PerJourney: boolean;
+  uiV6Polish: boolean;
 }
 
 export const FLAG_ROUTE_MAP: Record<FlagName, string[]> = {
@@ -30,4 +32,5 @@ export const FLAG_ROUTE_MAP: Record<FlagName, string[]> = {
   uiV6Landing: [],
   uiV6LeanTrim: [],
   uiV6PerJourney: [],
+  uiV6Polish: [],
 };

@@ -48,6 +48,7 @@ const flagsAllOff: FeatureFlags = {
   uiV6Landing: false,
   uiV6LeanTrim: false,
   uiV6PerJourney: false,
+  uiV6Polish: false,
 };
 
 const RD_PERSONA = JSON.stringify({ kind: 'rd', displayName: 'FoU-chef' });

@@ -13,6 +13,7 @@ const DEFAULT_FLAGS: FeatureFlags = {
   uiV6Landing: false,
   uiV6LeanTrim: false,
   uiV6PerJourney: false,
+  uiV6Polish: false,
 };
 
 const FlagContext = createContext<FeatureFlags>(DEFAULT_FLAGS);

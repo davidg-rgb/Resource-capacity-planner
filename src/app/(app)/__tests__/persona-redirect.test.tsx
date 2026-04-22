@@ -61,6 +61,7 @@ const DEFAULT_FLAGS: FeatureFlags = {
   uiV6Landing: true,
   uiV6LeanTrim: false,
   uiV6PerJourney: false,
+  uiV6Polish: false,
 };
 
 const mockUseFlags = vi.fn().mockReturnValue(DEFAULT_FLAGS);
