@@ -26,8 +26,19 @@ const LANDINGS: LandingCase[] = [
 ];
 
 test.describe('Invariant #2 — flag-off parity (Phase 51 behavior preserved)', () => {
-  test.beforeEach(async ({ request }) => {
-    await disablePerJourney(request);
+  test.beforeEach(async ({ request }, testInfo) => {
+    // v6.0 — Phase 52 / REVIEW-FIX WR-02: don't silently run against the
+    // seed baseline (flag ON) when the flag-toggle endpoint is absent.
+    // Annotate + skip so CI output accurately reflects that flag-off
+    // parity wasn't actually exercised, rather than reporting a false pass.
+    const result = await disablePerJourney(request);
+    if (!result.applied) {
+      testInfo.annotations.push({
+        type: 'warning',
+        description: `flag-off setup did not apply: ${result.reason}`,
+      });
+      test.skip(true, `flag-off unavailable: ${result.reason}`);
+    }
   });
 
   test.afterEach(async ({ request }) => {
@@ -78,9 +89,7 @@ test.describe('Invariant #2 — flag-off parity (Phase 51 behavior preserved)', 
     await expect(page.locator('body')).toBeVisible();
   });
 
-  test('R&D: flag-off → zoom control still renders, aggregation pins month', async ({
-    page,
-  }) => {
+  test('R&D: flag-off → zoom control still renders, aggregation pins month', async ({ page }) => {
     await personaAs(page, 'rd');
     await page.goto('/rd');
     // Zoom control is always mounted (parity) — but per D-08 + the
@@ -93,9 +102,7 @@ test.describe('Invariant #2 — flag-off parity (Phase 51 behavior preserved)', 
     }
   });
 
-  test('R&D: flag-off → red cell opens existing drawer, NOT OvercommitDialog', async ({
-    page,
-  }) => {
+  test('R&D: flag-off → red cell opens existing drawer, NOT OvercommitDialog', async ({ page }) => {
     await personaAs(page, 'rd');
     await page.goto('/rd');
     // Flag-off preserves Phase 51's cell → drawer path. When no red cell
@@ -107,9 +114,7 @@ test.describe('Invariant #2 — flag-off parity (Phase 51 behavior preserved)', 
     await expect(dialog).toHaveCount(0);
   });
 
-  test('Admin: flag-off → ADMIN-01 toast still surfaces (NOT flag-gated)', async ({
-    page,
-  }) => {
+  test('Admin: flag-off → ADMIN-01 toast still surfaces (NOT flag-gated)', async ({ page }) => {
     // ADMIN-01 is explicitly NOT flag-gated per CONTEXT — the toast fires
     // regardless of flag state. This is a non-regression assertion.
     await personaAs(page, 'admin');
@@ -123,9 +128,7 @@ test.describe('Invariant #2 — flag-off parity (Phase 51 behavior preserved)', 
   // Invariant #3 — ISO 53-week-year correctness (Pitfall #4 smoke)
   // ---------------------------------------------------------------------
 
-  test('Invariant #3: 2026 year-mode column header reads exactly "2026"', async ({
-    page,
-  }) => {
+  test('Invariant #3: 2026 year-mode column header reads exactly "2026"', async ({ page }) => {
     await personaAs(page, 'rd');
     await page.goto('/rd');
     // With flag OFF the zoom control pins aggregation to month, so this
