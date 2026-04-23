@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v5.0
-milestone_name: Plan vs Actual + Approval Workflow
-status: Milestone complete
-stopped_at: Phase 52 context gathered
-last_updated: "2026-04-22T11:49:30.488Z"
-last_activity: 2026-04-22
+milestone: v6.0
+milestone_name: UI Restructure & Journey Frictionless
+status: Required phases complete (Phase 54 optional/deferred)
+stopped_at: Phase 53 shipped 2026-04-22
+last_updated: "2026-04-23T00:00:00.000Z"
+last_activity: 2026-04-23
 progress:
-  total_phases: 48
-  completed_phases: 48
-  total_plans: 140
-  completed_plans: 140
+  total_phases: 53
+  completed_phases: 53
+  total_plans: 161
+  completed_plans: 161
   percent: 100
 ---
 
@@ -34,26 +34,29 @@ v5.0 artifacts (completed, do not re-review):
 - .planning/milestones/v5.0-REQUIREMENTS.md (archived)
 
 **Core value:** Every user journey at its target click-count — remove persona-blind chrome, delete duplicate surfaces, unblock the Line Manager / PM / Admin pages that regress today. No new features.
-**Current focus:** Phase 48 — Pre-flight verification
+**Current focus:** v6.0 required work complete. Phase 54 (dashboard quadrant redesign) deferred pending Phase 53 viewport diagnostic telemetry.
 
 ## Current Position
 
-Phase: 53
-Plan: Not started
-Next command: `/gsd-discuss-phase 48` or `/gsd-plan-phase 48`
-Last activity: 2026-04-22
+Phase: 53 (shipped)
+Plan: Complete
+Next command: none — milestone required phases done. Options:
+  - `/gsd-verify-work 53` to continue live validation
+  - `/gsd-discuss-phase 54` only if POLISH-07 SOFT-gate artifacts indicate quadrant redesign is warranted
+  - `/gsd-complete-milestone v6.0` to archive
+Last activity: 2026-04-23
 
 ## v6.0 Phase Status
 
 | Phase | Name | Status |
 |-------|------|--------|
-| 48 | Pre-flight verification | Not started |
-| 49 | Unbreak broken persona surfaces | Not started |
-| 50 | Persona-aware landing & navigation | Not started |
-| 51 | Lean cleanup — duplicate removal | Not started |
-| 52 | Per-journey friction fixes | Not started |
-| 53 | Chrome polish | Not started |
-| 54 | Dashboard quadrant redesign (optional) | Deferred |
+| 48 | Pre-flight verification | Complete |
+| 49 | Unbreak broken persona surfaces | Complete |
+| 50 | Persona-aware landing & navigation | Complete |
+| 51 | Lean cleanup — duplicate removal | Complete |
+| 52 | Per-journey friction fixes | Complete |
+| 53 | Chrome polish | Complete (shipped 2026-04-22; UAT Test 2 partial-pass, Tests 1+3 pending) |
+| 54 | Dashboard quadrant redesign (optional) | Deferred — telemetry-gated on POLISH-07 |
 
 ## Previous Milestones
 
@@ -64,6 +67,7 @@ Last activity: 2026-04-22
 | v3.0 Switch from Excel | 18-22 | Complete | 2026-03-30 |
 | v4.0 Dashboard Visualizations | 23-32 | Complete | 2026-04-01 |
 | v5.0 Plan vs Actual + Approval | 33-47 | Complete | 2026-04-13 |
+| v6.0 UI Restructure & Journey Frictionless | 48-53 | Required phases complete | 2026-04-22 |
 
 ## Accumulated Context
 
@@ -87,17 +91,23 @@ Last activity: 2026-04-22
 
 ### Pending Todos
 
-None.
+- **53-HUMAN-UAT Test 1 (POLISH-07 SOFT gate):** capture `manager-1440x900-polishOn.json` + `project-leader-1440x900-polishOn.json` viewport artifacts from CI; feeds Phase 54 go/no-go.
+- **53-HUMAN-UAT Test 2 remaining combos:** Staff + flag-ON (bell null expected) and all 5 personas + flag-OFF (legacy chrome parity).
+- **53-HUMAN-UAT Test 3:** operator migration rowcount check for the three 20260422_polish_* one-shot SQL migrations against production.
 
 ### Blockers/Concerns
 
-- **Phase 48 must complete before any code change.** 3-agent review surfaced 9 unverified assumptions (getLandingRoute existence, `/api/v5/proposals/queue/count` existence, Phase 41 department picker status, admin API 500 root causes, custom-dashboard widget references, existing Playwright spec classification, sidebar i18n collision map, `v5.persona.kinds.*` key presence, plan-vs-actual cell reuse). Pre-flight report resolves each or expands downstream phase scope.
+- **Dev env harness gaps logged during Phase 53 UAT:**
+  - `/api/test/seed` fails under neon-http driver (no transactions). Workaround: direct SQL insert for flag toggling.
+  - `/api/v5/proposals/queue/count` + `/api/v5/capacity/overcommit/count` 404 in dev Turbopack; counts always read 0. Production behavior not affected per route tests.
+  - Route-level `requireRole()` returns 401 even with `E2E_TEST` proxy bypass — Clerk session-level guards still fire.
+  - Intermittent Turbopack panics on `/team/page` cause 500s and stale React state.
 
 ## Session Continuity
 
-Last session: 2026-04-21T10:31:36.133Z
-Stopped at: Phase 52 context gathered
+Last session: 2026-04-22T11:49:30.488Z
+Stopped at: Phase 53 shipped (commit eb9807f)
 
 ---
 
-_Last updated: 2026-04-15 — v6.0 initialized_
+_Last updated: 2026-04-23 — v6.0 required phases complete; STATE.md realigned from stale v5.0/Phase 48 pointer_
