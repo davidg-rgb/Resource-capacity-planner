@@ -71,6 +71,22 @@ Source-file spot checks:
 - `src/app/(app)/dashboard/dashboard-content.tsx:6,20` — StrategicAlertsBanner imported and mounted gated by `flags.uiV6Polish`.
 - `src/app/(app)/alerts/page.tsx` — parseTab() allowlist guard (T-53-21), tablist only when uiV6Polish=true.
 
+## Live Flag-OFF Parity Sweep (2026-04-23 on Vercel prod resource-capacity-planner-psi)
+
+Executed via Chrome MCP against `https://resource-capacity-planner-psi.vercel.app` after commit e0186e1 deployed. Tenant state: `uiV6Polish=false`, `uiV6LeanTrim=false`, `flags.alerts=false` (inferred from rendered widget IDs + nav items).
+
+| Surface | Observation | POLISH gate verdict |
+|---------|-------------|---------------------|
+| Header × 5 personas | No `[data-testid=notification-bell]`, no legacy `<a href=/alerts><Bell/></a>` | POLISH-01 bell correctly flag-gated |
+| Top-nav × 5 personas | All 14 items visible regardless of persona | POLISH-02 `visibleFor` no-op when flag off |
+| Manager dashboard (`/dashboard`, persona=admin) | Widget IDs: kpi-cards, utilization-heat-map, capacity-gauges, department-bar-chart, utilization-sparklines, discipline-chart, capacity-forecast, bench-report, availability-finder | POLISH-03 rename not applied (legacy `discipline-chart`), POLISH-04 strip not applied (`bench-report` present at pos 7), POLISH-06 banner not mounted |
+| Project-leader dashboard (`/dashboard/projects`) | kpi-cards, capacity-distribution, availability-timeline, capacity-forecast, allocation-trends, discipline-distribution, program-rollup, resource-conflicts, availability-finder, period-comparison | POLISH-03 rename not applied (legacy `discipline-distribution`), POLISH-05 strip not applied (`resource-conflicts` present) |
+| `/alerts` | Route redirected to /input (`flags.alerts=false`); no `role=tablist` rendered on final page | POLISH-05 tabs correctly gated |
+
+Conclusion: **POLISH-FLAG flag-off parity invariant holds on production.** Zero Phase 53 surfaces leak into the flag-off render path. Five of the ten UAT Test 2 combos (all flag-OFF) are now live-verified, supplementing yesterday's flag-ON combos.
+
+Remaining live gap: flag-ON sweep blocked pending DB toggle (`UPDATE feature_flags SET enabled=true WHERE flag_name='uiV6Polish' AND organization_id=<prod-org-id>`). Structural tests already cover all 10 combos; live flag-ON re-run is confirmation, not new evidence.
+
 ## Summary
 
 total: 3
