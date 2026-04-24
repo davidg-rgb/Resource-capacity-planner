@@ -30,6 +30,7 @@ import { Bell } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useAuth } from '@clerk/nextjs';
 
+import { ALERTS_WINDOW_MONTHS } from '@/features/alerts/constants';
 import { useFlags } from '@/features/flags/flag.context';
 import { usePersona } from '@/features/personas/persona.context';
 import { usePmWishCounts } from '@/features/proposals/use-pm-wish-counts';
@@ -46,7 +47,7 @@ export function NotificationBell() {
   const t = useTranslations('v6.polish.bell');
 
   const monthFrom = getCurrentMonth();
-  const months = generateMonthRange(monthFrom, 4);
+  const months = generateMonthRange(monthFrom, ALERTS_WINDOW_MONTHS);
   const monthTo = months[months.length - 1];
 
   const pmEnabled = uiV6Polish && persona.kind === 'pm' && !!userId;

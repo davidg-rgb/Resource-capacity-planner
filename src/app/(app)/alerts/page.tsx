@@ -25,6 +25,7 @@ import {
   ResourceConflictsPanel,
   defaultConflictsTimeRange,
 } from '@/components/alerts/resource-conflicts-panel';
+import { ALERTS_WINDOW_MONTHS } from '@/features/alerts/constants';
 import { useFlags } from '@/features/flags/flag.context';
 import { useAlerts } from '@/hooks/use-alerts';
 import { generateMonthRange, getCurrentMonth } from '@/lib/date-utils';
@@ -39,9 +40,7 @@ type AlertsTab = (typeof ALERTS_TABS)[number];
 function parseTab(raw: string | null): AlertsTab {
   // T-53-21: narrow client-controlled tab param to the allowlist; any
   // other value falls through to the default 'warnings' tab.
-  return (ALERTS_TABS as readonly string[]).includes(raw ?? '')
-    ? (raw as AlertsTab)
-    : 'warnings';
+  return (ALERTS_TABS as readonly string[]).includes(raw ?? '') ? (raw as AlertsTab) : 'warnings';
 }
 
 export default function AlertsPage() {
@@ -54,7 +53,7 @@ export default function AlertsPage() {
   const tab: AlertsTab = parseTab(searchParams.get('tab'));
 
   const monthFrom = getCurrentMonth();
-  const monthTo = generateMonthRange(monthFrom, 3).at(-1)!;
+  const monthTo = generateMonthRange(monthFrom, ALERTS_WINDOW_MONTHS).at(-1)!;
   const { data, isLoading, isError, error } = useAlerts(monthFrom, monthTo);
 
   const conflictsTimeRange = useMemo(() => defaultConflictsTimeRange(), []);

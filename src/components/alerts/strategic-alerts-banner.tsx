@@ -9,21 +9,22 @@ import Link from 'next/link';
 import { AlertTriangle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { ALERTS_WINDOW_MONTHS } from '@/features/alerts/constants';
 import { useAlerts } from '@/hooks/use-alerts';
 import { generateMonthRange, getCurrentMonth } from '@/lib/date-utils';
 
 /**
  * Inline banner that summarises the current count of active capacity alerts
  * and links to the full `/alerts` page. Re-uses the existing `useAlerts` hook
- * (no new endpoint) and the same 4-month window (current + 3) used by the
- * TopNav AlertBadge for consistency.
+ * (no new endpoint) and the shared `ALERTS_WINDOW_MONTHS` window so the
+ * banner, /alerts page and NotificationBell all query the same cache.
  *
  * Renders nothing when the count is 0 (empty-state short-circuit).
  */
 export function StrategicAlertsBanner() {
   const t = useTranslations('v6.polish.banner');
   const monthFrom = getCurrentMonth();
-  const monthTo = generateMonthRange(monthFrom, 3).at(-1) ?? monthFrom;
+  const monthTo = generateMonthRange(monthFrom, ALERTS_WINDOW_MONTHS).at(-1) ?? monthFrom;
   const { data: alerts } = useAlerts(monthFrom, monthTo);
 
   const count = alerts?.length ?? 0;
