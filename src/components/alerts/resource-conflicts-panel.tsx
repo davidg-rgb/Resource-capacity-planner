@@ -47,7 +47,8 @@ function getDismissed(): Set<string> {
   try {
     const stored = localStorage.getItem(DISMISSED_KEY);
     return stored ? new Set(JSON.parse(stored)) : new Set();
-  } catch {
+  } catch (err) {
+    console.warn('[alerts] failed to parse dismissed list', err);
     return new Set();
   }
 }
@@ -310,13 +311,14 @@ export const ResourceConflictsPanel = React.memo(function ResourceConflictsPanel
     targetHours: number;
   } | null>(null);
 
+  // Use timeRange.from if available, otherwise current month.
+  // (Falls back to a computed default so the panel works outside the
+  // widget shell — e.g. AlertsPage route.)
+  const rangeFrom = timeRange?.from;
   const currentMonth = useMemo(() => {
-    // Use timeRange.from if available, otherwise current month.
-    // (Falls back to a computed default so the panel works outside the
-    // widget shell — e.g. AlertsPage route.)
-    if (timeRange?.from) return timeRange.from.slice(0, 7);
+    if (rangeFrom) return rangeFrom.slice(0, 7);
     return getCurrentMonth();
-  }, [timeRange?.from]);
+  }, [rangeFrom]);
 
   const monthsCount = viewMode === 'multi' ? 3 : 1;
   const { data, isLoading, error } = useConflicts(currentMonth, monthsCount);
