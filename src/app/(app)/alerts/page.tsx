@@ -46,6 +46,7 @@ function parseTab(raw: string | null): AlertsTab {
 export default function AlertsPage() {
   const flags = useFlags();
   const t = useTranslations('v6.polish.alerts.tabs');
+  const tPage = useTranslations('v6.polish.alerts.page');
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -95,11 +96,9 @@ export default function AlertsPage() {
     <>
       <Breadcrumbs />
       <h1 className="font-headline text-on-surface text-3xl font-semibold tracking-tight">
-        Capacity Alerts
+        {tPage('title')}
       </h1>
-      <p className="text-on-surface-variant mt-2 text-sm">
-        People with allocation levels outside healthy thresholds.
-      </p>
+      <p className="text-on-surface-variant mt-2 text-sm">{tPage('subtitle')}</p>
 
       {flags.uiV6Polish && (
         <div
@@ -125,9 +124,11 @@ export default function AlertsPage() {
                 onClick={() => setTab(key)}
                 data-testid={`alerts-tab-${key}`}
                 className={
+                  // UI-MN-04: px-4 py-3 gives a ≥44px tap target per WCAG 2.5.5.
+                  // -mb-px keeps the border-b-2 selection underline flush.
                   isActive
-                    ? 'border-primary text-primary border-b-2 pb-2 font-semibold'
-                    : 'text-on-surface-variant pb-2'
+                    ? 'border-primary text-primary -mb-px border-b-2 px-4 py-3 font-semibold'
+                    : 'text-on-surface-variant -mb-px px-4 py-3'
                 }
               >
                 {t(key)}

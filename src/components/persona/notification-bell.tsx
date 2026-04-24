@@ -94,6 +94,11 @@ export function NotificationBell() {
     label = t('adminAlertsLabel', { count });
   }
 
+  // UI-MN-02: zero-state parity with PendingWishChip — return null instead
+  // of announcing "0 X" for non-admin personas. Admin bell still renders at
+  // zero because /alerts is the admin's actionable fall-through destination.
+  if (count === 0 && persona.kind !== 'admin') return null;
+
   return (
     <Link
       href={href}

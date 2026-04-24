@@ -877,6 +877,10 @@
         "externalDocs": "Open external documentation"
       },
       "alerts": {
+        "page": {
+          "title": "Capacity Alerts",
+          "subtitle": "People with allocation levels outside healthy thresholds."
+        },
         "tabs": {
           "warnings": "Warnings",
           "conflicts": "Conflicts"

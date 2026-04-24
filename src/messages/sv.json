@@ -942,6 +942,10 @@
         "externalDocs": "Öppna extern dokumentation"
       },
       "alerts": {
+        "page": {
+          "title": "Kapacitetsvarningar",
+          "subtitle": "Personer med beläggningsnivåer utanför säkra gränser."
+        },
         "tabs": {
           "warnings": "Varningar",
           "conflicts": "Konflikter"

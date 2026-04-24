@@ -42,7 +42,9 @@ export function StrategicAlertsBanner() {
       <Link
         href="/alerts"
         data-testid="strategic-alerts-banner-cta"
-        className="text-primary text-sm font-semibold hover:underline"
+        // UI-MN-04: px-3 py-2 (with negative margins to keep the visual size
+        // stable) brings the tap target ≥44x44px per WCAG 2.5.5.
+        className="text-primary -mx-3 -my-2 rounded px-3 py-2 text-sm font-semibold hover:underline"
       >
         {t('cta')}
       </Link>

@@ -43,7 +43,8 @@ export function normalizeProjectStaffing(
 
   const byDiscipline = new Map<string, number>();
   for (const person of data.people) {
-    const key = person.discipline && person.discipline.length > 0 ? person.discipline : 'unassigned';
+    const key =
+      person.discipline && person.discipline.length > 0 ? person.discipline : 'unassigned';
     const personTotal = Object.values(person.months ?? {}).reduce(
       (sum, h) => sum + (typeof h === 'number' ? h : 0),
       0,
@@ -137,7 +138,10 @@ export function DisciplineBreakdownWidget({ config, timeRange }: WidgetProps) {
       <div
         role="tablist"
         aria-label={`${t('toggleBar')} / ${t('toggleDonut')}`}
-        className="flex gap-2 text-sm"
+        // UI-MN-01: wrap in a pill group so the toggles read as a control,
+        // not orphan text links. Mirrors the viewMode toggle pattern in
+        // resource-conflicts-panel.tsx.
+        className="bg-surface-container-low inline-flex gap-1 rounded-md p-1 text-sm"
       >
         <button
           type="button"
@@ -146,8 +150,8 @@ export function DisciplineBreakdownWidget({ config, timeRange }: WidgetProps) {
           onClick={() => setChartType('bar')}
           className={
             chartType === 'bar'
-              ? 'text-on-surface font-semibold underline underline-offset-4'
-              : 'text-on-surface-variant hover:text-on-surface'
+              ? 'bg-surface text-on-surface rounded px-3 py-1 font-semibold shadow-sm'
+              : 'text-on-surface-variant hover:text-on-surface rounded px-3 py-1'
           }
         >
           {t('toggleBar')}
@@ -159,8 +163,8 @@ export function DisciplineBreakdownWidget({ config, timeRange }: WidgetProps) {
           onClick={() => setChartType('donut')}
           className={
             chartType === 'donut'
-              ? 'text-on-surface font-semibold underline underline-offset-4'
-              : 'text-on-surface-variant hover:text-on-surface'
+              ? 'bg-surface text-on-surface rounded px-3 py-1 font-semibold shadow-sm'
+              : 'text-on-surface-variant hover:text-on-surface rounded px-3 py-1'
           }
         >
           {t('toggleDonut')}
