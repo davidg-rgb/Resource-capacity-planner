@@ -179,4 +179,44 @@ describe('AlertsPage tabs (Plan 53-05 POLISH-05)', () => {
     expect(screen.queryByTestId('resource-conflicts-panel-stub')).toBeNull();
     expect(screen.getByTestId('alert-list-stub')).toBeTruthy();
   });
+
+  it('UI-02: tabs wire aria-controls + tabpanel + roving tabIndex (APG)', () => {
+    tabState.current = null;
+    render(
+      <Wrapper>
+        <AlertsPage />
+      </Wrapper>,
+    );
+
+    const warningsTab = screen.getByTestId('alerts-tab-warnings');
+    const conflictsTab = screen.getByTestId('alerts-tab-conflicts');
+    expect(warningsTab.getAttribute('id')).toBe('alerts-tab-warnings');
+    expect(warningsTab.getAttribute('aria-controls')).toBe('alerts-panel-warnings');
+    expect(conflictsTab.getAttribute('aria-controls')).toBe('alerts-panel-conflicts');
+
+    // Roving tabindex: active=0, inactive=-1.
+    expect(warningsTab.getAttribute('tabindex')).toBe('0');
+    expect(conflictsTab.getAttribute('tabindex')).toBe('-1');
+
+    // Panel is labeled by the active tab.
+    const panel = document.getElementById('alerts-panel-warnings');
+    expect(panel).not.toBeNull();
+    expect(panel!.getAttribute('role')).toBe('tabpanel');
+    expect(panel!.getAttribute('aria-labelledby')).toBe('alerts-tab-warnings');
+  });
+
+  it('UI-02: ArrowRight on the tablist moves selection + calls router.replace', () => {
+    tabState.current = null;
+    render(
+      <Wrapper>
+        <AlertsPage />
+      </Wrapper>,
+    );
+
+    const warningsTab = screen.getByTestId('alerts-tab-warnings');
+    fireEvent.keyDown(warningsTab, { key: 'ArrowRight' });
+
+    expect(replaceMock).toHaveBeenCalledTimes(1);
+    expect(replaceMock.mock.calls[0][0]).toBe('/alerts?tab=conflicts');
+  });
 });

@@ -15,6 +15,7 @@
 // /pm/wishes?tab=rejected deep-link: useSearchParams + router.replace
 // (both require 'use client' — Pitfall 2 in 53-RESEARCH).
 
+import { useRef } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
@@ -57,11 +58,38 @@ export default function AlertsPage() {
 
   const conflictsTimeRange = defaultConflictsTimeRange();
 
+  // UI-02: roving-focus refs for ArrowLeft/ArrowRight tab keyboard nav (APG).
+  const tabRefs = useRef<Record<AlertsTab, HTMLButtonElement | null>>({
+    warnings: null,
+    conflicts: null,
+  });
+
   function setTab(next: AlertsTab) {
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', next);
     router.replace(`${pathname}?${params.toString()}`);
   }
+
+  function onTablistKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    // APG tabs pattern: ArrowLeft/ArrowRight cycles through tabs, focus + activate.
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    const currentIndex = ALERTS_TABS.indexOf(tab);
+    const delta = event.key === 'ArrowRight' ? 1 : -1;
+    const nextIndex = (currentIndex + delta + ALERTS_TABS.length) % ALERTS_TABS.length;
+    const nextTab = ALERTS_TABS[nextIndex];
+    setTab(nextTab);
+    tabRefs.current[nextTab]?.focus();
+  }
+
+  function tabButtonId(key: AlertsTab) {
+    return `alerts-tab-${key}`;
+  }
+  function tabPanelId(key: AlertsTab) {
+    return `alerts-panel-${key}`;
+  }
+
+  const activePanel: AlertsTab = flags.uiV6Polish && tab === 'conflicts' ? 'conflicts' : 'warnings';
 
   return (
     <>
@@ -74,37 +102,48 @@ export default function AlertsPage() {
       </p>
 
       {flags.uiV6Polish && (
-        <div role="tablist" className="mt-6 flex gap-4 border-b">
-          <button
-            role="tab"
-            aria-selected={tab === 'warnings'}
-            onClick={() => setTab('warnings')}
-            data-testid="alerts-tab-warnings"
-            className={
-              tab === 'warnings'
-                ? 'border-primary text-primary border-b-2 pb-2 font-semibold'
-                : 'text-on-surface-variant pb-2'
-            }
-          >
-            {t('warnings')}
-          </button>
-          <button
-            role="tab"
-            aria-selected={tab === 'conflicts'}
-            onClick={() => setTab('conflicts')}
-            data-testid="alerts-tab-conflicts"
-            className={
-              tab === 'conflicts'
-                ? 'border-primary text-primary border-b-2 pb-2 font-semibold'
-                : 'text-on-surface-variant pb-2'
-            }
-          >
-            {t('conflicts')}
-          </button>
+        <div
+          role="tablist"
+          aria-label={t('warnings') + ' / ' + t('conflicts')}
+          onKeyDown={onTablistKeyDown}
+          className="mt-6 flex gap-4 border-b"
+        >
+          {ALERTS_TABS.map((key) => {
+            const isActive = tab === key;
+            return (
+              <button
+                key={key}
+                ref={(el) => {
+                  tabRefs.current[key] = el;
+                }}
+                type="button"
+                role="tab"
+                id={tabButtonId(key)}
+                aria-controls={tabPanelId(key)}
+                aria-selected={isActive}
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => setTab(key)}
+                data-testid={`alerts-tab-${key}`}
+                className={
+                  isActive
+                    ? 'border-primary text-primary border-b-2 pb-2 font-semibold'
+                    : 'text-on-surface-variant pb-2'
+                }
+              >
+                {t(key)}
+              </button>
+            );
+          })}
         </div>
       )}
 
-      <div className="mt-6">
+      <div
+        className="mt-6"
+        id={tabPanelId(activePanel)}
+        role={flags.uiV6Polish ? 'tabpanel' : undefined}
+        aria-labelledby={flags.uiV6Polish ? tabButtonId(activePanel) : undefined}
+        tabIndex={flags.uiV6Polish ? 0 : undefined}
+      >
         {/* Conflicts tab only renders when the polish flag is ON AND tab=conflicts.
             Flag-off always falls through to the warnings view (parity). */}
         {flags.uiV6Polish && tab === 'conflicts' ? (
