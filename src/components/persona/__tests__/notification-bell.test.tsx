@@ -201,9 +201,13 @@ describe('NotificationBell (POLISH-01)', () => {
     adminAlertData.count = 0;
     const { rerender, container } = render(<NotificationBell />, { wrapper: makeWrapper() });
     const bell = screen.getByTestId('notification-bell');
-    // No "0" text inside the bell (no badge when count === 0).
-    // The aria-label may still include "0" as part of the message.
-    expect(bell.querySelector('span')).toBeNull();
+    // No VISIBLE badge span when count === 0. The sr-only live-region span
+    // (UI-01) is always present for screen-reader announcements, so filter
+    // it out before asserting.
+    const visibleSpans = Array.from(bell.querySelectorAll('span')).filter(
+      (s) => !s.classList.contains('sr-only'),
+    );
+    expect(visibleSpans).toHaveLength(0);
     void container;
 
     // count = 120 → "99+"
@@ -213,14 +217,34 @@ describe('NotificationBell (POLISH-01)', () => {
     expect(bell2.textContent).toContain('99+');
   });
 
+  it('Test 9: UI-01 — live region announces label updates politely', () => {
+    // Admin persona, count changes from 0 → 5. The visually-hidden
+    // aria-live="polite" span must carry the same label so screen readers
+    // announce the new count without requiring focus.
+    personaState.persona = { kind: 'admin', displayName: 'Admin' };
+    adminAlertData.count = 0;
+    const { rerender } = render(<NotificationBell />, { wrapper: makeWrapper() });
+    const live = screen.getByTestId('notification-bell-live');
+    expect(live.getAttribute('role')).toBe('status');
+    expect(live.getAttribute('aria-live')).toBe('polite');
+    expect(live.getAttribute('aria-atomic')).toBe('true');
+    expect(live.textContent).toContain('0');
+
+    adminAlertData.count = 5;
+    rerender(<NotificationBell />);
+    const live2 = screen.getByTestId('notification-bell-live');
+    expect(live2.textContent).toContain('5');
+    expect(live2.textContent).toContain('Varningar');
+  });
+
   it('Test 8: useRdOvercommitCount(false) → TanStack skips the fetch', async () => {
     // Re-import the REAL hook (not the mock) via vi.importActual so we can
     // observe that `enabled:false` prevents a network call.
     const actual = await vi.importActual<
       typeof import('@/features/proposals/use-rd-overcommit-count')
     >('@/features/proposals/use-rd-overcommit-count');
-    const fetchMock = vi.fn(() =>
-      Promise.resolve({ ok: true, status: 200, json: async () => ({ count: 42 }) }) as never,
+    const fetchMock = vi.fn(
+      () => Promise.resolve({ ok: true, status: 200, json: async () => ({ count: 42 }) }) as never,
     );
     vi.stubGlobal('fetch', fetchMock);
 

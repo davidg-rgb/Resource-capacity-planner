@@ -103,10 +103,25 @@ export function NotificationBell() {
     >
       <Bell size={18} />
       {count > 0 && (
-        <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+        <span
+          aria-hidden="true"
+          className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white"
+        >
           {count > 99 ? '99+' : count}
         </span>
       )}
+      {/* UI-01: screen readers only announce aria-label on focus; polling tick
+          updates (60s) stay silent without a live region. Mirror the label in
+          a visually-hidden live span so count changes announce politely. */}
+      <span
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        data-testid="notification-bell-live"
+        className="sr-only"
+      >
+        {label}
+      </span>
     </Link>
   );
 }
