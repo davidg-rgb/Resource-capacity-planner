@@ -1,7 +1,7 @@
 // v6.0 Phase 53 Plan 03 POLISH-03 Task 1 — DisciplineDonut primitive tests.
 // Covers empty-state short-circuit (Pitfall 7), normal rendering, and palette cycling.
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
 
 import { DisciplineDonut } from '../discipline-donut';
@@ -19,8 +19,6 @@ vi.mock('recharts', async () => {
       React.createElement('div', { 'data-testid': 'responsive-container' }, children),
   };
 });
-
-import { vi } from 'vitest';
 
 const THREE_ROWS: DisciplineBreakdown[] = [
   { disciplineId: 'sw', disciplineName: 'Software', totalHours: 120 },

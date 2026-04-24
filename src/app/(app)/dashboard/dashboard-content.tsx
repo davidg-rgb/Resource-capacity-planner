@@ -9,10 +9,10 @@ import { TimeRangeProvider } from '@/features/dashboard/dashboard-time-range';
 import { useFlags } from '@/features/flags/flag.context';
 
 export function DashboardContent() {
-  // v6.0 Phase 53 Plan 04 POLISH-06: render inline strategic-alerts banner above
-  // the manager dashboard grid when the polish flag is ON. Banner self-hides
-  // when alert count is 0; flag-off path preserves the legacy widget-based
-  // alerts panel via LEGACY_LAYOUTS.
+  // v6.0 Phase 53 POLISH-06: banner component from Plan 04; mounted here above
+  // the manager grid when the polish flag is ON. Banner self-hides when alert
+  // count is 0; flag-off path preserves the legacy widget-based alerts panel
+  // via LEGACY_LAYOUTS.
   const flags = useFlags();
 
   return (
