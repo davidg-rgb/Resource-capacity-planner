@@ -53,7 +53,7 @@ export default function AlertsPage() {
   const tab: AlertsTab = parseTab(searchParams.get('tab'));
 
   const monthFrom = getCurrentMonth();
-  const monthTo = generateMonthRange(monthFrom, ALERTS_WINDOW_MONTHS).at(-1)!;
+  const monthTo = generateMonthRange(monthFrom, ALERTS_WINDOW_MONTHS).at(-1) ?? monthFrom;
   const { data, isLoading, isError, error } = useAlerts(monthFrom, monthTo);
 
   const conflictsTimeRange = useMemo(() => defaultConflictsTimeRange(), []);
