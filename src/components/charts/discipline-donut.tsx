@@ -13,7 +13,7 @@ import type { DisciplineBreakdown } from '@/features/analytics/analytics.types';
 
 interface DisciplineDonutProps {
   data: DisciplineBreakdown[];
-  /** Override palette. Defaults to CHART_COLORS.palette. */
+  /** Override palette. Defaults to CHART_COLORS.categoricalPalette (UI-03). */
   colors?: string[];
 }
 
@@ -34,7 +34,7 @@ export function DisciplineDonut({ data, colors }: DisciplineDonutProps) {
     );
   }
 
-  const palette = colors ?? CHART_COLORS.palette;
+  const palette = colors ?? CHART_COLORS.categoricalPalette;
 
   return (
     <ResponsiveContainer width="100%" height={300}>
