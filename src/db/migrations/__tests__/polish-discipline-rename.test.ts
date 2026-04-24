@@ -35,11 +35,7 @@ async function resetTable() {
   await pg.exec('DELETE FROM dashboard_layouts;');
 }
 
-async function seedRow(
-  orgId: string,
-  dashboardId: string,
-  layout: unknown,
-): Promise<string> {
+async function seedRow(orgId: string, dashboardId: string, layout: unknown): Promise<string> {
   const res = await pg.query<{ id: string }>(
     `INSERT INTO dashboard_layouts (organization_id, dashboard_id, layout)
      VALUES ($1, $2, $3::jsonb) RETURNING id`,
@@ -82,10 +78,7 @@ describe('20260422_polish_discipline_rename migration', () => {
     await pg.exec(MIGRATION_SQL);
 
     const aLayout = (await getLayout(a)) as Array<{ widgetId: string }>;
-    expect(aLayout.map((p) => p.widgetId)).toEqual([
-      'kpi-cards',
-      'discipline-breakdown',
-    ]);
+    expect(aLayout.map((p) => p.widgetId)).toEqual(['kpi-cards', 'discipline-breakdown']);
 
     const uLayout = (await getLayout(untouched)) as Array<{ widgetId: string }>;
     expect(uLayout.map((p) => p.widgetId)).toEqual(['kpi-cards', 'capacity-forecast']);
@@ -106,7 +99,7 @@ describe('20260422_polish_discipline_rename migration', () => {
     ]);
   });
 
-  it('rewrites BOTH legacy IDs when a layout contains both (may create duplicates — documented as acceptable)', async () => {
+  it('dedupes when a layout contains BOTH legacy IDs — keeps lowest-position placement (MN-01)', async () => {
     const id = await seedRow(ORG_A, 'manager', [
       { widgetId: 'discipline-chart', position: 0, colSpan: 6 },
       { widgetId: 'kpi-cards', position: 1, colSpan: 12 },
@@ -115,12 +108,28 @@ describe('20260422_polish_discipline_rename migration', () => {
 
     await pg.exec(MIGRATION_SQL);
 
-    const layout = (await getLayout(id)) as Array<{ widgetId: string }>;
-    expect(layout.map((p) => p.widgetId)).toEqual([
-      'discipline-breakdown',
-      'kpi-cards',
-      'discipline-breakdown',
+    const layout = (await getLayout(id)) as Array<{ widgetId: string; position: number }>;
+    // Only ONE discipline-breakdown placement remains; the earlier one
+    // (position 0, from discipline-chart) wins.
+    expect(layout.map((p) => p.widgetId)).toEqual(['discipline-breakdown', 'kpi-cards']);
+    expect(layout[0].position).toBe(0);
+  });
+
+  it('dedupes pre-existing discipline-breakdown + legacy ID in the same layout (MN-01)', async () => {
+    // Edge case: a tenant who already had discipline-breakdown wired (e.g.
+    // default layout) plus a legacy discipline-chart from a pre-migration
+    // custom layout. Dedupe must keep one — the earliest placement.
+    const id = await seedRow(ORG_A, 'manager', [
+      { widgetId: 'kpi-cards', position: 0, colSpan: 12 },
+      { widgetId: 'discipline-breakdown', position: 1, colSpan: 6 },
+      { widgetId: 'discipline-chart', position: 2, colSpan: 6 },
     ]);
+
+    await pg.exec(MIGRATION_SQL);
+
+    const layout = (await getLayout(id)) as Array<{ widgetId: string; position: number }>;
+    expect(layout.map((p) => p.widgetId)).toEqual(['kpi-cards', 'discipline-breakdown']);
+    expect(layout[1].position).toBe(1);
   });
 
   it('is idempotent — second application produces no further changes', async () => {

@@ -5,7 +5,14 @@
 --
 -- Idempotent: repeated executions produce no further changes because the
 -- `jsonb_set` only fires on placements whose widgetId is one of the legacy
--- values. Rows without those IDs are short-circuited by the WHERE clause.
+-- values, and the dedupe step keeps only the earliest (lowest position)
+-- `discipline-breakdown` placement per layout.
+--
+-- Phase 53 REVIEW-VERIFY-FIX MN-01: if a tenant layout contains BOTH legacy
+-- IDs, the rename would emit two `discipline-breakdown` placements side-by-
+-- side and the widget registry would mount the chart twice. The dedupe pass
+-- strips duplicates, keeping the first occurrence (lowest position) so the
+-- visual anchor stays put.
 --
 -- Scope: per-tenant (UPDATE operates on rows already partitioned by
 -- organization_id). No cross-tenant data movement.
@@ -13,6 +20,7 @@
 -- NOT wired into drizzle-kit's journal. Operator applies this once manually
 -- against the target environment (Phase 51 LEAN-11 precedent).
 
+-- Pass 1: rename legacy IDs to discipline-breakdown.
 UPDATE dashboard_layouts
 SET layout = (
   SELECT jsonb_agg(
@@ -25,3 +33,30 @@ SET layout = (
   FROM jsonb_array_elements(layout) placement
 )
 WHERE layout::text ~* 'discipline-chart|discipline-distribution';
+
+-- Pass 2: dedupe. Keep the first `discipline-breakdown` placement per layout
+-- (lowest position, then stable ordinal order), drop subsequent duplicates.
+-- Rows that contain zero or one `discipline-breakdown` placement are short-
+-- circuited by the WHERE clause (no jsonb rewrite cost in the common case).
+UPDATE dashboard_layouts
+SET layout = (
+  SELECT jsonb_agg(placement ORDER BY ord)
+  FROM (
+    SELECT
+      placement,
+      ord,
+      ROW_NUMBER() OVER (
+        PARTITION BY placement->>'widgetId'
+        ORDER BY
+          COALESCE((placement->>'position')::int, ord),
+          ord
+      ) AS rn
+    FROM jsonb_array_elements(layout) WITH ORDINALITY AS t(placement, ord)
+  ) ranked
+  WHERE placement->>'widgetId' <> 'discipline-breakdown' OR rn = 1
+)
+WHERE (
+  SELECT COUNT(*)
+  FROM jsonb_array_elements(layout) placement
+  WHERE placement->>'widgetId' = 'discipline-breakdown'
+) > 1;
