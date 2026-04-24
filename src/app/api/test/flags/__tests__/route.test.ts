@@ -145,4 +145,26 @@ describe('POST /api/test/flags — REVIEW-FIX WR-01 contract', () => {
       POST(makeRequest({ flagName: 'uiV6Polish', enabled: true }) as never),
     ).rejects.toThrow(/test-only route imported in production build/);
   });
+
+  it('returns 400 seed_required when the platform_admin row is missing (MJ-02)', async () => {
+    // Remove the seed row that beforeAll inserted, then call the route.
+    await testDb.execute(sql`DELETE FROM platform_admins WHERE id = ${E2E_PLATFORM_ADMIN_ID}`);
+    try {
+      const POST = await importRoute();
+      const res = await POST(makeRequest({ flagName: 'uiV6Polish', enabled: true }) as never);
+      expect(res.status).toBe(400);
+      const payload = await res.json();
+      expect(payload).toEqual({
+        error: 'seed_required',
+        detail: 'POST /api/test/seed must run before /api/test/flags',
+      });
+    } finally {
+      // Restore the admin row so subsequent tests in the file (run in any
+      // order) still have a valid FK target.
+      await testDb.execute(
+        sql`INSERT INTO platform_admins (id, email, password_hash, name) VALUES
+            (${E2E_PLATFORM_ADMIN_ID}, 'e2e-system@nordic-capacity.test', 'e2e-no-login', 'E2E System')`,
+      );
+    }
+  });
 });

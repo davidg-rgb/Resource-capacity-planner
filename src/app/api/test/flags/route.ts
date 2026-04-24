@@ -24,11 +24,12 @@
 // have run first — Playwright's globalSetup already does this.
 
 import { NextRequest, NextResponse } from 'next/server';
+import { eq } from 'drizzle-orm';
 import { v5 as uuidv5 } from 'uuid';
 import { z } from 'zod';
 
 import { db } from '@/db';
-import { featureFlags } from '@/db/schema';
+import { featureFlags, platformAdmins } from '@/db/schema';
 import { FLAG_NAMES } from '@/features/flags/flag.types';
 import { FIXTURE_NS } from '../../../../../tests/fixtures/namespace';
 
@@ -49,9 +50,7 @@ export async function POST(request: NextRequest): Promise<Response> {
   // Gate 1: hard production block. Throw string is asserted by the
   // no-test-routes-in-prod static invariant (see WR-01 notes there).
   if (process.env.NODE_ENV === 'production' && process.env.E2E_TEST !== '1') {
-    throw new Error(
-      '[api/test/flags] test-only route imported in production build',
-    );
+    throw new Error('[api/test/flags] test-only route imported in production build');
   }
   // Gate 2: runtime opt-in. Reuses the seed route's env flag.
   if (process.env.E2E_SEED_ENABLED !== '1') {
@@ -64,6 +63,25 @@ export async function POST(request: NextRequest): Promise<Response> {
   } catch (err) {
     return NextResponse.json(
       { error: 'invalid_body', detail: (err as Error).message },
+      { status: 400 },
+    );
+  }
+
+  // Phase 53 REVIEW-VERIFY-FIX MJ-02: the feature_flags row FK-depends on
+  // platform_admins.id = E2E_PLATFORM_ADMIN_ID, which is only inserted by
+  // /api/test/seed. Pre-flight check so a standalone caller gets a helpful
+  // 400 instead of a confusing FK-violation 500.
+  const adminExists = await db
+    .select({ id: platformAdmins.id })
+    .from(platformAdmins)
+    .where(eq(platformAdmins.id, E2E_PLATFORM_ADMIN_ID))
+    .limit(1);
+  if (adminExists.length === 0) {
+    return NextResponse.json(
+      {
+        error: 'seed_required',
+        detail: 'POST /api/test/seed must run before /api/test/flags',
+      },
       { status: 400 },
     );
   }
