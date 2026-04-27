@@ -117,9 +117,7 @@ function makeWrapper() {
 // lg-visible links + the logo link.
 function centerNavHrefs(): string[] {
   const links = screen.getAllByRole('link');
-  return links
-    .map((a) => a.getAttribute('href') ?? '')
-    .filter((h) => h && h !== '/'); // exclude logo /
+  return links.map((a) => a.getAttribute('href') ?? '').filter((h) => h && h !== '/'); // exclude logo /
 }
 
 // --------------------------------------------------------------------------
@@ -218,13 +216,7 @@ describe('TopNav visibleFor matrix (POLISH-02 / D-03 LITERAL)', () => {
     personaState.persona = { kind: 'rd', displayName: 'R&D' };
     render(<TopNav />, { wrapper: makeWrapper() });
     const hrefs = centerNavHrefs();
-    expect(hrefs).toEqual([
-      '/dashboard/team',
-      '/projects',
-      '/dashboard',
-      '/alerts',
-      '/help',
-    ]);
+    expect(hrefs).toEqual(['/dashboard/team', '/projects', '/dashboard', '/alerts', '/help']);
   });
 
   it('Test 6: flag on + persona=admin → every item including help', () => {
@@ -232,6 +224,8 @@ describe('TopNav visibleFor matrix (POLISH-02 / D-03 LITERAL)', () => {
     personaState.persona = { kind: 'admin', displayName: 'Admin' };
     render(<TopNav />, { wrapper: makeWrapper() });
     const hrefs = centerNavHrefs();
+    // audit-r2 / R2-P1-09 (K12): /admin/members no longer appears in the
+    // top-nav — moved to the admin sidebar's PERSONA_SECTION_NAV.admin.
     expect(hrefs).toEqual([
       '/dashboard/team',
       '/input',
@@ -243,7 +237,6 @@ describe('TopNav visibleFor matrix (POLISH-02 / D-03 LITERAL)', () => {
       '/team',
       '/data',
       '/admin/disciplines',
-      '/admin/members',
       '/help',
     ]);
   });
