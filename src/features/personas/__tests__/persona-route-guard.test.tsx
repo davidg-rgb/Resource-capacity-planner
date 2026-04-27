@@ -20,9 +20,16 @@ import type { Persona } from '../persona.types';
 
 const messages = {
   v5: {
+    persona: {
+      // CONS-P1-06: PersonaGate now reads from `v5.persona` (shared with
+      // persona-switcher), not `v5.lineManager`.
+      wrongPersonaHint: {
+        title: 'Wrong persona',
+        description: 'Switch to the correct persona to view this page.',
+        switchCta: 'Switch persona',
+      },
+    },
     lineManager: {
-      wrongPersonaHint: 'Switch to the Line Manager persona to view this page.',
-      switchPersonaCta: 'Switch persona',
       desktopOnlyMessage: 'Desktop only',
     },
   },

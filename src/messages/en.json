@@ -537,6 +537,11 @@
         "staff": "Staff",
         "rd": "R&D Manager",
         "admin": "Admin"
+      },
+      "wrongPersonaHint": {
+        "title": "Wrong persona",
+        "description": "Switch to the correct persona to view this page.",
+        "switchCta": "Switch persona"
       }
     },
     "timeline": {

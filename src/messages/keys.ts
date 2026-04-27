@@ -58,6 +58,15 @@ export const K = {
         rd: 'persona.kind.rd',
         admin: 'persona.kind.admin',
       },
+      // CONS-P1-06: shared wrongPersonaHint surface (PersonaGate). The
+      // identical lineManager.wrongPersonaHint keys are kept for backward
+      // compat with existing LM-specific specs but new code should target
+      // this namespace.
+      wrongPersonaHint: {
+        title: 'persona.wrongPersonaHint.title',
+        description: 'persona.wrongPersonaHint.description',
+        switchCta: 'persona.wrongPersonaHint.switchCta',
+      },
     },
     timeline: {
       historic: {

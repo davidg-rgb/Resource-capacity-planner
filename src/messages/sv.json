@@ -537,6 +537,11 @@
         "staff": "Medarbetare",
         "rd": "FoU-chef",
         "admin": "Administratör"
+      },
+      "wrongPersonaHint": {
+        "title": "Fel persona",
+        "description": "Byt till rätt persona för att visa den här sidan.",
+        "switchCta": "Byt persona"
       }
     },
     "timeline": {

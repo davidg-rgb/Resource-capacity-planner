@@ -38,7 +38,10 @@ export interface PersonaGateProps {
 export function PersonaGate({ allowed, children }: PersonaGateProps) {
   const { persona } = usePersona();
   const result = assertPersonaOrRedirect(persona, allowed);
-  const t = useTranslations('v5.lineManager');
+  // CONS-P1-06: route guard is persona-agnostic — pull copy from the
+  // shared `v5.persona` namespace (matches persona-switcher) instead of
+  // the LM-specific bundle.
+  const t = useTranslations('v5.persona');
 
   if (result.allowed) {
     return createElement('div', { 'data-testid': 'persona-gate-allowed' }, children);
