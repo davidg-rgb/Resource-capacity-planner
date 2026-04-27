@@ -140,6 +140,11 @@ export const PERSONA_SECTION_NAV: Record<PersonaKind, NavSectionDef[]> = {
         // top-nav (where it duplicated /admin/people surface) into the admin
         // sidebar's referenceData group, matching UI-RESTRUCTURE-PLAN-v2.md
         // K12: "top-nav removes Medlemmar; moves to admin sidebar".
+        //
+        // audit-r3 R3-P3-05 note: `disciplines`, `departments`, `programs` reuse
+        // pre-existing flat `sidebar.*` keys (legacy v3 admin nav). Plan §6 K3
+        // ("new keys go under sidebar.personaSections.*") applies to NEW keys
+        // only — these predate v6.0 and reuse is intentional.
         { labelKey: 'disciplines', href: '/admin/disciplines', icon: 'category' },
         { labelKey: 'departments', href: '/admin/departments', icon: 'corporate_fare' },
         { labelKey: 'programs', href: '/admin/programs', icon: 'flag' },
