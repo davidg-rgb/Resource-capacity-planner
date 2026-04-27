@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { UserButton } from '@clerk/nextjs';
@@ -165,6 +165,19 @@ export function TopNav() {
     }
     return true;
   });
+
+  // audit-r2 / D-CR-111: Escape key closes the mobile drawer. Mirrors the
+  // dismiss-on-backdrop-click pattern already present below so keyboard
+  // users have parity with mouse users. Only mounts the handler while the
+  // drawer is actually open so we don't pollute the keydown channel.
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileMenuOpen(false);
+    };
+    document.addEventListener('keydown', onEsc);
+    return () => document.removeEventListener('keydown', onEsc);
+  }, [mobileMenuOpen]);
 
   // v6.0 Phase 53-02 (POLISH-02): Help item labelKey/descKey are
   // fully-qualified (`v6.polish.nav.help`) to avoid polluting the root `nav`
