@@ -152,6 +152,7 @@ function getSectionKey(pathname: string): string {
 export function SideNav() {
   const pathname = usePathname();
   const t = useTranslations('sidebar');
+  const tShell = useTranslations('appShell');
   const flags = useFlags();
   const { persona } = usePersona();
 
@@ -173,9 +174,11 @@ export function SideNav() {
         </div>
         <div>
           <p className="font-headline text-on-surface text-sm font-semibold tracking-tight">
-            Resource Planner
+            {tShell('brand')}
           </p>
-          <p className="text-outline text-[10px] tracking-widest uppercase">Nordic Precision</p>
+          <p className="text-outline text-[10px] tracking-widest uppercase">
+            {tShell('designSystem')}
+          </p>
         </div>
       </div>
 

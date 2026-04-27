@@ -7,6 +7,7 @@
 // `data` is []; the empty-state div prevents the chart from mounting at all.
 
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { useTranslations } from 'next-intl';
 
 import { CHART_COLORS, CHART_FONT } from './chart-colors';
 import type { DisciplineBreakdown } from '@/features/analytics/analytics.types';
@@ -23,13 +24,14 @@ interface DisciplineDonutProps {
  * `DisciplineChart` so toggling bar <-> donut does not reflow the containing widget.
  */
 export function DisciplineDonut({ data, colors }: DisciplineDonutProps) {
+  const t = useTranslations('widgets.disciplineBreakdown');
   if (!data || data.length === 0) {
     return (
       <div
         className="text-on-surface-variant py-10 text-center text-sm italic"
         data-testid="discipline-donut-empty"
       >
-        Ingen data
+        {t('empty')}
       </div>
     );
   }

@@ -117,6 +117,10 @@
     "closeMenu": "Stäng meny",
     "dismiss": "Stäng"
   },
+  "appShell": {
+    "brand": "Resource Planner",
+    "designSystem": "Nordic Precision"
+  },
   "personCard": {
     "title": "Persondetaljer",
     "close": "Stäng personkort",
@@ -283,6 +287,10 @@
       "selectProject": "Välj ett projekt för att visa disciplinfördelning",
       "error": "Kunde inte ladda disciplinfördelning",
       "empty": "Ingen bemanningsdata för detta projekt i vald period"
+    },
+    "disciplineBreakdown": {
+      "empty": "Ingen data",
+      "loadFailed": "Kunde inte ladda disciplinfördelning"
     },
     "periodComparison": {
       "title": "Periodjämförelse",

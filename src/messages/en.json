@@ -117,6 +117,10 @@
     "closeMenu": "Close menu",
     "dismiss": "Dismiss"
   },
+  "appShell": {
+    "brand": "Resource Planner",
+    "designSystem": "Nordic Precision"
+  },
   "personCard": {
     "title": "Person Details",
     "close": "Close person card",
@@ -283,6 +287,10 @@
       "selectProject": "Select a project to view discipline distribution",
       "error": "Failed to load discipline distribution",
       "empty": "No staffing data for this project in the selected period"
+    },
+    "disciplineBreakdown": {
+      "empty": "No data",
+      "loadFailed": "Failed to load discipline distribution"
     },
     "periodComparison": {
       "title": "Period Comparison",

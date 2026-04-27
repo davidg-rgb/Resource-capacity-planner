@@ -156,6 +156,7 @@ export function TopNav() {
   const t = useTranslations('nav');
   const tRoot = useTranslations();
   const tc = useTranslations('common');
+  const tShell = useTranslations('appShell');
   // v6.0 Phase 53-02 (POLISH-02): flag-gated visibleFor filter.
   // Order is load-bearing: flag gate precedes visibleFor — disabling the
   // `dashboards` feature flag MUST hide dashboard items even for admin
@@ -206,7 +207,7 @@ export function TopNav() {
             href="/"
             className="font-headline text-primary text-xl font-semibold tracking-tighter"
           >
-            Nordic Capacity
+            {tShell('brand')}
           </Link>
         </div>
 

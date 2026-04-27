@@ -69,6 +69,7 @@ export function normalizeProjectStaffing(
 
 export function DisciplineBreakdownWidget({ config, timeRange }: WidgetProps) {
   const t = useTranslations('v6.polish.discipline');
+  const tBreakdown = useTranslations('widgets.disciplineBreakdown');
   const projectId = (config?.projectId as string | undefined) ?? undefined;
   const scope: 'org' | 'project' = projectId ? 'project' : 'org';
   const defaultChartType: ChartType = scope === 'project' ? 'donut' : 'bar';
@@ -115,7 +116,7 @@ export function DisciplineBreakdownWidget({ config, timeRange }: WidgetProps) {
   if (error) {
     return (
       <div className="text-destructive flex items-center justify-center py-10 text-sm">
-        Kunde inte ladda disciplinfördelning
+        {tBreakdown('loadFailed')}
       </div>
     );
   }
@@ -140,7 +141,9 @@ export function DisciplineBreakdownWidget({ config, timeRange }: WidgetProps) {
   }
 
   if (rows.length === 0) {
-    return <div className="text-on-surface-variant py-10 text-center text-sm">Ingen data</div>;
+    return (
+      <div className="text-on-surface-variant py-10 text-center text-sm">{tBreakdown('empty')}</div>
+    );
   }
 
   return (
