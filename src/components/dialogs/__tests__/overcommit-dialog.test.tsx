@@ -71,7 +71,9 @@ function renderDialog(
   const full = {
     open: props.open,
     onClose,
-    scope: (props.scope ?? 'department') as 'department' | 'project',
+    // audit-r2 / D-CR-109: OvercommitDialogProps['scope'] narrowed to
+    // 'department' only — drop the legacy union annotation.
+    scope: props.scope ?? ('department' as const),
     scopeId: props.scopeId ?? 'dept-electronics',
     monthKey: props.monthKey ?? '2026-06',
   };

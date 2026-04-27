@@ -29,9 +29,13 @@ import type { OvercommitPerson, OvercommitProject } from '@/features/capacity/ca
 export interface OvercommitDialogProps {
   open: boolean;
   onClose: () => void;
-  /** Currently only 'department' is wired — D-09 scoped the dialog to
-   *  red-cell clicks on /rd's portfolio grid. */
-  scope: 'department' | 'project';
+  /** Only 'department' is wired — D-09 scoped the dialog to red-cell
+   *  clicks on /rd's portfolio grid. The audit-r2 / D-CR-109 narrowing
+   *  drops the unused 'project' branch from the union to keep the
+   *  contract honest (no caller passes 'project'; the breakdown API
+   *  endpoint did historically support both, but the dialog UI was
+   *  never wired to the project surface). */
+  scope: 'department';
   scopeId: string;
   /** 'YYYY-MM' — passed to the breakdown endpoint AND embedded in per-person
    *  drill-down link targets. */
