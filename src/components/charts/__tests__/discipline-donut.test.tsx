@@ -3,9 +3,23 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
+import { NextIntlClientProvider } from 'next-intl';
+import type { ReactElement } from 'react';
 
 import { DisciplineDonut } from '../discipline-donut';
+import en from '@/messages/en.json';
 import type { DisciplineBreakdown } from '@/features/analytics/analytics.types';
+
+// audit-r2 / R2-P1-02 (D-CR-103): DisciplineDonut now reads
+// `widgets.disciplineBreakdown.empty` via useTranslations, so tests must
+// wrap the render in NextIntlClientProvider.
+function renderDonut(ui: ReactElement) {
+  return render(
+    <NextIntlClientProvider locale="en" messages={en as Record<string, unknown>}>
+      {ui}
+    </NextIntlClientProvider>,
+  );
+}
 
 // recharts ResponsiveContainer needs a sized parent; jsdom reports 0x0 by default which
 // collapses the PieChart. Stubbing ResponsiveContainer via mock keeps the underlying
@@ -28,7 +42,7 @@ const THREE_ROWS: DisciplineBreakdown[] = [
 
 describe('DisciplineDonut', () => {
   it('renders empty-state placeholder and does NOT mount PieChart when data=[] (Pitfall 7)', () => {
-    const { container, queryByTestId } = render(<DisciplineDonut data={[]} />);
+    const { container, queryByTestId } = renderDonut(<DisciplineDonut data={[]} />);
     expect(queryByTestId('discipline-donut-empty')).not.toBeNull();
     // Short-circuit: no ResponsiveContainer / recharts surface anywhere.
     expect(queryByTestId('responsive-container')).toBeNull();
@@ -36,7 +50,7 @@ describe('DisciplineDonut', () => {
   });
 
   it('renders ResponsiveContainer + a PieChart surface for 3 rows', () => {
-    const { queryByTestId, container } = render(<DisciplineDonut data={THREE_ROWS} />);
+    const { queryByTestId, container } = renderDonut(<DisciplineDonut data={THREE_ROWS} />);
     // Not in empty-state path.
     expect(queryByTestId('discipline-donut-empty')).toBeNull();
     // Container / recharts surface present.
@@ -54,7 +68,7 @@ describe('DisciplineDonut', () => {
     ];
     const palette = ['#111111', '#222222']; // 2 colors, 5 rows -> cycles 0,1,0,1,0
     // Prop acceptance: component must render without throwing.
-    const { queryByTestId } = render(<DisciplineDonut data={manyRows} colors={palette} />);
+    const { queryByTestId } = renderDonut(<DisciplineDonut data={manyRows} colors={palette} />);
     expect(queryByTestId('discipline-donut-empty')).toBeNull();
     expect(queryByTestId('responsive-container')).not.toBeNull();
   });
