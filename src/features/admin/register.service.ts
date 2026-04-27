@@ -24,6 +24,7 @@ import { db } from '@/db';
 import * as schema from '@/db/schema';
 import { recordChange } from '@/features/change-log/change-log.service';
 import { ConflictError, InternalError, NotFoundError, ValidationError } from '@/lib/errors';
+import { getServerNowMonthKey } from '@/lib/server/get-server-now-month-key';
 
 import { departmentCreateSchema, departmentUpdateSchema } from './register.schema';
 import {
@@ -450,7 +451,18 @@ async function collectBlockers(
   orgId: string,
   id: string,
 ): Promise<Record<string, number>> {
-  const monthKey = currentMonthKey(); // YYYY-MM-01
+  // audit-r1 / F-B-12: pull the current month from the DB clock instead
+  // of `new Date()`. Aligns with FOUND-V5-06 (CLOCK SOURCE — DB, not
+  // Node) so blocker queries don't drift from edit-gate semantics at
+  // midnight CET. getServerNowMonthKey returns YYYY-MM; the `month`
+  // column on allocations/actuals is a DATE keyed to YYYY-MM-01.
+  // Cast through unknown as TxLike — drizzle's transaction type carries
+  // a richer signature than TxLike's structural minimum. Same pattern
+  // is used in allocation.service.ts:272.
+  const yyyymm = await getServerNowMonthKey(
+    tx as unknown as Parameters<typeof getServerNowMonthKey>[0],
+  );
+  const monthKey = `${yyyymm}-01`;
   const blockers: Record<string, number> = {};
 
   switch (entity) {
@@ -561,9 +573,7 @@ async function collectBlockers(
   }
 }
 
-function currentMonthKey(): string {
-  const now = new Date();
-  const yyyy = now.getUTCFullYear();
-  const mm = String(now.getUTCMonth() + 1).padStart(2, '0');
-  return `${yyyy}-${mm}-01`;
-}
+// audit-r1 / F-B-12: removed `currentMonthKey()` Node-clock helper. Use
+// `getServerNowMonthKey(tx)` from `@/lib/server/get-server-now-month-key`
+// — that helper hits the DB clock (CURRENT_DATE) instead, matching the
+// edit-gate / historic-check semantics elsewhere in v5.0.
