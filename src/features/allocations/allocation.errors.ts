@@ -1,26 +1,11 @@
 // v5.0 — Phase 40 / Plan 40-01: allocation-specific error types.
 //
-// HistoricEditNotConfirmedError is thrown by patchAllocation when the caller
-// tries to edit an allocation whose monthKey is strictly less than the server
-// now month key WITHOUT passing `confirmHistoric: true`. HTTP 409 per D-15 /
-// ARCHITECTURE §616-627 (soft-warn historic edit contract).
+// Round 1 audit CONS-P0-09: the original `HistoricEditNotConfirmedError`
+// (code HISTORIC_EDIT_NOT_CONFIRMED) collided with the canonical
+// `HistoricConfirmRequiredError` (code HISTORIC_CONFIRM_REQUIRED, status 409)
+// declared in `@/lib/errors`. Canonicalized on the latter; this file is kept
+// only as a thin re-export to avoid breaking any stragglers that import the
+// old name. New code should import directly from `@/lib/errors`.
 
-import { AppError } from '@/lib/errors';
-
-export const ERR_HISTORIC_EDIT_NOT_CONFIRMED = 'HISTORIC_EDIT_NOT_CONFIRMED';
-
-export class HistoricEditNotConfirmedError extends AppError {
-  readonly targetMonthKey: string;
-  readonly nowMonthKey: string;
-
-  constructor(targetMonthKey: string, nowMonthKey: string) {
-    super(
-      `Historic edit of ${targetMonthKey} requires confirmHistoric:true (server now=${nowMonthKey})`,
-      ERR_HISTORIC_EDIT_NOT_CONFIRMED,
-      409,
-      { targetMonthKey, nowMonthKey },
-    );
-    this.targetMonthKey = targetMonthKey;
-    this.nowMonthKey = nowMonthKey;
-  }
-}
+export { HistoricConfirmRequiredError as HistoricEditNotConfirmedError } from '@/lib/errors';
+export { HISTORIC_CONFIRM_REQUIRED as ERR_HISTORIC_EDIT_NOT_CONFIRMED } from '@/lib/errors/codes';

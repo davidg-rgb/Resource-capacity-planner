@@ -2,11 +2,15 @@
 //
 // Covers:
 //   - TC-API-004a: non-historic edit writes ALLOCATION_EDITED (direct path)
-//   - TC-API-004b: historic edit without confirmHistoric throws HistoricEditNotConfirmedError
+//   - TC-API-004b: historic edit without confirmHistoric throws HistoricConfirmRequiredError
 //     and does NOT mutate allocations or change_log
 //   - TC-PS-006:   historic edit with confirmHistoric:true writes ALLOCATION_HISTORIC_EDITED
 //     with context.confirmedHistoric=true and populated previousValue / newValue
 //   - Cutoff:      month equal to server-now is NOT historic (strict '<')
+//
+// Round 1 audit CONS-P0-09: error class canonicalized on HistoricConfirmRequiredError
+// (code HISTORIC_CONFIRM_REQUIRED, status 409). Was HistoricEditNotConfirmedError
+// (code HISTORIC_EDIT_NOT_CONFIRMED) in v5.0 — see allocation.errors.ts.
 //
 // PGlite bootstrap mirrors src/features/proposals/__tests__/proposal.service.e2e.test.ts.
 
@@ -31,7 +35,9 @@ vi.mock('@/lib/server/get-server-now-month-key', () => ({
 }));
 
 const { patchAllocation } = await import('../allocation.service');
-const { HistoricEditNotConfirmedError } = await import('../allocation.errors');
+// Round 1 audit CONS-P0-09: canonical class lives in `@/lib/errors`. The
+// allocation.errors.ts file re-exports it under the legacy alias for back-compat.
+const { HistoricConfirmRequiredError } = await import('@/lib/errors');
 const { allocations, changeLog } = schema;
 
 const ORG_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -145,7 +151,6 @@ describe('TC-API-004: Phase 40 / Plan 40-01: patchAllocation contract (TC-API-00
     expect(parsed.success).toBe(false);
   });
 
-
   test('TC-API-004a: non-historic edit writes ALLOCATION_EDITED change_log row', async () => {
     const result = await patchAllocation({
       orgId: ORG_ID,
@@ -186,7 +191,7 @@ describe('TC-API-004: Phase 40 / Plan 40-01: patchAllocation contract (TC-API-00
         allocationId: HISTORIC_ALLOC_ID,
         hours: 80,
       }),
-    ).rejects.toBeInstanceOf(HistoricEditNotConfirmedError);
+    ).rejects.toBeInstanceOf(HistoricConfirmRequiredError);
 
     // Allocation unchanged
     const [row] = await testDb

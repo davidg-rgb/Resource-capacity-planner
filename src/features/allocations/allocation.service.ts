@@ -4,11 +4,9 @@ import * as XLSX from 'xlsx';
 import { db } from '@/db';
 import * as schema from '@/db/schema';
 import { normalizeMonth } from '@/lib/date-utils';
-import { NotFoundError } from '@/lib/errors';
+import { HistoricConfirmRequiredError, NotFoundError } from '@/lib/errors';
 import { getServerNowMonthKey } from '@/lib/server/get-server-now-month-key';
 import { recordChange } from '@/features/change-log/change-log.service';
-
-import { HistoricEditNotConfirmedError } from './allocation.errors';
 import type {
   AllocationUpsert,
   BatchUpsertResult,
@@ -187,6 +185,12 @@ export async function _applyAllocationUpsertsInTx(
  * - If expectedUpdatedAt is provided, checks for conflicts before upserting.
  *   A conflict occurs when the server's updatedAt is newer than expectedUpdatedAt.
  *   Omitting expectedUpdatedAt forces the upsert (backward compatible).
+ *
+ * @no-change-log thin wrapper — recordChange() is called by the underlying
+ *   `_applyAllocationUpsertsInTx` helper for every row mutation. The ESLint
+ *   rule does not trace through helper calls, so this comment documents the
+ *   intentional indirection (CONS-P1-11 surfaced this when the regex
+ *   tightened).
  */
 export async function batchUpsertAllocations(
   orgId: string,
@@ -230,7 +234,11 @@ export interface PatchAllocationResult {
  * - Loads the row scoped to `orgId`. Throws NotFoundError if missing.
  * - Computes the server now monthKey via getServerNowMonthKey(tx) inside the tx.
  * - If `row.monthKey < nowMonthKey` and `confirmHistoric !== true`, throws
- *   HistoricEditNotConfirmedError (HTTP 409). No mutation, no change_log write.
+ *   HistoricConfirmRequiredError (HTTP 409, code HISTORIC_CONFIRM_REQUIRED).
+ *   No mutation, no change_log write.
+ *   (Round 1 audit CONS-P0-09: was previously HistoricEditNotConfirmedError
+ *   with code HISTORIC_EDIT_NOT_CONFIRMED, which conflicted with the
+ *   documented canonical class in `lib/errors.ts`.)
  * - On historic confirmed path, writes change_log action='ALLOCATION_HISTORIC_EDITED'
  *   with context.confirmedHistoric=true.
  * - On non-historic path, writes action='ALLOCATION_EDITED' with context.via='direct'.
@@ -267,7 +275,13 @@ export async function patchAllocation(args: PatchAllocationArgs): Promise<PatchA
     const isHistoric = monthKey < nowMonthKey; // strict '<'; current month is NOT historic
 
     if (isHistoric && args.confirmHistoric !== true) {
-      throw new HistoricEditNotConfirmedError(monthKey, nowMonthKey);
+      // Round 1 audit CONS-P0-09: canonical class is HistoricConfirmRequiredError
+      // from `@/lib/errors` (code HISTORIC_CONFIRM_REQUIRED, status 409 —
+      // concurrent-state conflict, not malformed input).
+      throw new HistoricConfirmRequiredError(
+        `Historic edit of ${monthKey} requires confirmHistoric:true (server now=${nowMonthKey})`,
+        { targetMonthKey: monthKey, nowMonthKey },
+      );
     }
 
     const previousHours = existing.hours;

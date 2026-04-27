@@ -10,7 +10,9 @@
 // Response shape on success:
 //   { allocation: { id, personId, projectId, monthKey, hours }, changeLogAction }
 // Response shape on historic-edit rejection (409):
-//   { error: 'HISTORIC_EDIT_NOT_CONFIRMED', message, details: { targetMonthKey, nowMonthKey } }
+//   { error: 'HISTORIC_CONFIRM_REQUIRED', message, details: { targetMonthKey, nowMonthKey } }
+// (Round 1 audit CONS-P0-09: code was HISTORIC_EDIT_NOT_CONFIRMED in v5.0,
+// canonicalized on HISTORIC_CONFIRM_REQUIRED — see lib/errors.ts.)
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
