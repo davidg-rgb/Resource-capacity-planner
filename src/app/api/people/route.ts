@@ -3,11 +3,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { personCreateSchema } from '@/features/people/person.schema';
 import { createPerson, listPeople, listPeopleWithStatus } from '@/features/people/person.service';
 import { handleApiError } from '@/lib/api-utils';
-import { getTenantId, requireRole } from '@/lib/auth';
+import { requireRole } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const orgId = await getTenantId();
+    // audit-r2 / D-CR-107: gate read access behind the lowest role tier
+    // (`viewer`). getTenantId() alone proves session + org membership but
+    // does NOT prove a role assignment — a session without a role would
+    // otherwise read the people register. requireRole('viewer') closes
+    // that gap and returns the same orgId for the rest of the handler.
+    const { orgId } = await requireRole('viewer');
     const { searchParams } = request.nextUrl;
 
     const filters = {
