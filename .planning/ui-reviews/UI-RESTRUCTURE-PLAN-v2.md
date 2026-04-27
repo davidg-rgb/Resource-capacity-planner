@@ -237,9 +237,12 @@ Net: 9 widgets → 8 widgets, no duplicate with project-leader dashboard.
 
 ### `project-leader:desktop` (after Wave 2.6)
 
+> **R2-P1-08 audit-r2 deferral note:** `project-kpi-cards` was never built and is deferred — similar to the QUAD-* deferral pattern from Phase 54. The v6.0 ship omits `project-kpi-cards`; deferred to a future polish phase if user research surfaces a need. The 8-widget aspirational layout below is **archived intent**; the actual shipped 6-widget shape is documented immediately after.
+
 ```ts
+// Aspirational (planned 8-widget layout — project-kpi-cards never shipped)
 'project-leader:desktop': [
-  { widgetId: 'project-kpi-cards',     position: 0, colSpan: 12 }, // NEW — project-scoped KPIs (replaces manager kpi-cards)
+  { widgetId: 'project-kpi-cards',     position: 0, colSpan: 12 }, // DEFERRED — never shipped (R2-P1-08)
   { widgetId: 'capacity-distribution', position: 1, colSpan: 12 },
   { widgetId: 'availability-timeline', position: 2, colSpan: 12 },
   { widgetId: 'period-comparison',     position: 3, colSpan: 12 }, // promoted — unique to PL view
@@ -250,9 +253,23 @@ Net: 9 widgets → 8 widgets, no duplicate with project-leader dashboard.
 ],
 ```
 
-Net: 10 widgets → 8 widgets, zero overlap with manager.
+**As shipped (6 widgets, project-kpi-cards omitted):**
 
-Project-KPIs to ship in `project-kpi-cards`: (1) active projects count, (2) staffing gap (sum of unstaffed planned hours), (3) planned hours this month, (4) approval lag (median days from wish to resolution).
+```ts
+'project-leader:desktop': [
+  { widgetId: 'capacity-distribution',   position: 0, colSpan: 12 },
+  { widgetId: 'availability-timeline',   position: 1, colSpan: 12 },
+  { widgetId: 'period-comparison',       position: 2, colSpan: 12 },
+  { widgetId: 'allocation-trends',       position: 3, colSpan: 6 },
+  { widgetId: 'discipline-distribution', position: 4, colSpan: 6 },
+  { widgetId: 'program-rollup',          position: 5, colSpan: 12 },
+  { widgetId: 'resource-conflicts',      position: 6, colSpan: 12 },
+],
+```
+
+Net: 10 widgets → 6 widgets shipped (planned 8, project-kpi-cards deferred), zero overlap with manager.
+
+Project-KPIs that *would* ship in `project-kpi-cards` if revived: (1) active projects count, (2) staffing gap (sum of unstaffed planned hours), (3) planned hours this month, (4) approval lag (median days from wish to resolution).
 
 ---
 
