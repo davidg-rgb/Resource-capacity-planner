@@ -122,8 +122,20 @@ vi.mock('@/features/import/validate-staged-rows', () => ({
 
 // Prevent register dependent-row blocker check from throwing — stub collect-
 // Blockers to return zero counts.
+//
+// audit-r3 / TD-03: the previous mock targeted '@/features/admin/register-blockers'
+// but `collectBlockers` is a module-internal function inside register.service.ts,
+// not a separate export — so the mock had no effect and `archiveRegisterRow`
+// fell through to the real `getServerNowMonthKey(tx)` call, which rejected the
+// stubbed DB row shape with "unexpected DB result shape". We now mock
+// `getServerNowMonthKey` directly so the dependent-row blocker queries return
+// the empty stub rows (which then yield zero blocker counts) and execution
+// reaches `recordChange`.
 vi.mock('@/features/admin/register-blockers', () => ({
   collectBlockers: async () => ({}),
+}));
+vi.mock('@/lib/server/get-server-now-month-key', () => ({
+  getServerNowMonthKey: async () => '2026-04',
 }));
 
 // ---------------------------------------------------------------------------
