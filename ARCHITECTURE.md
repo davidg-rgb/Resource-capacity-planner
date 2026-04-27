@@ -4,6 +4,36 @@
 > Date: 2026-03-25
 > Status: DRAFT — Pending Review
 
+> ## ⚠ v1.0 BASELINE — superseded for v2.0+ work
+>
+> This document is the **v1.0 build blueprint** dated 2026-03-25, prior to the v2.0/v4.0/v5.0/v6.0 milestones.
+> Many surfaces (modules, APIs, data models, ADRs) have evolved since.
+>
+> **Authoritative for current state:**
+>
+> - `.planning/v5.0-ARCHITECTURE.md` — v5.0 plan-vs-actual + approval workflow (~280 TC-\* assertions, 11 ADRs)
+> - `.planning/milestones/v6.0-ROADMAP.md` — v6.0 UI restructure (architecture-light, plan-driven)
+> - `.planning/milestones/v6.0-REQUIREMENTS.md` — v6.0 final requirement state
+> - `.planning/PROJECT.md` — current Validated/Active requirements
+>
+> v1.0 sections that have NOT been superseded (still authoritative):
+>
+> - §3 Project Structure (high-level layout still holds)
+> - §10 Module Dependencies (core module set unchanged)
+> - §12 Constraints (still binding)
+> - §13 Architectural Patterns (still binding)
+>
+> v1.0 sections superseded — see citations below for live state:
+>
+> - §4 Tech Stack — see `package.json`
+> - §5 (parts) — `(platform)` route group lives at `src/app/(platform)/`, not `src/app/(app)/(platform)/`
+> - §6 Modules — most module names/signatures evolved; see `.planning/v5.0-ARCHITECTURE.md` §6
+> - §7 Data Models — added `proposals`, `actuals`, `change_log`, `dashboard_layouts`, `scenarios`, `import_batches`
+> - §8.1 API contracts — `/api/v5/*` surface added; `/api/dashboard` split into 14 `/api/analytics/*`
+> - §11.1 Error Taxonomy — extended with `HISTORIC_CONFIRM_REQUIRED` (409), `BAD_HOURS`, `PROPOSAL_NOT_ACTIVE`, etc.
+>
+> Below: original v1.0 content preserved verbatim for historical reference.
+
 ---
 
 ## Table of Contents
@@ -1296,6 +1326,8 @@ getDisciplineBreakdown(orgId: String): Promise<List<DisciplineMetric>>
 
 ### 6.12 Organization Service (`src/features/organizations/organization.service.ts`)
 
+> **Drift note (audit-r2):** `checkTrialStatus` and trial enforcement are deferred per `PROJECT.md` "No Stripe for MVP" decision. The function is not implemented.
+
 **Purpose:** Organization setup and configuration.
 
 ```
@@ -1344,6 +1376,8 @@ checkTrialStatus(orgId: String): Promise<TrialStatus>
 ```
 
 ### 6.13 Billing Service (`src/features/billing/billing.service.ts`)
+
+> **Drift note (audit-r2):** Deferred. Stripe billing is not in MVP per `PROJECT.md` "No Stripe for MVP" decision; the entire billing service file does not exist in the current codebase.
 
 **Purpose:** Stripe subscription management.
 
@@ -1478,6 +1512,8 @@ parseSwedishMonth(value: String): Optional<String>
 
 ### 6.16 Tenant Context (`src/lib/tenant.ts`)
 
+> **Drift note (audit-r2):** `getTenantId` and `requireRole` now live in `src/lib/auth.ts`. `tenant.ts` only exports `withTenant()` (the wrapper helper). See `src/lib/auth.ts` for current signatures.
+
 **Purpose:** Extract and validate the current tenant (organization) from the request context.
 
 ```
@@ -1510,6 +1546,8 @@ requireRole(request: Request, minimumRole: Role): Promise<{ orgId: String, userI
 ```
 
 ### 6.17 Auth Middleware (`src/middleware.ts`)
+
+> **Drift note (audit-r2):** Renamed to `src/proxy.ts` in Next.js 16 (the new framework hook name). Behaviour unchanged.
 
 **Purpose:** Next.js middleware for route protection and tenant context.
 
@@ -2161,7 +2199,11 @@ handlePaste(event: ClipboardEvent, gridApi: GridApi, orgId: String): Promise<Res
 
 ## 7. Data Models
 
+> **Drift note (audit-r2):** v2.0/v4.0/v5.0 added several entities not listed below: `proposals`, `actuals`, `change_log`, `dashboard_layouts`, `scenarios`, `import_batches`, `holidays`. See `.planning/v5.0-ARCHITECTURE.md` §7 for the new tables and `src/db/schema.ts` for the live source of truth.
+
 ### Entity: Organization
+
+> **Drift note (audit-r2):** v2.0 adds `onboarding_completed_at` Timestamp (nullable) — set when admin completes the onboarding wizard. See `src/db/schema.ts:122`.
 
 | Field                  | Type      | Constraints                                                                  |
 | ---------------------- | --------- | ---------------------------------------------------------------------------- |
@@ -2246,6 +2288,8 @@ Indexes:
 
 ### Entity: Project
 
+> **Drift note (audit-r2):** v5.0 adds `lead_pm_person_id` UUID FK → `people.id` (nullable) for project ownership/PM assignment. See `src/db/schema.ts:238` and indexed at `:252-254`.
+
 | Field           | Type      | Constraints                                         |
 | --------------- | --------- | --------------------------------------------------- |
 | id              | UUID      | PK, auto-generated                                  |
@@ -2279,6 +2323,8 @@ Indexes:
 
 ### Entity: Program
 
+> **Drift note (audit-r2):** v5.0 adds `archived_at` Timestamp (nullable) for soft-delete. Same pattern applied to Department and Discipline (see those entities below). Source: `src/db/schema.ts:140,160,180`.
+
 | Field           | Type      | Constraints                     |
 | --------------- | --------- | ------------------------------- |
 | id              | UUID      | PK, auto-generated              |
@@ -2306,6 +2352,8 @@ Indexes:
 
 ### Entity: Department
 
+> **Drift note (audit-r2):** v5.0 adds `archived_at` Timestamp (nullable) for soft-delete. Source: `src/db/schema.ts:160`.
+
 | Field           | Type      | Constraints                     |
 | --------------- | --------- | ------------------------------- |
 | id              | UUID      | PK, auto-generated              |
@@ -2325,6 +2373,8 @@ Indexes:
 ---
 
 ### Entity: Discipline
+
+> **Drift note (audit-r2):** v5.0 adds `archived_at` Timestamp (nullable) for soft-delete. Source: `src/db/schema.ts:180`.
 
 | Field           | Type      | Constraints                                       |
 | --------------- | --------- | ------------------------------------------------- |
@@ -2347,6 +2397,8 @@ Indexes:
 
 ### Entity: Allocation (The Flat Table)
 
+> **Drift note (audit-r2):** DB-level `CHECK (hours >= 0 AND hours <= 744)` constraint added by audit-r2 migration to pair with the Zod schema bound (R1 F-A-011 fix) and provide end-to-end defense in depth.
+
 | Field           | Type      | Constraints                                            |
 | --------------- | --------- | ------------------------------------------------------ |
 | id              | UUID      | PK, auto-generated                                     |
@@ -2354,7 +2406,7 @@ Indexes:
 | person_id       | UUID      | FK → people.id, required                               |
 | project_id      | UUID      | FK → projects.id, required                             |
 | month           | Date      | required, always first day of month (e.g., 2026-03-01) |
-| hours           | Integer   | required, min 0, max 744                               |
+| hours           | Integer   | required, min 0, max 744 (DB CHECK, see drift note)    |
 | created_at      | Timestamp | auto-generated                                         |
 | updated_at      | Timestamp | auto-updated, used for optimistic locking              |
 
@@ -2588,6 +2640,8 @@ _Note: The Organization entity's platform admin fields (`suspended_at`, `suspend
 
 All API endpoints are prefixed with `/api/`. All require Clerk authentication except webhooks and health. All scoped by tenant via `getTenantId()`.
 
+> **Drift note (audit-r2):** Where this section lists `/organizations/*` for platform-admin routes, the live code uses `/api/platform/tenants/*`. §5 of this doc matches that convention; §8.1 below is stale on the path prefix. See `.planning/v5.0-ARCHITECTURE.md` §8.1 for `/api/v5/*` and `/api/analytics/*` surfaces added in v2.0/v5.0.
+
 ---
 
 #### Allocations
@@ -2619,6 +2673,8 @@ GET /api/allocations
     401: { error: "AUTH_ERROR", message: "Not authenticated" }
   Maps to: allocationService.getPersonAllocations | getTeamAllocations | getProjectAllocations | getAllocationsFlat
 ```
+
+> **Drift note (audit-r2):** `POST /api/allocations` (single) and `DELETE /api/allocations/[id]` are superseded — the live grid uses `POST /api/allocations/batch` (always-batched, even for a single cell) and `PATCH /api/v5/planning/allocations/[id]`. The single-row routes below were never built. See `.planning/v5.0-ARCHITECTURE.md` §8.1.
 
 ```
 POST /api/allocations
@@ -2920,6 +2976,8 @@ POST /api/import/execute
 ---
 
 #### Dashboard (Phase 2)
+
+> **Drift note (audit-r2):** `/api/dashboard` was split into 14 focused endpoints under `/api/analytics/*` in v2.0 (KPIs, capacity gauges, department heatmap, discipline breakdown, alerts, allocation trends, capacity forecast, period comparison, utilization sparklines, availability finder, availability timeline, capacity distribution, program rollup, resource conflicts). The single-endpoint contract below is stale — see live routes under `src/app/api/analytics/*` and `.planning/v5.0-ARCHITECTURE.md` §8.1.
 
 ```
 GET /api/dashboard
@@ -3639,6 +3697,15 @@ AppError (base)
 │     - Missing required field: { field: "firstName", message: "First name is required" }
 │     - Out of range: { field: "hours", message: "Hours must be between 0 and 744" }
 │     - Invalid format: { field: "month", message: "Month must be in YYYY-MM format" }
+│
+│   > Drift note (audit-r2): Canonical taxonomy now lives in `src/lib/errors/codes.ts`.
+│   > `HISTORIC_CONFIRM_REQUIRED` is **409 ConflictError**, not 400 ValidationError.
+│   > Bare-form (no `ERR_` prefix) wire codes added in v5.0:
+│   >   `BAD_HOURS`, `REASON_REQUIRED`, `BATCH_ALREADY_ROLLED_BACK`,
+│   >   `ROLLBACK_WINDOW_EXPIRED`, `DEPENDENT_ROWS_EXIST`,
+│   >   `PROPOSAL_NOT_ACTIVE`, `ALLOCATION_NOT_FOUND`.
+│   > Plus prefixed legacy codes: `ERR_US_WEEK_HEADERS`, `ERR_HOLIDAY_YEAR_OUT_OF_RANGE`.
+│   > See `.planning/v5.0-ARCHITECTURE.md` §11.1 for the live taxonomy.
 │
 ├── AuthError (401)
 │   code: "ERR_AUTH"
