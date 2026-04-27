@@ -43,29 +43,22 @@ export function PersonSidebar({ activePersonId }: PersonSidebarProps) {
     return map;
   }, [filtered]);
 
+  // audit-r3 / R3-P2-07: mirror R2-P1-03 (D-CR-104) cleanup. The footer
+  // previously rendered three dead affordances:
+  //   - "New Entry" button: no onClick, no form context → did nothing.
+  //   - "Archive" link: href="#" with no /archive route → scrolls to top +
+  //     dirties history.
+  //   - "Help" link: href="#" → same dead-link issue. Now points at /help.
   const sidebarFooter = (
     <div className="border-outline-variant/15 border-t p-4">
-      <button
-        type="button"
-        className="bg-primary text-on-primary mb-4 w-full rounded-sm py-2 text-xs font-bold shadow-sm transition-opacity hover:opacity-90"
-      >
-        New Entry
-      </button>
       <div className="flex flex-col gap-1">
-        <a
-          href="#"
+        <Link
+          href="/help"
           className="flex items-center gap-3 rounded-sm p-2 text-xs font-medium text-slate-600 hover:bg-[#e2e8f0] dark:text-slate-400 dark:hover:bg-slate-900"
         >
           <span className="material-symbols-outlined text-sm">help_outline</span>
           Help
-        </a>
-        <a
-          href="#"
-          className="flex items-center gap-3 rounded-sm p-2 text-xs font-medium text-slate-600 hover:bg-[#e2e8f0] dark:text-slate-400 dark:hover:bg-slate-900"
-        >
-          <span className="material-symbols-outlined text-sm">archive</span>
-          Archive
-        </a>
+        </Link>
       </div>
     </div>
   );
