@@ -306,8 +306,9 @@ All keys land in both `messages/sv.json` and `messages/en.json`. New keys go und
 | `sidebar.personaSections.changeLog` | Ändringslogg | Change Log |
 | `sidebar.personaSections.adminPeople` | Personer | People |
 | `sidebar.personaSections.adminProjects` | Projekt | Projects |
+| `sidebar.personaSections.adminMembers` | Medlemmar | Members |
 
-Total 18 new keys. Zero collisions with existing `sidebar.*` headings.
+Total 19 new keys (18 + adminMembers added in audit-r2 R2-P1-09 K12 fix). Zero collisions with existing `sidebar.*` headings.
 
 ---
 
