@@ -217,29 +217,19 @@ export function SideNav() {
         ))}
       </nav>
 
-      {/* Footer */}
+      {/* Footer — R2-P1-03 (D-CR-104): removed dead "New Entry" button (no
+          onClick / no form context) and "Archive" link (no /archive route
+          exists; misleading affordance). "Help" link now points at the real
+          /help route instead of href="#" (which Next treats as a same-page
+          anchor and dirties history). */}
       <div className="border-outline-variant/15 border-t p-4">
-        <button
-          type="button"
-          className="bg-primary text-on-primary mb-6 flex w-full items-center justify-center gap-2 rounded-sm py-2.5 text-xs font-semibold hover:opacity-90"
-        >
-          <MaterialIcon name="add" className="text-on-primary !text-base" />
-          {t('newEntry')}
-        </button>
         <div className="space-y-1">
           <Link
-            href="#"
+            href="/help"
             className="text-on-surface-variant hover:text-primary flex items-center gap-2 px-1 text-xs transition-colors"
           >
             <MaterialIcon name="help_outline" className="!text-base" />
             {t('help')}
-          </Link>
-          <Link
-            href="#"
-            className="text-on-surface-variant hover:text-primary flex items-center gap-2 px-1 text-xs transition-colors"
-          >
-            <MaterialIcon name="archive" className="!text-base" />
-            {t('archive')}
           </Link>
         </div>
       </div>
