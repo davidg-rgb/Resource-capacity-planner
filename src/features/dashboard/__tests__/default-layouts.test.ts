@@ -1,10 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import {
-  DEFAULT_LAYOUTS,
-  LEGACY_LAYOUTS,
-  getDefaultLayout,
-} from '../default-layouts';
+import { DEFAULT_LAYOUTS, LEGACY_LAYOUTS, getDefaultLayout } from '../default-layouts';
 
 // ---------------------------------------------------------------------------
 // Helper: extract widgetIds from a layout array
@@ -101,11 +97,9 @@ describe('LEGACY_LAYOUTS (rollback)', () => {
   });
 
   it('all LEGACY_LAYOUTS widget IDs are self-consistent (no accidental drops)', () => {
-    const allIds = new Set(
-      Object.values(LEGACY_LAYOUTS).flatMap((layout) => ids(layout)),
-    );
+    const allIds = new Set(Object.values(LEGACY_LAYOUTS).flatMap((layout) => ids(layout)));
     // Verify each layout only references IDs that exist in the full legacy set
-    for (const [key, layout] of Object.entries(LEGACY_LAYOUTS)) {
+    for (const layout of Object.values(LEGACY_LAYOUTS)) {
       for (const w of layout) {
         expect(allIds.has(w.widgetId)).toBe(true);
       }
@@ -283,8 +277,13 @@ describe('getDefaultLayout()', () => {
     expect(ids(layout)).toContain('heat-map-summary-card');
   });
 
-  it('falls back to manager:desktop for unknown dashboard', () => {
-    const layout = getDefaultLayout('unknown', 'desktop');
+  // audit-r1 / D-CR-13: dashboardId is now narrowed to KnownDashboardId so
+  // typos like 'managr' are a compile-time error. Unknown deviceClass on a
+  // known dashboardId still falls back to manager:desktop (this is the
+  // existing v1 behavior; tightening this further would break the route
+  // handler's contract).
+  it('falls back to manager:desktop for an unknown deviceClass on a known dashboardId', () => {
+    const layout = getDefaultLayout('manager', 'lcars-screen');
     expect(layout.length).toBeGreaterThan(0);
     expect(ids(layout)).toContain('kpi-cards');
   });

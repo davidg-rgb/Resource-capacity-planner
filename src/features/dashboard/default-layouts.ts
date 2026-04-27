@@ -155,14 +155,32 @@ export const DEFAULT_LAYOUTS: Record<string, WidgetPlacement[]> = {
 };
 
 /**
+ * Discriminated union of dashboards that have built-in layouts. Keep
+ * this in sync with `dashboardIdSchema` in
+ * `src/app/api/dashboard/layout/route.ts` (Phase 51 LEAN-08 contract).
+ *
+ * audit-r1 / D-CR-13: tighten the input type so typos (e.g. `'managr'`)
+ * fail at compile time instead of silently falling back to the
+ * manager:desktop layout. Existing call sites already pass the narrow
+ * literal — the route handler validates via Zod's
+ * `z.enum(['manager', 'project-leader'])` before calling this.
+ */
+export type KnownDashboardId = 'manager' | 'project-leader';
+
+/**
  * Get the default layout for a dashboard and device class.
- * Falls back to manager desktop if no matching default exists.
+ *
+ * Falls back to manager:desktop if no matching default exists for the
+ * `(dashboardId, deviceClass)` pair (e.g. unknown deviceClass on a
+ * known dashboardId). The type narrowing on `dashboardId` prevents the
+ * other typo class — passing an unknown dashboardId is now a compile-
+ * time error.
  *
  * @param useLegacy - When true, returns original (pre-trim) layouts for rollback.
  *                    Callers pass `!flags.uiV6LeanTrim` as this argument.
  */
 export function getDefaultLayout(
-  dashboardId: string,
+  dashboardId: KnownDashboardId,
   deviceClass: string,
   useLegacy?: boolean,
 ): WidgetPlacement[] {
