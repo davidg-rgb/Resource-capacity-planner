@@ -67,7 +67,10 @@ const NAV_ITEMS: NavItemDef[] = [
   {
     labelKey: 'projects',
     descKey: 'projectsDesc',
-    href: '/projects',
+    // audit-r1 / C-P2-1: point directly at the canonical destination instead
+    // of /projects (which 308-redirects to /admin/projects per next.config.ts).
+    // Avoids the redirect round-trip and keeps the address bar honest.
+    href: '/admin/projects',
     icon: FolderKanban,
     visibleFor: ['pm', 'line-manager', 'rd', 'admin'],
   },
@@ -106,7 +109,8 @@ const NAV_ITEMS: NavItemDef[] = [
   {
     labelKey: 'staff',
     descKey: 'staffDesc',
-    href: '/team',
+    // audit-r1 / C-P2-1: bypass the /team -> /admin/people 308-redirect.
+    href: '/admin/people',
     icon: Users,
     visibleFor: ['admin'],
   },
