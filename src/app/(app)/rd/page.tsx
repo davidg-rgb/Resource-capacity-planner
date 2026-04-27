@@ -127,21 +127,12 @@ function RdPageInner() {
     queryFn: () => fetchPortfolio(groupBy, startMonth, endMonth),
   });
 
-  function handleCellClick(
-    rowId: string,
-    rowLabel: string,
-    monthKey: string,
-    isOver: boolean,
-  ) {
+  function handleCellClick(rowId: string, rowLabel: string, monthKey: string, isOver: boolean) {
     // v6.0 — Phase 52 / Plan 52-04 (RD-02 / D-09):
     // Red overcommit cells (cell.state === 'over') open the OvercommitDialog
     // INSTEAD of the drawer when the flag is on AND we have a department
     // scope (groupBy='department'). Otherwise preserve Phase 51 drawer flow.
-    if (
-      flags.uiV6PerJourney &&
-      isOver &&
-      groupBy === 'department'
-    ) {
+    if (flags.uiV6PerJourney && isOver && groupBy === 'department') {
       setOvercommit({ scope: 'department', scopeId: rowId, monthKey });
       return;
     }
@@ -167,14 +158,26 @@ function RdPageInner() {
         <h1 className="font-headline text-2xl font-bold">{t('title')}</h1>
         <div className="flex items-center gap-2">
           {!flags.uiV6PerJourney && (
-            // Phase 51 parity — the button opens a placeholder modal. In flag-ON
-            // mode the primary entry point is clicking a red overcommit cell
-            // (RD-02 / D-09), which supplies dept + month context to the dialog.
+            // Phase 51 parity — the button is rendered in flag-OFF mode for layout
+            // parity with flag-ON, but the dialog cannot resolve scope without
+            // per-journey context (scope=department + scopeId=''), so the query
+            // never fires and the dialog renders with no actionable content.
+            // R2-P1-01 (D-CR-102): disable in flag-OFF mode and explain via title.
+            // In flag-ON mode the primary entry point is clicking a red overcommit
+            // cell (RD-02 / D-09), which supplies dept + month context to the dialog.
             <button
               type="button"
               data-testid="rd-overcommit-drill-btn"
-              className="border-outline-variant rounded-sm border px-3 py-1.5 text-sm"
-              onClick={() => setOvercommit({ scope: 'department', scopeId: '', monthKey: startMonth })}
+              className="border-outline-variant rounded-sm border px-3 py-1.5 text-sm disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={!flags.uiV6PerJourney}
+              title={
+                !flags.uiV6PerJourney
+                  ? 'Tillgänglig endast med per-resa-flaggan aktiverad'
+                  : undefined
+              }
+              onClick={() =>
+                setOvercommit({ scope: 'department', scopeId: '', monthKey: startMonth })
+              }
             >
               {t('overcommitDrill')}
             </button>
