@@ -14,8 +14,15 @@ import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, relative, sep } from 'node:path';
 import { globSync } from 'glob';
 
-const MUTATING_RE =
-  /^(create|update|delete|edit|submit|resubmit|approve|reject|commit|rollback|upsert|archive|withdraw|patch|bulk[A-Z]|batch[A-Z])/;
+// CONS-P1-11: source the regex from the shared CommonJS module so the
+// ESLint rule (eslint-rules/require-change-log.js) and this codegen always
+// recognise the same prefix set. Use createRequire so a CJS file can be
+// loaded from this ESM-style TS script.
+import { createRequire } from 'node:module';
+const requireCjs = createRequire(import.meta.url);
+const { MUTATION_PREFIX_REGEX: MUTATING_RE } = requireCjs(
+  '../eslint-rules/_mutation-prefix-regex',
+) as { MUTATION_PREFIX_REGEX: RegExp };
 
 const INCLUDE = [
   'src/features/change-log/**/*.service.ts',

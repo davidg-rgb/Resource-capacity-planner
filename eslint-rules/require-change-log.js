@@ -8,8 +8,11 @@
 
 'use strict';
 
-const MUTATING_VERB_RE =
-  /^(create|update|delete|edit|submit|approve|reject|commit|rollback|upsert|archive|withdraw|bulk[A-Z])/;
+// CONS-P1-11: source the regex from the shared module so it stays in sync
+// with scripts/generate-mutations-manifest.ts. Previously the two regexes
+// drifted (codegen recognised `resubmit|patch|batch[A-Z]`; the rule did
+// not), allowing some mutations to escape change-log coverage.
+const { MUTATION_PREFIX_REGEX: MUTATING_VERB_RE } = require('./_mutation-prefix-regex');
 
 function isMutatingName(name) {
   return typeof name === 'string' && MUTATING_VERB_RE.test(name);
