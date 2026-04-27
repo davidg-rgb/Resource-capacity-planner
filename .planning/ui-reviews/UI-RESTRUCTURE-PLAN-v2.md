@@ -125,6 +125,15 @@ Additions over v1:
   ```
   Permanent (308) redirects preserve the request method and query string — the status-chip deep-link `/pm/wishes?tab=rejected` works through the redirect. Also: fix the hard-coded `<Link href="/projects">` in `projects/[projectId]/page.tsx:167` to `/admin/projects` (K1).
 
+  > **R3-P1-01 deferral note (audit-r3, 2026-04-27):** the shipped
+  > `next.config.ts` deviates from the snippet above — `/team`,
+  > `/team/:path*`, and `/projects` are deliberately `permanent: false`
+  > (307) per audit-r1 D-CR-16: "mid-rollout, don't pin destination
+  > prematurely". Only `/wishes` is `permanent: true` (308). Re-evaluate
+  > after Wave 4 closes and the destination URLs are stable, then either
+  > flip these three to 308 or amend this plan to record the long-term
+  > 307 stance.
+
 - **2.5 SQL CORRECTED** (K1):
   ```sql
   -- Pre-deletion gate — must return 0 rows
