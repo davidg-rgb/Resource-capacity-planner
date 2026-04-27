@@ -186,6 +186,12 @@ Wave 1 must land before Wave 2 (not parallel). If they must ship together, combi
 
 ## 4. Feature-Flag Gating (K5, K10)
 
+> **Note (audit-r1 / CONS-P1-03):** the dotted-form names below were the
+> *plan-time* identifiers. The shipped TS code uses camelCase (`uiV6Landing`,
+> `uiV6LeanTrim`, `uiV6PerJourney`, `uiV6Polish`) per the Nordic TS naming
+> convention — the flag-toggle endpoint, helpers, and `FlagName` union are
+> all camelCase. Treat the dotted form as a documentation artifact only.
+
 New flags added to `src/features/flags/flag.types.ts`:
 
 ```ts
@@ -196,10 +202,10 @@ export type FlagName =
   | 'onboarding'
   | 'scenarios'
   // v6 restructure flags — remove after rollout stable
-  | 'uiV6.landing'      // Wave 1
-  | 'uiV6.leanTrim'     // Wave 2
-  | 'uiV6.perJourney'   // Wave 3
-  | 'uiV6.polish';      // Wave 4
+  | 'uiV6Landing'      // Wave 1 (was: uiV6.landing in plan v1)
+  | 'uiV6LeanTrim'     // Wave 2 (was: uiV6.leanTrim)
+  | 'uiV6PerJourney'   // Wave 3 (was: uiV6.perJourney)
+  | 'uiV6Polish';      // Wave 4 (was: uiV6.polish)
 ```
 
 Rollout protocol: each flag defaults OFF in production; enabled for internal Nordic Precision tenant first; expanded to all tenants after 1 week of green telemetry.
