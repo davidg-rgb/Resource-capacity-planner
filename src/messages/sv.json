@@ -63,7 +63,8 @@
       "adminMain": "Administration",
       "changeLog": "Ändringslogg",
       "adminPeople": "Personer",
-      "adminProjects": "Projekt"
+      "adminProjects": "Projekt",
+      "adminMembers": "Medlemmar"
     }
   },
   "heatMap": {

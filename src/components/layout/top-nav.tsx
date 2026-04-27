@@ -127,13 +127,10 @@ const NAV_ITEMS: NavItemDef[] = [
     icon: ShieldCheck,
     visibleFor: ['admin'],
   },
-  {
-    labelKey: 'members',
-    descKey: 'membersDesc',
-    href: '/admin/members',
-    icon: Users,
-    visibleFor: ['admin'],
-  },
+  // v6.0 audit-r2 / R2-P1-09 (P1-101 / K12): Members moved out of top-nav and
+  // into the admin sidebar (`PERSONA_SECTION_NAV.admin` referenceData section).
+  // Plan UI-RESTRUCTURE-PLAN-v2.md K12 directive: "top-nav removes Medlemmar;
+  // moves to admin sidebar".
   // v6.0 Phase 53-02 (POLISH-02 / D-03): Help nav item — visible for ALL
   // personas (no visibleFor). labelKey/descKey are fully-qualified so we can
   // pull them from the flag-scoped v6.polish.nav namespace without

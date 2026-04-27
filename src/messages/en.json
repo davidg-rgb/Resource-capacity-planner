@@ -63,7 +63,8 @@
       "adminMain": "Administration",
       "changeLog": "Change Log",
       "adminPeople": "People",
-      "adminProjects": "Projects"
+      "adminProjects": "Projects",
+      "adminMembers": "Members"
     }
   },
   "heatMap": {

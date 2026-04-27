@@ -136,9 +136,14 @@ export const PERSONA_SECTION_NAV: Record<PersonaKind, NavSectionDef[]> = {
         { labelKey: 'personaSections.changeLog', href: '/admin', icon: 'history' },
         { labelKey: 'personaSections.adminPeople', href: '/admin/people', icon: 'group' },
         { labelKey: 'personaSections.adminProjects', href: '/admin/projects', icon: 'flag' },
+        // v6.0 audit-r2 / R2-P1-09 (P1-101 / K12): Members relocated from
+        // top-nav (where it duplicated /admin/people surface) into the admin
+        // sidebar's referenceData group, matching UI-RESTRUCTURE-PLAN-v2.md
+        // K12: "top-nav removes Medlemmar; moves to admin sidebar".
         { labelKey: 'referenceData', href: '/admin/disciplines', icon: 'category' },
         { labelKey: 'departments', href: '/admin/departments', icon: 'corporate_fare' },
         { labelKey: 'programs', href: '/admin/programs', icon: 'flag' },
+        { labelKey: 'personaSections.adminMembers', href: '/admin/members', icon: 'badge' },
       ],
     },
   ],
