@@ -152,8 +152,11 @@ describe('TopNav visibleFor matrix (POLISH-02 / D-03 LITERAL)', () => {
     const hrefs = centerNavHrefs();
     // Flag-off preserves the existing filter — every flag-enabled NAV_ITEM is
     // visible regardless of persona. Key items must be present:
+    // audit-r1 / C-P2-1: NAV_ITEMS now point directly at canonical destinations
+    // (/admin/projects + /admin/people) to skip the 308-redirect — assert against
+    // those rather than the legacy /projects + /team values.
     expect(hrefs).toContain('/dashboard');
-    expect(hrefs).toContain('/projects');
+    expect(hrefs).toContain('/admin/projects');
     expect(hrefs).toContain('/alerts');
     // Help item IS in NAV_ITEMS so it appears — but its presence here is not
     // the POLISH-02 narrative; the flag-off parity only requires legacy set
@@ -185,7 +188,7 @@ describe('TopNav visibleFor matrix (POLISH-02 / D-03 LITERAL)', () => {
     expect(hrefs).toEqual([
       '/dashboard/team',
       '/input',
-      '/projects',
+      '/admin/projects',
       '/dashboard',
       '/dashboard/projects',
       '/help',
@@ -204,7 +207,7 @@ describe('TopNav visibleFor matrix (POLISH-02 / D-03 LITERAL)', () => {
     expect(hrefs).toEqual([
       '/dashboard/team',
       '/input',
-      '/projects',
+      '/admin/projects',
       '/dashboard',
       '/alerts',
       '/help',
@@ -216,7 +219,7 @@ describe('TopNav visibleFor matrix (POLISH-02 / D-03 LITERAL)', () => {
     personaState.persona = { kind: 'rd', displayName: 'R&D' };
     render(<TopNav />, { wrapper: makeWrapper() });
     const hrefs = centerNavHrefs();
-    expect(hrefs).toEqual(['/dashboard/team', '/projects', '/dashboard', '/alerts', '/help']);
+    expect(hrefs).toEqual(['/dashboard/team', '/admin/projects', '/dashboard', '/alerts', '/help']);
   });
 
   it('Test 6: flag on + persona=admin → every item including help', () => {
@@ -226,15 +229,17 @@ describe('TopNav visibleFor matrix (POLISH-02 / D-03 LITERAL)', () => {
     const hrefs = centerNavHrefs();
     // audit-r2 / R2-P1-09 (K12): /admin/members no longer appears in the
     // top-nav — moved to the admin sidebar's PERSONA_SECTION_NAV.admin.
+    // audit-r1 / C-P2-1: projects + staff items point at canonical destinations
+    // /admin/projects + /admin/people (skips the 308-redirect from /projects + /team).
     expect(hrefs).toEqual([
       '/dashboard/team',
       '/input',
-      '/projects',
+      '/admin/projects',
       '/dashboard',
       '/dashboard/projects',
       '/scenarios',
       '/alerts',
-      '/team',
+      '/admin/people',
       '/data',
       '/admin/disciplines',
       '/help',
@@ -253,7 +258,8 @@ describe('TopNav visibleFor matrix (POLISH-02 / D-03 LITERAL)', () => {
     expect(hrefs).not.toContain('/dashboard/team');
     expect(hrefs).not.toContain('/dashboard/projects');
     // Other admin items remain visible
-    expect(hrefs).toContain('/projects');
+    // audit-r1 / C-P2-1: projects item points at canonical /admin/projects.
+    expect(hrefs).toContain('/admin/projects');
     expect(hrefs).toContain('/help');
   });
 });
