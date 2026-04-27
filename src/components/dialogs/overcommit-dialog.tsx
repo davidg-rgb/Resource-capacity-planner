@@ -159,7 +159,11 @@ export function OvercommitDialog(props: OvercommitDialogProps) {
                 {people.map((p) => (
                   <li key={p.id}>
                     <Link
-                      href={`/staff/${p.id}?month=${monthKey}`}
+                      // CONS-P1-09: monthKey is user-tainted (URL param), so
+                      // it must be encoded before being interpolated into a
+                      // query string. encodeURIComponent prevents accidental
+                      // pollution if a future caller passes e.g. "2026-04&x=1".
+                      href={`/staff/${p.id}?month=${encodeURIComponent(monthKey)}`}
                       data-clicks="true"
                       data-testid={`overcommit-person-${p.id}`}
                       className="text-primary text-sm hover:underline"
