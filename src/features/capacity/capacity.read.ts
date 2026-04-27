@@ -325,6 +325,13 @@ export async function getOvercommitBreakdown(
     .where(
       and(
         eq(schema.allocations.organizationId, args.orgId),
+        // Round 1 audit CONS-P0-08: defense-in-depth tenant scoping on the
+        // joined `people` and `projects` tables. `allocations.organizationId`
+        // is already filtered, but every other read fn in this file scopes
+        // joins explicitly — match the convention so a future cross-tenant
+        // FK never bleeds rows.
+        eq(schema.people.organizationId, args.orgId),
+        eq(schema.projects.organizationId, args.orgId),
         eq(schema.people.departmentId, args.departmentId),
         eq(schema.allocations.month, monthFirstDay),
       ),
@@ -388,6 +395,9 @@ export async function getOvercommitBreakdown(
     .where(
       and(
         eq(schema.allocations.organizationId, args.orgId),
+        // Round 1 audit CONS-P0-08: defense-in-depth tenant scoping on the
+        // joined `people` table (matching the projectRows query above).
+        eq(schema.people.organizationId, args.orgId),
         eq(schema.people.departmentId, args.departmentId),
         eq(schema.allocations.month, monthFirstDay),
       ),

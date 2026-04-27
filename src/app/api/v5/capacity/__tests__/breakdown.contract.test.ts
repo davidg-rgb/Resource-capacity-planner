@@ -248,3 +248,48 @@ describe('GET /api/v5/capacity/breakdown — validation', () => {
     expect(res.status).toBe(400);
   });
 });
+
+// Round 1 audit CONS-P0-08: defense-in-depth tenant scoping on the
+// `people` and `projects` joins inside getOvercommitBreakdown.
+describe('GET /api/v5/capacity/breakdown — tenant isolation (CONS-P0-08)', () => {
+  const ORG_B_ID = 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee';
+  const DEPT_B_ID = 'd1111111-1111-4111-8111-111111111110';
+  const PB_ID = 'bbbb1111-1111-4111-8111-111111111111';
+  const PROJB_ID = 'cbbb1111-1111-4111-8111-111111111111';
+
+  it('does not bleed projects[]/people[] from a different org sharing the same departmentId-typed UUID', async () => {
+    // Seed org B with a dept whose ID happens to match an org-A dept's pattern
+    // (real ID space is uuid; collisions need to be defended-against by
+    // organization_id scoping on the joined tables).
+    await testDb.execute(sql`INSERT INTO organizations (id, name) VALUES (${ORG_B_ID}, 'OrgB')`);
+    await testDb.execute(
+      sql`INSERT INTO departments (id, organization_id, name) VALUES (${DEPT_B_ID}, ${ORG_B_ID}, 'EngB')`,
+    );
+    await testDb.execute(
+      sql`INSERT INTO people (id, organization_id, department_id, first_name, last_name, target_hours_per_month)
+          VALUES (${PB_ID}, ${ORG_B_ID}, ${DEPT_B_ID}, 'OrgB', 'Person', 100)`,
+    );
+    await testDb.execute(
+      sql`INSERT INTO projects (id, organization_id, name) VALUES (${PROJB_ID}, ${ORG_B_ID}, 'OrgBProj')`,
+    );
+    await testDb.execute(
+      sql`INSERT INTO allocations (organization_id, person_id, project_id, month, hours) VALUES
+          (${ORG_ID}, ${P1_ID}, ${PROJ1_ID}, '2026-06-01', 40),
+          (${ORG_B_ID}, ${PB_ID}, ${PROJB_ID}, '2026-06-01', 200)`,
+    );
+
+    // Query for ORG_ID + DEPT_ID — should see only org-A allocations.
+    fakeAuth.orgId = ORG_ID;
+    const res = await GET(makeReq(`scope=department&scopeId=${DEPT_ID}&monthKey=2026-06`) as never);
+    expect(res.status).toBe(200);
+    const json = (await res.json()) as {
+      projects: Array<{ id: string; name: string }>;
+      people: Array<{ id: string; name: string }>;
+    };
+    // No org-B project name should appear
+    expect(json.projects.every((p) => p.name !== 'OrgBProj')).toBe(true);
+    expect(json.projects.every((p) => p.id !== PROJB_ID)).toBe(true);
+    // No org-B person should appear
+    expect(json.people.every((p) => p.id !== PB_ID)).toBe(true);
+  });
+});
