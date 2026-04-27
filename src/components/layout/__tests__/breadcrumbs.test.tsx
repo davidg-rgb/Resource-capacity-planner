@@ -81,9 +81,11 @@ describe('Breadcrumbs', () => {
     });
 
     it('renders intermediate segments as clickable Links', () => {
+      // audit-r2 / D-CR-110: persona acronyms render via LABEL_MAP
+      // ("pm" -> "PM") instead of relying on CSS capitalize.
       mockPathname = '/pm/wishes';
       renderBreadcrumbs();
-      const pmLink = screen.getByText('pm');
+      const pmLink = screen.getByText('PM');
       expect(pmLink.closest('a')).toHaveAttribute('href', '/pm');
     });
 

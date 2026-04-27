@@ -9,6 +9,20 @@ import { getLandingRoute } from '@/features/personas/persona.routes';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+// audit-r2 / D-CR-110: persona acronyms render correctly instead of being
+// CSS-capitalized ("Pm" / "Lm" / "Rd"). For unknown segments we fall back to
+// the legacy capitalize behavior (CSS class + dash-to-space rewrite).
+const LABEL_MAP: Record<string, string> = {
+  pm: 'PM',
+  lm: 'LM',
+  rd: 'R&D',
+  'line-manager': 'Line Manager',
+};
+
+function labelForSegment(segment: string): string {
+  return LABEL_MAP[segment] ?? segment.replace(/-/g, ' ');
+}
+
 export function Breadcrumbs() {
   const pathname = usePathname();
   const flags = useFlags();
@@ -48,14 +62,20 @@ export function Breadcrumbs() {
         const href = '/' + segments.slice(0, i + 1).join('/');
         // CONS-P0-03 / D-CR-06: key includes index to avoid React duplicate-key
         // collisions on paths with repeated segments (e.g. /admin/admin).
+        // audit-r2 / D-CR-110: render via LABEL_MAP so persona acronyms (pm,
+        // lm, rd, line-manager) render with the correct casing. Unknown
+        // segments still get the dash-to-space rewrite + CSS capitalize.
+        const mapped = LABEL_MAP[segment];
+        const label = labelForSegment(segment);
+        const wrapperClass = mapped ? '' : 'capitalize';
         return (
           <span key={`${i}-${segment}`} className="flex items-center gap-2">
             {i > 0 && <span className="material-symbols-outlined text-sm">chevron_right</span>}
             {isLast ? (
-              <span className="text-on-surface capitalize">{segment.replace(/-/g, ' ')}</span>
+              <span className={`text-on-surface ${wrapperClass}`.trim()}>{label}</span>
             ) : (
-              <Link href={href} className="hover:text-primary capitalize">
-                {segment.replace(/-/g, ' ')}
+              <Link href={href} className={`hover:text-primary ${wrapperClass}`.trim()}>
+                {label}
               </Link>
             )}
           </span>

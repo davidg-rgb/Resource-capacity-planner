@@ -52,10 +52,10 @@ exports[`Breadcrumbs > uiV6Landing ON > snapshot: flag on, path /line-manager/ti
     class="flex items-center gap-2"
   >
     <a
-      class="hover:text-primary capitalize"
+      class="hover:text-primary"
       href="/line-manager"
     >
-      line manager
+      Line Manager
     </a>
   </span>
   <span
@@ -95,10 +95,10 @@ exports[`Breadcrumbs > uiV6Landing ON > snapshot: flag on, path /pm/wishes 1`] =
     class="flex items-center gap-2"
   >
     <a
-      class="hover:text-primary capitalize"
+      class="hover:text-primary"
       href="/pm"
     >
-      pm
+      PM
     </a>
   </span>
   <span
