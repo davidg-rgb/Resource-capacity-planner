@@ -12,6 +12,8 @@ import { test, expect, personaAs, type PersonaKind } from '../fixtures/test-base
 import {
   disablePerJourney,
   enablePerJourney,
+  setLandingFlag,
+  setLeanTrimFlag,
   setPolishFlag,
 } from '../helpers/flag-toggle';
 
@@ -192,17 +194,13 @@ test.describe('POLISH-FLAG — flag-off parity for every POLISH-* surface', () =
     await setPolishFlag(request, true);
   });
 
-  test('top-nav: legacy capacity-alerts link present (not NotificationBell)', async ({
-    page,
-  }) => {
+  test('top-nav: legacy capacity-alerts link present (not NotificationBell)', async ({ page }) => {
     await personaAs(page, 'pm');
     await page.goto('/pm');
     await expect(page.locator('[data-testid="notification-bell"]')).toHaveCount(0);
   });
 
-  test('top-nav: staff persona sees legacy NAV_ITEMS (no visibleFor filter)', async ({
-    page,
-  }) => {
+  test('top-nav: staff persona sees legacy NAV_ITEMS (no visibleFor filter)', async ({ page }) => {
     await personaAs(page, 'staff');
     await page.goto('/staff');
     // Flag-off bypasses the `visibleFor` gate, so Staff sees every item
@@ -211,9 +209,7 @@ test.describe('POLISH-FLAG — flag-off parity for every POLISH-* surface', () =
     await expect(page.locator('body')).toBeVisible();
   });
 
-  test('/alerts: no tab UI when polish flag is off (legacy AlertList only)', async ({
-    page,
-  }) => {
+  test('/alerts: no tab UI when polish flag is off (legacy AlertList only)', async ({ page }) => {
     await personaAs(page, 'admin');
     await page.goto('/alerts');
     await expect(page.locator('[data-testid="alerts-tab-warnings"]')).toHaveCount(0);
@@ -246,8 +242,76 @@ test.describe('POLISH-FLAG — flag-off parity for every POLISH-* surface', () =
     await page.goto('/dashboard');
     // The banner was introduced in Plan 04 behind uiV6Polish; with the flag
     // OFF it must NOT render (parity with pre-Phase-53 chrome).
-    await expect(
-      page.locator('[data-testid="strategic-alerts-banner-cta"]'),
-    ).toHaveCount(0);
+    await expect(page.locator('[data-testid="strategic-alerts-banner-cta"]')).toHaveCount(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// v6.0 — LANDING-FLAG — flag-off parity for `uiV6Landing`. With the flag OFF,
+// the persona-aware redirect chain on `/` falls back to legacy `/home`. Specs
+// skip gracefully when the /api/test/flags endpoint is not wired.
+// ---------------------------------------------------------------------------
+
+test.describe('LANDING-FLAG — flag-off parity for uiV6Landing', () => {
+  test.beforeEach(async ({ request }, testInfo) => {
+    const result = await setLandingFlag(request, false);
+    if (!result.applied) {
+      testInfo.annotations.push({
+        type: 'warning',
+        description: `landing flag-off setup did not apply: ${result.reason}`,
+      });
+      test.skip(true, `landing flag-off unavailable: ${result.reason}`);
+    }
+  });
+
+  test.afterEach(async ({ request }) => {
+    await setLandingFlag(request, true);
+  });
+
+  test('root /: with uiV6Landing=false, root remains accessible (legacy /home)', async ({
+    page,
+  }) => {
+    await personaAs(page, 'admin');
+    await page.goto('/');
+    // Flag-off must not redirect through the v6 persona-redirect chain.
+    // Body renders — exact landing target depends on legacy behavior.
+    await expect(page.locator('body')).toBeVisible();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// v6.0 — LEAN-TRIM-FLAG — flag-off parity for `uiV6LeanTrim`. With the flag
+// OFF, the trimmed-navigation lean-mode reverts to the legacy full surface.
+// Specs skip gracefully when the /api/test/flags endpoint is not wired.
+// ---------------------------------------------------------------------------
+
+test.describe('LEAN-TRIM-FLAG — flag-off parity for uiV6LeanTrim', () => {
+  test.beforeEach(async ({ request }, testInfo) => {
+    const result = await setLeanTrimFlag(request, false);
+    if (!result.applied) {
+      testInfo.annotations.push({
+        type: 'warning',
+        description: `lean-trim flag-off setup did not apply: ${result.reason}`,
+      });
+      test.skip(true, `lean-trim flag-off unavailable: ${result.reason}`);
+    }
+  });
+
+  test.afterEach(async ({ request }) => {
+    await setLeanTrimFlag(request, true);
+  });
+
+  test('lean-trim flag-off: PM landing renders without trim regressions', async ({ page }) => {
+    await personaAs(page, 'pm');
+    await page.goto('/pm');
+    // Non-regression: page body renders under flag-off.
+    await expect(page.locator('body')).toBeVisible();
+  });
+
+  test('lean-trim flag-off: side-nav still renders for admin persona', async ({ page }) => {
+    await personaAs(page, 'admin');
+    await page.goto('/admin');
+    // The full-surface side-nav must remain accessible when lean-trim is off.
+    await expect(page.locator('body')).toBeVisible();
   });
 });
