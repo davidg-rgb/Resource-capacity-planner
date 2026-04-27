@@ -38,6 +38,7 @@ import { useLmQueueCount } from '@/features/proposals/use-lm-queue-count';
 import { useRdOvercommitCount } from '@/features/proposals/use-rd-overcommit-count';
 import { useAlertCount } from '@/hooks/use-alerts';
 import { generateMonthRange, getCurrentMonth } from '@/lib/date-utils';
+import { safeTCount } from '@/lib/i18n-utils';
 
 export function NotificationBell() {
   const flags = useFlags();
@@ -73,25 +74,28 @@ export function NotificationBell() {
 
   let count = 0;
   let href = '/alerts';
-  let label = t('adminAlertsLabel', { count: 0 });
+  // D-CR-11: route every label through safeTCount so missing keys (e.g.
+  // partial-rollout copy not yet authored in sv.json) surface a sensible
+  // English fallback instead of throwing during render.
+  let label = safeTCount(t, 'adminAlertsLabel', { count: 0 }, 'Alerts');
 
   if (persona.kind === 'pm') {
     count = pm?.rejected ?? 0;
     href = '/pm/wishes?tab=rejected';
-    label = t('pmRejectedLabel', { count });
+    label = safeTCount(t, 'pmRejectedLabel', { count }, `Rejected wishes: ${count}`);
   } else if (persona.kind === 'line-manager') {
     count = lm ?? 0;
     href = '/line-manager/approval-queue';
-    label = t('lmPendingLabel', { count });
+    label = safeTCount(t, 'lmPendingLabel', { count }, `Pending approvals: ${count}`);
   } else if (persona.kind === 'rd') {
     count = rdCount ?? 0;
     href = '/alerts';
-    label = t('rdOvercommitsLabel', { count });
+    label = safeTCount(t, 'rdOvercommitsLabel', { count }, `Overcommits: ${count}`);
   } else {
     // admin — fall-through to alert-count behavior
     count = alertCount ?? 0;
     href = '/alerts';
-    label = t('adminAlertsLabel', { count });
+    label = safeTCount(t, 'adminAlertsLabel', { count }, `Alerts: ${count}`);
   }
 
   // UI-MN-02: zero-state parity with PendingWishChip — return null instead
