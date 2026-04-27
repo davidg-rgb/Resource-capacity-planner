@@ -20,7 +20,9 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
-    const { orgId } = await requireRole('planner');
+    // RV-02: ARCHITECTURE.md §6 reserves CUD on the projects register for
+    // admins. Tighten back from `planner`.
+    const { orgId } = await requireRole('admin');
     const { id } = await params;
     const body = await request.json();
     const data = projectUpdateSchema.parse(body);

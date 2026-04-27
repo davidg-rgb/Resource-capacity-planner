@@ -25,7 +25,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { orgId } = await requireRole('planner');
+    // RV-02: ARCHITECTURE.md §6 reserves CUD on the projects register for
+    // admins. Previous `planner` check exposed project creation to any
+    // planner regardless of admin role.
+    const { orgId } = await requireRole('admin');
     const body = await request.json();
     const data = projectCreateSchema.parse(body);
     const project = await createProject(orgId, data);
