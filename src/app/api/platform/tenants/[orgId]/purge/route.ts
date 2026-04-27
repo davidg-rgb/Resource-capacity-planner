@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { purgeTenantData } from '@/features/platform/platform-tenant-data.service';
 import { getTenantDetail } from '@/features/platform/platform-tenant.service';
 import { handleApiError } from '@/lib/api-utils';
+import { ValidationError } from '@/lib/errors';
 import { logPlatformAction } from '@/lib/platform-audit';
 import { requirePlatformAdmin } from '@/lib/platform-auth';
 
@@ -18,13 +19,13 @@ export async function POST(
     const confirmName = typeof body.confirmName === 'string' ? body.confirmName : '';
 
     if (!confirmName) {
-      return NextResponse.json({ error: 'Confirmation name is required' }, { status: 400 });
+      throw new ValidationError('Confirmation name is required');
     }
 
     const tenant = await getTenantDetail(orgId);
 
     if (confirmName !== tenant.name) {
-      return NextResponse.json({ error: 'Confirmation name does not match' }, { status: 400 });
+      throw new ValidationError('Confirmation name does not match');
     }
 
     const { deletedCounts } = await purgeTenantData(orgId);

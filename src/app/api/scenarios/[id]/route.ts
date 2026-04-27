@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { getScenario, updateScenario, deleteScenario } from '@/features/scenarios/scenario.service';
 import { handleApiError } from '@/lib/api-utils';
 import { getTenantId } from '@/lib/auth';
+import { AuthError } from '@/lib/errors';
 
 // ---------------------------------------------------------------------------
 // Validation
@@ -38,7 +39,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
     const orgId = await getTenantId();
     const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    if (!userId) throw new AuthError();
 
     const { id } = await params;
     const body = updateScenarioSchema.parse(await request.json());
@@ -54,7 +55,7 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   try {
     const orgId = await getTenantId();
     const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    if (!userId) throw new AuthError();
 
     const { id } = await params;
     await deleteScenario(orgId, id, userId);

@@ -34,14 +34,19 @@ import { describe, it, expect } from 'vitest';
 
 import { handleApiError } from '@/lib/api-utils';
 import {
-  HistoricConfirmRequiredError,
+  AuthError,
   BadHoursError,
+  BatchAlreadyRolledBackError,
+  DependentRowsExistError,
+  ForbiddenError,
+  HistoricConfirmRequiredError,
+  NotFoundError,
+  PayloadTooLargeError,
   ProposalNotActiveError,
   ReasonRequiredError,
-  BatchAlreadyRolledBackError,
   RollbackWindowExpiredError,
-  DependentRowsExistError,
   UsWeekHeadersError,
+  ValidationError,
 } from '@/lib/errors';
 import {
   HISTORIC_CONFIRM_REQUIRED,
@@ -151,6 +156,130 @@ describe('API-V5-01 error wire format', () => {
       // Guard: the top-level key is exactly { error }.
       const keys = Object.keys(body).sort();
       expect(keys).toEqual(['error']);
+    });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// R2-P0-01 — Round 2 Phase 2: error shape reconciliation across 7 legacy routes
+// ---------------------------------------------------------------------------
+//
+// The following routes were migrated from the legacy flat
+// `{ error: 'string' }` shape to throwing AppError subclasses so they flow
+// through handleApiError() and emit the canonical nested
+// `{ error: { code, message, details? } }` shape.
+//
+// We assert the wire shape per error class — same invariant guards as the
+// documented-error cases above (status, code, message, top-level keys).
+// ---------------------------------------------------------------------------
+
+interface RouteCase {
+  tcId: string;
+  route: string;
+  make: () => Error;
+  expectedCode: string;
+  expectedStatus: number;
+}
+
+const routeCases: RouteCase[] = [
+  // src/app/api/analytics/alerts/route.ts:14 — flag-disabled
+  {
+    tcId: 'TC-INV-ERRWIRE-R2-001',
+    route: 'GET /api/analytics/alerts (flag off)',
+    make: () => new ForbiddenError('Feature not enabled'),
+    expectedCode: 'ERR_FORBIDDEN',
+    expectedStatus: 403,
+  },
+  // src/app/api/analytics/alerts/count/route.ts:14 — flag-disabled
+  {
+    tcId: 'TC-INV-ERRWIRE-R2-002',
+    route: 'GET /api/analytics/alerts/count (flag off)',
+    make: () => new ForbiddenError('Feature not enabled'),
+    expectedCode: 'ERR_FORBIDDEN',
+    expectedStatus: 403,
+  },
+  // src/app/api/reports/team-heatmap/route.tsx:33 — flag-disabled (404)
+  {
+    tcId: 'TC-INV-ERRWIRE-R2-003',
+    route: 'GET /api/reports/team-heatmap (flag off)',
+    make: () => new NotFoundError('feature', 'pdfExport'),
+    expectedCode: 'ERR_NOT_FOUND',
+    expectedStatus: 404,
+  },
+  // src/app/api/import/upload/route.ts:23 — no file
+  {
+    tcId: 'TC-INV-ERRWIRE-R2-004',
+    route: 'POST /api/import/upload (no file)',
+    make: () => new ValidationError('No file provided'),
+    expectedCode: 'ERR_VALIDATION',
+    expectedStatus: 400,
+  },
+  // src/app/api/import/upload/route.ts:28 — file too large
+  {
+    tcId: 'TC-INV-ERRWIRE-R2-005',
+    route: 'POST /api/import/upload (>10MB)',
+    make: () => new PayloadTooLargeError('File exceeds 10MB limit'),
+    expectedCode: 'ERR_PAYLOAD_TOO_LARGE',
+    expectedStatus: 413,
+  },
+  // src/app/api/import/upload/route.ts:62 — bad extension
+  {
+    tcId: 'TC-INV-ERRWIRE-R2-006',
+    route: 'POST /api/import/upload (bad ext)',
+    make: () => new ValidationError('Unsupported file type. Use .xlsx, .xls, or .csv'),
+    expectedCode: 'ERR_VALIDATION',
+    expectedStatus: 400,
+  },
+  // src/app/api/scenarios/route.ts:24,38 — not authenticated
+  {
+    tcId: 'TC-INV-ERRWIRE-R2-007',
+    route: 'GET|POST /api/scenarios (no userId)',
+    make: () => new AuthError(),
+    expectedCode: 'ERR_AUTH',
+    expectedStatus: 401,
+  },
+  // src/app/api/scenarios/[id]/route.ts:41,57 — not authenticated
+  {
+    tcId: 'TC-INV-ERRWIRE-R2-008',
+    route: 'PATCH|DELETE /api/scenarios/:id (no userId)',
+    make: () => new AuthError(),
+    expectedCode: 'ERR_AUTH',
+    expectedStatus: 401,
+  },
+  // src/app/api/platform/tenants/[orgId]/purge/route.ts:21 — confirmName missing
+  {
+    tcId: 'TC-INV-ERRWIRE-R2-009',
+    route: 'POST /api/platform/tenants/:orgId/purge (no confirmName)',
+    make: () => new ValidationError('Confirmation name is required'),
+    expectedCode: 'ERR_VALIDATION',
+    expectedStatus: 400,
+  },
+  // src/app/api/platform/tenants/[orgId]/purge/route.ts:27 — confirmName mismatch
+  {
+    tcId: 'TC-INV-ERRWIRE-R2-010',
+    route: 'POST /api/platform/tenants/:orgId/purge (mismatch)',
+    make: () => new ValidationError('Confirmation name does not match'),
+    expectedCode: 'ERR_VALIDATION',
+    expectedStatus: 400,
+  },
+];
+
+describe('R2-P0-01 reconciled error wire format on 7 legacy routes', () => {
+  for (const c of routeCases) {
+    it(`${c.tcId} ${c.route} → status ${c.expectedStatus} with nested wire shape`, async () => {
+      const res = handleApiError(c.make());
+      expect(res.status).toBe(c.expectedStatus);
+
+      const body = (await res.json()) as {
+        error: { code: string; message: string; details?: Record<string, unknown> };
+      };
+
+      expect(body.error.code).toBe(c.expectedCode);
+      expect(typeof body.error.message).toBe('string');
+      expect(body.error.message.length).toBeGreaterThan(0);
+
+      // Top-level keys must be exactly { error } (no flat string).
+      expect(Object.keys(body).sort()).toEqual(['error']);
     });
   }
 });

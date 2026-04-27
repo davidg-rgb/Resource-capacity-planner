@@ -22,6 +22,7 @@ import { getTeamHeatMap, validateMonthRange } from '@/features/analytics/analyti
 import { getOrgFlags } from '@/features/flags/flag.service';
 import { getTenantId } from '@/lib/auth';
 import { handleApiError } from '@/lib/api-utils';
+import { NotFoundError } from '@/lib/errors';
 
 export async function GET(request: NextRequest) {
   try {
@@ -30,7 +31,8 @@ export async function GET(request: NextRequest) {
     // Feature flag gate (PDF-01 / pitfall 5)
     const flags = await getOrgFlags(orgId);
     if (!flags.pdfExport) {
-      return NextResponse.json({ error: 'Feature not available' }, { status: 404 });
+      // Surface as 404 to obscure existence of the feature when disabled.
+      throw new NotFoundError('feature', 'pdfExport');
     }
 
     // Parse and validate query params (max 36 months)

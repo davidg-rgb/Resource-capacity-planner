@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { listScenarios, createScenario } from '@/features/scenarios/scenario.service';
 import { handleApiError } from '@/lib/api-utils';
 import { getTenantId } from '@/lib/auth';
+import { AuthError } from '@/lib/errors';
 
 // ---------------------------------------------------------------------------
 // Validation
@@ -21,7 +22,7 @@ export async function GET() {
   try {
     const orgId = await getTenantId();
     const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    if (!userId) throw new AuthError();
 
     const scenarios = await listScenarios(orgId, userId);
     return NextResponse.json({ scenarios });
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
   try {
     const orgId = await getTenantId();
     const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    if (!userId) throw new AuthError();
 
     const body = createScenarioSchema.parse(await request.json());
     const scenario = await createScenario(orgId, userId, {

@@ -4,6 +4,7 @@ import { getCapacityAlerts, validateMonthRange } from '@/features/analytics/anal
 import { getOrgFlags } from '@/features/flags/flag.service';
 import { getTenantId } from '@/lib/auth';
 import { handleApiError } from '@/lib/api-utils';
+import { ForbiddenError } from '@/lib/errors';
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest) {
 
     const flags = await getOrgFlags(orgId);
     if (!flags.alerts) {
-      return NextResponse.json({ error: 'Feature not enabled' }, { status: 403 });
+      throw new ForbiddenError('Feature not enabled');
     }
 
     const params = request.nextUrl.searchParams;

@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { parseExcelBuffer, autoDetectMappings } from '@/features/import/import.utils';
 import { handleApiError } from '@/lib/api-utils';
 import { requireRole } from '@/lib/auth';
-import { ValidationError } from '@/lib/errors';
+import { PayloadTooLargeError, ValidationError } from '@/lib/errors';
 
 /**
  * POST /api/import/upload
@@ -20,21 +20,18 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
     if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+      throw new ValidationError('No file provided');
     }
 
     // D-15: max 10MB file size
     if (file.size > 10 * 1024 * 1024) {
-      return NextResponse.json({ error: 'File exceeds 10MB limit' }, { status: 400 });
+      throw new PayloadTooLargeError('File exceeds 10MB limit');
     }
 
     // Validate file extension
     const ext = file.name.split('.').pop()?.toLowerCase();
     if (!ext || !['xlsx', 'xls', 'csv'].includes(ext)) {
-      return NextResponse.json(
-        { error: 'Unsupported file type. Use .xlsx, .xls, or .csv' },
-        { status: 400 },
-      );
+      throw new ValidationError('Unsupported file type. Use .xlsx, .xls, or .csv');
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
@@ -58,9 +55,6 @@ export async function POST(request: NextRequest) {
       suggestedMappings: mappings,
     });
   } catch (error) {
-    if (error instanceof ValidationError) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
-    }
     return handleApiError(error);
   }
 }
