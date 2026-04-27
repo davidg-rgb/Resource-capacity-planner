@@ -10,6 +10,7 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { PieChart as PieIcon, Loader2 } from 'lucide-react';
+import { z } from 'zod';
 
 import { DisciplineChart } from '@/components/charts/discipline-chart';
 import { DisciplineDonut } from '@/components/charts/discipline-donut';
@@ -77,8 +78,17 @@ export function DisciplineBreakdownWidget({ config, timeRange }: WidgetProps) {
   // can still come from `config.chartType` so tenants who set it via the API get
   // their default. Full cross-session persistence is deferred to a future plan
   // that extends WidgetProps with onConfigChange + layout mutation.
-  const initialChartType = ((config?.chartType as ChartType | undefined) ??
-    defaultChartType) as ChartType;
+  // audit-r1 / D-CR-15: validate `config.chartType` via Zod instead of double-
+  // casting through `as ChartType`. Invalid/missing values fall back to the
+  // scope-derived default cleanly. safeParse over parse so a malformed
+  // tenant config (e.g. legacy 'pie' string) doesn't crash the dashboard.
+  const chartTypeResult = z
+    .enum(['bar', 'donut'])
+    .default(defaultChartType)
+    .safeParse(config?.chartType);
+  const initialChartType: ChartType = chartTypeResult.success
+    ? chartTypeResult.data
+    : defaultChartType;
   const [chartType, setChartType] = useState<ChartType>(initialChartType);
 
   // Both hooks are ALWAYS called (React rules of hooks). `useProjectStaffing`
