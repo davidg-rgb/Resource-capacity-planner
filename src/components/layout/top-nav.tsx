@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { UserButton } from '@clerk/nextjs';
 import {
-  Search,
   Bell,
   Settings,
   FileInput,
@@ -232,16 +231,10 @@ export function TopNav() {
           })}
         </nav>
 
-        {/* Right: Search (hidden on small), notifications, settings, user */}
+        {/* Right: notifications, settings, user — R2-P1-04 (D-CR-105):
+            removed the desktop search input (no /search route exists, no
+            value/onChange/form context). Restore once search is implemented. */}
         <div className="ml-auto flex items-center gap-3">
-          <div className="relative hidden md:block">
-            <Search size={14} className="text-outline absolute top-1/2 left-3 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder={tc('search')}
-              className="bg-surface-container-low text-on-surface placeholder:text-outline focus:ring-primary w-64 rounded-sm py-1.5 pr-4 pl-9 text-xs focus:ring-1 focus:outline-none"
-            />
-          </div>
           {/* v6.0 Phase 53-02 (POLISH-01): flag-gated mutual exclusion —
               when uiV6Polish=true, NotificationBell owns the bell slot
               (persona-scoped + badges); when OFF, the legacy Phase 52 link
@@ -286,23 +279,10 @@ export function TopNav() {
             onClick={() => setMobileMenuOpen(false)}
             aria-hidden="true"
           />
-          {/* Drawer */}
+          {/* Drawer — R2-P1-04 (D-CR-105): removed mobile search input
+              (no /search route, no onChange/form). Restore when search is
+              wired. */}
           <nav className="border-outline-variant/15 bg-surface relative z-10 flex max-h-[calc(100vh-3.5rem)] w-72 flex-col overflow-y-auto border-r shadow-lg">
-            {/* Search (shown in mobile drawer) */}
-            <div className="border-outline-variant/15 border-b p-4 md:hidden">
-              <div className="relative">
-                <Search
-                  size={14}
-                  className="text-outline absolute top-1/2 left-3 -translate-y-1/2"
-                />
-                <input
-                  type="text"
-                  placeholder={tc('search')}
-                  className="bg-surface-container-low text-on-surface placeholder:text-outline focus:ring-primary w-full rounded-sm py-1.5 pr-4 pl-9 text-xs focus:ring-1 focus:outline-none"
-                />
-              </div>
-            </div>
-
             {/* Nav links */}
             <div className="flex-1 space-y-1 p-3">
               {visibleItems.map((item) => {
