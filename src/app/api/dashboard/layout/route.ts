@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 
 import { db } from '@/db';
@@ -13,11 +12,16 @@ import type {
   WidgetPlacement,
 } from '@/features/dashboard/widget-registry.types';
 import { handleApiError } from '@/lib/api-utils';
-import { getTenantId } from '@/lib/auth';
+import { requireRole } from '@/lib/auth';
 
 // ---------------------------------------------------------------------------
 // Validation
 // ---------------------------------------------------------------------------
+
+// Round 1 audit CONS-P0-07: dashboardId must be one of the documented
+// dashboard surfaces. Typos (e.g. "managr") were silently writing rows that
+// no UI would ever read.
+const dashboardIdSchema = z.enum(['manager', 'project-leader']);
 
 const widgetPlacementSchema = z.object({
   widgetId: z.string(),
@@ -28,7 +32,7 @@ const widgetPlacementSchema = z.object({
 });
 
 const putBodySchema = z.object({
-  dashboardId: z.string().min(1),
+  dashboardId: dashboardIdSchema,
   deviceClass: z.enum(['desktop', 'mobile']),
   widgets: z.array(widgetPlacementSchema),
 });
@@ -61,14 +65,12 @@ function filterValidWidgets(widgets: WidgetPlacement[]): WidgetPlacement[] {
 
 export async function GET(request: NextRequest) {
   try {
-    const orgId = await getTenantId();
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-    }
+    // Round 1 audit CONS-P0-07: GET now requires viewer+ role. Previously the
+    // route only called getTenantId() + auth() with no role check.
+    const { orgId, userId } = await requireRole('viewer');
 
     const params = request.nextUrl.searchParams;
-    const dashboardId = params.get('dashboardId') ?? 'manager';
+    const dashboardId = dashboardIdSchema.parse(params.get('dashboardId') ?? 'manager');
     const deviceClass = z.enum(['desktop', 'mobile']).parse(params.get('deviceClass') ?? 'desktop');
 
     // Tier 1: personal layout (exact user + device)
@@ -169,11 +171,8 @@ export async function GET(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const orgId = await getTenantId();
-    const { userId } = await auth();
-    if (!userId) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-    }
+    // Round 1 audit CONS-P0-07: PUT now requires viewer+ role.
+    const { orgId, userId } = await requireRole('viewer');
 
     const body = putBodySchema.parse(await request.json());
 
@@ -196,7 +195,10 @@ export async function PUT(request: NextRequest) {
         ],
         set: {
           layout: body.widgets,
-          version: 1,
+          // Round 1 audit CONS-P0-07: bump version on update so optimistic
+          // concurrency consumers can detect modifications. Hardcoded to 1
+          // before, which silently broke version-bump invariants.
+          version: sql`${dashboardLayouts.version} + 1`,
         },
       })
       .returning();

@@ -69,26 +69,40 @@ vi.mock('@clerk/nextjs', () => ({
   useAuth: () => ({ isLoaded: true, userId: authState.userId }),
 }));
 
+// CONS-P1-07: vi.fn() mocks so we can assert call args (notably the
+// `enabled` flag wired per-persona). Each branch must skip the fetch for
+// non-matching personas (T-53-11 — DoS mitigation).
+const usePmWishCountsMock = vi.fn((_clerkUserId: string, _enabled: boolean) => ({
+  data: { pending: pmData.pending, rejected: pmData.rejected },
+}));
+const useLmQueueCountMock = vi.fn((_deptId: string | null, _enabled: boolean) => ({
+  data: lmData.count,
+}));
+const useRdOvercommitCountMock = vi.fn((_enabled: boolean) => ({
+  data: rdData.count,
+}));
+// useAlertCount: 3rd arg is the `enabled` gate (Phase 53 REVIEW-FIX WR-02).
+const useAlertCountMock = vi.fn((_from: string, _to: string, _enabled?: boolean) => ({
+  data: adminAlertData.count,
+}));
+
 vi.mock('@/features/proposals/use-pm-wish-counts', () => ({
-  usePmWishCounts: (_clerkUserId: string, _enabled: boolean) => ({
-    data: { pending: pmData.pending, rejected: pmData.rejected },
-  }),
+  usePmWishCounts: (clerkUserId: string, enabled: boolean) =>
+    usePmWishCountsMock(clerkUserId, enabled),
 }));
 
 vi.mock('@/features/proposals/use-lm-queue-count', () => ({
-  useLmQueueCount: (_deptId: string | null, _enabled: boolean) => ({
-    data: lmData.count,
-  }),
+  useLmQueueCount: (deptId: string | null, enabled: boolean) =>
+    useLmQueueCountMock(deptId, enabled),
 }));
 
 vi.mock('@/features/proposals/use-rd-overcommit-count', () => ({
-  useRdOvercommitCount: (_enabled: boolean) => ({
-    data: rdData.count,
-  }),
+  useRdOvercommitCount: (enabled: boolean) => useRdOvercommitCountMock(enabled),
 }));
 
 vi.mock('@/hooks/use-alerts', () => ({
-  useAlertCount: (_from: string, _to: string) => ({ data: adminAlertData.count }),
+  useAlertCount: (from: string, to: string, enabled?: boolean) =>
+    useAlertCountMock(from, to, enabled),
 }));
 
 // --------------------------------------------------------------------------
@@ -124,6 +138,10 @@ describe('NotificationBell (POLISH-01)', () => {
     lmData.count = null;
     rdData.count = null;
     adminAlertData.count = null;
+    usePmWishCountsMock.mockClear();
+    useLmQueueCountMock.mockClear();
+    useRdOvercommitCountMock.mockClear();
+    useAlertCountMock.mockClear();
   });
 
   afterEach(() => {
@@ -262,5 +280,62 @@ describe('NotificationBell (POLISH-01)', () => {
     });
     expect(fetchMock).not.toHaveBeenCalled();
     vi.unstubAllGlobals();
+  });
+
+  // CONS-P1-07: assert each persona-scoped hook is called with enabled=false
+  // for non-matching personas. The contract from notification-bell.tsx is:
+  //   pmEnabled    = uiV6Polish && persona.kind === 'pm' && !!userId
+  //   lmEnabled    = uiV6Polish && persona.kind === 'line-manager'
+  //   rdEnabled    = uiV6Polish && persona.kind === 'rd'
+  //   adminEnabled = uiV6Polish && persona.kind === 'admin'
+  // Only ONE branch may be enabled at a time per active persona.
+  it('CONS-P1-07: hook enabled flags are false for non-matching personas (PM)', () => {
+    personaState.persona = {
+      kind: 'pm',
+      personId: 'p-1',
+      displayName: 'PM',
+      homeDepartmentId: 'dept-A',
+    };
+    pmData.rejected = 1;
+    render(<NotificationBell />, { wrapper: makeWrapper() });
+    expect(usePmWishCountsMock).toHaveBeenCalledWith('clerk-user', true);
+    expect(useLmQueueCountMock).toHaveBeenCalledWith(null, false);
+    expect(useRdOvercommitCountMock).toHaveBeenCalledWith(false);
+    // useAlertCount third arg is the enabled gate.
+    expect(useAlertCountMock).toHaveBeenCalledWith(expect.any(String), expect.any(String), false);
+  });
+
+  it('CONS-P1-07: hook enabled flags are false for non-matching personas (LM)', () => {
+    personaState.persona = {
+      kind: 'line-manager',
+      departmentId: 'dept-A',
+      displayName: 'LM',
+    };
+    lmData.count = 1;
+    render(<NotificationBell />, { wrapper: makeWrapper() });
+    expect(usePmWishCountsMock).toHaveBeenCalledWith(expect.any(String), false);
+    expect(useLmQueueCountMock).toHaveBeenCalledWith('dept-A', true);
+    expect(useRdOvercommitCountMock).toHaveBeenCalledWith(false);
+    expect(useAlertCountMock).toHaveBeenCalledWith(expect.any(String), expect.any(String), false);
+  });
+
+  it('CONS-P1-07: hook enabled flags are false for non-matching personas (R&D)', () => {
+    personaState.persona = { kind: 'rd', displayName: 'R&D' };
+    rdData.count = 1;
+    render(<NotificationBell />, { wrapper: makeWrapper() });
+    expect(usePmWishCountsMock).toHaveBeenCalledWith(expect.any(String), false);
+    expect(useLmQueueCountMock).toHaveBeenCalledWith(null, false);
+    expect(useRdOvercommitCountMock).toHaveBeenCalledWith(true);
+    expect(useAlertCountMock).toHaveBeenCalledWith(expect.any(String), expect.any(String), false);
+  });
+
+  it('CONS-P1-07: Staff persona — bell is null and only useAlertCount may run', () => {
+    personaState.persona = { kind: 'staff', personId: 'p-1', displayName: 'Staff' };
+    render(<NotificationBell />, { wrapper: makeWrapper() });
+    // For staff, every persona-scoped hook must be called with enabled=false.
+    expect(usePmWishCountsMock).toHaveBeenCalledWith(expect.any(String), false);
+    expect(useLmQueueCountMock).toHaveBeenCalledWith(null, false);
+    expect(useRdOvercommitCountMock).toHaveBeenCalledWith(false);
+    expect(useAlertCountMock).toHaveBeenCalledWith(expect.any(String), expect.any(String), false);
   });
 });
