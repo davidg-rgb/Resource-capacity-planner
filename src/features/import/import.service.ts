@@ -160,7 +160,7 @@ export async function validateImportRows(
     const projectMatch = matchName(row.projectName, projectList);
 
     // Hours validation
-    if (!Number.isInteger(row.hours) || row.hours < 1 || row.hours > 999) {
+    if (!Number.isInteger(row.hours) || row.hours < 1 || row.hours > 744) {
       errors.push(`Invalid hours: ${row.hours}`);
     }
 

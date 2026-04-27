@@ -8,7 +8,7 @@ export const allocationUpsertSchema = z.object({
   personId: z.uuid(),
   projectId: z.uuid(),
   month: z.string().regex(/^\d{4}-\d{2}$/, 'Month must be YYYY-MM format'),
-  hours: z.number().int().min(0).max(999),
+  hours: z.number().int().min(0).max(744),
   expectedUpdatedAt: z.iso.datetime().optional(),
 });
 
