@@ -180,9 +180,11 @@ function reducer(state: WizardState, action: Action): WizardState {
 // ---------- Error → step routing -------------------------------------------
 
 function mapErrorToStep(code: string, current: WizardStep): WizardStep {
+  // audit-r1 / F-B-14: canonical code is ERR_US_WEEK_HEADERS. The legacy
+  // US_WEEK_DETECTED was an early-Phase-44 alias that never made it to
+  // production but lingered as a defensive fallback.
   if (
     code === 'ERR_US_WEEK_HEADERS' ||
-    code === 'US_WEEK_DETECTED' ||
     code === 'ERR_UNKNOWN_LAYOUT' ||
     code === 'UNSUPPORTED_FILE_TYPE'
   ) {

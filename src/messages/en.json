@@ -614,7 +614,7 @@
       "BAD_HOURS": "",
       "UNSUPPORTED_FORMAT": "",
       "INVALID_DATE": "",
-      "US_WEEK_DETECTED": "",
+      "ERR_US_WEEK_HEADERS": "",
       "HOURS_NEGATIVE": "",
       "ALLOCATION_NOT_FOUND": "",
       "PROPOSAL_NOT_FOUND": "",

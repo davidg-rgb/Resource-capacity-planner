@@ -308,7 +308,7 @@ describe('TC-IMP-005 rolling back a partially skipped batch', () => {
 // ---------------------------------------------------------------------------
 
 describe('TC-IMP-006 Sunday-start / US-week pivot hard-stop', () => {
-  it('TC-IMP-006: pivoted sheet with Sunday-start weekly dates throws ValidationError US_WEEK_DETECTED', () => {
+  it('TC-IMP-006: pivoted sheet with Sunday-start weekly dates throws ValidationError ERR_US_WEEK_HEADERS', () => {
     const sheet = XLSX.utils.aoa_to_sheet([
       ['person_name', 'project_name', '2026-04-05', '2026-04-12'],
       ['Anna Tester', 'Atlas', 40, 40],

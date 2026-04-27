@@ -679,7 +679,7 @@
       "BAD_HOURS": "Ogiltigt timantal.",
       "UNSUPPORTED_FORMAT": "Filformatet stöds inte. Använd .xlsx.",
       "INVALID_DATE": "Ogiltigt datum.",
-      "US_WEEK_DETECTED": "Filen verkar använda amerikansk veckonumrering. Kontrollera och försök igen.",
+      "ERR_US_WEEK_HEADERS": "Filen verkar använda amerikansk veckonumrering. Kontrollera och försök igen.",
       "HOURS_NEGATIVE": "Timmar kan inte vara negativa.",
       "ALLOCATION_NOT_FOUND": "Tilldelningen hittades inte.",
       "PROPOSAL_NOT_FOUND": "Önskemålet hittades inte.",

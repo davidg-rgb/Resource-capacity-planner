@@ -39,8 +39,9 @@ export function ImportWizard({ fetcher, now }: ImportWizardProps) {
     if (!state.error) return null;
     let msg = state.error.message;
     switch (state.error.code) {
+      // audit-r1 / F-B-14: ERR_US_WEEK_HEADERS is canonical; US_WEEK_DETECTED
+      // was an early-Phase-44 alias that never reached prod.
       case 'ERR_US_WEEK_HEADERS':
-      case 'US_WEEK_DETECTED':
         msg = tUpload('parseError.usWeek');
         break;
       case 'ERR_UNKNOWN_LAYOUT':
