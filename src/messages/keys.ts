@@ -213,7 +213,6 @@ export const K = {
       BATCH_ALREADY_ROLLED_BACK: 'errors.BATCH_ALREADY_ROLLED_BACK',
       ROLLBACK_WINDOW_EXPIRED: 'errors.ROLLBACK_WINDOW_EXPIRED',
       SESSION_NOT_STAGED: 'errors.SESSION_NOT_STAGED',
-      DUPLICATE_PROPOSAL: 'errors.DUPLICATE_PROPOSAL',
     },
     common: {
       toast: {

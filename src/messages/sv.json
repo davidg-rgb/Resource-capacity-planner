@@ -693,8 +693,7 @@
       "PROPOSAL_NOT_ACTIVE": "Önskemålet är inte längre aktivt.",
       "BATCH_ALREADY_ROLLED_BACK": "Importomgången har redan rullats tillbaka.",
       "ROLLBACK_WINDOW_EXPIRED": "Tidsfönstret för återställning har gått ut.",
-      "SESSION_NOT_STAGED": "Sessionen är inte förberedd.",
-      "DUPLICATE_PROPOSAL": "Ett liknande önskemål finns redan."
+      "SESSION_NOT_STAGED": "Sessionen är inte förberedd."
     },
     "common": {
       "toast": {
