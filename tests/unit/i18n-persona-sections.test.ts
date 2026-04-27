@@ -29,16 +29,16 @@ const svSidebar = (sv as any).sidebar;
 const enSidebar = (en as any).sidebar;
 
 describe('i18n persona sections (NAV-05)', () => {
-  it('sv.json has all 18 personaSections keys', () => {
+  it('sv.json has all 19 personaSections keys', () => {
     const keys = Object.keys(svSidebar.personaSections);
     expect(keys).toEqual(expect.arrayContaining(EXPECTED_KEYS));
-    expect(keys).toHaveLength(18);
+    expect(keys).toHaveLength(19);
   });
 
-  it('en.json has all 18 personaSections keys', () => {
+  it('en.json has all 19 personaSections keys', () => {
     const keys = Object.keys(enSidebar.personaSections);
     expect(keys).toEqual(expect.arrayContaining(EXPECTED_KEYS));
-    expect(keys).toHaveLength(18);
+    expect(keys).toHaveLength(19);
   });
 
   it('no empty values in either locale', () => {
