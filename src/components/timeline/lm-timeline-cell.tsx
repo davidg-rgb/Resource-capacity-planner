@@ -180,10 +180,7 @@ export function LmTimelineCell(props: LmTimelineCellProps) {
   }
 
   return (
-    <div
-      className="relative"
-      data-testid={`lm-person-cell-${personRow.personId}-${monthKey}`}
-    >
+    <div className="relative" data-testid={`lm-person-cell-${personRow.personId}-${monthKey}`}>
       <PlanVsActualCell
         planned={aggregate}
         actual={null}
@@ -192,6 +189,11 @@ export function LmTimelineCell(props: LmTimelineCellProps) {
         projectId={editProjectId}
         monthKey={monthKey}
         onCellEdit={handleEdit}
+        // CONS-P1-10: when no allocation exists for this person/month the
+        // cell would silently no-op on edit (handleEdit guards on missing
+        // allocationId). Force editable=false so the cell renders read-only
+        // instead of presenting an input that swallows keystrokes.
+        editable={!!editAllocationId}
       />
       {pendingHistoric && (
         <HistoricEditDialog
