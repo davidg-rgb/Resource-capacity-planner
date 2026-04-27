@@ -45,8 +45,13 @@ export interface OvercommitProject {
   id: string;
   name: string;
   plannedHours: number;
-  /** Fraction 0..1 of this dept/month's total planned that lands on this project. */
-  pctOfOvercommit: number;
+  /**
+   * Fraction 0..1 of this dept/month's total planned hours that lands on this
+   * project. NOTE: name was `pctOfOvercommit` but the math computed share of
+   * total planned hours, not share of overcommit. Renamed in Round 1 audit
+   * (CONS-P0-06) so the field name matches the value being computed.
+   */
+  pctOfTotalPlanned: number;
 }
 
 export interface OvercommitPerson {

@@ -167,7 +167,12 @@ describe('GET /api/v5/capacity/breakdown — scope=department overcommit fields 
     expect(res.status).toBe(200);
     const json = (await res.json()) as {
       rows: unknown[];
-      projects: Array<{ id: string; name: string; plannedHours: number; pctOfOvercommit: number }>;
+      projects: Array<{
+        id: string;
+        name: string;
+        plannedHours: number;
+        pctOfTotalPlanned: number;
+      }>;
       people: Array<{
         id: string;
         name: string;
@@ -185,9 +190,11 @@ describe('GET /api/v5/capacity/breakdown — scope=department overcommit fields 
     expect(json.projects).toHaveLength(2);
     expect(json.projects[0].name).toBe('Atlas');
     expect(json.projects[0].plannedHours).toBe(120);
+    // Round 1 audit CONS-P0-06: field renamed from pctOfOvercommit to
+    // pctOfTotalPlanned (the math computes share of total planned hours).
     // pct: 120/200 = 0.6
-    expect(json.projects[0].pctOfOvercommit).toBeCloseTo(0.6, 5);
-    expect(json.projects[1].pctOfOvercommit).toBeCloseTo(0.4, 5);
+    expect(json.projects[0].pctOfTotalPlanned).toBeCloseTo(0.6, 5);
+    expect(json.projects[1].pctOfTotalPlanned).toBeCloseTo(0.4, 5);
 
     // people[]: 2 people, Anna (120h planned, 100h capacity → +20 delta) tops,
     // Bob (80h planned, 160h capacity → -80 delta) second.

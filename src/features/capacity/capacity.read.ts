@@ -343,12 +343,14 @@ export async function getOvercommitBreakdown(
         id: r.projectId,
         name: r.projectName,
         plannedHours: hours,
-        pctOfOvercommit: 0, // fill after loop
+        // Round 1 audit CONS-P0-06: field renamed from `pctOfOvercommit` to
+        // `pctOfTotalPlanned` to match what's actually being computed.
+        pctOfTotalPlanned: 0, // fill after loop
       });
     }
   }
   for (const p of projectByKey.values()) {
-    p.pctOfOvercommit = totalPlanned === 0 ? 0 : p.plannedHours / totalPlanned;
+    p.pctOfTotalPlanned = totalPlanned === 0 ? 0 : p.plannedHours / totalPlanned;
   }
   const projects = Array.from(projectByKey.values()).sort(
     (a, b) => b.plannedHours - a.plannedHours,

@@ -132,7 +132,10 @@ export function OvercommitDialog(props: OvercommitDialogProps) {
                       {t('projectRowLabel', {
                         name: p.name,
                         hours: p.plannedHours.toFixed(0),
-                        pct: Math.round(p.pctOfOvercommit * 100),
+                        // Round 1 audit CONS-P0-06: was p.pctOfOvercommit;
+                        // field renamed to honestly describe the value (share
+                        // of total planned, not share of overcommit).
+                        pct: Math.round(p.pctOfTotalPlanned * 100),
                       })}
                     </Link>
                   </li>

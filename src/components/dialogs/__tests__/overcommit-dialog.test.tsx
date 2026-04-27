@@ -29,8 +29,8 @@ function makeBreakdown(): OvercommitBreakdownResponse {
   return {
     rows: [],
     projects: [
-      { id: 'proj-atlas', name: 'Atlas', plannedHours: 120, pctOfOvercommit: 0.6 },
-      { id: 'proj-bravo', name: 'Bravo', plannedHours: 80, pctOfOvercommit: 0.4 },
+      { id: 'proj-atlas', name: 'Atlas', plannedHours: 120, pctOfTotalPlanned: 0.6 },
+      { id: 'proj-bravo', name: 'Bravo', plannedHours: 80, pctOfTotalPlanned: 0.4 },
     ],
     people: [
       {
