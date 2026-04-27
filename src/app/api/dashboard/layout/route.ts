@@ -152,7 +152,9 @@ export async function GET(request: NextRequest) {
     // Tier 4: built-in persona default
     const flags = await getOrgFlags(orgId);
     const useLegacy = !flags.uiV6LeanTrim;
-    const builtInWidgets = filterValidWidgets(getDefaultLayout(dashboardId, deviceClass, useLegacy));
+    const builtInWidgets = filterValidWidgets(
+      getDefaultLayout(dashboardId, deviceClass, useLegacy),
+    );
     const data: DashboardLayoutData = {
       dashboardId,
       deviceClass,

@@ -172,9 +172,7 @@ describe('PUT /api/dashboard/layout (CONS-P0-07)', () => {
 
   it('bumps version on update (1 → 2 → 3)', async () => {
     // Initial insert (version=1)
-    await PUT(
-      makePutReq({ dashboardId: 'manager', deviceClass: 'desktop', widgets: [] }),
-    );
+    await PUT(makePutReq({ dashboardId: 'manager', deviceClass: 'desktop', widgets: [] }));
 
     // Second PUT — should bump to 2
     const res2 = await PUT(

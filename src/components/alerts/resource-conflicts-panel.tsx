@@ -44,6 +44,10 @@ function formatMonth(m: string): string {
 const DISMISSED_KEY = 'nordic-capacity-dismissed-conflicts';
 
 function getDismissed(): Set<string> {
+  // CONS-P1-08: localStorage is undefined during SSR. The component is a
+  // client component, but useState's initializer runs on the same render
+  // cycle as the SSR pass when paired with React's streaming hydration.
+  if (typeof window === 'undefined') return new Set();
   try {
     const stored = localStorage.getItem(DISMISSED_KEY);
     return stored ? new Set(JSON.parse(stored)) : new Set();
@@ -54,6 +58,8 @@ function getDismissed(): Set<string> {
 }
 
 function setDismissed(keys: Set<string>) {
+  // CONS-P1-08: guard against SSR — no-op if window is undefined.
+  if (typeof window === 'undefined') return;
   localStorage.setItem(DISMISSED_KEY, JSON.stringify([...keys]));
 }
 
