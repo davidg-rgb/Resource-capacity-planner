@@ -16,12 +16,8 @@ import { resolve } from 'node:path';
 
 // Side-effect import registers all built-in widgets
 import '../../dashboard/widgets/index';
-import { getWidget, clearRegistry } from '../../dashboard/widget-registry';
-import {
-  DEFAULT_LAYOUTS,
-  LEGACY_LAYOUTS,
-  getDefaultLayout,
-} from '../../dashboard/default-layouts';
+import { getWidget } from '../../dashboard/widget-registry';
+import { DEFAULT_LAYOUTS, LEGACY_LAYOUTS, getDefaultLayout } from '../../dashboard/default-layouts';
 
 // ---------------------------------------------------------------------------
 // Helper
@@ -62,10 +58,24 @@ describe('LEAN-01..03: 308 permanent redirects', () => {
     expect(configContent).toContain("destination: '/pm/wishes'");
   });
 
-  it('all redirects are permanent (308)', () => {
-    // Count occurrences of permanent: true
-    const permanentCount = (configContent.match(/permanent:\s*true/g) ?? []).length;
-    expect(permanentCount).toBeGreaterThanOrEqual(4);
+  it('redirect entries declare correct permanence flags (mid-rollout 307 + stable 308)', () => {
+    // audit-r1 / D-CR-16: /team, /team/:path*, /projects intentionally use
+    // permanent: false (307) so search engines and CDN caches don't pin the
+    // destination during the v6.0 nav rollout. /wishes is stable, so it stays
+    // permanent: true (308). The audit-r3 cleanup (TD-02) updates this test
+    // from a coarse "≥4 permanent:true" count to a precise per-entry check.
+    expect(configContent).toMatch(
+      /source:\s*'\/team'\s*,\s*destination:\s*'\/admin\/people'\s*,\s*permanent:\s*false/,
+    );
+    expect(configContent).toMatch(
+      /source:\s*'\/team\/:path\*'\s*,\s*destination:\s*'\/admin\/people\/:path\*'\s*,\s*permanent:\s*false/,
+    );
+    expect(configContent).toMatch(
+      /source:\s*'\/projects'\s*,\s*destination:\s*'\/admin\/projects'\s*,\s*permanent:\s*false/,
+    );
+    expect(configContent).toMatch(
+      /source:\s*'\/wishes'\s*,\s*destination:\s*'\/pm\/wishes'\s*,\s*permanent:\s*true/,
+    );
   });
 });
 
