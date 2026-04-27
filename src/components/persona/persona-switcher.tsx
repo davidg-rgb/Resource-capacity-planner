@@ -2,7 +2,7 @@
 
 /**
  * Persona switcher (FOUND-V5-03 + Phase 40 D-19/D-20 + Phase 49 UNBREAK-01/02/08 + Phase 50 NAV-04
- * + Phase 52-04 LM-01 / D-06 + Phase 52 WR-05).
+ * + Phase 52-04 LM-01 / D-06 + Phase 52 WR-05 + audit-r1 CONS-P0-04 / CONS-P0-05).
  *
  * Phase 50: When uiV6Landing flag is ON, renders a single grouped `<select>`
  * with `<optgroup>` per PersonaKind. Composite value pattern encodes
@@ -18,6 +18,11 @@
  * currently-active persona kind when `buildPersona()` returns null (PM/Staff
  * selected before /api/people resolves). Previously it returned silently and
  * the dropdown lied about the selected kind.
+ *
+ * Audit Round 1 — CONS-P0-05: PM personas now carry `homeDepartmentId` so the
+ * pure edit-gate helper at src/features/proposals/edit-gate.ts:34-40 can
+ * grant direct-edit access to PMs working in their home department. The PM's
+ * department is taken from the /api/people row that backs the selection.
  *
  * This file is INSIDE the v5 no-literals eslint guard scope. All
  * user-visible strings route through useTranslations('v5.persona').
@@ -42,6 +47,9 @@ interface PersonRowLite {
   id: string;
   firstName: string;
   lastName: string;
+  // CONS-P0-05: needed to populate Persona['homeDepartmentId'] for PMs so the
+  // edit-gate can grant direct-edit in their home department.
+  departmentId?: string;
 }
 
 interface PeopleResponse {
@@ -60,11 +68,18 @@ function buildPersona(
   label: string,
   personId: string | null,
   departmentId: string | null,
+  /** CONS-P0-05: optional home dept for PM edit-gate. */
+  homeDepartmentId?: string | null,
 ): Persona | null {
   switch (kind) {
     case 'pm':
       if (!personId) return null;
-      return { kind: 'pm', personId, displayName: label };
+      return {
+        kind: 'pm',
+        personId,
+        displayName: label,
+        ...(homeDepartmentId ? { homeDepartmentId } : {}),
+      };
     case 'staff':
       if (!personId) return null;
       return { kind: 'staff', personId, displayName: label };
@@ -124,15 +139,24 @@ function GroupedPersonaSwitcher() {
 
     let next: Persona | null = null;
     switch (kind) {
-      case 'pm':
+      case 'pm': {
         if (!entityId) return;
-        next = { kind: 'pm', personId: entityId, displayName: label };
+        // CONS-P0-05: look up the selected person's department so the PM
+        // edit-gate (edit-gate.ts:34-40) can grant direct-edit at home.
+        const selected = people.find((p) => p.id === entityId);
+        next = {
+          kind: 'pm',
+          personId: entityId,
+          displayName: label,
+          ...(selected?.departmentId ? { homeDepartmentId: selected.departmentId } : {}),
+        };
         try {
           localStorage.setItem(PM_PERSON_STORAGE_KEY, entityId);
         } catch {
           /* ignore */
         }
         break;
+      }
       case 'staff':
         if (!entityId) return;
         next = { kind: 'staff', personId: entityId, displayName: label };
@@ -297,7 +321,12 @@ function LegacyPersonaSwitcher() {
     const defaultPersonId = preservedPersonId ?? people[0]?.id ?? null;
     const defaultDeptId =
       nextKind === 'line-manager' ? effectiveLmDeptId || departments[0]?.id || null : null;
-    const next = buildPersona(nextKind, label, defaultPersonId, defaultDeptId);
+    // CONS-P0-05: PM home dept lookup so the edit-gate can detect home-dept.
+    const defaultHomeDeptId =
+      nextKind === 'pm' && defaultPersonId
+        ? (people.find((p) => p.id === defaultPersonId)?.departmentId ?? null)
+        : null;
+    const next = buildPersona(nextKind, label, defaultPersonId, defaultDeptId, defaultHomeDeptId);
     if (!next) {
       // v6.0 — Phase 52 / REVIEW-FIX WR-05: buildPersona returns null when
       // PM / Staff are selected before `fetchPeople()` resolves. Previously
@@ -315,7 +344,12 @@ function LegacyPersonaSwitcher() {
   function handlePersonChange(e: ChangeEvent<HTMLSelectElement>) {
     const nextPersonId = e.target.value;
     const label = t(`kind.${persona.kind}`);
-    const next = buildPersona(persona.kind, label, nextPersonId, null);
+    // CONS-P0-05: refresh homeDepartmentId for the new PM person too.
+    const homeDeptId =
+      persona.kind === 'pm'
+        ? (people.find((p) => p.id === nextPersonId)?.departmentId ?? null)
+        : null;
+    const next = buildPersona(persona.kind, label, nextPersonId, null, homeDeptId);
     if (!next) return;
     setPersona(next);
   }
