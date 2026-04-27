@@ -21,6 +21,13 @@
 -- against the target environment (Phase 51 LEAN-11 precedent).
 
 -- Pass 1: rename legacy IDs to discipline-breakdown.
+-- audit-r1 / D-CR-12: WHERE clause uses EXISTS over jsonb_array_elements
+-- instead of `layout::text ~* 'discipline-chart|discipline-distribution'`.
+-- The text-cast regex is fragile — it would also match a layout that
+-- happened to embed those tokens elsewhere (e.g. a metadata blob, or a
+-- legacy widget whose name was a substring like 'discipline-chart-v2').
+-- The structural EXISTS check matches only on actual widgetId placements
+-- and stays idempotent (repeated executions match nothing after pass 1).
 UPDATE dashboard_layouts
 SET layout = (
   SELECT jsonb_agg(
@@ -32,7 +39,11 @@ SET layout = (
   )
   FROM jsonb_array_elements(layout) placement
 )
-WHERE layout::text ~* 'discipline-chart|discipline-distribution';
+WHERE EXISTS (
+  SELECT 1
+  FROM jsonb_array_elements(layout) placement
+  WHERE placement->>'widgetId' IN ('discipline-chart','discipline-distribution')
+);
 
 -- Pass 2: dedupe. Keep the first `discipline-breakdown` placement per layout
 -- (lowest position, then stable ordinal order), drop subsequent duplicates.
