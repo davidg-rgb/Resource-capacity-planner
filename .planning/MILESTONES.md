@@ -33,16 +33,66 @@
 - System health monitoring — DB latency, active connections, error rate, memory on platform dashboard
 - Tenant data operations — JSON export and GDPR purge with transactional deletion and name confirmation
 
-## v3.0 Switch from Excel (In Progress)
+## v3.0 Switch from Excel (Shipped: 2026-03-30)
 
-**Defined:** 2026-03-30
-**Phases:** 18-22 (5 phases, Phase 22 is stretch)
+**Phases completed:** 4 phases (18-21), 4 plans (Phase 22 deferred as stretch)
 **Requirements:** 15 (UX-01 through UX-15)
 
-**Goal:** Make the app self-explanatory enough that a line manager can import their spreadsheet, see immediate value, and never go back to Excel. No new features — UX clarity, role-based experience, and friction removal.
+**Key accomplishments:**
 
-**Context:** After shipping v1.0 and v2.0, the core features exist but the interface doesn't make value obvious enough to switch from Excel. The heat map (strongest differentiator) is buried 2 clicks deep. Navigation labels are generic. Users land on a person list instead of the value view.
+- Role-based landing experience — Clerk `orgRole` routes to manager/PM dashboards, no more land-on-people-list
+- Self-explanatory navigation labels with Swedish primary copy
+- Heat map promoted as hero (1-click from sign-in) — was buried 2 clicks deep
+- Import-to-value flow — wizard surfaces "see your team load" CTA immediately after import success
 
-**Key insight from client phone call:** Line managers want to see team load month by month, plan hours per person per project, and get flagged when someone is overbooked. The app already does all of this — but the UX doesn't make it self-explanatory.
+## v4.0 Dashboard Visualizations & Customization (Shipped: 2026-04-01)
+
+**Phases completed:** 10 phases (23-32), 13 widget specs + custom dashboards + scenarios
+**Code review:** 3 rounds
+
+**Key accomplishments:**
+
+- 13 widget specs (KPI cards, capacity gauges, availability finder, discipline charts, project impact, utilization heat map, bench report, strategic alerts, resource conflicts, capacity forecast, etc.)
+- Custom dashboard layouts — drag-to-arrange, persisted per `clerk_user_id` × dashboard
+- Scenario layer — what-if planning over current allocations
+- Widget registry with manager/project-leader default layouts
+
+## v5.0 Plan vs Actual + Approval Workflow (Shipped: 2026-04-13)
+
+**Phases completed:** 15 phases (33-47), ~62 plans, 38 requirements + 1 launch gate
+**Code review:** 3-round architecture review (iter 1: 6 blockers, iter 2: 5 bugs, iter 3: doc drift + final fixes)
+
+**Key accomplishments:**
+
+- ISO 8601 / 53-week calendar foundation with Swedish holidays 2026–2030 hardcoded; eslint guard prevents date-fns week-API imports outside `lib/time/iso-calendar.ts`
+- Universal `change_log` infrastructure with eslint rule + codegen manifest + runtime invariant test (TC-CL-005)
+- 5-persona role switcher (PM, Line Mgr, Staff, R&D Mgr, Admin) with localStorage persistence and persona-keyed routing
+- Day-grain `actual_entries` with largest-remainder week/month → day distribution; plan-vs-actual cell reused across PM/LM/Staff/R&D timelines
+- Excel import pipeline (SheetJS) with parse → preview → commit, idempotency, rollback within 24h, supersession
+- PM-wish → Line-Manager-approval state machine with routing (re-route on department change), audit trail, resubmit-from-rejected
+- Admin self-service CRUD with archive + `DEPENDENT_ROWS_EXIST` blocking
+- AppError taxonomy across all `/api/v5/*` routes with documented error codes
+- PDF export bug fix (html2canvas → html-to-image) — 9/9 widgets render correctly in exports
+- Playwright E2E infrastructure with NODE_ENV=test Clerk bypass, nc_e2e database bootstrap, persona harness, 12 TC-E2E specs
+
+## v6.0 UI Restructure & Journey Frictionless (Shipped: 2026-04-27)
+
+**Phases completed:** 6 required phases (48-53), 22 plans, 39 active requirements + 6 net scope-expansion (45 implemented total)
+**Code review:** Multiple post-ship fix batches — UI review batch (UI-MN-01..04), code-review fix batch (MN-01..04, NT-01..03, MJ-01..02, WR-03..05), structural validation sweep, live flag-OFF parity sweep on Vercel prod
+
+**Known deferred items at close:** 20 (see `.planning/STATE.md` Deferred Items — all are pre-existing accepted gaps from prior shipped milestones or v6.0 SOFT gates designed as `human_needed`; none blocked v6.0 ship). Phase 54 (3 QUAD-* requirements) deferred indefinitely — Phase 53 SOFT-gate viewport telemetry showed no quadrant-redesign signal.
+
+**Key accomplishments:**
+
+- Phase 48 pre-flight verification framework — grep/SQL-verified 9 assumptions before any code change; 3 failed checks triggered scope expansions (UNBREAK-08 DepartmentPicker, UNBREAK-09 PersonaGate rewire, LEAN-11 dashboard_layouts migration, LM-03 queue/count endpoint)
+- 4 independent feature flags (`uiV6.landing` / `.leanTrim` / `.perJourney` / `.polish`) — each acts as a kill-switch with verified flag-off parity invariants
+- Persona-aware landing redirect at `/` → `getLandingRoute(persona)` so users never land on the admin dashboard by default
+- Persona-keyed sidebar with 18 new `sidebar.personaSections.*` i18n keys (sv + en parity); persona switcher refactored to grouped `<select>` with edge-case handling
+- 308 redirects via `next.config.ts` for `/team`, `/projects`, `/wishes` — source pages deleted, query strings preserved for deep-links
+- 7 dead widgets removed (`discipline-progress`, `discipline-demand`, `project-impact`, `utilization-heat-map`, `bench-report`, `strategic-alerts`, `resource-conflicts`) with one-shot SQL migrations stripping IDs from custom `dashboard_layouts.layout` JSONB
+- Widget-registry defensive fallback — unknown IDs render "Widget ej tillgänglig" placeholder instead of throwing
+- Per-journey click-count targets enforced via 11 Playwright journey specs (PM, LM, Staff, R&D, Admin) plus axe-core a11y assertions; flag-off parity invariant ships per wave
+- Persona-scoped notification bell + `NavItemDef.visibleFor` top-nav filtering; `discipline-chart` + `discipline-distribution` merged into single widget with chart-type toggle; `strategic-alerts` replaced with inline banner
+- 1440×900 viewport SOFT gate — diagnostic JSON artifacts captured in CI rather than `expect()` calls so Phase 54 redesign can be triggered by data; UAT Test 1 (2026-04-24) confirmed within threshold
 
 ---

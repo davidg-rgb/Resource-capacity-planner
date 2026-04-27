@@ -144,71 +144,110 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 - [x] Platform audit log (F-036 / PLAT-08) — Phase 10
 - [x] Cross-tenant user management via Clerk SDK (F-037 / PLAT-09) — Phase 10
 
+### v5.0 — Plan vs Actual + Approval Workflow (shipped 2026-04-13)
+
+- ✓ ISO 8601 / 53-week calendar foundation with Swedish holidays 2026–2030 (FOUND-V5-01/02) — v5.0
+- ✓ Persona context + role switcher (PM, Line Mgr, Staff, R&D Mgr, Admin) with localStorage persistence (FOUND-V5-03) — v5.0
+- ✓ Universal change_log with eslint + codegen + runtime invariant (FOUND-V5-04) — v5.0
+- ✓ Day-grain `actual_entries` with largest-remainder distribution; plan-vs-actual cell (ACT-01..05) — v5.0
+- ✓ Excel import pipeline — parse → preview → commit, idempotency, rollback within 24h, supersession (IMP-01..07, WIZ-01) — v5.0
+- ✓ PM-wish → Line-Manager-approval state machine with re-routing and audit trail (PROP-01..08) — v5.0
+- ✓ 14-screen persona inventory across PM/LM/Staff/R&D/Admin (UX-V5-01..12, HIST-01) — v5.0
+- ✓ Admin register CRUD with archive + DEPENDENT_ROWS_EXIST blocking (ADM-01..04) — v5.0
+- ✓ AppError taxonomy across all `/api/v5/*` routes with documented error codes (API-V5-01/02, TEST-V5-01/02) — v5.0
+- ✓ PDF export captures every widget type — html2canvas → html-to-image swap (LAUNCH-01) — v5.0
+- ✓ Playwright E2E infrastructure with NODE_ENV=test bypass, persona harness, 12 TC-E2E specs — v5.0
+
+### v6.0 — UI Restructure & Journey Frictionless (shipped 2026-04-27)
+
+- ✓ Pre-flight verification framework — grep/SQL-verified 9 assumptions before code (VERIFY-01..09) — v6.0
+- ✓ Persona-aware landing redirect at `/` → `getLandingRoute(persona)` (NAV-01) — v6.0
+- ✓ Persona-keyed sidebar with 18 new `sidebar.personaSections.*` i18n keys (NAV-02..05) — v6.0
+- ✓ DepartmentPicker component (UNBREAK-08) — v6.0
+- ✓ PersonaGate rewire with persona-kinds namespace fix (UNBREAK-06/09) — v6.0
+- ✓ /admin and /admin/people 500s fixed via dev Neon migrations (UNBREAK-04/05) — v6.0
+- ✓ 308 redirects for `/team`, `/projects`, `/wishes` with source pages deleted (LEAN-01..03) — v6.0
+- ✓ 7 dead widgets removed with one-shot SQL migration stripping IDs from `dashboard_layouts.layout` (LEAN-05/11, POLISH-03..06) — v6.0
+- ✓ Widget-registry defensive fallback for unknown IDs (LEAN-08) — v6.0
+- ✓ Per-journey click-count targets enforced via 11 Playwright journey specs + axe-core a11y (PM-01..04, LM-01..03, STAFF-01, RD-01/02, ADMIN-01, SHARED-01) — v6.0
+- ✓ Persona-scoped notification bell + `NavItemDef.visibleFor` top-nav filtering (POLISH-01/02) — v6.0
+- ✓ Manager + project-leader dashboards fit 1440×900 viewport (POLISH-07 SOFT gate within threshold) — v6.0
+- ✓ 4 independent feature flags (`uiV6.landing` / `.leanTrim` / `.perJourney` / `.polish`) with verified flag-off parity invariants (PJ-FLAG, POLISH-FLAG, LEAN-10) — v6.0
+
 ## Shipped
 
 - **v1.0 MVP** (2026-03-27) — Core platform, auth, tenancy, grid, import, platform admin
 - **v2.0 Visibility & Insights** (2026-03-28) — Heat map, dashboards, alerts, project view, PDF export
 - **v3.0 Switch from Excel** (2026-03-30) — UX polish to make the app self-explanatory
 - **v4.0 Dashboard Visualizations & Customization** (2026-04-01) — 13 widgets, custom dashboards, scenarios
+- **v5.0 Plan vs Actual + Approval Workflow** (2026-04-13) — Day-grain actuals, PM/LM approval flow, 5-persona views, Excel pipeline, Playwright E2E
+- **v6.0 UI Restructure & Journey Frictionless** (2026-04-27) — Persona-aware landing, duplicate surface removal, click-count targets, persona-scoped chrome, 4 feature-flag waves
 
 See [MILESTONES.md](MILESTONES.md) for details.
 
-## Current Milestone: v5.0 — Plan vs Actual + Approval Workflow
+## Current Milestone: Between milestones
 
-**Goal:** Transform Nordic Capacity from a "fancier Excel" into a workflow tool by introducing a plan-vs-actual layer (day-grain actuals), a PM→line-manager proposal/approval flow, and persona-scoped views. Strictly additive to the v4.0 schema.
+**Status (2026-04-27):** v6.0 shipped and archived. No active milestone. Phase 54 (dashboard quadrant redesign) deferred indefinitely — Phase 53 SOFT-gate viewport telemetry showed no quadrant-redesign signal.
 
-**Target features:**
-- Plan vs Actual layer — `actual_entries` (day grain), flexible input (day/week/month), comparison UI everywhere
-- Excel import pipeline — SheetJS, idempotent on `(org,person,project,date)`, override checkbox, rollback + supersession
-- Proposal/approval workflow — PM wishes → line mgr approval with state machine and audit trail
-- Persona-scoped views — 5 personas (PM, Line Mgr, Staff, R&D Mgr, Admin), role switcher header, 14 screens
-- Admin register maintenance — self-service CRUD with archive / dependent-row blocking
-- ISO 8601 + 53-week year — first-class, Swedish holidays 2026–2030 hardcoded
-- Universal change_log — eslint rule + codegen + runtime test enforcement
-- Historic edit guardrails — soft warning before editing current-month
-- Launch gate (separate): PDF export bug fix (html2canvas → html-to-image / modern-screenshot)
+**Next planning step:** `/gsd-new-milestone` (or capture ideas first via `/gsd-add-backlog`).
 
-**Planning artifacts (frozen, do not re-review):**
-- [.planning/v5.0-FEEDBACK.md](v5.0-FEEDBACK.md) — client raw notes + 6 resolved decisions (Q1–Q6)
-- [.planning/v5.0-USER-JOURNEYS.md](v5.0-USER-JOURNEYS.md) — 5 personas, 11 journeys, 14-screen inventory
-- [.planning/v5.0-ARCHITECTURE.md](v5.0-ARCHITECTURE.md) — 11 ADRs, 4 new tables, ~30 modules, ~280 testable assertions (§15), 7-stage roadmap (§14)
-- [.planning/v5.0-HANDOFF.md](v5.0-HANDOFF.md) — cross-session handoff brief
+### Carried-Forward Active Requirements (no milestone yet)
 
-### v5.0 Non-Goals (from USER-JOURNEYS.md)
+- [ ] Counter-proposal flow for LM approval (deferred from v5.0)
+- [ ] Mobile-first responsive pass (deferred from v6.0)
+- [ ] Email/Slack notification channel — currently in-app only
+- [ ] Real role-based permissions replacing the persona "UX shortcut" (ADR-004)
+- [ ] LEGACY_LAYOUTS code path cleanup once all tenants migrated off `uiV6.polish` flag-off path
+- [ ] Three dev-env harness gaps from Phase 53 UAT (`/api/test/seed` no-tx under neon-http; `/api/v5/*/count` 404 in Turbopack dev; `requireRole()` bypasses Clerk session-level guards) — none affect production
 
-- No real authentication — role switcher only (ADR-004)
-- No task/activity sub-dimension under projects
-- No multi-entry-per-day preservation (sum on import)
-- No notifications outside the app (email, Slack)
-- No staff actuals entry — read-only for staff
-- No hard locks on historic edits
-- No counter-proposal flow (deferred unless client pushes)
-- No drag-reorder of projects/people (drag-to-copy hours IS in scope)
-- No mobile-first design — desktop primary
+### v6.0 Locked Decisions (still binding)
 
-### Global Out of Scope
+- **Feature-flag gating mandatory** for every restructure wave — independent kill-switches.
+- **`next.config.redirects[]`** is the chosen mechanism for deleted-route redirects (308 permanent, preserves query strings).
+- **i18n keys land under `sidebar.personaSections.*`** to avoid collision.
+- **Widget-registry defensive fallback** — unknown widget IDs render placeholder, never throw.
+- **SOFT gate over HARD gate** for viewport-fit diagnostics — emit JSON artifacts to CI rather than failing builds.
+
+### v5.0 Locked Decisions (inherited, still binding)
+
+- **ADR-004** Personas are UX shortcuts, not security boundaries.
+- **Q5** Staff read-only "My Schedule" only.
+- **Q6** Historic edits allowed with soft warning, no hard locks.
+- **ISO 8601 + 53-week year** first-class. 2026 is a 53-week year. Swedish holidays 2026–2030 hardcoded.
+- **Universal change_log** enforced via eslint + codegen + runtime test (TC-CL-005).
+
+### Global Out of Scope (held)
 
 - Stripe billing integration — 1-2 orgs initially, manual billing sufficient
 - SSO / SAML (F-023) — Enterprise feature, no demand from current clients
-- Audit trail (F-024) — Not requested by target users
+- Audit trail (F-024) — Not requested by target users (change_log covers internal needs)
 - Public API (F-025) — No integration demand yet
 - Department-level scoping (F-022) — Adds complexity without clear client need
 - Jira/HR system integrations — No client request
 - Dark mode (A9) — No planning value
 - Weekly granularity (A3) — Clients plan monthly, confirmed by phone notes
-- New features or capabilities — v3.0 is polish, not features
+- Counter-proposal flow — deferred from v5.0; not in v6.0; revisit on client push
 
 ## Key Decisions
 
 | Decision                            | Rationale                                                                               | Outcome           |
 | ----------------------------------- | --------------------------------------------------------------------------------------- | ----------------- |
-| Neon over Supabase                  | Pure serverless Postgres, native Vercel integration, don't pay for unused auth/realtime | Neon              |
-| AG Grid Community over Enterprise   | MIT licensed, covers core needs. Drag-to-fill implemented custom.                       | AG Grid Community |
-| Clerk over Auth.js                  | Org management maps to tenants, invitation flows built-in, SSO available later          | Clerk             |
-| Drizzle over Prisma                 | SQL-first, better complex aggregations, lighter weight                                  | Drizzle           |
-| Modular monolith over microservices | Solo dev, shared domain model, no natural service boundary                              | Monolith          |
-| No Stripe for MVP                   | Revenue integration deferred, focus on core product                                     | Deferred          |
-| Platform admin separate auth        | Own JWT + table, completely isolated from Clerk tenant auth                             | Separate          |
+| Neon over Supabase                  | Pure serverless Postgres, native Vercel integration, don't pay for unused auth/realtime | Neon ✓ Good       |
+| AG Grid Community over Enterprise   | MIT licensed, covers core needs. Drag-to-fill implemented custom.                       | AG Grid Community ✓ Good |
+| Clerk over Auth.js                  | Org management maps to tenants, invitation flows built-in, SSO available later          | Clerk ✓ Good      |
+| Drizzle over Prisma                 | SQL-first, better complex aggregations, lighter weight                                  | Drizzle ✓ Good    |
+| Modular monolith over microservices | Solo dev, shared domain model, no natural service boundary                              | Monolith ✓ Good   |
+| No Stripe for MVP                   | Revenue integration deferred, focus on core product                                     | Deferred — Pending |
+| Platform admin separate auth        | Own JWT + table, completely isolated from Clerk tenant auth                             | Separate ✓ Good   |
+| ADR-004 personas as UX shortcuts (v5.0) | Solo dev, no real auth needed for early clients; persona = role switcher                | UX shortcut ✓ Good (validated through v6.0) |
+| ISO 8601 + 53-week year (v5.0)      | 2026 is 53-week; native Date locale defaults broke; centralized in `lib/time/iso-calendar.ts` with eslint guard | Centralized utility ✓ Good |
+| Universal change_log (v5.0)         | Audit trail via 3-mechanism enforcement (eslint + codegen + runtime invariant)          | 3-mechanism ✓ Good |
+| Largest-remainder week→day distribution (v5.0) | Preserves sums to ±0.01h across grain boundaries                                | Largest-remainder ✓ Good |
+| html-to-image over html2canvas (v5.0) | html2canvas left blank tiles for non-SVG widgets in PDF export                        | html-to-image ✓ Good |
+| Feature-flag gating per wave (v6.0) | Independent kill-switches enable mid-rollout rollback without ripping out code          | 4-flag pattern ✓ Good |
+| LEGACY_LAYOUTS + DEFAULT_LAYOUTS (v6.0) | Dual-layout pattern enables flag-off rollback during widget-registry restructuring   | Dual-layout ✓ Good (cleanup pending) |
+| SOFT gate diagnostics (v6.0)        | JSON artifacts to CI > expect() calls when right action depends on telemetry, not correctness | SOFT gate ✓ Good |
+| Pre-flight verification phase (v6.0) | Grep/SQL-verify assumptions before any code change to prevent scope-mid-execution      | Pre-flight phase ✓ Good (3 scope expansions caught) |
 
 ## Repository
 
@@ -235,4 +274,4 @@ This document evolves at phase transitions and milestone boundaries.
 
 ---
 
-_Last updated: 2026-04-07 — v5.0 milestone started (Plan vs Actual + Approval Workflow)_
+_Last updated: 2026-04-27 — v6.0 milestone shipped and archived. Between milestones._

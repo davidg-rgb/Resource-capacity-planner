@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: UI Restructure & Journey Frictionless
-status: Required phases complete (Phase 54 optional/deferred)
-stopped_at: Phase 53 shipped 2026-04-22
-last_updated: "2026-04-23T00:00:00.000Z"
-last_activity: 2026-04-23
+status: Shipped 2026-04-27 — milestone archived
+stopped_at: v6.0 closed 2026-04-27 (tag v6.0)
+last_updated: "2026-04-27T00:00:00.000Z"
+last_activity: 2026-04-27
 progress:
   total_phases: 53
   completed_phases: 53
@@ -38,13 +38,10 @@ v5.0 artifacts (completed, do not re-review):
 
 ## Current Position
 
-Phase: 53 (shipped)
-Plan: Complete
-Next command: none — milestone required phases done. Options:
-  - `/gsd-verify-work 53` to continue live validation
-  - `/gsd-discuss-phase 54` only if POLISH-07 SOFT-gate artifacts indicate quadrant redesign is warranted
-  - `/gsd-complete-milestone v6.0` to archive
-Last activity: 2026-04-23
+Phase: v6.0 milestone archived 2026-04-27
+Plan: n/a — between milestones
+Next command: `/gsd-new-milestone` to start v7.0 (or capture ideas via `/gsd-add-backlog`)
+Last activity: 2026-04-27
 
 ## v6.0 Phase Status
 
@@ -103,6 +100,33 @@ Last activity: 2026-04-23
   - Route-level `requireRole()` returns 401 even with `E2E_TEST` proxy bypass — Clerk session-level guards still fire.
   - Intermittent Turbopack panics on `/team/page` cause 500s and stale React state.
 
+## Deferred Items
+
+Items acknowledged and deferred at v6.0 milestone close on 2026-04-27. All entries are pre-existing accepted gaps from prior shipped milestones or v6.0 SOFT gates designed as `human_needed`. None blocked v6.0 ship.
+
+| Category | Phase | Item | Status |
+|----------|-------|------|--------|
+| uat_gap | 03 | 03-HUMAN-UAT.md | partial (7 pending — v1.0) |
+| uat_gap | 04 | 04-HUMAN-UAT.md | partial (6 pending — v1.0) |
+| uat_gap | 05 | 05-HUMAN-UAT.md | partial (3 pending — v1.0) |
+| uat_gap | 07 | 07-HUMAN-UAT.md | partial (6 pending — v1.0) |
+| uat_gap | 09 | 09-HUMAN-UAT.md | partial (6 pending — v1.0) |
+| uat_gap | 52 | 52-HUMAN-UAT.md | partial (6 pending — v6.0) |
+| uat_gap | 53 | 53-HUMAN-UAT.md | partial (Test 3 prod-DB rowcount check pending) |
+| verification_gap | 03 | 03-VERIFICATION.md | human_needed (v1.0) |
+| verification_gap | 04 | 04-VERIFICATION.md | human_needed (v1.0) |
+| verification_gap | 05 | 05-VERIFICATION.md | human_needed (v1.0) |
+| verification_gap | 07 | 07-VERIFICATION.md | gaps_found (v1.0) |
+| verification_gap | 09 | 09-VERIFICATION.md | human_needed (v1.0) |
+| verification_gap | 10 | 10-VERIFICATION.md | gaps_found (v1.0) |
+| verification_gap | 12 | 12-VERIFICATION.md | human_needed (v2.0) |
+| verification_gap | 15 | 15-VERIFICATION.md | human_needed (v2.0) |
+| verification_gap | 17 | 17-VERIFICATION.md | gaps_found (v2.0) |
+| verification_gap | 35 | 35-VERIFICATION.md | gaps_found (v5.0) |
+| verification_gap | 52 | 52-VERIFICATION.md | human_needed (v6.0 SOFT gate) |
+| verification_gap | 53 | 53-VERIFICATION.md | human_needed (v6.0 SOFT gate) |
+| context_question | 43 | 43-CONTEXT.md | 3 open Q (Q-01..Q-03 archive defaults — v5.0 already shipped on documented defaults) |
+
 ## Session Continuity
 
 Last session: 2026-04-22T11:49:30.488Z
@@ -110,4 +134,4 @@ Stopped at: Phase 53 shipped (commit eb9807f)
 
 ---
 
-_Last updated: 2026-04-23 — v6.0 required phases complete; STATE.md realigned from stale v5.0/Phase 48 pointer_
+_Last updated: 2026-04-27 — v6.0 milestone closed; deferred items recorded_
