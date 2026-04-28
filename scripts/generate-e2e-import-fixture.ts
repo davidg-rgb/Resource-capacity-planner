@@ -61,9 +61,7 @@ function write(): void {
     compression: true,
   }) as Buffer;
   writeFileSync(OUTPUT_PATH, buf);
-  console.log(
-    `Wrote ${buf.byteLength} bytes to ${OUTPUT_PATH} (${dataRows.length} data rows)`,
-  );
+  console.log(`Wrote ${buf.byteLength} bytes to ${OUTPUT_PATH} (${dataRows.length} data rows)`);
 }
 
 write();

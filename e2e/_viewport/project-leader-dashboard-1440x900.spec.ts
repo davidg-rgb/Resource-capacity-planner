@@ -25,8 +25,7 @@ test.describe('POLISH-07 (soft gate) — project-leader dashboard at 1440x900 (p
     const metrics = await page.evaluate(() => ({
       scrollHeight: document.documentElement.scrollHeight,
       clientHeight: document.documentElement.clientHeight,
-      overflow:
-        document.documentElement.scrollHeight - document.documentElement.clientHeight,
+      overflow: document.documentElement.scrollHeight - document.documentElement.clientHeight,
     }));
 
     await test.info().attach('project-leader-1440x900-polishOn.json', {
@@ -34,7 +33,6 @@ test.describe('POLISH-07 (soft gate) — project-leader dashboard at 1440x900 (p
       contentType: 'application/json',
     });
 
-    // eslint-disable-next-line no-console
     console.log(
       `[POLISH-07 soft] project-leader overflow=${metrics.overflow}px ` +
         `(scroll=${metrics.scrollHeight}, client=${metrics.clientHeight})`,

@@ -11,9 +11,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 describe('pdf-export dependency invariants', () => {
-  const pkg = JSON.parse(
-    readFileSync(resolve(process.cwd(), 'package.json'), 'utf-8'),
-  ) as {
+  const pkg = JSON.parse(readFileSync(resolve(process.cwd(), 'package.json'), 'utf-8')) as {
     dependencies?: Record<string, string>;
     devDependencies?: Record<string, string>;
   };

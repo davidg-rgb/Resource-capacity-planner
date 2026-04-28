@@ -70,13 +70,7 @@ export function useBlockerFormatter() {
 // 12", "Aktuella önskemål: 3"), NOT per-row identifiers.
 // ---------------------------------------------------------------------------
 
-const KNOWN_BLOCKER_KINDS = [
-  'allocations',
-  'proposals',
-  'people',
-  'projects',
-  'leadPm',
-] as const;
+const KNOWN_BLOCKER_KINDS = ['allocations', 'proposals', 'people', 'projects', 'leadPm'] as const;
 type KnownBlockerKind = (typeof KNOWN_BLOCKER_KINDS)[number];
 
 export interface DependentRowsToastContentProps {

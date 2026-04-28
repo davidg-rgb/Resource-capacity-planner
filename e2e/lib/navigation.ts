@@ -29,11 +29,7 @@ const ROOT_TESTID: Record<PersonaKind, string> = {
  * the test if the test id is missing — specs that need stronger guarantees
  * should add their own explicit waits after calling gotoAs.
  */
-export async function gotoAs(
-  page: Page,
-  kind: PersonaKind,
-  path: string = '/',
-): Promise<void> {
+export async function gotoAs(page: Page, kind: PersonaKind, path: string = '/'): Promise<void> {
   await personaAs(page, kind);
   await page.goto(path);
   await waitForPersonaReady(page, kind);

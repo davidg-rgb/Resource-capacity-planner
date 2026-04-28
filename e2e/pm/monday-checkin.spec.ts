@@ -33,9 +33,7 @@ test.describe('PM Monday check-in', () => {
     // Drill-down drawer — click the first allocation cell if any exists.
     // If the DOM lacks a pinned selector we annotate a todo so the
     // manifest still records the TC ID as attempted.
-    const firstCell = page
-      .locator('[data-testid="allocation-cell"], [role="gridcell"]')
-      .first();
+    const firstCell = page.locator('[data-testid="allocation-cell"], [role="gridcell"]').first();
 
     if ((await firstCell.count()) > 0) {
       await firstCell.click();

@@ -120,8 +120,7 @@ const eslintConfig = defineConfig([
       'no-restricted-syntax': [
         'error',
         {
-          selector:
-            "ThrowStatement[argument.type='NewExpression'][argument.callee.name='Error']",
+          selector: "ThrowStatement[argument.type='NewExpression'][argument.callee.name='Error']",
           message:
             "Throw AppError subclasses from '@/lib/errors', not raw Error. v5 API contract requires typed error codes.",
         },

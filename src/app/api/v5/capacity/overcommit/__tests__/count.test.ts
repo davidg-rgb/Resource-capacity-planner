@@ -37,9 +37,7 @@ vi.mock('@/db', () => ({
   },
 }));
 
-type FakeAuth =
-  | { kind: 'ok'; orgId: string; userId: string; role: 'planner' }
-  | { kind: 'unauth' };
+type FakeAuth = { kind: 'ok'; orgId: string; userId: string; role: 'planner' } | { kind: 'unauth' };
 const fakeAuth: { value: FakeAuth } = {
   value: { kind: 'ok', orgId: '', userId: 'user_test', role: 'planner' },
 };

@@ -254,9 +254,7 @@ describe('PM Home page — PM-01 auto-redirect (Phase 52 Plan 03)', () => {
 
     render(<PmHomePage />, { wrapper: makeWrapper() });
 
-    await waitFor(() =>
-      expect(screen.getByRole('link', { name: /alpha/i })).toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.getByRole('link', { name: /alpha/i })).toBeInTheDocument());
     expect(routerReplaceSpy).not.toHaveBeenCalled();
   });
 });

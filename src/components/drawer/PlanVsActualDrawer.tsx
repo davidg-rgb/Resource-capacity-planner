@@ -221,59 +221,59 @@ export function PlanVsActualDrawer(props: PlanVsActualDrawerProps) {
             </button>
           </header>
 
-        {activeQuery.isLoading && <p className={styles.status}>{t('loading')}</p>}
-        {activeQuery.error && <p className={styles.status}>{t('error')}</p>}
-        {showEmpty && (
-          <p className={styles.status} data-testid="drawer-empty">
-            {t('empty')}
-          </p>
-        )}
+          {activeQuery.isLoading && <p className={styles.status}>{t('loading')}</p>}
+          {activeQuery.error && <p className={styles.status}>{t('error')}</p>}
+          {showEmpty && (
+            <p className={styles.status} data-testid="drawer-empty">
+              {t('empty')}
+            </p>
+          )}
 
-        {isDaily && dailyRows.length > 0 && (
-          <table className={styles.table} data-testid="drawer-table">
-            <thead>
-              <tr>
-                <th>{t('dateColumn')}</th>
-                <th>{t('plannedColumn')}</th>
-                <th>{t('actualColumn')}</th>
-                <th>{t('deltaColumn')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dailyRows.map((r) => (
-                <tr key={r.date} data-testid="drawer-row">
-                  <td>{r.date}</td>
-                  <td>{formatHours(r.planned)}</td>
-                  <td>{formatHours(r.actual)}</td>
-                  <td>{formatHours(r.delta)}</td>
+          {isDaily && dailyRows.length > 0 && (
+            <table className={styles.table} data-testid="drawer-table">
+              <thead>
+                <tr>
+                  <th>{t('dateColumn')}</th>
+                  <th>{t('plannedColumn')}</th>
+                  <th>{t('actualColumn')}</th>
+                  <th>{t('deltaColumn')}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {dailyRows.map((r) => (
+                  <tr key={r.date} data-testid="drawer-row">
+                    <td>{r.date}</td>
+                    <td>{formatHours(r.planned)}</td>
+                    <td>{formatHours(r.actual)}</td>
+                    <td>{formatHours(r.delta)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
 
-        {isProjectPersonBreakdown && personRows.length > 0 && (
-          <table className={styles.table} data-testid="drawer-project-person-table">
-            <thead>
-              <tr>
-                <th>{t('dateColumn')}</th>
-                <th>{t('plannedColumn')}</th>
-                <th>{t('actualColumn')}</th>
-                <th>{t('deltaColumn')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {personRows.map((r) => (
-                <tr key={r.personId} data-testid="drawer-person-row">
-                  <td>{r.personName}</td>
-                  <td>{formatHours(r.planned)}</td>
-                  <td>{formatHours(r.actual)}</td>
-                  <td>{formatHours(r.delta)}</td>
+          {isProjectPersonBreakdown && personRows.length > 0 && (
+            <table className={styles.table} data-testid="drawer-project-person-table">
+              <thead>
+                <tr>
+                  <th>{t('dateColumn')}</th>
+                  <th>{t('plannedColumn')}</th>
+                  <th>{t('actualColumn')}</th>
+                  <th>{t('deltaColumn')}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {personRows.map((r) => (
+                  <tr key={r.personId} data-testid="drawer-person-row">
+                    <td>{r.personName}</td>
+                    <td>{formatHours(r.planned)}</td>
+                    <td>{formatHours(r.actual)}</td>
+                    <td>{formatHours(r.delta)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </aside>
       </div>
     </FocusTrap>

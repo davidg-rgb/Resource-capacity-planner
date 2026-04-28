@@ -35,9 +35,7 @@ export function assertE2EDatabase(): string {
     throw new Error(`[e2e/db] DATABASE_URL is not a valid URL: ${url}`);
   }
   if (!dbName) {
-    throw new Error(
-      `[e2e/db] DATABASE_URL has no database name in its path: ${url}`,
-    );
+    throw new Error(`[e2e/db] DATABASE_URL has no database name in its path: ${url}`);
   }
   if (!/e2e|test/i.test(dbName)) {
     throw new Error(
@@ -96,9 +94,7 @@ export async function reset(): Promise<void> {
 
   if (rows.length === 0) return;
 
-  const tableList = rows
-    .map((r) => `"public"."${r.tablename}"`)
-    .join(', ');
+  const tableList = rows.map((r) => `"public"."${r.tablename}"`).join(', ');
   const truncateSql = `TRUNCATE TABLE ${tableList} RESTART IDENTITY CASCADE`;
 
   // Shell out to psql for the TRUNCATE. Requires psql on PATH locally and

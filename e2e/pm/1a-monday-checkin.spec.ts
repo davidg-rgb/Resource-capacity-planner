@@ -35,9 +35,7 @@ test.describe('Journey 1A — PM Monday check-in', () => {
     // Click 2: open a drill-down drawer by clicking the first allocation
     // cell. Prefers the canonical testids from Phase 40/42.
     const firstCell = page
-      .locator(
-        '[data-testid="plan-vs-actual-cell"], [data-testid*="pm-cell"], [role="gridcell"]',
-      )
+      .locator('[data-testid="plan-vs-actual-cell"], [data-testid*="pm-cell"], [role="gridcell"]')
       .first();
     if ((await firstCell.count()) > 0) {
       await firstCell.click();

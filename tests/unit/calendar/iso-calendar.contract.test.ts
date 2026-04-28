@@ -74,9 +74,7 @@ describe('TC-CAL-* contract fill (phase 44-07)', () => {
     const end = utc(2026, 11, 31);
     const cursor = new Date(start.getTime());
     while (cursor.getTime() <= end.getTime()) {
-      seen.add(
-        `${cursor.getUTCFullYear()}-${String(cursor.getUTCMonth() + 1).padStart(2, '0')}`,
-      );
+      seen.add(`${cursor.getUTCFullYear()}-${String(cursor.getUTCMonth() + 1).padStart(2, '0')}`);
       cursor.setUTCDate(cursor.getUTCDate() + 1);
     }
     expect(seen.size).toBe(12);

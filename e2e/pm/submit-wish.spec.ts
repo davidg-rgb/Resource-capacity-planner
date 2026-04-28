@@ -10,9 +10,7 @@
 import { test, expect, personaAs } from '../fixtures/test-base';
 
 test.describe('PM submit wish', () => {
-  test('TC-E2E-1B: Anna submits a wish and sees toast confirmation', async ({
-    page,
-  }) => {
+  test('TC-E2E-1B: Anna submits a wish and sees toast confirmation', async ({ page }) => {
     await personaAs(page, 'pm');
     await page.goto('/');
 
@@ -25,8 +23,7 @@ test.describe('PM submit wish', () => {
     if ((await submitTrigger.count()) === 0) {
       test.info().annotations.push({
         type: 'todo',
-        description:
-          'TC-E2E-1B: submit-wish trigger button not found; form UI not yet pinned',
+        description: 'TC-E2E-1B: submit-wish trigger button not found; form UI not yet pinned',
       });
       return;
     }
@@ -54,12 +51,15 @@ test.describe('PM submit wish', () => {
     const hoursField = page.getByLabel(/hours|timmar/i).first();
     await hoursField.fill('40');
 
-    await page.getByRole('button', { name: /submit|skicka|save|spara/i }).first().click();
+    await page
+      .getByRole('button', { name: /submit|skicka|save|spara/i })
+      .first()
+      .click();
 
     // Toast confirmation — sonner renders into [data-sonner-toast] and
     // most a11y toasts use role=status.
-    await expect(
-      page.locator('[data-sonner-toast], [role="status"]').first(),
-    ).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('[data-sonner-toast], [role="status"]').first()).toBeVisible({
+      timeout: 5000,
+    });
   });
 });

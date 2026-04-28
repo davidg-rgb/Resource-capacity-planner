@@ -74,9 +74,7 @@ describe('TC-NEG-013 — PM persona attempting /line-manager/*', () => {
     expect(screen.queryByTestId('lm-home')).toBeNull();
     // Switch-persona hint is rendered (with i18n key fallback text)
     expect(screen.getByTestId('persona-gate-hint')).toBeTruthy();
-    expect(
-      screen.getByText('Switch to the correct persona to view this page.'),
-    ).toBeTruthy();
+    expect(screen.getByText('Switch to the correct persona to view this page.')).toBeTruthy();
     // CTA button present
     expect(screen.getByTestId('persona-gate-switch-cta')).toBeTruthy();
   });

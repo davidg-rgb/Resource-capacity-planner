@@ -4,17 +4,12 @@
 // (LM-02 / D-07 coverage) — no click-count target per UX-AUDIT §Persona 2C.
 
 import { test, expect } from '../fixtures/test-base';
-import {
-  personaAsLineManager,
-  LM_SEED_DEPARTMENT_ID,
-} from '../helpers/persona-setup';
+import { personaAsLineManager, LM_SEED_DEPARTMENT_ID } from '../helpers/persona-setup';
 import { resetClickCount, getClickCount } from '../helpers/click-counter';
 import { checkA11y } from '../helpers/a11y';
 
 test.describe('Journey 2C — LM direct edit / project breakdown', () => {
-  test('project-breakdown cells render per-person under the LM timeline', async ({
-    page,
-  }) => {
+  test('project-breakdown cells render per-person under the LM timeline', async ({ page }) => {
     await personaAsLineManager(page, { departmentId: LM_SEED_DEPARTMENT_ID });
     await page.goto('/line-manager/timeline');
     await page.waitForLoadState('networkidle');

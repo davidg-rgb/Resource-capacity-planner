@@ -61,13 +61,13 @@ package.
 
 ## Running
 
-| Task                | Command                                                            |
-| ------------------- | ------------------------------------------------------------------ |
-| All specs           | `pnpm test:e2e`                                                    |
-| Single spec         | `pnpm exec playwright test e2e/pm/submit-wish.spec.ts`             |
-| Interactive UI mode | `pnpm test:e2e:ui`                                                 |
-| Headed (debug)      | `pnpm exec playwright test --headed --workers=1`                   |
-| Trace viewer        | `pnpm exec playwright show-trace test-results/.../trace.zip`       |
+| Task                | Command                                                      |
+| ------------------- | ------------------------------------------------------------ |
+| All specs           | `pnpm test:e2e`                                              |
+| Single spec         | `pnpm exec playwright test e2e/pm/submit-wish.spec.ts`       |
+| Interactive UI mode | `pnpm test:e2e:ui`                                           |
+| Headed (debug)      | `pnpm exec playwright test --headed --workers=1`             |
+| Trace viewer        | `pnpm exec playwright show-trace test-results/.../trace.zip` |
 
 ## Adding a Spec
 

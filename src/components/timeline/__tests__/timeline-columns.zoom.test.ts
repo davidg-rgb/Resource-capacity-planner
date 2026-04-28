@@ -45,9 +45,7 @@ describe('buildTimelineColumns — zoom', () => {
     const qCols = cols.slice(1);
     const headers = qCols.map((c) => c.headerName);
     expect(headers).toEqual(['KV1 2026', 'KV2 2026', 'KV3 2026', 'KV4 2026']);
-    expect(qCols.every((c) => typeof c.field === 'string' && c.field!.startsWith('q_'))).toBe(
-      true,
-    );
+    expect(qCols.every((c) => typeof c.field === 'string' && c.field!.startsWith('q_'))).toBe(true);
   });
 
   it('TC-ZOOM-003: year zoom returns 1 pinned + 1 year col for a single-year range', () => {

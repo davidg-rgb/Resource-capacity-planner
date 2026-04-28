@@ -103,15 +103,10 @@ function main(): void {
   mkdirSync(dirname(OUT_PATH), { recursive: true });
   writeFileSync(
     OUT_PATH,
-    JSON.stringify(
-      { generatedAt: new Date().toISOString(), entries: sorted },
-      null,
-      2,
-    ) + '\n',
+    JSON.stringify({ generatedAt: new Date().toISOString(), entries: sorted }, null, 2) + '\n',
     'utf8',
   );
 
-  // eslint-disable-next-line no-console
   console.log(`Wrote ${Object.keys(sorted).length} TC-ID entries → ${OUT_PATH}`);
 }
 

@@ -26,10 +26,34 @@ type Combo = {
 };
 
 const COMBOS: Combo[] = [
-  { label: 'PM past month', personaKind: 'pm', path: '/pm', monthAttr: '2026-01', expectDialog: true },
-  { label: 'PM future month', personaKind: 'pm', path: '/pm', monthAttr: '2027-12', expectDialog: false },
-  { label: 'LM past month', personaKind: 'line-manager', path: '/line-manager/timeline', monthAttr: '2026-01', expectDialog: true },
-  { label: 'LM future month', personaKind: 'line-manager', path: '/line-manager/timeline', monthAttr: '2027-12', expectDialog: false },
+  {
+    label: 'PM past month',
+    personaKind: 'pm',
+    path: '/pm',
+    monthAttr: '2026-01',
+    expectDialog: true,
+  },
+  {
+    label: 'PM future month',
+    personaKind: 'pm',
+    path: '/pm',
+    monthAttr: '2027-12',
+    expectDialog: false,
+  },
+  {
+    label: 'LM past month',
+    personaKind: 'line-manager',
+    path: '/line-manager/timeline',
+    monthAttr: '2026-01',
+    expectDialog: true,
+  },
+  {
+    label: 'LM future month',
+    personaKind: 'line-manager',
+    path: '/line-manager/timeline',
+    monthAttr: '2027-12',
+    expectDialog: false,
+  },
 ];
 
 test.describe('Journey 1D — Historic edit (4-combo matrix)', () => {
@@ -41,9 +65,7 @@ test.describe('Journey 1D — Historic edit (4-combo matrix)', () => {
       await resetClickCount(page);
 
       // Click 1: find a cell for the target month.
-      const cell = page
-        .locator(`[data-month="${combo.monthAttr}"]`)
-        .first();
+      const cell = page.locator(`[data-month="${combo.monthAttr}"]`).first();
       if ((await cell.count()) === 0) {
         test.info().annotations.push({
           type: 'todo',

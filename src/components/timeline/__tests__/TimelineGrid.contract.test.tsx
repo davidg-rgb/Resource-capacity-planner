@@ -157,12 +157,7 @@ describe('TC-UI-006: TimelineGrid — zoom control switches columns to quarter/y
 describe('TC-UI-007: TimelineGrid opens scrolled to currentMonthKey on first mount', () => {
   it('contract: accepts currentMonthKey prop and marks target column', () => {
     render(
-      <FakeTimelineGrid
-        rows={rows}
-        cols={cols}
-        getCell={getCell}
-        currentMonthKey="2026-02"
-      />,
+      <FakeTimelineGrid rows={rows} cols={cols} getCell={getCell} currentMonthKey="2026-02" />,
     );
     // jsdom has no layout; scroll is an integration concern. We assert the
     // column exists so the real grid can target it.

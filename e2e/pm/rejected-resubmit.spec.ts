@@ -18,9 +18,7 @@ test.describe('PM My Wishes — rejected proposal', () => {
     // The rejection reason is a strong, near-unique string in the seed;
     // asserting it verifies both (a) the row rendered and (b) the reason
     // text is exposed to the PM.
-    await expect(
-      page.getByText(/Sara has another commitment/i).first(),
-    ).toBeVisible();
+    await expect(page.getByText(/Sara has another commitment/i).first()).toBeVisible();
 
     // Resubmit affordance — if present, clicking it should open a form
     // pre-filled with the previous hours value (60). If the UI flow is
@@ -38,8 +36,7 @@ test.describe('PM My Wishes — rejected proposal', () => {
     } else {
       test.info().annotations.push({
         type: 'todo',
-        description:
-          'TC-E2E-1C: resubmit button not present in UI yet; visibility-only assertion',
+        description: 'TC-E2E-1C: resubmit button not present in UI yet; visibility-only assertion',
       });
     }
   });

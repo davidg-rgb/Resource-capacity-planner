@@ -30,8 +30,7 @@ test.describe('Journey 1C — PM rejected wish', () => {
       // Fallback: navigate directly to the wishes page.
       test.info().annotations.push({
         type: 'todo',
-        description:
-          'Journey 1C: PendingWishChip not mounted yet (PM-02); fallback to direct nav',
+        description: 'Journey 1C: PendingWishChip not mounted yet (PM-02); fallback to direct nav',
       });
       await page.goto('/pm/wishes?tab=rejected');
     }

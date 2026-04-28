@@ -19,15 +19,11 @@ test.describe('Journey 3A — Staff check schedule (read-only)', () => {
 
     // Assert schedule body renders. Prefer the canonical cell testid; fall
     // back to role=grid / heading text for pre-wiring robustness.
-    const grid = page
-      .locator('[data-testid="plan-vs-actual-cell"], [role="grid"]')
-      .first();
+    const grid = page.locator('[data-testid="plan-vs-actual-cell"], [role="grid"]').first();
     await expect(grid).toBeVisible({ timeout: 5000 });
 
     // STAFF-01 contract: no editable cells.
-    const editableCells = page.locator(
-      '[data-testid="plan-vs-actual-cell"][data-editable="true"]',
-    );
+    const editableCells = page.locator('[data-testid="plan-vs-actual-cell"][data-editable="true"]');
     await expect(editableCells).toHaveCount(0);
 
     // 0 clicks target for 3A.

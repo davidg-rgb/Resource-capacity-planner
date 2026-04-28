@@ -37,10 +37,7 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const parsed = Query.parse(Object.fromEntries(url.searchParams.entries()));
     const count = await getQueueCount(orgId, parsed.departmentId);
-    return NextResponse.json(
-      { count, departmentId: parsed.departmentId },
-      { status: 200 },
-    );
+    return NextResponse.json({ count, departmentId: parsed.departmentId }, { status: 200 });
   } catch (error) {
     return handleApiError(error);
   }

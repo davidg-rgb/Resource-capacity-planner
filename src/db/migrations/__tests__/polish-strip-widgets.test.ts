@@ -10,10 +10,7 @@ import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { PGlite } from '@electric-sql/pglite';
 
-const MIGRATION_SQL = readFileSync(
-  'src/db/migrations/20260422_polish_strip_widgets.sql',
-  'utf8',
-);
+const MIGRATION_SQL = readFileSync('src/db/migrations/20260422_polish_strip_widgets.sql', 'utf8');
 
 const SCHEMA_SQL = `
   CREATE TABLE dashboard_layouts (
@@ -132,9 +129,7 @@ describe('20260422_polish_strip_widgets migration', () => {
     const second = JSON.stringify(await getLayout(id));
 
     expect(second).toEqual(first);
-    expect(JSON.parse(first)).toEqual([
-      { widgetId: 'kpi-cards', position: 0, colSpan: 12 },
-    ]);
+    expect(JSON.parse(first)).toEqual([{ widgetId: 'kpi-cards', position: 0, colSpan: 12 }]);
   });
 
   it('preserves placement metadata (position, colSpan, config) on surviving placements', async () => {

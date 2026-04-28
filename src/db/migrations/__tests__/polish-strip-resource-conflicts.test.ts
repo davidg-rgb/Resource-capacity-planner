@@ -110,9 +110,7 @@ describe('20260422_polish_strip_resource_conflicts migration', () => {
     const second = JSON.stringify(await getLayout(id));
 
     expect(second).toEqual(first);
-    expect(JSON.parse(first)).toEqual([
-      { widgetId: 'kpi-cards', position: 0, colSpan: 12 },
-    ]);
+    expect(JSON.parse(first)).toEqual([{ widgetId: 'kpi-cards', position: 0, colSpan: 12 }]);
   });
 
   it('reduces a layout containing ONLY resource-conflicts to null or []', async () => {

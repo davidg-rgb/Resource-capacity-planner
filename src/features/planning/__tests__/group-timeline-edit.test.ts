@@ -40,13 +40,9 @@ vi.mock('@/lib/auth', () => ({
   getTenantId: vi.fn(async () => fakeAuth.orgId),
 }));
 
-const { GET: GET_ALLOCATIONS } = await import(
-  '@/app/api/v5/planning/allocations/route'
-);
+const { GET: GET_ALLOCATIONS } = await import('@/app/api/v5/planning/allocations/route');
 const { GET: GET_CAPACITY } = await import('@/app/api/v5/capacity/route');
-const { patchAllocation } = await import(
-  '@/features/allocations/allocation.service'
-);
+const { patchAllocation } = await import('@/features/allocations/allocation.service');
 
 const ORG_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const DEPT_A = 'd0000000-0000-4000-8000-00000000000a';

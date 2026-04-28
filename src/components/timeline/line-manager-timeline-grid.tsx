@@ -117,9 +117,7 @@ function LmPersonColumnRenderer(params: ICellRendererParams<LmRow>) {
   if (!row || !ctx) return null;
   const expanded =
     row.kind === 'person' ? ctx.expanded.has(row.personId) : ctx.expanded.has(row.personId);
-  return (
-    <LmPersonColumnCell row={row} expanded={expanded} onToggleExpand={ctx.onToggleExpand} />
-  );
+  return <LmPersonColumnCell row={row} expanded={expanded} onToggleExpand={ctx.onToggleExpand} />;
 }
 
 interface MonthCellParams extends ICellRendererParams<LmRow> {

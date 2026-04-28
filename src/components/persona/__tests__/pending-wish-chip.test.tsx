@@ -150,11 +150,7 @@ describe('PendingWishChip (PM-02)', () => {
   });
 
   it('Test 4: rejected > 0 deep-links to /pm/wishes?tab=rejected', async () => {
-    installProposalsFetch([
-      { status: 'rejected' },
-      { status: 'proposed' },
-      { status: 'proposed' },
-    ]);
+    installProposalsFetch([{ status: 'rejected' }, { status: 'proposed' }, { status: 'proposed' }]);
     render(<PendingWishChip />, { wrapper: makeWrapper() });
     const chip = await screen.findByTestId('pending-wish-chip');
     expect(chip.getAttribute('href')).toBe('/pm/wishes?tab=rejected');
@@ -163,11 +159,7 @@ describe('PendingWishChip (PM-02)', () => {
   });
 
   it('Test 5: rejected === 0 and pending > 0 deep-links to /pm/wishes?tab=proposed', async () => {
-    installProposalsFetch([
-      { status: 'proposed' },
-      { status: 'proposed' },
-      { status: 'proposed' },
-    ]);
+    installProposalsFetch([{ status: 'proposed' }, { status: 'proposed' }, { status: 'proposed' }]);
     render(<PendingWishChip />, { wrapper: makeWrapper() });
     const chip = await screen.findByTestId('pending-wish-chip');
     expect(chip.getAttribute('href')).toBe('/pm/wishes?tab=proposed');

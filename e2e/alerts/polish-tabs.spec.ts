@@ -33,9 +33,7 @@ test.describe('POLISH-05 — /alerts tabs (polish flag ON)', () => {
     await expect(conflictsTab).toHaveAttribute('aria-selected', 'false');
 
     // Conflicts panel must NOT be present on the default (warnings) tab.
-    await expect(page.locator('[data-testid="resource-conflicts-panel"]')).toHaveCount(
-      0,
-    );
+    await expect(page.locator('[data-testid="resource-conflicts-panel"]')).toHaveCount(0);
   });
 
   test('clicking the conflicts tab updates the URL to ?tab=conflicts and renders the panel', async ({
@@ -54,9 +52,7 @@ test.describe('POLISH-05 — /alerts tabs (polish flag ON)', () => {
     );
   });
 
-  test('direct-navigating /alerts?tab=conflicts deep-links into the panel', async ({
-    page,
-  }) => {
+  test('direct-navigating /alerts?tab=conflicts deep-links into the panel', async ({ page }) => {
     await personaAs(page, 'admin');
     await page.goto('/alerts?tab=conflicts');
 

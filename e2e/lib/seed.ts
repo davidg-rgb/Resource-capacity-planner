@@ -38,9 +38,7 @@ export async function seedDb(request: APIRequestContext): Promise<void> {
   const res = await request.post('/api/test/seed', {});
   if (!res.ok()) {
     const body = await res.text().catch(() => '(no body)');
-    throw new Error(
-      `[e2e] seedDb failed: ${res.status()} ${res.statusText()} — ${body}`,
-    );
+    throw new Error(`[e2e] seedDb failed: ${res.status()} ${res.statusText()} — ${body}`);
   }
 }
 

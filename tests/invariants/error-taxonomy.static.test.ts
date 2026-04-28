@@ -25,8 +25,7 @@ function* walk(dir: string): Generator<string> {
   for (const e of entries) {
     const p = join(dir, e.name);
     if (e.isDirectory()) yield* walk(p);
-    else if (e.isFile() && (e.name.endsWith('.ts') || e.name.endsWith('.tsx')))
-      yield p;
+    else if (e.isFile() && (e.name.endsWith('.ts') || e.name.endsWith('.tsx'))) yield p;
   }
 }
 

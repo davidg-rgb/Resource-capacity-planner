@@ -13,9 +13,7 @@ type Exceptions = {
 const exceptions = JSON.parse(
   readFileSync('tests/invariants/tenant-exceptions.json', 'utf8'),
 ) as Exceptions;
-const exceptionFiles = new Set(
-  exceptions.routes.map((r) => r.file.replace(/\\/g, '/')),
-);
+const exceptionFiles = new Set(exceptions.routes.map((r) => r.file.replace(/\\/g, '/')));
 
 function* walk(dir: string): Generator<string> {
   let entries;

@@ -21,9 +21,7 @@ import { checkA11y } from '../helpers/a11y';
 type ZoomLevel = 'month' | 'quarter' | 'year';
 
 test.describe('Journey 4A — R&D portfolio overview (zoom × year matrix)', () => {
-  test('landing renders grid with month-level columns and 0 journey clicks', async ({
-    page,
-  }) => {
+  test('landing renders grid with month-level columns and 0 journey clicks', async ({ page }) => {
     await personaAs(page, 'rd');
     await page.goto('/rd');
     await page.waitForLoadState('networkidle');

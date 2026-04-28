@@ -14,7 +14,9 @@ function genMonthRange(year: number): string[] {
 }
 
 function denseMonths(monthRange: string[], planned: number, actual: number) {
-  return Object.fromEntries(monthRange.map((m) => [m, { plannedHours: planned, actualHours: actual }]));
+  return Object.fromEntries(
+    monthRange.map((m) => [m, { plannedHours: planned, actualHours: actual }]),
+  );
 }
 
 describe('RD-01: rdColumnKeys — zoom-aware column enumeration', () => {
@@ -49,11 +51,7 @@ describe('RD-01: rdColumnKeys — zoom-aware column enumeration', () => {
   });
 
   it('zoom=year spanning 2026-01..2028-12 → 3 year columns', () => {
-    const monthRange = [
-      ...genMonthRange(2026),
-      ...genMonthRange(2027),
-      ...genMonthRange(2028),
-    ];
+    const monthRange = [...genMonthRange(2026), ...genMonthRange(2027), ...genMonthRange(2028)];
     expect(rdColumnKeys(monthRange, 'year')).toEqual(['2026', '2027', '2028']);
   });
 });
@@ -129,8 +127,6 @@ describe('RD-01: aggregateRdRowMonths — summing month-grain cells into zoom bu
   });
 
   it('throws on unknown zoom', () => {
-    expect(() => rdColumnKeys([], 'weekly' as unknown as TimelineZoom)).toThrow(
-      /unknown zoom/,
-    );
+    expect(() => rdColumnKeys([], 'weekly' as unknown as TimelineZoom)).toThrow(/unknown zoom/);
   });
 });

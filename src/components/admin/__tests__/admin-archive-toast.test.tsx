@@ -181,9 +181,7 @@ describe('AdminRegisterPageShell archive → DependentRowsError toast (Plan 52-0
     // Render the React node out-of-band and assert its structure.
     const { unmount } = render(<Wrapper>{node as ReactNode}</Wrapper>);
     // Title mentions total = 12 + 3 = 15
-    expect(
-      screen.getByTestId('admin-dependent-rows-toast').textContent,
-    ).toMatch(/15/);
+    expect(screen.getByTestId('admin-dependent-rows-toast').textContent).toMatch(/15/);
     // <details> with <summary>.
     const details = screen.getByTestId('admin-dependent-rows-details');
     expect(details.tagName).toBe('DETAILS');

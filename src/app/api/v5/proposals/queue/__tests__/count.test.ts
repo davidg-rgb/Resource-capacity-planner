@@ -27,9 +27,7 @@ vi.mock('@/db', () => ({
 
 // Mutable auth stub — individual tests can flip it to simulate
 // unauth (throws AuthError) or cross-tenant (different orgId).
-type FakeAuth =
-  | { kind: 'ok'; orgId: string; userId: string; role: 'planner' }
-  | { kind: 'unauth' };
+type FakeAuth = { kind: 'ok'; orgId: string; userId: string; role: 'planner' } | { kind: 'unauth' };
 const fakeAuth: { value: FakeAuth } = {
   value: { kind: 'ok', orgId: '', userId: 'user_test', role: 'planner' },
 };

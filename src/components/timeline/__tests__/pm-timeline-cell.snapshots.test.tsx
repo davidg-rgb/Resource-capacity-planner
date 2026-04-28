@@ -91,9 +91,7 @@ describe('PmTimelineCell — PM-04 proposal-state snapshots (Phase 52 Plan 03)',
   });
 
   it('Snap 1: draft (plannedHours=40, no pendingProposal) matches snapshot', () => {
-    const { container } = renderState(
-      baseCell({ plannedHours: 40, pendingProposal: null }),
-    );
+    const { container } = renderState(baseCell({ plannedHours: 40, pendingProposal: null }));
     expect(container.innerHTML).toMatchSnapshot();
   });
 
@@ -108,9 +106,7 @@ describe('PmTimelineCell — PM-04 proposal-state snapshots (Phase 52 Plan 03)',
   });
 
   it('Snap 3: approved (plannedHours=60, pendingProposal null — approved merged) matches snapshot', () => {
-    const { container } = renderState(
-      baseCell({ plannedHours: 60, pendingProposal: null }),
-    );
+    const { container } = renderState(baseCell({ plannedHours: 60, pendingProposal: null }));
     expect(container.innerHTML).toMatchSnapshot();
   });
 });

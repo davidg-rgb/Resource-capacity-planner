@@ -14,9 +14,7 @@
 import { test, expect, personaAs } from '../fixtures/test-base';
 
 test.describe('Line Manager heatmap', () => {
-  test('TC-E2E-2A: heatmap renders with at least one red and one yellow cell', async ({
-    page,
-  }) => {
+  test('TC-E2E-2A: heatmap renders with at least one red and one yellow cell', async ({ page }) => {
     await personaAs(page, 'line-manager');
     await page.goto('/');
 

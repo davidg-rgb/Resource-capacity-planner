@@ -53,7 +53,9 @@ describe('useLmQueueCount', () => {
   });
 
   it('enabled + dept set → fetches and returns count (selector unwraps to number)', async () => {
-    const { result } = renderHook(() => useLmQueueCount('dept-1', true), { wrapper: makeWrapper() });
+    const { result } = renderHook(() => useLmQueueCount('dept-1', true), {
+      wrapper: makeWrapper(),
+    });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(result.current.data).toBe(3);
     expect(fetchMock).toHaveBeenCalledTimes(1);

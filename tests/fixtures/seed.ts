@@ -101,12 +101,48 @@ const PEOPLE: ReadonlyArray<{
   departmentSlug: string;
   disciplineName: string;
 }> = [
-  { slug: 'anna', firstName: 'Anna', lastName: 'Lindqvist', departmentSlug: 'software-design', disciplineName: 'Software Engineer' },
-  { slug: 'per', firstName: 'Per', lastName: 'Karlsson', departmentSlug: 'electronics-design', disciplineName: 'Electronics Engineer' },
-  { slug: 'sara', firstName: 'Sara', lastName: 'Berg', departmentSlug: 'electronics-design', disciplineName: 'Electronics Engineer' },
-  { slug: 'erik', firstName: 'Erik', lastName: 'Svensson', departmentSlug: 'electronics-design', disciplineName: 'Electronics Engineer' },
-  { slug: 'karin', firstName: 'Karin', lastName: 'Johansson', departmentSlug: 'management', disciplineName: 'Management' },
-  { slug: 'janne', firstName: 'Janne', lastName: 'Holm', departmentSlug: 'management', disciplineName: 'Management' },
+  {
+    slug: 'anna',
+    firstName: 'Anna',
+    lastName: 'Lindqvist',
+    departmentSlug: 'software-design',
+    disciplineName: 'Software Engineer',
+  },
+  {
+    slug: 'per',
+    firstName: 'Per',
+    lastName: 'Karlsson',
+    departmentSlug: 'electronics-design',
+    disciplineName: 'Electronics Engineer',
+  },
+  {
+    slug: 'sara',
+    firstName: 'Sara',
+    lastName: 'Berg',
+    departmentSlug: 'electronics-design',
+    disciplineName: 'Electronics Engineer',
+  },
+  {
+    slug: 'erik',
+    firstName: 'Erik',
+    lastName: 'Svensson',
+    departmentSlug: 'electronics-design',
+    disciplineName: 'Electronics Engineer',
+  },
+  {
+    slug: 'karin',
+    firstName: 'Karin',
+    lastName: 'Johansson',
+    departmentSlug: 'management',
+    disciplineName: 'Management',
+  },
+  {
+    slug: 'janne',
+    firstName: 'Janne',
+    lastName: 'Holm',
+    departmentSlug: 'management',
+    disciplineName: 'Management',
+  },
 ] as const;
 
 const DEPARTMENTS: ReadonlyArray<{ slug: string; name: string }> = [
@@ -156,7 +192,12 @@ function pad2(n: number): string {
 }
 
 /** All month keys from YYYY-MM..YYYY-MM inclusive, lexicographic order. */
-function monthKeysBetween(startYear: number, startMonth: number, endYear: number, endMonth: number): string[] {
+function monthKeysBetween(
+  startYear: number,
+  startMonth: number,
+  endYear: number,
+  endMonth: number,
+): string[] {
   const out: string[] = [];
   let y = startYear;
   let m = startMonth;
@@ -186,11 +227,17 @@ function daysInMonth(year: number, month: number): number {
  * Pure: uses only arithmetic, no Date object.
  */
 function datesBetween(
-  startY: number, startM: number, startD: number,
-  endY: number, endM: number, endD: number,
+  startY: number,
+  startM: number,
+  startD: number,
+  endY: number,
+  endM: number,
+  endD: number,
 ): string[] {
   const out: string[] = [];
-  let y = startY, m = startM, d = startD;
+  let y = startY,
+    m = startM,
+    d = startD;
   while (y < endY || (y === endY && m < endM) || (y === endY && m === endM && d <= endD)) {
     out.push(`${y}-${pad2(m)}-${pad2(d)}`);
     d += 1;
@@ -211,7 +258,8 @@ function isoDayOfWeek(y: number, m: number, d: number): number {
   // Sakamoto's algorithm → Sunday=0..Saturday=6; shift to ISO Mon=1..Sun=7.
   const t = [0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4];
   const yr = m < 3 ? y - 1 : y;
-  const dow = (yr + Math.floor(yr / 4) - Math.floor(yr / 100) + Math.floor(yr / 400) + t[m - 1] + d) % 7;
+  const dow =
+    (yr + Math.floor(yr / 4) - Math.floor(yr / 100) + Math.floor(yr / 400) + t[m - 1] + d) % 7;
   return dow === 0 ? 7 : dow;
 }
 
@@ -243,7 +291,7 @@ export function buildSeed(namespace: string = FIXTURE_NS): SeedBundle {
     id: uuidv5(`seed:project:${pr.slug}`, namespace),
     slug: pr.slug,
     name: pr.name,
-    leadPmPersonId: pr.leadPmSlug ? personIdBySlug.get(pr.leadPmSlug) ?? null : null,
+    leadPmPersonId: pr.leadPmSlug ? (personIdBySlug.get(pr.leadPmSlug) ?? null) : null,
     archived: pr.archived,
   }));
   const projectIdBySlug = new Map(projects.map((pr) => [pr.slug, pr.id]));

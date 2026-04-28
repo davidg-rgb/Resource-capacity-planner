@@ -18,8 +18,5 @@ import { expect, type Page } from '@playwright/test';
  */
 export async function checkA11y(page: Page): Promise<void> {
   const results = await new AxeBuilder({ page }).analyze();
-  expect(
-    results.violations,
-    JSON.stringify(results.violations, null, 2),
-  ).toEqual([]);
+  expect(results.violations, JSON.stringify(results.violations, null, 2)).toEqual([]);
 }

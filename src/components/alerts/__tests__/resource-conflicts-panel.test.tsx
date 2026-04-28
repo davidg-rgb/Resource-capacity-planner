@@ -46,9 +46,8 @@ vi.mock('@/features/dashboard/person-card/person-card-provider', () => ({
 
 // TanStack Query's useMutation used by redistribute + apply-suggestion.
 vi.mock('@tanstack/react-query', async () => {
-  const actual = await vi.importActual<typeof import('@tanstack/react-query')>(
-    '@tanstack/react-query',
-  );
+  const actual =
+    await vi.importActual<typeof import('@tanstack/react-query')>('@tanstack/react-query');
   return {
     ...actual,
     useMutation: () => ({
@@ -162,9 +161,9 @@ describe('ResourceConflictsPanel (Plan 53-05 POLISH-05)', () => {
     );
 
     // Find the dismiss button. Copy from sv.json widgets.common.dismiss = "Avfärda".
-    const dismissButton = screen.getAllByRole('button').find(
-      (b) => b.textContent?.trim().toLowerCase() === 'avfärda',
-    );
+    const dismissButton = screen
+      .getAllByRole('button')
+      .find((b) => b.textContent?.trim().toLowerCase() === 'avfärda');
     expect(dismissButton).toBeDefined();
     fireEvent.click(dismissButton!);
 

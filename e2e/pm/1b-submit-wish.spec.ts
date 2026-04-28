@@ -28,9 +28,7 @@ test.describe('Journey 1B — PM submit wish', () => {
     // Click 2: click a cell (target person-month). Typing is keystrokes, not
     // clicks, so they don't count toward the target.
     const cell = page
-      .locator(
-        '[data-testid="plan-vs-actual-cell"], [data-testid*="pm-cell"], [role="gridcell"]',
-      )
+      .locator('[data-testid="plan-vs-actual-cell"], [data-testid*="pm-cell"], [role="gridcell"]')
       .first();
     if ((await cell.count()) > 0) {
       await cell.click();
@@ -55,9 +53,9 @@ test.describe('Journey 1B — PM submit wish', () => {
       .first();
     if ((await submitBtn.count()) > 0) {
       await submitBtn.click();
-      await expect(
-        page.locator('[data-sonner-toast], [role="status"]').first(),
-      ).toBeVisible({ timeout: 5000 });
+      await expect(page.locator('[data-sonner-toast], [role="status"]').first()).toBeVisible({
+        timeout: 5000,
+      });
     } else {
       test.info().annotations.push({
         type: 'todo',

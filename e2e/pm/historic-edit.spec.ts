@@ -16,15 +16,12 @@ test.describe('PM historic edit', () => {
     // Locate a historic allocation cell. We use 2026-01 as the anchor
     // because it's the earliest seeded month and is guaranteed to be in
     // the past relative to any realistic test clock.
-    const historicCell = page
-      .locator('[data-testid*="historic"], [data-month="2026-01"]')
-      .first();
+    const historicCell = page.locator('[data-testid*="historic"], [data-month="2026-01"]').first();
 
     if ((await historicCell.count()) === 0) {
       test.info().annotations.push({
         type: 'todo',
-        description:
-          'TC-E2E-1D: historic allocation cell selector not pinned; test deferred',
+        description: 'TC-E2E-1D: historic allocation cell selector not pinned; test deferred',
       });
       return;
     }
@@ -44,7 +41,10 @@ test.describe('PM historic edit', () => {
 
     const hoursField = page.getByLabel(/hours|timmar/i).first();
     await hoursField.fill('45');
-    await page.getByRole('button', { name: /save|spara/i }).first().click();
+    await page
+      .getByRole('button', { name: /save|spara/i })
+      .first()
+      .click();
 
     await expect(dialog).toBeHidden({ timeout: 5000 });
 
@@ -54,9 +54,7 @@ test.describe('PM historic edit', () => {
     expect(logRes.ok()).toBe(true);
 
     const body = (await logRes.json()) as unknown;
-    const rows = Array.isArray(body)
-      ? body
-      : ((body as { rows?: unknown[] }).rows ?? []);
+    const rows = Array.isArray(body) ? body : ((body as { rows?: unknown[] }).rows ?? []);
     expect(rows.length).toBeGreaterThan(0);
     expect(JSON.stringify(rows)).toMatch(/allocation|historic/i);
   });

@@ -83,9 +83,11 @@ interface QueueRowProps {
 }
 
 function QueueRow({ proposal, onApprove, onReject, disabled }: QueueRowProps) {
-  const { data: impact, isLoading: impactLoading, error: impactError } = useProposalImpact(
-    proposal.id,
-  );
+  const {
+    data: impact,
+    isLoading: impactLoading,
+    error: impactError,
+  } = useProposalImpact(proposal.id);
   const t = useTranslations('v5.proposals');
   const tMonths = useTranslations('v5.proposals.months');
   // v5.0 Phase 41 / Plan 41-04 — UX-V5-06 impact preview wording update:

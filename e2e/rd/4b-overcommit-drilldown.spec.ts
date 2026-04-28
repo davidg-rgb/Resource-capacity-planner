@@ -53,9 +53,7 @@ test.describe('Journey 4B — R&D overcommit drill', () => {
     await checkA11y(page);
   });
 
-  test('deep-link drawer opens on /rd via ?drawer=person-month (SHARED-01)', async ({
-    page,
-  }) => {
+  test('deep-link drawer opens on /rd via ?drawer=person-month (SHARED-01)', async ({ page }) => {
     await personaAs(page, 'rd');
     // SHARED-01 on /rd needs a projectId query param in addition to the
     // standard (personId, month) trio since R&D rows are

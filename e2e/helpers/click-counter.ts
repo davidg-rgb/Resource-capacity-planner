@@ -36,7 +36,5 @@ export async function resetClickCount(page: Page): Promise<void> {
  * with a prior `resetClickCount` to guarantee the tracker is live.
  */
 export async function getClickCount(page: Page): Promise<number> {
-  return page.evaluate(
-    () => (window as unknown as { __clickCount?: number }).__clickCount ?? 0,
-  );
+  return page.evaluate(() => (window as unknown as { __clickCount?: number }).__clickCount ?? 0);
 }

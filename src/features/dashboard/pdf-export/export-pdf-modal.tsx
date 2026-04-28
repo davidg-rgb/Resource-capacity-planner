@@ -56,22 +56,22 @@ export function ExportPdfModal({
   // Build widget display data
   const widgetItems = useMemo(
     () =>
-      widgets
-        .map((placement) => {
-          const def = getWidget(placement.widgetId);
-          if (!def) return {
+      widgets.map((placement) => {
+        const def = getWidget(placement.widgetId);
+        if (!def)
+          return {
             id: placement.widgetId,
             name: `Widget ej tillganglig (${placement.widgetId})`,
             colSpan: placement.colSpan,
             Icon: null,
           };
-          return {
-            id: placement.widgetId,
-            name: def.name,
-            colSpan: placement.colSpan,
-            Icon: def.icon,
-          };
-        }) as Array<{
+        return {
+          id: placement.widgetId,
+          name: def.name,
+          colSpan: placement.colSpan,
+          Icon: def.icon,
+        };
+      }) as Array<{
         id: string;
         name: string;
         colSpan: 4 | 6 | 12;

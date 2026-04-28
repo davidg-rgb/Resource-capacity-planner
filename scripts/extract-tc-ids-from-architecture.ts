@@ -52,9 +52,7 @@ function main(): void {
   const md = readFileSync(ARCH_PATH, 'utf8');
   const section = extractSection15(md);
 
-  const singles = (section.match(SINGLE_RE) ?? []).filter(
-    (t) => !t.includes('..'),
-  );
+  const singles = (section.match(SINGLE_RE) ?? []).filter((t) => !t.includes('..'));
   const expanded = expandRanges(section);
 
   const set = new Set<string>([...singles, ...expanded]);
@@ -65,15 +63,10 @@ function main(): void {
   mkdirSync(dirname(OUT_PATH), { recursive: true });
   writeFileSync(
     OUT_PATH,
-    JSON.stringify(
-      { canonical, generatedAt: new Date().toISOString() },
-      null,
-      2,
-    ) + '\n',
+    JSON.stringify({ canonical, generatedAt: new Date().toISOString() }, null, 2) + '\n',
     'utf8',
   );
 
-  // eslint-disable-next-line no-console
   console.log(`Extracted ${canonical.length} canonical TC-IDs → ${OUT_PATH}`);
 }
 

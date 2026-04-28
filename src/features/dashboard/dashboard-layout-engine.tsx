@@ -254,7 +254,7 @@ function DashboardGridInner({ dashboardId = 'manager' }: { dashboardId?: string 
                 return (
                   <div
                     key={placement.widgetId}
-                    className={`col-span-${placement.colSpan} rounded-lg border border-dashed border-outline-variant bg-surface-container p-4 text-center`}
+                    className={`col-span-${placement.colSpan} border-outline-variant bg-surface-container rounded-lg border border-dashed p-4 text-center`}
                   >
                     <p className="text-on-surface-variant text-sm">Widget ej tillganglig</p>
                     <p className="text-on-surface-variant/60 mt-1 text-xs">{placement.widgetId}</p>

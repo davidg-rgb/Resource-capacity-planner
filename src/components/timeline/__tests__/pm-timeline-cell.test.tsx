@@ -200,11 +200,7 @@ describe('PmTimelineCell — PM-03 historic-edit gating (Phase 52 Plan 03)', () 
     cleanup();
   });
 
-  function renderCell(args: {
-    monthKey: string;
-    currentMonth: string;
-    flagOn: boolean;
-  }) {
+  function renderCell(args: { monthKey: string; currentMonth: string; flagOn: boolean }) {
     flagState.uiV6PerJourney = args.flagOn;
     const onAllocationPatch = vi.fn().mockResolvedValue(undefined);
     render(

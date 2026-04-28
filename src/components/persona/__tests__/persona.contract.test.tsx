@@ -14,9 +14,7 @@ const PERSONAS = ['admin', 'pm', 'line-manager', 'staff', 'rd'] as const;
 describe('TC-UI-040: PersonaSwitcher renders all five persona options', () => {
   it('contract: persona enum has exactly five members', () => {
     expect(PERSONAS).toHaveLength(5);
-    expect(new Set(PERSONAS)).toEqual(
-      new Set(['admin', 'pm', 'line-manager', 'staff', 'rd']),
-    );
+    expect(new Set(PERSONAS)).toEqual(new Set(['admin', 'pm', 'line-manager', 'staff', 'rd']));
   });
 });
 

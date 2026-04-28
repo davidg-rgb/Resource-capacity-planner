@@ -47,16 +47,14 @@ async function captureScrollHeight(
 
   // Explicit log so `pnpm test:e2e` output carries the number even when
   // the html reporter is not opened.
-  // eslint-disable-next-line no-console
+
   console.log(
     `[DIAGNOSTIC] ${label} scrollHeight=${scrollHeight} clientHeight=${clientHeight} overflow=${overflow}`,
   );
 }
 
 test.describe('POLISH-07 diagnostic — capture pre-Phase-53 scrollHeight', () => {
-  test('manager dashboard scrollHeight @ 1440x900 (uiV6Polish OFF)', async ({
-    page,
-  }) => {
+  test('manager dashboard scrollHeight @ 1440x900 (uiV6Polish OFF)', async ({ page }) => {
     // Baseline: flip the Phase 53 flag off before the first nav so the
     // measurement reflects the current post-Phase-52 layout, not the
     // polished target.
@@ -66,9 +64,7 @@ test.describe('POLISH-07 diagnostic — capture pre-Phase-53 scrollHeight', () =
     await captureScrollHeight('manager', page);
   });
 
-  test('project-leader dashboard scrollHeight @ 1440x900 (uiV6Polish OFF)', async ({
-    page,
-  }) => {
+  test('project-leader dashboard scrollHeight @ 1440x900 (uiV6Polish OFF)', async ({ page }) => {
     // RESEARCH used `/dashboard/projects` — verified present at
     // src/app/(app)/dashboard/projects/page.tsx in the current tree
     // (see 53-01-SUMMARY "Project-leader dashboard route path").

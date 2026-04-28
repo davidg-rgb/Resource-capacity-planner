@@ -47,9 +47,7 @@ vi.mock('@/hooks/use-alerts', () => ({
 }));
 
 vi.mock('@/lib/date-utils', async () => {
-  const actual = await vi.importActual<typeof import('@/lib/date-utils')>(
-    '@/lib/date-utils',
-  );
+  const actual = await vi.importActual<typeof import('@/lib/date-utils')>('@/lib/date-utils');
   return {
     ...actual,
     getCurrentMonth: () => '2026-04',
@@ -200,8 +198,8 @@ describe('DashboardContent — StrategicAlertsBanner mount point (POLISH-06)', (
     // captured other bits (e.g. DOCUMENT_POSITION_CONTAINED_BY = 16).
     const bannerEl = container.querySelector('[role="alert"]');
     expect(bannerEl).not.toBeNull();
-    expect(
-      bannerEl!.compareDocumentPosition(grid) & Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(bannerEl!.compareDocumentPosition(grid) & Node.DOCUMENT_POSITION_FOLLOWING).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING,
+    );
   });
 });

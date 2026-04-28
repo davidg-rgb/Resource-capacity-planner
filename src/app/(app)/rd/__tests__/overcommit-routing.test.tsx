@@ -92,10 +92,10 @@ function setup(opts: {
       });
     }
     if (url.includes('/api/v5/capacity/breakdown')) {
-      return new Response(
-        JSON.stringify({ rows: [], projects: [], people: [] }),
-        { status: 200, headers: { 'content-type': 'application/json' } },
-      );
+      return new Response(JSON.stringify({ rows: [], projects: [], people: [] }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
     }
     if (url.includes('/api/departments') || url.includes('/api/people')) {
       return new Response(JSON.stringify({ departments: [], people: [] }), {
@@ -210,7 +210,9 @@ describe('/rd page — red-cell routing to OvercommitDialog (RD-02 / D-09)', () 
     await findByTestId('rd-grid');
     const deptTab = await findByTestId('rd-groupby-department');
     await userEvent.click(deptTab);
-    await waitFor(() => expect(screen.getByTestId('rd-groupby-department').getAttribute('aria-pressed')).toBe('true'));
+    await waitFor(() =>
+      expect(screen.getByTestId('rd-groupby-department').getAttribute('aria-pressed')).toBe('true'),
+    );
     const cell = await findByTestId('rd-cell-dept-electronics-2026-06');
     await userEvent.click(cell);
     // Dialog does NOT open — flag off path stays on drawer

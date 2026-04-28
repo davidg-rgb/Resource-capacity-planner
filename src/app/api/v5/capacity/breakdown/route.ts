@@ -6,10 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import {
-  getCapacityBreakdown,
-  getOvercommitBreakdown,
-} from '@/features/capacity/capacity.read';
+import { getCapacityBreakdown, getOvercommitBreakdown } from '@/features/capacity/capacity.read';
 import { handleApiError } from '@/lib/api-utils';
 import { requireRole } from '@/lib/auth';
 

@@ -3,10 +3,7 @@
 // Target: ≤ 1 click — land, see heatmap, click a person row → drill.
 
 import { test, expect } from '../fixtures/test-base';
-import {
-  personaAsLineManager,
-  LM_SEED_DEPARTMENT_ID,
-} from '../helpers/persona-setup';
+import { personaAsLineManager, LM_SEED_DEPARTMENT_ID } from '../helpers/persona-setup';
 import { resetClickCount, getClickCount } from '../helpers/click-counter';
 import { checkA11y } from '../helpers/a11y';
 
@@ -20,11 +17,7 @@ test.describe('Journey 2A — LM capacity overview', () => {
     // Click 1: drill into a person row / heatmap cell.
     const personRow = page
       .locator('[data-testid^="lm-person-cell-"]')
-      .or(
-        page.locator(
-          '[data-capacity="over"], [data-capacity="under"], [data-status="over"]',
-        ),
-      )
+      .or(page.locator('[data-capacity="over"], [data-capacity="under"], [data-status="over"]'))
       .first();
 
     if ((await personRow.count()) > 0) {

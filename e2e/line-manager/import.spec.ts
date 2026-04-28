@@ -14,7 +14,10 @@ test.describe('Line Manager Nordlys import', () => {
     await personaAs(page, 'line-manager');
     await page.goto('/');
 
-    await page.getByRole('button', { name: /import|importera/i }).first().click();
+    await page
+      .getByRole('button', { name: /import|importera/i })
+      .first()
+      .click();
 
     const fixturePath = path.resolve(__dirname, '../fixtures/nordlys-import.xlsx');
     await page.setInputFiles('input[type="file"]', fixturePath);

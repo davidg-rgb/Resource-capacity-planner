@@ -77,10 +77,7 @@ describe('captureWidgetSnapshot', () => {
     document.body.innerHTML = `<div data-widget-id="w3"><p>table</p></div>`;
     const result = await captureWidgetSnapshot('w3');
     expect(result).toBeNull();
-    expect(console.warn).toHaveBeenCalledWith(
-      expect.stringContaining('w3'),
-      expect.any(Error),
-    );
+    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('w3'), expect.any(Error));
   });
 
   it('returns null when the widget element is not in the DOM', async () => {
@@ -130,12 +127,25 @@ describe('TC-PDF-005: max-height cap', () => {
     `;
     const container = document.querySelector<HTMLElement>('[data-widget-id="finder"]')!;
     vi.spyOn(container, 'getBoundingClientRect').mockReturnValue({
-      width: 1500, height: 3000, top: 0, left: 0, right: 1500, bottom: 3000, x: 0, y: 0, toJSON: () => ({}),
+      width: 1500,
+      height: 3000,
+      top: 0,
+      left: 0,
+      right: 1500,
+      bottom: 3000,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
     } as DOMRect);
 
     await captureWidgetSnapshot('finder');
 
-    const opts = toPngMock.mock.calls[0][1] as { width: number; canvasWidth: number; height: number; canvasHeight: number };
+    const opts = toPngMock.mock.calls[0][1] as {
+      width: number;
+      canvasWidth: number;
+      height: number;
+      canvasHeight: number;
+    };
     expect(opts.width).toBe(1500);
     expect(opts.canvasWidth).toBe(1500);
     expect(opts.height).toBe(1200); // capped from 3000
@@ -149,7 +159,15 @@ describe('TC-PDF-005: max-height cap', () => {
     `;
     const container = document.querySelector<HTMLElement>('[data-widget-id="widget2"]')!;
     vi.spyOn(container, 'getBoundingClientRect').mockReturnValue({
-      width: 756, height: 500, top: 0, left: 0, right: 756, bottom: 500, x: 0, y: 0, toJSON: () => ({}),
+      width: 756,
+      height: 500,
+      top: 0,
+      left: 0,
+      right: 756,
+      bottom: 500,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
     } as DOMRect);
 
     await captureWidgetSnapshot('widget2');

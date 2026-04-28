@@ -13,16 +13,11 @@ const ALLOWLIST_PATH = '.planning/test-contract/tc-allowlist.json';
 
 describe('TEST-V5-01 TC-ID coverage', () => {
   it('TC-INV-COVERAGE-001 canonical TC-IDs are all present in manifest or allowlist', () => {
-    const canonical = new Set(
-      (JSON.parse(readFileSync(CANON_PATH, 'utf8')).canonical as string[]),
-    );
+    const canonical = new Set(JSON.parse(readFileSync(CANON_PATH, 'utf8')).canonical as string[]);
     const manifest = JSON.parse(readFileSync(MANIFEST_PATH, 'utf8'));
-    const present = new Set(
-      Object.keys(manifest.entries as Record<string, unknown>),
-    );
+    const present = new Set(Object.keys(manifest.entries as Record<string, unknown>));
     const allowed = new Set(
-      (JSON.parse(readFileSync(ALLOWLIST_PATH, 'utf8'))
-        .stillMissing as string[]),
+      JSON.parse(readFileSync(ALLOWLIST_PATH, 'utf8')).stillMissing as string[],
     );
 
     const missing: string[] = [];
@@ -37,11 +32,8 @@ describe('TEST-V5-01 TC-ID coverage', () => {
 
   it('TC-INV-COVERAGE-002 allowlist contains no IDs that are already present', () => {
     const manifest = JSON.parse(readFileSync(MANIFEST_PATH, 'utf8'));
-    const present = new Set(
-      Object.keys(manifest.entries as Record<string, unknown>),
-    );
-    const allowed = JSON.parse(readFileSync(ALLOWLIST_PATH, 'utf8'))
-      .stillMissing as string[];
+    const present = new Set(Object.keys(manifest.entries as Record<string, unknown>));
+    const allowed = JSON.parse(readFileSync(ALLOWLIST_PATH, 'utf8')).stillMissing as string[];
     const stale = allowed.filter((id) => present.has(id));
     expect(
       stale,
@@ -50,11 +42,8 @@ describe('TEST-V5-01 TC-ID coverage', () => {
   });
 
   it('TC-INV-COVERAGE-003 allowlist entries are all in the canonical list', () => {
-    const canonical = new Set(
-      (JSON.parse(readFileSync(CANON_PATH, 'utf8')).canonical as string[]),
-    );
-    const allowed = JSON.parse(readFileSync(ALLOWLIST_PATH, 'utf8'))
-      .stillMissing as string[];
+    const canonical = new Set(JSON.parse(readFileSync(CANON_PATH, 'utf8')).canonical as string[]);
+    const allowed = JSON.parse(readFileSync(ALLOWLIST_PATH, 'utf8')).stillMissing as string[];
     const orphans = allowed.filter((id) => !canonical.has(id));
     expect(
       orphans,

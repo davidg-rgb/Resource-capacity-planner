@@ -12,9 +12,7 @@ import { resetClickCount, getClickCount } from '../helpers/click-counter';
 import { checkA11y } from '../helpers/a11y';
 
 test.describe('Journey 5B — Admin archive dependent project', () => {
-  test('archive project with allocations → toast.error with <details>', async ({
-    page,
-  }) => {
+  test('archive project with allocations → toast.error with <details>', async ({ page }) => {
     await personaAs(page, 'admin');
     await page.goto('/admin/projects');
     await page.waitForLoadState('networkidle');
@@ -26,7 +24,10 @@ test.describe('Journey 5B — Admin archive dependent project', () => {
 
     // Click 1: locate first project row. Admin register pages render row
     // actions as icon buttons.
-    const row = page.locator('tr').filter({ hasText: /Nordlys/i }).first();
+    const row = page
+      .locator('tr')
+      .filter({ hasText: /Nordlys/i })
+      .first();
     if ((await row.count()) === 0) {
       test.info().annotations.push({
         type: 'todo',
@@ -36,9 +37,7 @@ test.describe('Journey 5B — Admin archive dependent project', () => {
     }
 
     // Click 2: archive action on that row.
-    const archiveBtn = row
-      .getByRole('button', { name: /arkivera|archive/i })
-      .first();
+    const archiveBtn = row.getByRole('button', { name: /arkivera|archive/i }).first();
     if ((await archiveBtn.count()) > 0) {
       await archiveBtn.click();
     } else {

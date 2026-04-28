@@ -81,9 +81,7 @@ export async function POST(): Promise<Response> {
   // page-data collection step. The throw string is asserted by the
   // no-test-routes-in-prod static invariant.
   if (process.env.NODE_ENV === 'production' && process.env.E2E_TEST !== '1') {
-    throw new Error(
-      '[api/test/seed] test-only route imported in production build',
-    );
+    throw new Error('[api/test/seed] test-only route imported in production build');
   }
   // Gate 2: runtime opt-in.
   if (process.env.E2E_SEED_ENABLED !== '1') {
@@ -147,9 +145,7 @@ export async function POST(): Promise<Response> {
 
     // Disciplines — the bundle tracks `disciplineName` per person, not a
     // dedicated discipline table. Derive the distinct set and insert.
-    const distinctDisciplineNames = Array.from(
-      new Set(bundle.people.map((p) => p.disciplineName)),
-    );
+    const distinctDisciplineNames = Array.from(new Set(bundle.people.map((p) => p.disciplineName)));
     const disciplineIdByName = new Map<string, string>();
     for (const name of distinctDisciplineNames) {
       disciplineIdByName.set(name, disciplineIdFor(name));
@@ -304,10 +300,7 @@ export async function POST(): Promise<Response> {
           rejectionReason: pr.status === 'rejected' ? pr.reason : null,
           requestedBy: pr.proposerPersonId,
           decidedBy: pr.status === 'proposed' ? null : 'e2e_seed_user',
-          decidedAt:
-            pr.status === 'proposed'
-              ? null
-              : new Date('2026-04-01T00:00:00.000Z'),
+          decidedAt: pr.status === 'proposed' ? null : new Date('2026-04-01T00:00:00.000Z'),
           targetDepartmentId: deptIdByPersonId.get(pr.targetPersonId)!,
         })),
       );

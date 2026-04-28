@@ -49,10 +49,10 @@ function renderPage(opts: { flag: boolean; count: number }) {
   const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
     const url = typeof input === 'string' ? input : input.toString();
     if (url.includes('/api/v5/proposals/queue/count')) {
-      return new Response(
-        JSON.stringify({ count: opts.count, departmentId: 'dept-electronics' }),
-        { status: 200, headers: { 'content-type': 'application/json' } },
-      );
+      return new Response(JSON.stringify({ count: opts.count, departmentId: 'dept-electronics' }), {
+        status: 200,
+        headers: { 'content-type': 'application/json' },
+      });
     }
     if (url.includes('/api/v5/capacity')) {
       return new Response(JSON.stringify({ cells: [], people: [] }), {

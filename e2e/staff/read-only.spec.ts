@@ -21,9 +21,9 @@ test.describe('Staff read-only schedule', () => {
     await expect(page.getByRole('button', { name: /edit|redigera/i })).toHaveCount(0);
     await expect(page.getByRole('button', { name: /delete|ta bort/i })).toHaveCount(0);
     await expect(page.getByRole('button', { name: /save|spara/i })).toHaveCount(0);
-    await expect(
-      page.getByRole('button', { name: /submit wish|propose|ny önskan/i }),
-    ).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /submit wish|propose|ny önskan/i })).toHaveCount(
+      0,
+    );
 
     // No hours/allocation form inputs.
     await expect(page.getByLabel(/hours|timmar/i)).toHaveCount(0);
