@@ -33,7 +33,6 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
@@ -163,9 +162,7 @@ describe('PlanVsActualDrawer deep-link + ESC strip + focus trap (Plan 52-05)', (
   });
 
   it('T1: deep-link opens drawer on /pm/projects/[id] mount with correct payload', async () => {
-    mockSearchParams = new URLSearchParams(
-      'drawer=person-month&personId=u1&month=2026-06',
-    );
+    mockSearchParams = new URLSearchParams('drawer=person-month&personId=u1&month=2026-06');
 
     render(
       <Wrapper>
@@ -204,9 +201,7 @@ describe('PlanVsActualDrawer deep-link + ESC strip + focus trap (Plan 52-05)', (
   });
 
   it('T3: ESC while drawer open strips drawer/personId/month params via router.replace', async () => {
-    mockSearchParams = new URLSearchParams(
-      'drawer=person-month&personId=u1&month=2026-06&keep=ok',
-    );
+    mockSearchParams = new URLSearchParams('drawer=person-month&personId=u1&month=2026-06&keep=ok');
 
     render(
       <Wrapper>
@@ -240,9 +235,7 @@ describe('PlanVsActualDrawer deep-link + ESC strip + focus trap (Plan 52-05)', (
     // Tab-cycling behavior is covered in the Playwright journey specs (real
     // browser). Here we verify the contract by asserting the drawer renders
     // without the FocusTrap throwing + the close button is focusable.
-    mockSearchParams = new URLSearchParams(
-      'drawer=person-month&personId=u1&month=2026-06',
-    );
+    mockSearchParams = new URLSearchParams('drawer=person-month&personId=u1&month=2026-06');
 
     render(
       <Wrapper>

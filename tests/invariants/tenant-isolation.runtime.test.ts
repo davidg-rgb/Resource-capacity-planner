@@ -27,9 +27,9 @@ type MutRoute = {
   pathParams: Record<string, string>;
 };
 
-const manifest = JSON.parse(
-  readFileSync('tests/invariants/mutating-routes.json', 'utf8'),
-) as { routes: MutRoute[] };
+const manifest = JSON.parse(readFileSync('tests/invariants/mutating-routes.json', 'utf8')) as {
+  routes: MutRoute[];
+};
 
 const pg = new PGlite();
 const testDb = drizzle(pg, { schema });
@@ -298,7 +298,9 @@ function buildRequest(method: string, routeFile: string, body: unknown): Request
   });
 }
 
-async function importHandler(routeFile: string, method: string): Promise<Function> {
+type RouteHandler = (req: Request, ctx: unknown) => Promise<Response>;
+
+async function importHandler(routeFile: string, method: string): Promise<RouteHandler> {
   // routeFile is posix-normalized from manifest; vite/vitest resolves both.
   // Strip the leading `src/` because vitest alias `@/` → `src/`.
   const rel = routeFile.replace(/^src\//, '@/');
@@ -307,7 +309,7 @@ async function importHandler(routeFile: string, method: string): Promise<Functio
   if (typeof handler !== 'function') {
     throw new Error(`${routeFile} does not export ${method}`);
   }
-  return handler as Function;
+  return handler as RouteHandler;
 }
 
 describe('TC-API-TENANT runtime cross-tenant 404 prober', () => {

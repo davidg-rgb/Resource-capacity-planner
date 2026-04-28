@@ -59,6 +59,10 @@ const stubState: {
 };
 
 vi.mock('ag-grid-react', () => {
+  // AgGridReact is a test stub. Capturing props onto closure-scoped `stubState`
+  // is the test affordance; assertions inspect `stubState` afterwards. The
+  // immutability rule (intended for real components) does not apply here.
+  /* eslint-disable react-hooks/immutability */
   function AgGridReact(props: {
     rowData: StubRow[];
     columnDefs: Array<{
@@ -78,11 +82,7 @@ vi.mock('ag-grid-react', () => {
       }>
     >;
     context: unknown;
-    getRowId: (params: {
-      data: StubRow;
-      level: number;
-      parentKeys?: string[];
-    }) => string;
+    getRowId: (params: { data: StubRow; level: number; parentKeys?: string[] }) => string;
     rowClassRules?: Record<string, (p: { data: StubRow }) => boolean>;
   }) {
     stubState.lastRowData = props.rowData;
@@ -103,9 +103,7 @@ vi.mock('ag-grid-react', () => {
           return (
             <div key={rowId} data-testid={`row-${rowId}`} className={classes}>
               {props.columnDefs.map((col) => {
-                const Renderer = col.cellRenderer
-                  ? props.components[col.cellRenderer]
-                  : undefined;
+                const Renderer = col.cellRenderer ? props.components[col.cellRenderer] : undefined;
                 if (!Renderer) return null;
                 const extraParams = (col.cellRendererParams ?? {}) as {
                   monthKey?: string;
@@ -127,6 +125,7 @@ vi.mock('ag-grid-react', () => {
       </div>
     );
   }
+  /* eslint-enable react-hooks/immutability */
   return { AgGridReact };
 });
 
@@ -427,9 +426,7 @@ describe('LineManagerTimelineGrid — flat-row master/detail (TC-PS-001..010)', 
     expect(screen.getByTestId('row-project:p-allan:proj-3')).toBeInTheDocument();
 
     // All row ids are distinct (person: and project: namespaces never collide).
-    const ids = stubState.lastRowData.map((r) =>
-      stubState.lastGetRowId!({ data: r, level: 0 }),
-    );
+    const ids = stubState.lastRowData.map((r) => stubState.lastGetRowId!({ data: r, level: 0 }));
     expect(new Set(ids).size).toBe(ids.length);
     // Dual-namespace: row ids for child rows start with 'project:'.
     expect(ids.filter((id) => id.startsWith('project:'))).toHaveLength(3);

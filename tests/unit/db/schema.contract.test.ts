@@ -8,6 +8,8 @@
  * closes the two remaining canonical gaps with a cheap unit proxy.
  */
 
+import { readFileSync } from 'node:fs';
+
 import { describe, it, expect } from 'vitest';
 
 import * as schema from '@/db/schema';
@@ -38,8 +40,6 @@ describe('TC-DB-* schema introspection (phase 44-07)', () => {
     // Primary assertion: read the source file directly. Deterministic,
     // fast, and matches the static-invariant pattern already used in
     // tests/invariants.
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { readFileSync } = require('node:fs') as typeof import('node:fs');
     const schemaSrc = readFileSync('src/db/schema.ts', 'utf8');
 
     // The change_log block starts at `export const changeLog` and ends at
@@ -82,8 +82,6 @@ describe('TC-DB-* schema introspection (phase 44-07)', () => {
     }
 
     // Static cross-check: the schema source declares the expected FK arrows.
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { readFileSync } = require('node:fs') as typeof import('node:fs');
     const src = readFileSync('src/db/schema.ts', 'utf8');
 
     // actual_entries → organizations/people/projects
