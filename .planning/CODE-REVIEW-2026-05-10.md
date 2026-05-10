@@ -5,6 +5,27 @@
 **Baseline:** v6.0 shipped 2026-04-27, archived. POLISH-03/04/05/06 prod migrations applied 2026-05-10. Between milestones.
 **Reviewers:** 4 parallel agents covering (A) goals/architecture compliance, (B) bugs/errors/edge cases, (C) dead code & cruft, (D) quality/security/type-safety.
 
+## Remediation status (updated 2026-05-10)
+
+Same-day cross-eval + remediation pass landed the following commits on `main`:
+
+| Tag | Commit | Status |
+|---|---|---|
+| CR-01 | `a02ee17` | ✅ Fixed — server actions assert session orgId == caller orgId |
+| CR-02 | `232f76d` | ✅ Fixed — proposal Zod tightened to integer; round-warn at approve |
+| CR-03 | `971c143` | ✅ Fixed — projectId tenant verify in createProposal |
+| CR-04 | `a9c545e` | ✅ Fixed — discipline/department FK verify in createPerson + updatePerson |
+| HI-01 | `850686b` | ✅ Fixed — promoteAllocations change_log + orgId predicate |
+| HI-02 | `45ea568` | ✅ Fixed — executeImport change_log + tenant FK validation + AppError |
+| HI-04 | `6f968dd` | ✅ Fixed — scenarios CRUD now requires role |
+| HI-05 / HI-06 / HI-07 | `9a63c73` | ✅ Fixed — negative hours skip, PayloadTooLargeError, platform-admin active check |
+| HI-08 | `5f9ac3a` | ✅ Fixed — orphan discipline-demand chain deleted (~268 LoC) |
+| HI-09 | `4da46a3` | ✅ Fixed — unused widget-registry exports removed |
+| HI-03 | — | **Deferred to v7.0** — 5 legacy register services × 3 mutations + 15 route plumbing changes; needs phase-sized refactor (route-through-`register.service.ts` per ADR-003 single canonical writer) |
+| HI-10 | — | **Deferred to v7.0** — paired with the LEGACY_LAYOUTS retirement bundle (MED-09); flag-state audit gates removal |
+
+All 4 CRITICALs and 8 of 10 HIGHs landed. Each fix was verified against actual code (not just agent reports) before being applied; each commit has typecheck + relevant test-suite pass cited in the body. MEDIUMs and LOW/NIT items remain open as backlog candidates.
+
 ## Bottom line
 
 The codebase is **healthy for a solo-dev SaaS at this size** — strict TS, parameterized SQL, AppError taxonomy on v5 routes, centralized ISO calendar, change_log enforced via 3 mechanisms. **Zero CRITICAL items in dead-code or quality scopes.**

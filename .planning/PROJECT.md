@@ -199,6 +199,9 @@ See [MILESTONES.md](MILESTONES.md) for details.
 - [ ] Real role-based permissions replacing the persona "UX shortcut" (ADR-004)
 - [ ] LEGACY_LAYOUTS code path cleanup once all tenants migrated off `uiV6.polish` flag-off path
 - [ ] Three dev-env harness gaps from Phase 53 UAT (`/api/test/seed` no-tx under neon-http; `/api/v5/*/count` 404 in Turbopack dev; `requireRole()` bypasses Clerk session-level guards) — none affect production
+- [ ] **Legacy register services audit-trail closure (HI-03)** — people/projects/programs/departments/disciplines services bypass `change_log` entirely; the v5 `register.service.ts` audits properly but legacy routes don't go through it. Recommended fix per ADR-003 single-canonical-writer: route `/api/{people,projects,programs,departments,disciplines}/*` through `register.service.ts`. Scope ≈ phase-sized (5 services × 3 mutations + 15 route plumbing changes). See `.planning/CODE-REVIEW-2026-05-10.md` HI-03.
+- [ ] **`MUTATION_PREFIX_REGEX` expansion (MED-03)** — eslint guard misses `execute|promote|apply|cancel|stage` verbs, so future mutating exports under those prefixes silently skip the universal change_log invariant. Tracked alongside HI-03.
+- [ ] **`withTenant()` coverage decision (MED-02)** — wrapper covers 8 of 16 tenant-scoped tables; remaining 8 use direct `db.select(...).where(eq(organizationId, orgId))`. Decision needed: extend `withTenant()` or remove it (current half-and-half is worst-of-both). See CODE-REVIEW MED-02.
 
 ### v6.0 Locked Decisions (still binding)
 
