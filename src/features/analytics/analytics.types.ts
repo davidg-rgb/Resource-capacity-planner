@@ -396,29 +396,3 @@ export interface PeriodComparisonResponse {
   notableChanges: string[]; // Auto-generated bullet points
   generatedAt: string;
 }
-
-/** V12: Discipline Demand Heatmap -- per-discipline supply vs demand */
-export interface DisciplineDemandResponse {
-  disciplines: {
-    disciplineId: string;
-    disciplineName: string;
-    abbreviation: string;
-    months: Record<
-      string,
-      {
-        demand: number; // Sum of allocations for people with this discipline
-        supply: number; // Sum of target hours for people with this discipline
-        gap: number; // supply - demand
-        status: 'surplus' | 'balanced' | 'tight' | 'deficit';
-      }
-    >;
-    peakDeficit: number; // Worst month gap
-    peakDeficitMonth: string;
-    sustainedDeficit: boolean; // 3+ consecutive deficit months
-  }[];
-  summary: {
-    combinedPeakDeficit: number; // All disciplines combined
-    fteHiringNeed: number; // deficit / avg target
-  };
-  generatedAt: string;
-}
