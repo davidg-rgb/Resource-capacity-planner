@@ -70,9 +70,51 @@ export async function getPersonById(orgId: string, id: string) {
 }
 
 /**
+ * CR-04: verify discipline + department FK targets belong to the caller's
+ * tenant. Zod only validates UUID format; without this guard a tenant-A admin
+ * could create a person whose departmentId/disciplineId points at tenant B
+ * rows, leaking foreign register names through joined queries.
+ */
+async function assertRefsInTenant(
+  orgId: string,
+  refs: { disciplineId?: string; departmentId?: string },
+): Promise<void> {
+  if (refs.disciplineId !== undefined) {
+    const [discipline] = await db
+      .select({ id: schema.disciplines.id })
+      .from(schema.disciplines)
+      .where(
+        and(
+          eq(schema.disciplines.organizationId, orgId),
+          eq(schema.disciplines.id, refs.disciplineId),
+        ),
+      )
+      .limit(1);
+    if (!discipline) throw new NotFoundError('Discipline', refs.disciplineId);
+  }
+  if (refs.departmentId !== undefined) {
+    const [department] = await db
+      .select({ id: schema.departments.id })
+      .from(schema.departments)
+      .where(
+        and(
+          eq(schema.departments.organizationId, orgId),
+          eq(schema.departments.id, refs.departmentId),
+        ),
+      )
+      .limit(1);
+    if (!department) throw new NotFoundError('Department', refs.departmentId);
+  }
+}
+
+/**
  * Create a new person scoped to the organization.
  */
 export async function createPerson(orgId: string, data: PersonCreate) {
+  await assertRefsInTenant(orgId, {
+    disciplineId: data.disciplineId,
+    departmentId: data.departmentId,
+  });
   const rows = await withTenant(orgId)
     .insertPerson({
       firstName: data.firstName,
@@ -90,6 +132,10 @@ export async function createPerson(orgId: string, data: PersonCreate) {
  * Throws NotFoundError if person not found or not in org.
  */
 export async function updatePerson(orgId: string, id: string, data: PersonUpdate) {
+  await assertRefsInTenant(orgId, {
+    disciplineId: data.disciplineId,
+    departmentId: data.departmentId,
+  });
   const rows = await withTenant(orgId)
     .updatePerson(id, { ...data, updatedAt: new Date() })
     .returning();
