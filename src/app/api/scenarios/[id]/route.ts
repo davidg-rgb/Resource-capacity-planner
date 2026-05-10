@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
 import { z } from 'zod';
 
 import { getScenario, updateScenario, deleteScenario } from '@/features/scenarios/scenario.service';
 import { handleApiError } from '@/lib/api-utils';
-import { getTenantId } from '@/lib/auth';
-import { AuthError } from '@/lib/errors';
+import { requireRole } from '@/lib/auth';
 
 // ---------------------------------------------------------------------------
 // Validation
@@ -25,7 +23,8 @@ type RouteParams = { params: Promise<{ id: string }> };
 /** GET /api/scenarios/:id — get a single scenario */
 export async function GET(_request: NextRequest, { params }: RouteParams) {
   try {
-    const orgId = await getTenantId();
+    // HI-04: viewer can read; same gate as the list endpoint.
+    const { orgId } = await requireRole('viewer');
     const { id } = await params;
     const scenario = await getScenario(orgId, id);
     return NextResponse.json({ scenario });
@@ -37,10 +36,8 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 /** PATCH /api/scenarios/:id — update a scenario */
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
-    const orgId = await getTenantId();
-    const { userId } = await auth();
-    if (!userId) throw new AuthError();
-
+    // HI-04: write requires planner+; same reasoning as POST /api/scenarios.
+    const { orgId, userId } = await requireRole('planner');
     const { id } = await params;
     const body = updateScenarioSchema.parse(await request.json());
     const scenario = await updateScenario(orgId, id, userId, body);
@@ -53,10 +50,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 /** DELETE /api/scenarios/:id — delete a scenario */
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   try {
-    const orgId = await getTenantId();
-    const { userId } = await auth();
-    if (!userId) throw new AuthError();
-
+    // HI-04: delete requires planner+.
+    const { orgId, userId } = await requireRole('planner');
     const { id } = await params;
     await deleteScenario(orgId, id, userId);
     return NextResponse.json({ success: true });

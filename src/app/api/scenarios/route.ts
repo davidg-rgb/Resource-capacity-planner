@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
 import { z } from 'zod';
 
 import { listScenarios, createScenario } from '@/features/scenarios/scenario.service';
 import { handleApiError } from '@/lib/api-utils';
-import { getTenantId } from '@/lib/auth';
-import { AuthError } from '@/lib/errors';
+import { requireRole } from '@/lib/auth';
 
 // ---------------------------------------------------------------------------
 // Validation
@@ -20,10 +18,9 @@ const createScenarioSchema = z.object({
 /** GET /api/scenarios — list all scenarios for the current org */
 export async function GET() {
   try {
-    const orgId = await getTenantId();
-    const { userId } = await auth();
-    if (!userId) throw new AuthError();
-
+    // HI-04: scenarios are planning inputs; gating reads at viewer keeps the
+    // bar low while still requiring a real role assignment.
+    const { orgId, userId } = await requireRole('viewer');
     const scenarios = await listScenarios(orgId, userId);
     return NextResponse.json({ scenarios });
   } catch (error) {
@@ -34,10 +31,9 @@ export async function GET() {
 /** POST /api/scenarios — create a new scenario */
 export async function POST(request: NextRequest) {
   try {
-    const orgId = await getTenantId();
-    const { userId } = await auth();
-    if (!userId) throw new AuthError();
-
+    // HI-04: write requires planner+ — viewers must not be able to manipulate
+    // scenarios (planning inputs for other roles) or exhaust the per-org quota.
+    const { orgId, userId } = await requireRole('planner');
     const body = createScenarioSchema.parse(await request.json());
     const scenario = await createScenario(orgId, userId, {
       name: body.name,
