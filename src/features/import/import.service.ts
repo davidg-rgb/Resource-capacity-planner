@@ -6,11 +6,14 @@
  */
 
 import { findBestMatch } from 'string-similarity';
+import { and, eq, inArray } from 'drizzle-orm';
 
 import { db } from '@/db';
 import * as schema from '@/db/schema';
+import { recordChange } from '@/features/change-log/change-log.service';
 import { listPeople } from '@/features/people/person.service';
 import { listProjects } from '@/features/projects/project.service';
+import { ValidationError } from '@/lib/errors';
 
 import type {
   FuzzyMatch,
@@ -225,6 +228,16 @@ export async function validateImportRows(
  * (organizationId, personId, projectId, month) for upsert semantics.
  *
  * Supports up to 5,000 rows. The entire batch rolls back on any error.
+ *
+ * HI-02 (2026-05-10):
+ *   - Pre-validate every personId/projectId belongs to the caller's org
+ *     (batched SELECT). Without this, the global-scoped UUID FK would let
+ *     a tenant-A planner reference tenant-B people/projects.
+ *   - Emit one summary change_log row (ALLOCATION_BULK_COPIED) so the v4
+ *     bulk-import path no longer skips the audit spine that the v5 pipeline
+ *     enforces for the same `allocations` table.
+ *   - Throw AppError on validation failures rather than swallowing into a
+ *     `result.error` string; route handler routes through handleApiError.
  */
 export async function executeImport(
   orgId: string,
@@ -234,40 +247,98 @@ export async function executeImport(
     month: string;
     hours: number;
   }>,
+  actorPersonaId: string,
 ): Promise<ImportResult> {
-  try {
-    await db.transaction(async (tx) => {
-      for (const row of rows) {
-        // Normalize month to YYYY-MM-01 for date column storage
-        const monthDate = `${row.month}-01`;
-
-        await tx
-          .insert(schema.allocations)
-          .values({
-            organizationId: orgId,
-            personId: row.personId,
-            projectId: row.projectId,
-            month: monthDate,
-            hours: row.hours,
-          })
-          .onConflictDoUpdate({
-            target: [
-              schema.allocations.organizationId,
-              schema.allocations.personId,
-              schema.allocations.projectId,
-              schema.allocations.month,
-            ],
-            set: {
-              hours: row.hours,
-              updatedAt: new Date(),
-            },
-          });
-      }
-    });
-
-    return { imported: rows.length, skipped: 0, warnings: [] };
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown error';
-    return { imported: 0, skipped: 0, warnings: [], error: message };
+  if (rows.length === 0) {
+    return { imported: 0, skipped: 0, warnings: [] };
   }
+
+  // Pre-validate FK targets belong to caller's tenant.
+  const personIds = [...new Set(rows.map((r) => r.personId))];
+  const projectIds = [...new Set(rows.map((r) => r.projectId))];
+
+  const [validPeople, validProjects] = await Promise.all([
+    db
+      .select({ id: schema.people.id })
+      .from(schema.people)
+      .where(and(eq(schema.people.organizationId, orgId), inArray(schema.people.id, personIds))),
+    db
+      .select({ id: schema.projects.id })
+      .from(schema.projects)
+      .where(
+        and(eq(schema.projects.organizationId, orgId), inArray(schema.projects.id, projectIds)),
+      ),
+  ]);
+
+  const validPersonIds = new Set(validPeople.map((p) => p.id));
+  const validProjectIds = new Set(validProjects.map((p) => p.id));
+
+  const missingPeople = personIds.filter((id) => !validPersonIds.has(id));
+  const missingProjects = projectIds.filter((id) => !validProjectIds.has(id));
+  if (missingPeople.length > 0 || missingProjects.length > 0) {
+    throw new ValidationError(
+      'Import contains person or project IDs that do not belong to this organization',
+      { fields: [] },
+    );
+  }
+
+  await db.transaction(async (tx) => {
+    for (const row of rows) {
+      // Normalize month to YYYY-MM-01 for date column storage
+      const monthDate = `${row.month}-01`;
+
+      await tx
+        .insert(schema.allocations)
+        .values({
+          organizationId: orgId,
+          personId: row.personId,
+          projectId: row.projectId,
+          month: monthDate,
+          hours: row.hours,
+        })
+        .onConflictDoUpdate({
+          target: [
+            schema.allocations.organizationId,
+            schema.allocations.personId,
+            schema.allocations.projectId,
+            schema.allocations.month,
+          ],
+          set: {
+            hours: row.hours,
+            updatedAt: new Date(),
+          },
+        });
+    }
+
+    // HI-02: one summary audit row per executeImport call. entity =
+    // 'allocation' (canonical mutation target), entityId = a stable v5
+    // composite (orgId-personId-projectId-month) cannot fit a UUID, so use
+    // the organization id; the rows live in newValue and the import shape
+    // in context. handleApiError will surface ValidationError above.
+    await recordChange(
+      {
+        orgId,
+        actorPersonaId,
+        entity: 'allocation',
+        entityId: orgId,
+        action: 'ALLOCATION_BULK_COPIED',
+        previousValue: null,
+        newValue: {
+          rows: rows.map((r) => ({
+            personId: r.personId,
+            projectId: r.projectId,
+            month: r.month,
+            hours: r.hours,
+          })),
+        },
+        context: {
+          source: 'legacy_import_execute',
+          rowCount: rows.length,
+        },
+      },
+      tx as unknown as Parameters<typeof recordChange>[1],
+    );
+  });
+
+  return { imported: rows.length, skipped: 0, warnings: [] };
 }
