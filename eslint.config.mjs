@@ -27,6 +27,10 @@ const eslintConfig = defineConfig([
       'src/features/proposals/**/*.service.ts',
       // v5.0: allocations service coverage (batchUpsertAllocations, patchAllocation).
       'src/features/allocations/**/*.service.ts',
+      // MED-03 (2026-05-10): scenarios service coverage. promoteAllocations
+      // mutates the live allocations table; HI-01 added the recordChange
+      // call, this guard prevents future drift.
+      'src/features/scenarios/**/*.service.ts',
     ],
     plugins: { nordic },
     rules: { 'nordic/require-change-log': 'error' },

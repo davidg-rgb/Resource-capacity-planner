@@ -26,11 +26,23 @@
     },
     {
       "file": "src/features/import/actuals-import.service.ts",
+      "export": "cancelStaged"
+    },
+    {
+      "file": "src/features/import/actuals-import.service.ts",
       "export": "commitActualsBatch"
     },
     {
       "file": "src/features/import/actuals-import.service.ts",
+      "export": "parseAndStageActuals"
+    },
+    {
+      "file": "src/features/import/actuals-import.service.ts",
       "export": "rollbackBatch"
+    },
+    {
+      "file": "src/features/import/import.service.ts",
+      "export": "executeImport"
     },
     {
       "file": "src/features/proposals/proposal.service.ts",
@@ -55,6 +67,34 @@
     {
       "file": "src/features/proposals/proposal.service.ts",
       "export": "withdrawProposal"
+    },
+    {
+      "file": "src/features/scenarios/scenario.service.ts",
+      "export": "createScenario"
+    },
+    {
+      "file": "src/features/scenarios/scenario.service.ts",
+      "export": "createTempEntity"
+    },
+    {
+      "file": "src/features/scenarios/scenario.service.ts",
+      "export": "deleteScenario"
+    },
+    {
+      "file": "src/features/scenarios/scenario.service.ts",
+      "export": "deleteTempEntity"
+    },
+    {
+      "file": "src/features/scenarios/scenario.service.ts",
+      "export": "promoteAllocations"
+    },
+    {
+      "file": "src/features/scenarios/scenario.service.ts",
+      "export": "updateScenario"
+    },
+    {
+      "file": "src/features/scenarios/scenario.service.ts",
+      "export": "upsertScenarioAllocations"
     }
   ]
 }

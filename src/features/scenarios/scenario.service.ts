@@ -107,6 +107,14 @@ export async function listScenarios(orgId: string, _userId: string): Promise<Sce
   });
 }
 
+/**
+ * @no-change-log scenarios + scenarioAllocations + scenarioTempEntities are
+ * workspace-local models not on the audit spine — `scenario` is not in
+ * changeLogEntityEnum. The only spine-relevant mutation here is
+ * promoteAllocations (which DOES audit, see HI-01). Adding scenario entities
+ * to the change_log requires an enum migration; tracked as v7.0 audit-coverage
+ * expansion (CODE-REVIEW MED-03 follow-up).
+ */
 export async function createScenario(
   orgId: string,
   userId: string,
@@ -215,6 +223,7 @@ export async function getScenario(orgId: string, scenarioId: string): Promise<Sc
   return getScenarioOrThrow(scenarioId, orgId);
 }
 
+/** @no-change-log scenario entity not on audit spine — see createScenario. */
 export async function updateScenario(
   orgId: string,
   scenarioId: string,
@@ -255,6 +264,7 @@ export async function updateScenario(
   };
 }
 
+/** @no-change-log scenario entity not on audit spine — see createScenario. */
 export async function deleteScenario(
   orgId: string,
   scenarioId: string,
@@ -315,6 +325,7 @@ export async function getScenarioAllocations(orgId: string, scenarioId: string) 
   return rows;
 }
 
+/** @no-change-log scenarioAllocations not on audit spine — see createScenario. */
 export async function upsertScenarioAllocations(
   orgId: string,
   scenarioId: string,
@@ -557,6 +568,7 @@ export async function promoteAllocations(
 // Temp Entities
 // ---------------------------------------------------------------------------
 
+/** @no-change-log scenarioTempEntities not on audit spine — see createScenario. */
 export async function createTempEntity(
   orgId: string,
   scenarioId: string,
@@ -621,6 +633,7 @@ export async function listTempEntities(
   }));
 }
 
+/** @no-change-log scenarioTempEntities not on audit spine — see createScenario. */
 export async function deleteTempEntity(
   orgId: string,
   scenarioId: string,

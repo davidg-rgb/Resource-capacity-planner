@@ -14,7 +14,13 @@
 // consumer.
 'use strict';
 
+// MED-03 (2026-05-10): added `execute|promote|apply|cancel|stage|parseAndStage`
+// because executeImport / promoteAllocations / cancelStaged / parseAndStageActuals
+// each mutate domain tables but did not match the prior regex, so the
+// require-change-log lint rule silently ignored them. HI-01 / HI-02 fixed
+// the missing recordChange calls in those specific functions; this regex
+// expansion makes future verbs in the same family fail-loud at lint time.
 const MUTATION_PREFIX_REGEX =
-  /^(create|update|delete|edit|submit|resubmit|approve|reject|commit|rollback|upsert|archive|withdraw|patch|bulk[A-Z]|batch[A-Z])/;
+  /^(create|update|delete|edit|submit|resubmit|approve|reject|commit|rollback|upsert|archive|withdraw|patch|execute|promote|apply|cancel|stage|parseAndStage|bulk[A-Z]|batch[A-Z])/;
 
 module.exports = { MUTATION_PREFIX_REGEX };

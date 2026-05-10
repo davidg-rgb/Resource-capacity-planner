@@ -55,6 +55,14 @@ import { validateStagedRows } from './validate-staged-rows';
 // parseAndStageActuals
 // ---------------------------------------------------------------------------
 
+/**
+ * @no-change-log import_session is staging-only; rows become permanent via
+ * commitStaged() which DOES write an ACTUALS_BATCH_COMMITTED change_log row
+ * (and that row references the import_batch entity, which IS in
+ * changeLogEntityEnum). Pre-commit stage transitions and cancellations are
+ * intentionally outside the audit spine. Tracked as v7.0 audit-coverage
+ * expansion (CODE-REVIEW MED-03 follow-up).
+ */
 export async function parseAndStageActuals(
   input: ParseAndStageInput,
 ): Promise<ParseAndStageResult> {
@@ -127,6 +135,11 @@ export async function previewStagedBatch(
 // cancelStaged
 // ---------------------------------------------------------------------------
 
+/**
+ * @no-change-log paired with parseAndStageActuals — see that function's note.
+ * Cancel only touches the staging session; no permanent row mutation. v7.0
+ * audit-coverage expansion may add a SESSION_CANCELLED action.
+ */
 export async function cancelStaged(input: { orgId: string; sessionId: string }): Promise<void> {
   const session = await loadSessionOrThrow(input.orgId, input.sessionId);
   if (session.status !== 'staged') {

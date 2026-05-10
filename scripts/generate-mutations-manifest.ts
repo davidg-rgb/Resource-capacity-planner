@@ -34,6 +34,8 @@ const INCLUDE = [
   'src/features/proposals/**/*.service.ts',
   // v5.0: allocations service coverage.
   'src/features/allocations/**/*.service.ts',
+  // MED-03 (2026-05-10): scenarios coverage (promoteAllocations).
+  'src/features/scenarios/**/*.service.ts',
 ];
 
 const OUTPUT = 'tests/invariants/mutations.json';
