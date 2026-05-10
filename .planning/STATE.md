@@ -88,9 +88,11 @@ Last activity: 2026-04-27
 
 ### Pending Todos
 
-- **53-HUMAN-UAT Test 1 (POLISH-07 SOFT gate):** capture `manager-1440x900-polishOn.json` + `project-leader-1440x900-polishOn.json` viewport artifacts from CI; feeds Phase 54 go/no-go.
-- **53-HUMAN-UAT Test 2 remaining combos:** Staff + flag-ON (bell null expected) and all 5 personas + flag-OFF (legacy chrome parity).
-- ~~**53-HUMAN-UAT Test 3:** operator migration rowcount check for the three 20260422_polish_* one-shot SQL migrations against production.~~ **CLOSED 2026-05-10** — applied to prod via Neon MCP; result table matches dry-run; idempotence proven.
+_All v6.0 53-HUMAN-UAT items closed:_
+
+- ~~**Test 1 (POLISH-07 SOFT gate):** viewport JSON artifacts.~~ **CLOSED 2026-04-24** — operator confirmed CI artifacts captured; overflow within acceptable threshold; SOFT gate satisfied; no Phase 54 quadrant-redesign signal.
+- ~~**Test 2 remaining combos:** Staff + flag-ON, all 5 personas + flag-OFF.~~ **CLOSED 2026-04-23** — 4/10 combos verified live 2026-04-22; remaining 6 combos verified structurally via unit tests (notification-bell.test.tsx, top-nav.visibleFor.test.tsx, flag.service.test.ts) and live flag-OFF parity sweep on Vercel prod.
+- ~~**Test 3:** prod migration rowcount check.~~ **CLOSED 2026-05-10** — applied to prod via Neon MCP; result table matches dry-run; idempotence proven.
 
 ### Blockers/Concerns
 
