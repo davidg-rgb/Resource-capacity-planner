@@ -1,4 +1,4 @@
-import type { WidgetCategory, WidgetDefinition } from './widget-registry.types';
+import type { WidgetDefinition } from './widget-registry.types';
 
 // ---------------------------------------------------------------------------
 // Widget Registry — singleton Map keyed by widget ID
@@ -26,26 +26,12 @@ export function getWidget(id: string): WidgetDefinition | undefined {
 }
 
 /**
- * Get all registered widget definitions.
- */
-export function getAllWidgets(): WidgetDefinition[] {
-  return Array.from(widgetRegistry.values());
-}
-
-/**
  * Get widgets that are available on a specific dashboard.
  */
 export function getWidgetsByDashboard(dashboardId: string): WidgetDefinition[] {
   return Array.from(widgetRegistry.values()).filter((def) =>
     def.supportedDashboards.includes(dashboardId),
   );
-}
-
-/**
- * Get widgets filtered by category.
- */
-export function getWidgetsByCategory(category: WidgetCategory): WidgetDefinition[] {
-  return Array.from(widgetRegistry.values()).filter((def) => def.category === category);
 }
 
 /**
