@@ -10,12 +10,23 @@
  *   - actual  ← actual_entries.hours summed via aggregateByMonth (37-01)
  *
  * No new transport convention: just a thin RSC server action.
+ *
+ * CR-01 (2026-05-10): callers pass `orgId` for client-side queryKey purposes,
+ * but server actions ARE HTTP POST endpoints reachable from any signed-in
+ * browser. Without an auth check inside the action, a tenant-A user could
+ * call these with a tenant-B orgId and exfiltrate cross-tenant data. The
+ * trusted orgId is now derived from the Clerk session via getTenantId() and
+ * asserted against the caller-supplied value; any mismatch throws
+ * ForbiddenError. Caller signature is preserved so test mocks and TanStack
+ * Query cache keys keep working.
  */
 
 import { and, eq, sql } from 'drizzle-orm';
 
 import { db } from '@/db';
 import { actualEntries, allocations } from '@/db/schema';
+import { getTenantId } from '@/lib/auth';
+import { ForbiddenError } from '@/lib/errors';
 
 import { getDailyRows as readDailyRows, type DailyRow } from './actuals.read';
 import { getProjectPersonBreakdown } from '@/features/planning/planning.read';
@@ -25,12 +36,21 @@ export type CellData = {
   actual: number | null;
 };
 
+async function assertCallerOrgMatchesSession(callerOrgId: string): Promise<string> {
+  const trustedOrgId = await getTenantId();
+  if (trustedOrgId !== callerOrgId) {
+    throw new ForbiddenError('Cross-tenant access denied');
+  }
+  return trustedOrgId;
+}
+
 export async function getCellData(
   orgId: string,
   personId: string,
   projectId: string,
   monthKey: string,
 ): Promise<CellData> {
+  await assertCallerOrgMatchesSession(orgId);
   const monthFirstDay = `${monthKey}-01`;
 
   const plannedRows = await db
@@ -84,6 +104,7 @@ export async function getDailyCellBreakdown(
   orgId: string,
   args: { personId: string; projectId: string; monthKey: string },
 ): Promise<DailyBreakdownRow[]> {
+  await assertCallerOrgMatchesSession(orgId);
   const [{ distribute, workDaysInMonth }, dailyActual, cell] = await Promise.all([
     import('@/lib/time'),
     readDailyRows(orgId, args),
@@ -144,6 +165,7 @@ export async function getProjectPersonBreakdownAction(
   orgId: string,
   args: { projectId: string; monthKey: string },
 ): Promise<ProjectPersonBreakdownDTO[]> {
+  await assertCallerOrgMatchesSession(orgId);
   const rows = await getProjectPersonBreakdown({
     orgId,
     projectId: args.projectId,
