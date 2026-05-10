@@ -428,38 +428,48 @@ export async function rollbackBatch(
   input: RollbackInput,
   now: Date = new Date(),
 ): Promise<RollbackResult> {
-  const [batch] = await db
-    .select()
-    .from(importBatches)
-    .where(and(eq(importBatches.id, input.batchId), eq(importBatches.organizationId, input.orgId)));
-  if (!batch) {
-    throw new NotFoundError('import_batch', input.batchId);
-  }
-  if (batch.rolledBackAt) {
-    throw new ConflictError('Batch has already been rolled back', {
-      code: ERR_BATCH_ALREADY_ROLLED_BACK,
-      batchId: input.batchId,
-    });
-  }
-  if (batch.supersededAt) {
-    throw new ConflictError('Batch has been superseded by a later import; cannot roll back', {
-      code: ERR_ROLLBACK_WINDOW_EXPIRED,
-      batchId: input.batchId,
-      reason: 'superseded',
-    });
-  }
-  const ageMs = now.getTime() - new Date(batch.committedAt).getTime();
-  if (ageMs > ROLLBACK_WINDOW_MS) {
-    throw new ConflictError('Rollback window (24h) has expired for this batch', {
-      code: ERR_ROLLBACK_WINDOW_EXPIRED,
-      batchId: input.batchId,
-      reason: 'window-expired',
-    });
-  }
-
-  const reversal = (batch.reversalPayload ?? { rows: [] }) as ReversalPayload;
-
+  // MED-04: state checks must run inside the tx with a row lock — otherwise
+  // two concurrent rollback requests both see `rolledBackAt === null` outside
+  // any tx and both proceed, producing duplicate change_log rows and double
+  // DELETE/UPDATE passes on actual_entries (second pass is idempotent for
+  // DELETE but the audit row duplication is real). SELECT ... FOR UPDATE
+  // serialises the two callers; the loser sees the updated row and throws
+  // BatchAlreadyRolledBackError loudly.
   const result = await db.transaction(async (tx) => {
+    const [batch] = await tx
+      .select()
+      .from(importBatches)
+      .where(
+        and(eq(importBatches.id, input.batchId), eq(importBatches.organizationId, input.orgId)),
+      )
+      .for('update');
+    if (!batch) {
+      throw new NotFoundError('import_batch', input.batchId);
+    }
+    if (batch.rolledBackAt) {
+      throw new ConflictError('Batch has already been rolled back', {
+        code: ERR_BATCH_ALREADY_ROLLED_BACK,
+        batchId: input.batchId,
+      });
+    }
+    if (batch.supersededAt) {
+      throw new ConflictError('Batch has been superseded by a later import; cannot roll back', {
+        code: ERR_ROLLBACK_WINDOW_EXPIRED,
+        batchId: input.batchId,
+        reason: 'superseded',
+      });
+    }
+    const ageMs = now.getTime() - new Date(batch.committedAt).getTime();
+    if (ageMs > ROLLBACK_WINDOW_MS) {
+      throw new ConflictError('Rollback window (24h) has expired for this batch', {
+        code: ERR_ROLLBACK_WINDOW_EXPIRED,
+        batchId: input.batchId,
+        reason: 'window-expired',
+      });
+    }
+
+    const reversal = (batch.reversalPayload ?? { rows: [] }) as ReversalPayload;
+
     let rowsDeleted = 0;
     let rowsRestored = 0;
 
