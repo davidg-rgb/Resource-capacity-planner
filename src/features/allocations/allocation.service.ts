@@ -58,6 +58,20 @@ type DrizzleTx = Parameters<Parameters<typeof db.transaction>[0]>[0];
  * recordChange + proposal status update per ADR-003).
  *
  * Does NOT open its own transaction. Caller MUST wrap in db.transaction.
+ *
+ * MED-05 partial-commit contract (documented 2026-05-10):
+ *   - This helper does NOT roll back on conflict. Rows that pass the
+ *     expectedUpdatedAt check commit; rows that fail the check are skipped
+ *     and emit a ConflictInfo entry. Rows AFTER a conflict still process.
+ *   - Callers MUST inspect `result.conflicts` and react appropriately. The
+ *     autosave hook in src/hooks/use-grid-autosave.ts is the load-bearing
+ *     consumer: it commits the successful cells, then opens a conflict
+ *     resolution modal for the failed cells via handleConflicts().
+ *   - A future caller that needs all-or-nothing semantics should EITHER (a)
+ *     pre-check all rows in a separate read pass and abort before calling
+ *     this helper, OR (b) introduce an `atomic: true` opt-in that throws
+ *     ConflictError to roll back the caller's tx.
+ *   - Tests: see allocations contract tests for the partial-success path.
  */
 export async function _applyAllocationUpsertsInTx(
   tx: DrizzleTx,
