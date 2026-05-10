@@ -81,6 +81,21 @@ export async function createProposal(raw: CreateProposalInput): Promise<Proposal
       .limit(1);
     if (!person) throw new NotFoundError('Person', input.personId);
 
+    // CR-03: verify projectId belongs to the caller's tenant; the FK is global
+    // (UUIDs unique across tenants) so without this check a planner in tenant A
+    // could submit a proposal whose projectId is from tenant B.
+    const [project] = await tx
+      .select({ id: schema.projects.id })
+      .from(schema.projects)
+      .where(
+        and(
+          eq(schema.projects.organizationId, input.orgId),
+          eq(schema.projects.id, input.projectId),
+        ),
+      )
+      .limit(1);
+    if (!project) throw new NotFoundError('Project', input.projectId);
+
     const [row] = await tx
       .insert(schema.allocationProposals)
       .values({
