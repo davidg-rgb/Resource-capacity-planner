@@ -1,5 +1,9 @@
 import { jwtVerify, SignJWT } from 'jose';
 import { cookies } from 'next/headers';
+import { eq } from 'drizzle-orm';
+
+import { db } from '@/db';
+import { platformAdmins } from '@/db/schema';
 
 import { env } from './env';
 import { AuthError } from './errors';
@@ -36,17 +40,33 @@ export async function requirePlatformAdmin(): Promise<PlatformAdmin> {
     throw new AuthError('Platform authentication required');
   }
 
+  let adminId: string;
+  let email: string;
+  let name: string;
   try {
     const { payload } = await jwtVerify(token, getSecret(), {
       issuer: 'nordic-capacity-platform',
     });
-
-    return {
-      adminId: payload.adminId as string,
-      email: payload.email as string,
-      name: payload.name as string,
-    };
+    adminId = payload.adminId as string;
+    email = payload.email as string;
+    name = payload.name as string;
   } catch {
     throw new AuthError('Invalid or expired platform token');
   }
+
+  // HI-07: a JWT-only check leaves deactivated/deleted platform admins able
+  // to act for up to PLATFORM_ADMIN_TOKEN_EXPIRY (default 8h). Verify the
+  // row still exists and is active on every call so off-boarding takes
+  // effect immediately.
+  const [admin] = await db
+    .select({ id: platformAdmins.id, isActive: platformAdmins.isActive })
+    .from(platformAdmins)
+    .where(eq(platformAdmins.id, adminId))
+    .limit(1);
+
+  if (!admin || !admin.isActive) {
+    throw new AuthError('Platform admin not active');
+  }
+
+  return { adminId, email, name };
 }

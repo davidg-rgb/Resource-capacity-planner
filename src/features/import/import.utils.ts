@@ -7,6 +7,8 @@
 import { findBestMatch } from 'string-similarity';
 import * as XLSX from 'xlsx';
 
+import { PayloadTooLargeError } from '@/lib/errors';
+
 import type { ColumnMapping, FormatInfo, ImportRow, ParsedFile, TargetField } from './import.types';
 
 // ---------------------------------------------------------------------------
@@ -297,8 +299,13 @@ export function unpivotData(
       const rawValue = row[mc];
       const hours = Number(rawValue);
 
-      // Skip zero, empty, or non-numeric values
-      if (!rawValue || isNaN(hours) || hours === 0) continue;
+      // Skip zero, empty, non-numeric, and negative values. Negative hours
+      // surfacing in production-style spreadsheets are almost always formula
+      // errors or accidental sign-flips; the legacy validate path catches
+      // them via `hours < 1` at validateImportRows but the v5 actuals parser
+      // already silently skips `hours <= 0` — mirror that convention here so
+      // both flows treat negative cells consistently as noise (HI-05).
+      if (!rawValue || isNaN(hours) || hours === 0 || hours < 0) continue;
 
       result.push({
         rowIndex: r + 2, // +2: 1-indexed + header row
@@ -493,9 +500,11 @@ export function parseExcelBuffer(buffer: Buffer, codepage?: number): ParsedFile 
   const allRows = jsonData.slice(1) as unknown[][];
   const totalRows = allRows.length;
 
-  // Enforce row limit
+  // Enforce row limit. HI-06: throw a typed AppError so handleApiError emits
+  // 413 with ERR_PAYLOAD_TOO_LARGE rather than the bare 500 + ERR_INTERNAL
+  // produced by an untyped Error.
   if (totalRows > MAX_ROWS) {
-    throw new Error(
+    throw new PayloadTooLargeError(
       `File exceeds ${MAX_ROWS.toLocaleString()} row limit. Found ${totalRows.toLocaleString()} data rows.`,
     );
   }
