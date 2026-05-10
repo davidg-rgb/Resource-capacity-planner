@@ -9,6 +9,7 @@ import { parseAndStageActuals } from '@/features/import/actuals-import.service';
 import { ERR_UNSUPPORTED_FILE_TYPE } from '@/features/import/actuals-import.types';
 import { handleApiError } from '@/lib/api-utils';
 import { requireRole } from '@/lib/auth';
+import { env } from '@/lib/env';
 import { ValidationError } from '@/lib/errors';
 
 export async function POST(request: NextRequest) {
@@ -28,8 +29,13 @@ export async function POST(request: NextRequest) {
         { received: ext ?? '(none)' },
       );
     }
-    if (file.size > 10 * 1024 * 1024) {
-      throw new ValidationError('File exceeds 10MB limit', 'PAYLOAD_TOO_LARGE');
+    // MED-11: honor IMPORT_MAX_FILE_SIZE_MB env var (default 10MB).
+    const maxBytes = env.IMPORT_MAX_FILE_SIZE_MB * 1024 * 1024;
+    if (file.size > maxBytes) {
+      throw new ValidationError(
+        `File exceeds ${env.IMPORT_MAX_FILE_SIZE_MB}MB limit`,
+        'PAYLOAD_TOO_LARGE',
+      );
     }
 
     const buffer = await file.arrayBuffer();

@@ -41,10 +41,15 @@ export function generateMonthRange(startMonth: string, count: number): string[] 
 
 /**
  * Returns the current month as a YYYY-MM string.
+ *
+ * MED-06: must read UTC fields. `iso-calendar.ts` documents the project
+ * contract as "always UTC"; the previous local-time reading produced
+ * off-by-one results at the month boundary on non-UTC deployments (CET
+ * tenants saw the new month an hour late on the 1st).
  */
 export function getCurrentMonth(): string {
   const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  return `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}`;
 }
 
 /**

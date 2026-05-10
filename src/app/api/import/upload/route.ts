@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { parseExcelBuffer, autoDetectMappings } from '@/features/import/import.utils';
 import { handleApiError } from '@/lib/api-utils';
 import { requireRole } from '@/lib/auth';
+import { env } from '@/lib/env';
 import { PayloadTooLargeError, ValidationError } from '@/lib/errors';
 
 /**
@@ -23,9 +24,10 @@ export async function POST(request: NextRequest) {
       throw new ValidationError('No file provided');
     }
 
-    // D-15: max 10MB file size
-    if (file.size > 10 * 1024 * 1024) {
-      throw new PayloadTooLargeError('File exceeds 10MB limit');
+    // D-15: max file size from IMPORT_MAX_FILE_SIZE_MB (default 10MB, MED-11).
+    const maxBytes = env.IMPORT_MAX_FILE_SIZE_MB * 1024 * 1024;
+    if (file.size > maxBytes) {
+      throw new PayloadTooLargeError(`File exceeds ${env.IMPORT_MAX_FILE_SIZE_MB}MB limit`);
     }
 
     // Validate file extension
