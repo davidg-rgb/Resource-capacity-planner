@@ -548,7 +548,19 @@ export async function approveProposal(input: ApproveProposalInput): Promise<Prop
       )
       .limit(1);
 
-    const proposedHoursInt = Math.round(Number(winner.proposedHours));
+    // CR-02: createProposal/editProposal Zod schemas now enforce int (2026-05-10).
+    // Pre-2026-05-10 rows may carry fractional hours; preserve the historical
+    // rounding behaviour for backward compat but log when it actually fires so
+    // we can drop the round once the audit confirms zero fractional rows remain.
+    const proposedHoursRaw = Number(winner.proposedHours);
+    const proposedHoursInt = Math.round(proposedHoursRaw);
+    if (proposedHoursRaw !== proposedHoursInt) {
+      console.warn(
+        `[CR-02 backward-compat] approveProposal rounded proposal ${winner.id} ` +
+          `from ${proposedHoursRaw} to ${proposedHoursInt}h. ` +
+          `Audit allocation_proposals for fractional rows and remove rounding.`,
+      );
+    }
     await _applyAllocationUpsertsInTx(tx, input.orgId, [
       {
         personId: winner.personId,

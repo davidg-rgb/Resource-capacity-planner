@@ -6,7 +6,9 @@ export const createProposalInputSchema = z.object({
   personId: z.string().uuid(),
   projectId: z.string().uuid(),
   month: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'month must be YYYY-MM'),
-  proposedHours: z.number().min(0).max(999.99),
+  // Allocations.hours is integer-only; approving a fractional proposal silently
+  // rounded for v5.0–v6.0. Tightened to int 2026-05-10 (CODE-REVIEW CR-02).
+  proposedHours: z.number().int().min(0).max(744),
   note: z.string().max(1000).nullable().optional(),
   requestedBy: z.string().min(1),
   actorPersonaId: z.string().min(1),
@@ -42,7 +44,8 @@ export const withdrawProposalInputSchema = z.object({
 export const editProposalInputSchema = z.object({
   orgId: z.string().uuid(),
   proposalId: z.string().uuid(),
-  proposedHours: z.number().min(0).max(999.99).optional(),
+  // See createProposalInputSchema — integer hours only (CR-02).
+  proposedHours: z.number().int().min(0).max(744).optional(),
   note: z.string().max(1000).nullable().optional(),
   requestedBy: z.string().min(1),
   actorPersonaId: z.string().min(1),
