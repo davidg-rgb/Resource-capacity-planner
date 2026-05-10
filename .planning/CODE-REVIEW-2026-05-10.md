@@ -21,10 +21,21 @@ Same-day cross-eval + remediation pass landed the following commits on `main`:
 | HI-05 / HI-06 / HI-07 | `9a63c73` | ✅ Fixed — negative hours skip, PayloadTooLargeError, platform-admin active check |
 | HI-08 | `5f9ac3a` | ✅ Fixed — orphan discipline-demand chain deleted (~268 LoC) |
 | HI-09 | `4da46a3` | ✅ Fixed — unused widget-registry exports removed |
+| MED-01 | `7872479` | ✅ Fixed — decodeCursor throws ValidationError instead of raw Error |
+| MED-04 | `7f17a6d` | ✅ Fixed — rollbackBatch state checks moved inside tx with SELECT FOR UPDATE |
+| MED-06 | `e9fb9b7` | ✅ Fixed — getCurrentMonth uses UTC fields |
+| MED-10 | `b7b6c88` | ✅ Fixed — platform-admin login bcrypt-on-miss closes timing channel |
+| MED-11 | `e9fb9b7` | ✅ Fixed — IMPORT_MAX_FILE_SIZE_MB env now wired into both upload routes |
+| LO-03 | `b7b6c88` | ✅ Fixed — /api/projects + /api/departments GET now require viewer role |
+| LO-07 | `b7b6c88` | ✅ Fixed — api-utils console.error scrubs to {name, message, stack} |
+| LO-10 | `7872479` | ✅ Fixed — stale ZoomControls TODO removed; "tillgänglig" diacritic |
 | HI-03 | — | **Deferred to v7.0** — 5 legacy register services × 3 mutations + 15 route plumbing changes; needs phase-sized refactor (route-through-`register.service.ts` per ADR-003 single canonical writer) |
 | HI-10 | — | **Deferred to v7.0** — paired with the LEGACY_LAYOUTS retirement bundle (MED-09); flag-state audit gates removal |
+| MED-02 / MED-03 / MED-05 / MED-07 / MED-08 / MED-09 / MED-12 | — | Open — see PROJECT.md carry-forward and the individual finding entries below |
+| LO-01 / LO-02 / LO-04 / LO-05 / LO-06 / LO-08 / LO-09 | — | Open — minor / paired with larger refactors |
+| NIT-01 / NIT-02 / NIT-03 | — | Open — cosmetic |
 
-All 4 CRITICALs and 8 of 10 HIGHs landed. Each fix was verified against actual code (not just agent reports) before being applied; each commit has typecheck + relevant test-suite pass cited in the body. MEDIUMs and LOW/NIT items remain open as backlog candidates.
+All 4 CRITICALs, 8 of 10 HIGHs, 5 of 12 MEDIUMs, and 3 of 10 LOWs landed in a single same-day pass. 19 atomic commits. Each fix was verified against actual code (not just agent reports) before being applied; each commit has typecheck + relevant test-suite pass cited in the body.
 
 ## Bottom line
 
