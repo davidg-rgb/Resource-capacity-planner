@@ -1,9 +1,9 @@
 ---
-status: partial
+status: pass
 phase: 53-chrome-polish
 source: [53-VERIFICATION.md]
 started: 2026-04-22T00:00:00Z
-updated: 2026-04-24T00:00:00Z
+updated: 2026-05-10T00:00:00Z
 ---
 
 ## Current Test
@@ -12,7 +12,7 @@ number: 3
 name: Operator migration rowcount check (POLISH-03 / POLISH-04 / POLISH-05 / POLISH-06)
 expected: |
   For each of 20260422_polish_discipline_rename.sql, 20260422_polish_strip_widgets.sql, 20260422_polish_strip_resource_conflicts.sql — SELECT COUNT(*) FROM dashboard_layouts WHERE layout::text ~* '<target ids>' returns > 0 before apply, and 0 after apply. Idempotent re-run leaves the count at 0.
-awaiting: user response
+result: pass (2026-05-10 — operator David Geborek; applied to prod branch br-gentle-poetry-alfgjqb1 via Neon MCP)
 
 ## Tests
 
@@ -43,7 +43,12 @@ note: flag toggled via direct SQL insert (workaround for seed failure); flipped 
 
 ### 3. Operator migration rowcount check (POLISH-03 / POLISH-04 / POLISH-05 / POLISH-06)
 expected: For each of `20260422_polish_discipline_rename.sql`, `20260422_polish_strip_widgets.sql`, `20260422_polish_strip_resource_conflicts.sql` — `SELECT COUNT(*) FROM dashboard_layouts WHERE layout::text ~* '<target ids>'` returns > 0 before apply, and 0 after apply. Idempotent re-run leaves the count at 0.
-result: [pending — requires prod DB session; migration idempotence verified in `src/db/migrations/__tests__/` on pglite (6/6 rename + 5/5 strip-widgets + strip-resource-conflicts all green)]
+result: pass (2026-05-10 — operator David Geborek; applied to prod branch `br-gentle-poetry-alfgjqb1` via Neon MCP after dry-run on `br-spring-dawn-al9oyp0x` proved green)
+prod_result_table:
+  - migration: discipline rename — pre 1, post 0, re-run 0 ✓
+  - migration: strip widgets (bench-report, strategic-alerts) — pre 1, post 0, re-run 0 ✓
+  - migration: strip resource-conflicts — pre 0 (no-op), post 0, re-run 0 ✓
+  - migration: hours CHECK constraint — pre-flight 0 violations, constraint `CHECK (((hours >= 0) AND (hours <= 744)))` present, IF-NOT-EXISTS guard short-circuits on re-run ✓
 
 ## Structural Validation Sweep (2026-04-23)
 
@@ -94,9 +99,9 @@ Remaining live gap: flag-ON sweep blocked pending DB toggle (`UPDATE feature_fla
 ## Summary
 
 total: 3
-passed: 2
+passed: 3
 issues: 0
-pending: 1
+pending: 0
 skipped: 0
 blocked: 0
 

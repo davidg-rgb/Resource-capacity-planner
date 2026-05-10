@@ -79,6 +79,7 @@
 
 **Phases completed:** 6 required phases (48-53), 22 plans, 39 active requirements + 6 net scope-expansion (45 implemented total)
 **Code review:** Multiple post-ship fix batches — UI review batch (UI-MN-01..04), code-review fix batch (MN-01..04, NT-01..03, MJ-01..02, WR-03..05), structural validation sweep, live flag-OFF parity sweep on Vercel prod
+**Post-ship close-out:** Test 3 closure 2026-05-10 — POLISH-03/04/05/06 prod migrations + R2-P1-10 hours CHECK constraint applied via Neon MCP to prod branch `br-gentle-poetry-alfgjqb1`; idempotence verified.
 
 **Known deferred items at close:** 20 (see `.planning/STATE.md` Deferred Items — all are pre-existing accepted gaps from prior shipped milestones or v6.0 SOFT gates designed as `human_needed`; none blocked v6.0 ship). Phase 54 (3 QUAD-* requirements) deferred indefinitely — Phase 53 SOFT-gate viewport telemetry showed no quadrant-redesign signal.
 

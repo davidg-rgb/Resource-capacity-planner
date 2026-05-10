@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v6.0
 milestone_name: UI Restructure & Journey Frictionless
-status: Shipped 2026-04-27 — milestone archived
-stopped_at: v6.0 closed 2026-04-27 (tag v6.0)
-last_updated: "2026-04-27T00:00:00.000Z"
-last_activity: 2026-04-27
+status: Shipped 2026-04-27 — milestone archived; v6.0 Test 3 closed 2026-05-10
+stopped_at: v6.0 closed 2026-04-27 (tag v6.0); Test 3 prod migrations applied 2026-05-10
+last_updated: "2026-05-10T00:00:00.000Z"
+last_activity: 2026-05-10
 progress:
   total_phases: 53
   completed_phases: 53
@@ -90,7 +90,7 @@ Last activity: 2026-04-27
 
 - **53-HUMAN-UAT Test 1 (POLISH-07 SOFT gate):** capture `manager-1440x900-polishOn.json` + `project-leader-1440x900-polishOn.json` viewport artifacts from CI; feeds Phase 54 go/no-go.
 - **53-HUMAN-UAT Test 2 remaining combos:** Staff + flag-ON (bell null expected) and all 5 personas + flag-OFF (legacy chrome parity).
-- **53-HUMAN-UAT Test 3:** operator migration rowcount check for the three 20260422_polish_* one-shot SQL migrations against production.
+- ~~**53-HUMAN-UAT Test 3:** operator migration rowcount check for the three 20260422_polish_* one-shot SQL migrations against production.~~ **CLOSED 2026-05-10** — applied to prod via Neon MCP; result table matches dry-run; idempotence proven.
 
 ### Blockers/Concerns
 
@@ -112,7 +112,6 @@ Items acknowledged and deferred at v6.0 milestone close on 2026-04-27. All entri
 | uat_gap | 07 | 07-HUMAN-UAT.md | partial (6 pending — v1.0) |
 | uat_gap | 09 | 09-HUMAN-UAT.md | partial (6 pending — v1.0) |
 | uat_gap | 52 | 52-HUMAN-UAT.md | partial (6 pending — v6.0) |
-| uat_gap | 53 | 53-HUMAN-UAT.md | partial (Test 3 prod-DB rowcount check pending) |
 | verification_gap | 03 | 03-VERIFICATION.md | human_needed (v1.0) |
 | verification_gap | 04 | 04-VERIFICATION.md | human_needed (v1.0) |
 | verification_gap | 05 | 05-VERIFICATION.md | human_needed (v1.0) |
@@ -134,4 +133,4 @@ Stopped at: Phase 53 shipped (commit eb9807f)
 
 ---
 
-_Last updated: 2026-04-27 — v6.0 milestone closed; deferred items recorded_
+_Last updated: 2026-05-10 — v6.0 Test 3 prod migrations applied; uat_gap row for phase 53 dropped_
