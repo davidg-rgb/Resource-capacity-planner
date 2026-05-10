@@ -7,7 +7,6 @@
 // Data: GET /api/v5/planning/allocations?scope=staff&personId=... (Phase 42-02 Task 1).
 // Drawer: PlanVsActualDrawer imported from '@/components/drawer/PlanVsActualDrawer'
 // (EXACT path — load-bearing for Phase 42 Wave 4 TC-UI shared drawer test).
-// Zoom: TODO — 42-03 will mount <ZoomControls> here.
 //
 // v6.0 — Phase 52 / Plan 52-04 (STAFF-01 / D-10): this page uses a hand-rolled
 // <table> + StaffTimelineCell today. StaffTimelineCell passes no `onCellEdit`

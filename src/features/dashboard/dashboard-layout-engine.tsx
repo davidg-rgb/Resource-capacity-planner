@@ -256,7 +256,7 @@ function DashboardGridInner({ dashboardId = 'manager' }: { dashboardId?: string 
                     key={placement.widgetId}
                     className={`col-span-${placement.colSpan} border-outline-variant bg-surface-container rounded-lg border border-dashed p-4 text-center`}
                   >
-                    <p className="text-on-surface-variant text-sm">Widget ej tillganglig</p>
+                    <p className="text-on-surface-variant text-sm">Widget ej tillgänglig</p>
                     <p className="text-on-surface-variant/60 mt-1 text-xs">{placement.widgetId}</p>
                   </div>
                 );

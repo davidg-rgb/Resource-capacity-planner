@@ -11,6 +11,7 @@
 import { and, between, desc, eq, inArray, lt, or, sql } from 'drizzle-orm';
 
 import { db } from '@/db';
+import { ValidationError } from '@/lib/errors';
 import { changeLog } from './change-log.schema';
 import type { ChangeLogEntry, FeedFilter, FeedPage, FeedPagination } from './change-log.types';
 
@@ -27,15 +28,19 @@ export function encodeCursor(c: CursorShape): string {
 }
 
 export function decodeCursor(raw: string): CursorShape {
+  // MED-01: a malformed `?cursor=` query is a client-input error. Throwing
+  // a raw Error fell through to handleApiError's generic 500 / ERR_INTERNAL;
+  // ValidationError emits 400 / ERR_VALIDATION matching API-V5-01.
   try {
     const json = Buffer.from(raw, 'base64').toString('utf8');
     const parsed = JSON.parse(json) as CursorShape;
     if (typeof parsed.createdAt !== 'string' || typeof parsed.id !== 'string') {
-      throw new Error('invalid cursor shape');
+      throw new ValidationError('invalid cursor shape', 'ERR_VALIDATION');
     }
     return parsed;
-  } catch {
-    throw new Error('invalid cursor');
+  } catch (err) {
+    if (err instanceof ValidationError) throw err;
+    throw new ValidationError('invalid cursor', 'ERR_VALIDATION');
   }
 }
 
