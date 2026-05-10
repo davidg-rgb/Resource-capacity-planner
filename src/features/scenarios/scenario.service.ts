@@ -2,6 +2,7 @@ import { and, eq, sql, desc, count as drizzleCount } from 'drizzle-orm';
 
 import { db } from '@/db';
 import * as schema from '@/db/schema';
+import { recordChange } from '@/features/change-log/change-log.service';
 import { NotFoundError, ForbiddenError, ValidationError, InternalError } from '@/lib/errors';
 
 import type {
@@ -410,12 +411,15 @@ export async function promoteAllocations(
     let skipped = 0;
     const errors: string[] = [];
 
-    // Batch-fetch all requested allocations in one query
+    // Batch-fetch all requested allocations in one query.
+    // HI-01: defense-in-depth — verify rows belong to the caller's tenant
+    // even though getScenarioOrThrow already authorized the parent scenario.
     const scenAllocs = await tx
       .select()
       .from(schema.scenarioAllocations)
       .where(
         and(
+          eq(schema.scenarioAllocations.organizationId, orgId),
           eq(schema.scenarioAllocations.scenarioId, scenarioId),
           sql`${schema.scenarioAllocations.id} = ANY(${data.allocationIds}::uuid[])`,
         ),
@@ -504,6 +508,45 @@ export async function promoteAllocations(
         .update(schema.scenarioAllocations)
         .set({ promotedAt: new Date() })
         .where(sql`${schema.scenarioAllocations.id} = ANY(${promotedIds}::uuid[])`);
+    }
+
+    // HI-01: write one summary change_log row when at least one allocation
+    // was promoted. Mirrors the actuals.service.ts bulk pattern: entity =
+    // 'allocation' (canonical mutation target), entityId = the first source
+    // scenarioAllocation.id for traceability, newValue carries per-row
+    // detail, context records the scenario provenance + skip/error totals.
+    if (promotedIds.length > 0) {
+      const firstSource = scenAllocMap.get(promotedIds[0])!;
+      const promotedRows = promotedIds.map((id) => {
+        const a = scenAllocMap.get(id)!;
+        return {
+          scenarioAllocationId: a.id,
+          personId: a.personId,
+          projectId: a.projectId,
+          month: a.month,
+          hours: a.hours,
+          isRemoved: a.isRemoved,
+        };
+      });
+      await recordChange(
+        {
+          orgId,
+          actorPersonaId: data.actorPersonaId,
+          entity: 'allocation',
+          entityId: firstSource.id,
+          action: 'ALLOCATION_BULK_COPIED',
+          previousValue: null,
+          newValue: { rows: promotedRows },
+          context: {
+            source: 'scenario_promote',
+            scenarioId,
+            promoted,
+            skipped,
+            errorCount: errors.length,
+          },
+        },
+        tx as unknown as Parameters<typeof recordChange>[1],
+      );
     }
 
     return { promoted, skipped, errors };

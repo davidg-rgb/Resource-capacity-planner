@@ -20,13 +20,14 @@ type RouteParams = { params: Promise<{ id: string }> };
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
     // Only admin and owner can promote
-    const { orgId } = await requireRole('admin');
+    const { orgId, userId } = await requireRole('admin');
     const { id } = await params;
     const body = promoteSchema.parse(await request.json());
 
     const result = await promoteAllocations(orgId, id, {
       allocationIds: body.allocationIds,
       confirmation: body.confirmation,
+      actorPersonaId: userId,
     });
 
     return NextResponse.json(result);

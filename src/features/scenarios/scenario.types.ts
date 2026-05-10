@@ -79,6 +79,11 @@ export interface ScenarioAllocationUpsert {
 export interface PromoteRequest {
   allocationIds: string[];
   confirmation: boolean; // Must be true
+  /**
+   * HI-01: actor identity for the change_log row emitted on successful
+   * promote. Plumbed from the Clerk session userId at the route handler.
+   */
+  actorPersonaId: string;
 }
 
 export interface PromoteResult {
