@@ -82,7 +82,10 @@ export async function requireRole(minimumRole: Role): Promise<{
   if (!clerkOrgId) throw new ForbiddenError('No organization membership');
 
   const role = CLERK_ROLE_MAP[orgRole ?? ''];
-  if (!role) throw new ForbiddenError('Unknown role');
+  // NIT-01: use the generic message so we don't reveal that the session
+  // *has* an org role string we just couldn't map. ForbiddenError defaults
+  // to 'Forbidden' — explicit for readability.
+  if (!role) throw new ForbiddenError('Forbidden');
   if (ROLE_HIERARCHY[role] < ROLE_HIERARCHY[minimumRole]) {
     throw new ForbiddenError(`${minimumRole} role required for this action`);
   }

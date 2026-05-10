@@ -186,6 +186,10 @@ export function StackedAreaDistributionChart({
     });
   }, [months, supply, allSeries]);
 
+  // NIT-03 verdict (2026-05-10): kept the `any` + eslint-disable here.
+  // recharts' LegendPayload.dataKey union includes `(obj) => any`, which
+  // doesn't compose with our `String(...)` narrowing without a deeper cast.
+  // Not worth a deeper refactor for a 4-line callback.
   const handleLegendClick = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (entry: any) => {

@@ -48,9 +48,21 @@ export async function GET(request: NextRequest) {
     const actorPersonaIds = csv(sp.get('actorPersonaIds'));
     if (actorPersonaIds) filter.actorPersonaIds = actorPersonaIds;
 
+    // LO-02: validate from/to before passing to change-log.read which builds
+    // `new Date(from)` (returns Invalid Date for malformed inputs and then
+    // `between()` silently filters to zero rows). Accept either YYYY-MM-DD
+    // or full ISO 8601 datetimes.
+    const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}(T.*)?$/, {
+      message: 'must be YYYY-MM-DD or ISO 8601 datetime',
+    });
     const from = sp.get('from');
     const to = sp.get('to');
-    if (from && to) filter.dateRange = { from, to };
+    if (from && to) {
+      filter.dateRange = {
+        from: dateSchema.parse(from),
+        to: dateSchema.parse(to),
+      };
+    }
 
     const limitRaw = sp.get('limit');
     const limit = limitRaw ? z.coerce.number().int().positive().parse(limitRaw) : undefined;

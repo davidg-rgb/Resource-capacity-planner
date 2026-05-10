@@ -26,6 +26,15 @@ export function getWidget(id: string): WidgetDefinition | undefined {
 }
 
 /**
+ * LO-04: registry size. Used by the dashboard layout route to detect the
+ * "server-side empty registry" case explicitly instead of probing for a
+ * specific widget ID (which silently breaks if that widget is renamed).
+ */
+export function getRegistrySize(): number {
+  return widgetRegistry.size;
+}
+
+/**
  * Get widgets that are available on a specific dashboard.
  */
 export function getWidgetsByDashboard(dashboardId: string): WidgetDefinition[] {

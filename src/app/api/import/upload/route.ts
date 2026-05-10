@@ -19,10 +19,15 @@ export async function POST(request: NextRequest) {
     const { orgId } = await requireRole('planner');
 
     const formData = await request.formData();
-    const file = formData.get('file') as File | null;
-    if (!file) {
+    const fileRaw = formData.get('file');
+    // MED-07: a multipart field named 'file' can be either a File or a plain
+    // string. `as File | null` cast lied to TS; if a client sent a string
+    // value the subsequent file.size access returned undefined (>maxBytes
+    // check passed) and file.arrayBuffer() then threw TypeError → 500.
+    if (!fileRaw || !(fileRaw instanceof File)) {
       throw new ValidationError('No file provided');
     }
+    const file = fileRaw;
 
     // D-15: max file size from IMPORT_MAX_FILE_SIZE_MB (default 10MB, MED-11).
     const maxBytes = env.IMPORT_MAX_FILE_SIZE_MB * 1024 * 1024;

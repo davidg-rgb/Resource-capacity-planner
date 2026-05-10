@@ -6,7 +6,7 @@ import { db } from '@/db';
 import { dashboardLayouts } from '@/db/schema';
 import { getDefaultLayout } from '@/features/dashboard/default-layouts';
 import { getOrgFlags } from '@/features/flags/flag.service';
-import { getWidget } from '@/features/dashboard/widget-registry';
+import { getWidget, getRegistrySize } from '@/features/dashboard/widget-registry';
 import type {
   DashboardLayoutData,
   WidgetPlacement,
@@ -50,10 +50,12 @@ const TENANT_DEFAULT_USER = '__tenant_default__';
  * widgets are registered to avoid stripping the entire layout.
  */
 function filterValidWidgets(widgets: WidgetPlacement[]): WidgetPlacement[] {
-  // If registry is empty (server-side), pass through all widgets — the
-  // client will handle missing widgets gracefully at render time.
-  const sample = getWidget(widgets[0]?.widgetId);
-  if (widgets.length > 0 && sample === undefined && getWidget('kpi-cards') === undefined) {
+  // LO-04: detect the "server-side empty registry" case explicitly via
+  // getRegistrySize() instead of probing for a specific widget id. The
+  // prior `getWidget('kpi-cards') === undefined` heuristic silently broke
+  // if that widget got renamed — the route would start stripping every
+  // widget from layouts on every deploy.
+  if (getRegistrySize() === 0) {
     return widgets;
   }
   return widgets.filter((w) => getWidget(w.widgetId) !== undefined);

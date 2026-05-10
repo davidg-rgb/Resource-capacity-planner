@@ -17,10 +17,12 @@ export async function POST(request: NextRequest) {
     const { orgId, userId } = await requireRole('planner');
 
     const formData = await request.formData();
-    const file = formData.get('file') as File | null;
-    if (!file) {
+    const fileRaw = formData.get('file');
+    // MED-07: see /api/import/upload — same File-instance check.
+    if (!fileRaw || !(fileRaw instanceof File)) {
       throw new ValidationError('No file provided', ERR_UNSUPPORTED_FILE_TYPE);
     }
+    const file = fileRaw;
     const ext = file.name.split('.').pop()?.toLowerCase();
     if (ext !== 'xlsx') {
       throw new ValidationError(

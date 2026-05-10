@@ -168,6 +168,10 @@ export function CapacityForecastChart({
     });
   }, [months, supply, demand, gap]);
 
+  // NIT-03 verdict (2026-05-10): kept the `any` + eslint-disable here.
+  // recharts' MouseHandlerDataParam doesn't expose `activePayload` cleanly
+  // and the cast tooling is fragile. Defensive `?.activePayload?.[0]?.payload`
+  // handles the runtime shape.
   const handleClick = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (state: any) => {
