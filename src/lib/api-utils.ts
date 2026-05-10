@@ -22,7 +22,15 @@ export function handleApiError(error: unknown): NextResponse {
     return NextResponse.json(validationError.toJSON(), { status: 400 });
   }
 
-  console.error('Unhandled API error:', error);
+  // LO-07: avoid logging the full error object. Drizzle/postgres-driver
+  // errors stringify the connection string in their `cause` chain, leaking
+  // DATABASE_URL credentials into the log stream. We keep enough to debug
+  // (message + stack) and drop the rest.
+  const safe =
+    error instanceof Error
+      ? { name: error.name, message: error.message, stack: error.stack }
+      : { value: String(error) };
+  console.error('Unhandled API error', safe);
   return NextResponse.json(
     { error: { code: 'ERR_INTERNAL', message: 'Internal server error' } },
     { status: 500 },

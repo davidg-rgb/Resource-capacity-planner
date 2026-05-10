@@ -3,11 +3,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { departmentCreateSchema } from '@/features/departments/department.schema';
 import { createDepartment, listDepartments } from '@/features/departments/department.service';
 import { handleApiError } from '@/lib/api-utils';
-import { getTenantId, requireRole } from '@/lib/auth';
+import { requireRole } from '@/lib/auth';
 
 export async function GET() {
   try {
-    const orgId = await getTenantId();
+    // LO-03: gate at viewer (matches the people register pattern).
+    const { orgId } = await requireRole('viewer');
     const departments = await listDepartments(orgId);
     return NextResponse.json({ departments });
   } catch (error) {

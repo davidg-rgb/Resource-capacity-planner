@@ -3,11 +3,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { projectCreateSchema } from '@/features/projects/project.schema';
 import { createProject, listProjects } from '@/features/projects/project.service';
 import { handleApiError } from '@/lib/api-utils';
-import { getTenantId, requireRole } from '@/lib/auth';
+import { requireRole } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    const orgId = await getTenantId();
+    // LO-03: gate at viewer (matches the people register pattern) — keeps
+    // session-without-role users from reading project metadata.
+    const { orgId } = await requireRole('viewer');
     const { searchParams } = request.nextUrl;
 
     const filters = {
