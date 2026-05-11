@@ -185,23 +185,30 @@ Solo developer with AI agent team. No human team members. Architecture designed 
 
 See [MILESTONES.md](MILESTONES.md) for details.
 
-## Current Milestone: Between milestones
+## Current Milestone: v7.0 Foundation & Quality
 
-**Status (2026-04-27):** v6.0 shipped and archived. No active milestone. Phase 54 (dashboard quadrant redesign) deferred indefinitely — Phase 53 SOFT-gate viewport telemetry showed no quadrant-redesign signal.
+**Goal:** Close architectural debt accumulated through v1–v6 and rehab dev-env quality so v8.0 features land on a clean foundation.
 
-**Next planning step:** `/gsd-new-milestone` (or capture ideas first via `/gsd-add-backlog`).
+**Target features:**
 
-### Carried-Forward Active Requirements (no milestone yet)
+- **Audit-spine completion** — route 5 legacy register services (people, projects, programs, departments, disciplines) through audited `register.service.ts` so every mutation emits to `change_log` (HI-03)
+- **Tenant-isolation completion** — extend `withTenant()` to remaining 8 tenant-scoped tables OR remove the wrapper (MED-02 decision)
+- **Change-log enum expansion** — add `scenario`, `scenario_allocation`, `import_session` to `change_log_entity` enum via schema migration
+- **`MUTATION_PREFIX_REGEX` expansion** — eslint guard covers `execute|promote|apply|cancel|stage` verbs (MED-03)
+- **E2E CI rehab** — re-enable disabled CI job, fix Clerk key + drizzle driver + other latent stack from 2026-04-28
+- **Dev-env harness gaps** — `/api/test/seed` no-tx fix, `/api/v5/*/count` Turbopack 404s, `requireRole()` E2E_TEST bypass
+- **Localization completeness** — full sv+en parity across all UI strings
+- **Responsive design baseline** — mobile-first pass on persona timelines, heatmap, dashboard (deferred from v6.0)
+- **A11y consistency** — `motion-reduce:` fallbacks site-wide, `focus-visible` ring consistency, touch-target uprating to AAA on critical interactive elements
 
-- [ ] Counter-proposal flow for LM approval (deferred from v5.0)
-- [ ] Mobile-first responsive pass (deferred from v6.0)
+**Started:** 2026-05-11. Continues phase numbering from v6.0 (last phase: 53).
+
+### Carried-Forward (deferred beyond v7.0)
+
+- [ ] Counter-proposal flow for LM approval (deferred from v5.0; not in v7.0)
 - [ ] Email/Slack notification channel — currently in-app only
 - [ ] Real role-based permissions replacing the persona "UX shortcut" (ADR-004)
 - [ ] LEGACY_LAYOUTS code path cleanup once all tenants migrated off `uiV6.polish` flag-off path
-- [ ] Three dev-env harness gaps from Phase 53 UAT (`/api/test/seed` no-tx under neon-http; `/api/v5/*/count` 404 in Turbopack dev; `requireRole()` bypasses Clerk session-level guards) — none affect production
-- [ ] **Legacy register services audit-trail closure (HI-03)** — people/projects/programs/departments/disciplines services bypass `change_log` entirely; the v5 `register.service.ts` audits properly but legacy routes don't go through it. Recommended fix per ADR-003 single-canonical-writer: route `/api/{people,projects,programs,departments,disciplines}/*` through `register.service.ts`. Scope ≈ phase-sized (5 services × 3 mutations + 15 route plumbing changes). See `.planning/CODE-REVIEW-2026-05-10.md` HI-03.
-- [ ] **`MUTATION_PREFIX_REGEX` expansion (MED-03)** — eslint guard misses `execute|promote|apply|cancel|stage` verbs, so future mutating exports under those prefixes silently skip the universal change_log invariant. Tracked alongside HI-03.
-- [ ] **`withTenant()` coverage decision (MED-02)** — wrapper covers 8 of 16 tenant-scoped tables; remaining 8 use direct `db.select(...).where(eq(organizationId, orgId))`. Decision needed: extend `withTenant()` or remove it (current half-and-half is worst-of-both). See CODE-REVIEW MED-02.
 
 ### v6.0 Locked Decisions (still binding)
 
@@ -277,4 +284,4 @@ This document evolves at phase transitions and milestone boundaries.
 
 ---
 
-_Last updated: 2026-04-27 — v6.0 milestone shipped and archived. Between milestones._
+_Last updated: 2026-05-11 — v7.0 Foundation & Quality milestone started._
