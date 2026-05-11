@@ -6,7 +6,7 @@
  * 3 cell states snapshotted here: draft / proposed / approved.
  * The 4th state (rejected) has NO cell visual — `pendingProposal` is cleared
  * on rejection — so its snapshot lives in
- * src/components/wishes/__tests__/my-wishes-panel.test.tsx instead.
+ * src/features/proposals/__tests__/my-wishes-panel.phase52.test.tsx instead.
  *
  * Unlike pm-timeline-cell.test.tsx, this file does NOT stub PlanVsActualCell —
  * snapshots exist to diff the real rendered markup, so any downstream visual
