@@ -40,18 +40,6 @@ export interface ScenarioAllocation {
   updatedAt: string;
 }
 
-export interface ScenarioTempEntity {
-  id: string;
-  scenarioId: string;
-  organizationId: string;
-  entityType: 'person' | 'project';
-  name: string;
-  departmentId: string | null;
-  disciplineId: string | null;
-  targetHoursPerMonth: number | null;
-  createdAt: string;
-}
-
 // --- API Request/Response Types ---
 
 export interface CreateScenarioRequest {
@@ -142,12 +130,4 @@ export interface ScenarioComparisonResponse {
     deltaHours: number;
     newConflicts: string[]; // person names
   };
-}
-
-export interface CreateTempEntityRequest {
-  entityType: 'person' | 'project';
-  name: string;
-  departmentId?: string;
-  disciplineId?: string;
-  targetHoursPerMonth?: number;
 }

@@ -74,15 +74,7 @@
     },
     {
       "file": "src/features/scenarios/scenario.service.ts",
-      "export": "createTempEntity"
-    },
-    {
-      "file": "src/features/scenarios/scenario.service.ts",
       "export": "deleteScenario"
-    },
-    {
-      "file": "src/features/scenarios/scenario.service.ts",
-      "export": "deleteTempEntity"
     },
     {
       "file": "src/features/scenarios/scenario.service.ts",

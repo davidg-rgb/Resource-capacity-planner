@@ -13,8 +13,6 @@ import type {
   ScenarioAllocationUpsert,
   PromoteRequest,
   PromoteResult,
-  CreateTempEntityRequest,
-  ScenarioTempEntity,
 } from './scenario.types';
 
 const MAX_SCENARIOS_PER_USER = 10;
@@ -565,98 +563,7 @@ export async function promoteAllocations(
 }
 
 // ---------------------------------------------------------------------------
-// Temp Entities
-// ---------------------------------------------------------------------------
-
-/** @no-change-log scenarioTempEntities not on audit spine — see createScenario. */
-export async function createTempEntity(
-  orgId: string,
-  scenarioId: string,
-  data: CreateTempEntityRequest,
-): Promise<ScenarioTempEntity> {
-  await getScenarioOrThrow(scenarioId, orgId);
-
-  const [entity] = await db
-    .insert(schema.scenarioTempEntities)
-    .values({
-      scenarioId,
-      organizationId: orgId,
-      entityType: data.entityType,
-      name: data.name,
-      departmentId: data.departmentId ?? null,
-      disciplineId: data.disciplineId ?? null,
-      targetHoursPerMonth: data.targetHoursPerMonth ?? 160,
-    })
-    .returning();
-
-  if (!entity) throw new InternalError('Failed to create temp entity');
-
-  return {
-    id: entity.id,
-    scenarioId: entity.scenarioId,
-    organizationId: entity.organizationId,
-    entityType: entity.entityType,
-    name: entity.name,
-    departmentId: entity.departmentId,
-    disciplineId: entity.disciplineId,
-    targetHoursPerMonth: entity.targetHoursPerMonth,
-    createdAt: entity.createdAt.toISOString(),
-  };
-}
-
-export async function listTempEntities(
-  orgId: string,
-  scenarioId: string,
-): Promise<ScenarioTempEntity[]> {
-  await getScenarioOrThrow(scenarioId, orgId);
-
-  const rows = await db
-    .select()
-    .from(schema.scenarioTempEntities)
-    .where(
-      and(
-        eq(schema.scenarioTempEntities.scenarioId, scenarioId),
-        eq(schema.scenarioTempEntities.organizationId, orgId),
-      ),
-    );
-
-  return rows.map((row) => ({
-    id: row.id,
-    scenarioId: row.scenarioId,
-    organizationId: row.organizationId,
-    entityType: row.entityType,
-    name: row.name,
-    departmentId: row.departmentId,
-    disciplineId: row.disciplineId,
-    targetHoursPerMonth: row.targetHoursPerMonth,
-    createdAt: row.createdAt.toISOString(),
-  }));
-}
-
-/** @no-change-log scenarioTempEntities not on audit spine — see createScenario. */
-export async function deleteTempEntity(
-  orgId: string,
-  scenarioId: string,
-  entityId: string,
-): Promise<void> {
-  await getScenarioOrThrow(scenarioId, orgId);
-
-  // Also delete related allocations
-  await db
-    .delete(schema.scenarioAllocations)
-    .where(
-      and(
-        eq(schema.scenarioAllocations.scenarioId, scenarioId),
-        eq(schema.scenarioAllocations.tempEntityId, entityId),
-      ),
-    );
-
-  await db
-    .delete(schema.scenarioTempEntities)
-    .where(
-      and(
-        eq(schema.scenarioTempEntities.id, entityId),
-        eq(schema.scenarioTempEntities.scenarioId, scenarioId),
-      ),
-    );
-}
+// (Temp Entities section removed — client surface (hook + API route) was never
+// wired into any UI. DB table scenario_temp_entities is retained because
+// scenario-analytics.service.ts still reads it via LEFT JOIN for comparison
+// rollups. If the analytics path is also dropped, the table can be dropped too.)
