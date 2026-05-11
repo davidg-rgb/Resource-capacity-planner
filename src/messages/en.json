@@ -86,7 +86,18 @@
     "legendOver": "Overloaded (>100%)",
     "teamHealth": "Team Health Summary",
     "teamHealthLink": "Detailed KPIs available on",
-    "kpiDashboard": "KPI Dashboard"
+    "kpiDashboard": "KPI Dashboard",
+    "kpis": {
+      "title": "Aggregated Team Health Metrics",
+      "avgUtilization": "Avg. Utilization",
+      "avgUtilizationHint": "across selected range",
+      "criticalRisk": "Critical Risk",
+      "criticalRiskHint": "{count, plural, one {1 person over 110%} other {# people over 110%}}",
+      "hiringGap": "Hiring Gap",
+      "hiringGapHint": "{hours}h over capacity",
+      "coverage": "Project Coverage",
+      "coverageHint": "share with allocations"
+    }
   },
   "import": {
     "readyToImport": "Ready to import {count} allocations",

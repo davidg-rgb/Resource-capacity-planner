@@ -86,7 +86,18 @@
     "legendOver": "Överbelastad (>100%)",
     "teamHealth": "Sammanfattande teamhälsa",
     "teamHealthLink": "Detaljerade nyckeltal visas på",
-    "kpiDashboard": "KPI-dashboarden"
+    "kpiDashboard": "KPI-dashboarden",
+    "kpis": {
+      "title": "Aggregerade teamhälsomått",
+      "avgUtilization": "Genomsnittlig beläggning",
+      "avgUtilizationHint": "över valt intervall",
+      "criticalRisk": "Kritisk risk",
+      "criticalRiskHint": "{count, plural, one {1 person över 110%} other {# personer över 110%}}",
+      "hiringGap": "Bemanningsgap",
+      "hiringGapHint": "{hours}h över kapacitet",
+      "coverage": "Projektbemanning",
+      "coverageHint": "andel med tilldelning"
+    }
   },
   "import": {
     "readyToImport": "Redo att importera {count} bökningar",

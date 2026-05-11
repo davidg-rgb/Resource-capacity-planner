@@ -12,6 +12,7 @@ import { HeatMapTable } from '@/components/heat-map/heat-map-table';
 import { HeatMapFilters } from '@/components/heat-map/heat-map-filters';
 import { HeatMapSummaryBanner } from '@/components/heat-map/heat-map-summary-banner';
 import { HeatMapActions } from '@/components/heat-map/heat-map-actions';
+import { HeatMapKpiCards } from '@/components/heat-map/heat-map-kpi-cards';
 import { getCurrentMonth, generateMonthRange } from '@/lib/date-utils';
 import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import type { HeatMapFilters as HeatMapFiltersType } from '@/features/analytics/analytics.types';
@@ -193,18 +194,24 @@ function TeamOverviewContent() {
           </div>
         </div>
 
-        {/* Team Health Summary — placeholder for future computed metrics */}
-        <div className="bg-surface-container-lowest border-outline-variant/10 flex flex-col items-center justify-center rounded-sm border p-6 shadow-sm md:col-span-3">
-          <span className="text-outline text-[10px] font-bold tracking-wider uppercase">
-            {t('teamHealth')}
-          </span>
-          <p className="text-on-surface-variant mt-3 text-center text-sm">
-            {t('teamHealthLink')}{' '}
-            <a href="/dashboard" className="text-primary font-medium hover:underline">
-              {t('kpiDashboard')}
-            </a>
-          </p>
-        </div>
+        {/* Aggregated team health metrics — 4 KPIs derived from the same
+            HeatMapResponse the table consumes. Renders placeholder zeros
+            while the page is still loading the data. */}
+        {data ? (
+          <HeatMapKpiCards data={data} />
+        ) : (
+          <div className="bg-surface-container-lowest border-outline-variant/10 flex flex-col items-center justify-center rounded-sm border p-6 shadow-sm md:col-span-3">
+            <span className="text-outline text-[10px] font-bold tracking-wider uppercase">
+              {t('teamHealth')}
+            </span>
+            <p className="text-on-surface-variant mt-3 text-center text-sm">
+              {t('teamHealthLink')}{' '}
+              <a href="/dashboard" className="text-primary font-medium hover:underline">
+                {t('kpiDashboard')}
+              </a>
+            </p>
+          </div>
+        )}
       </div>
     </>
   );
