@@ -187,6 +187,8 @@ export function ChangeLogFeed(props: ChangeLogFeedProps) {
       {!isLoading && !isError && entries.length === 0 && (
         <div
           data-testid="change-log-empty"
+          role="status"
+          aria-live="polite"
           className="bg-surface-container-low text-on-surface-variant rounded-md p-8 text-center text-sm"
         >
           {t('empty')}

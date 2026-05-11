@@ -163,7 +163,9 @@ export function PersonAnalytics({ allocations, targetHoursPerMonth }: PersonAnal
               summary.peakOverloadPct > 100 ? 'text-error' : 'text-on-surface'
             }`}
           >
-            {summary.peakOverloadPct.toFixed(0)}% topp
+            {targetHoursPerMonth > 0
+              ? `${summary.peakOverloadPct.toFixed(0)}% topp`
+              : `${Math.max(...summary.monthlyTotals.map((x) => x.hours), 0)}h topp`}
           </span>
         </div>
       </div>
