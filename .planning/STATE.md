@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v7.0
 milestone_name: Foundation & Quality
-status: Started 2026-05-11 — defining requirements
-stopped_at: v7.0 milestone initialized; requirements pending roadmap
+status: Roadmap created 2026-05-11 — ready to plan Phase 54
+stopped_at: v7.0 roadmap created; 8 phases mapped (54–61); 31 requirements covered; awaiting /gsd-plan-phase 54
 last_updated: "2026-05-11T00:00:00.000Z"
 last_activity: 2026-05-11
 progress:
-  total_phases: 0
+  total_phases: 8
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -20,9 +20,9 @@ progress:
 
 See: .planning/PROJECT.md (updated 2026-05-11 — v7.0 Foundation & Quality started)
 
-v7.0 planning artifacts (in progress):
-- .planning/REQUIREMENTS.md — milestone requirements (this milestone)
-- .planning/ROADMAP.md — phase structure (pending roadmapper)
+v7.0 planning artifacts:
+- .planning/REQUIREMENTS.md — milestone requirements (31 total, all mapped)
+- .planning/ROADMAP.md — phase structure (Phases 54–61)
 
 v6.0 artifacts (completed, do not re-review):
 - .planning/milestones/v6.0-REQUIREMENTS.md (archived)
@@ -36,20 +36,33 @@ Recent context:
 
 **Core value (this milestone):** Close architectural debt so v8.0 features land on a clean foundation. Audit-spine coverage, tenant-isolation consistency, change-log enum completeness, eslint guard coverage, E2E CI restoration, localization parity, responsive baseline, a11y consistency. **No new product features.**
 
-**Current focus:** Requirements definition → roadmap.
+**Current focus:** Roadmap complete. Next step: `/gsd-plan-phase 54` to decompose Phase 54 (Audit-spine + eslint regex expansion) into executable plans.
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: Not started (Phase 54 ready to plan)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-05-11 — Milestone v7.0 started
+Status: Roadmap created, awaiting first plan
+Last activity: 2026-05-11 — v7.0 ROADMAP.md written with 8 phases (54–61), 31/31 requirements mapped
+
+### v7.0 Phase Overview
+
+| # | Phase | Requirements | Status |
+|---|-------|--------------|--------|
+| 54 | Audit-spine + eslint regex expansion | AUDIT-01..07 | Not started |
+| 55 | Tenant-isolation consolidation | TENANT-01..03 | Not started |
+| 56 | Change-log enum expansion | CHLOG-01..03 | Not started |
+| 57 | E2E CI rehab | E2E-01..04 | Not started |
+| 58 | Dev-env harness fixes | QUAL-04..06 | Not started |
+| 59 | Localization completeness | L10N-01..04 | Not started |
+| 60 | Responsive design baseline | RESP-01..04 | Not started |
+| 61 | A11y consistency | A11Y-01..03 | Not started |
 
 ## Accumulated Context
 
 ### v7.0 Locked Decisions (forming)
 
-To be added as decisions land during phases.
+To be added as decisions land during phases. Phase 55 ADR (TENANT-01) will be the first.
 
 ### v6.0 Locked Decisions (inherited, still binding)
 
@@ -73,21 +86,24 @@ To be added as decisions land during phases.
 
 ### Blockers/Concerns
 
-- **Dev env harness gaps** logged during Phase 53 UAT — addressed by v7.0 Category 6 (QUAL-04..06):
+- **Dev env harness gaps** logged during Phase 53 UAT — addressed by v7.0 Phase 58 (QUAL-04..06):
   - `/api/test/seed` fails under neon-http driver (no transactions)
   - `/api/v5/proposals/queue/count` + `/api/v5/capacity/overcommit/count` 404 in dev Turbopack
   - Route-level `requireRole()` returns 401 even with `E2E_TEST` proxy bypass
   - Intermittent Turbopack panics on `/team/page`
+- **E2E CI job disabled** since 2026-04-28 (`a60b493`) — addressed by v7.0 Phase 57. Recommended ordering: Phase 58 first (harness) then Phase 57 (CI restore) so the harness fixes are available when E2E runs.
 
 ## Deferred Items (from prior milestones)
 
 See PROJECT.md "Carried-Forward (deferred beyond v7.0)" section.
 
+Phase 54 of v6.0 (Dashboard quadrant redesign, QUAD-01..03) is deferred indefinitely — telemetry-gated, no signal at v6.0 close. The Phase 54 numeric slot is reused by v7.0 (Audit-spine + eslint regex expansion); the deferred quadrant work remains documented under REQUIREMENTS.md "v8+ deferred."
+
 ## Session Continuity
 
-Last session: 2026-05-11 — frontend-app-reviewer Phase 6 complete, 9 commits pushed to origin/main
-Stopped at: v7.0 milestone initialized; requirements drafted
+Last session: 2026-05-11 — v7.0 milestone initialized; requirements drafted; ROADMAP.md created with 8 phases and 31/31 requirements mapped
+Stopped at: Roadmap complete; awaiting `/gsd-plan-phase 54` to decompose Phase 54 into executable plans
 
 ---
 
-_Last updated: 2026-05-11 — v7.0 Foundation & Quality milestone initialized._
+_Last updated: 2026-05-11 — v7.0 Foundation & Quality roadmap created (8 phases, 31 requirements mapped, 0 unmapped)._

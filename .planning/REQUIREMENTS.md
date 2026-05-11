@@ -111,43 +111,43 @@ Three a11y categories surfaced by 2026-05-11 frontend audit Phase 6 review as de
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUDIT-01 | TBD | Pending |
-| AUDIT-02 | TBD | Pending |
-| AUDIT-03 | TBD | Pending |
-| AUDIT-04 | TBD | Pending |
-| AUDIT-05 | TBD | Pending |
-| AUDIT-06 | TBD | Pending |
-| AUDIT-07 | TBD | Pending |
-| TENANT-01 | TBD | Pending |
-| TENANT-02 | TBD | Pending |
-| TENANT-03 | TBD | Pending |
-| CHLOG-01 | TBD | Pending |
-| CHLOG-02 | TBD | Pending |
-| CHLOG-03 | TBD | Pending |
-| E2E-01 | TBD | Pending |
-| E2E-02 | TBD | Pending |
-| E2E-03 | TBD | Pending |
-| E2E-04 | TBD | Pending |
-| QUAL-04 | TBD | Pending |
-| QUAL-05 | TBD | Pending |
-| QUAL-06 | TBD | Pending |
-| L10N-01 | TBD | Pending |
-| L10N-02 | TBD | Pending |
-| L10N-03 | TBD | Pending |
-| L10N-04 | TBD | Pending |
-| RESP-01 | TBD | Pending |
-| RESP-02 | TBD | Pending |
-| RESP-03 | TBD | Pending |
-| RESP-04 | TBD | Pending |
-| A11Y-01 | TBD | Pending |
-| A11Y-02 | TBD | Pending |
-| A11Y-03 | TBD | Pending |
+| AUDIT-01 | Phase 54 | Pending |
+| AUDIT-02 | Phase 54 | Pending |
+| AUDIT-03 | Phase 54 | Pending |
+| AUDIT-04 | Phase 54 | Pending |
+| AUDIT-05 | Phase 54 | Pending |
+| AUDIT-06 | Phase 54 | Pending |
+| AUDIT-07 | Phase 54 | Pending |
+| TENANT-01 | Phase 55 | Pending |
+| TENANT-02 | Phase 55 | Pending |
+| TENANT-03 | Phase 55 | Pending |
+| CHLOG-01 | Phase 56 | Pending |
+| CHLOG-02 | Phase 56 | Pending |
+| CHLOG-03 | Phase 56 | Pending |
+| E2E-01 | Phase 57 | Pending |
+| E2E-02 | Phase 57 | Pending |
+| E2E-03 | Phase 57 | Pending |
+| E2E-04 | Phase 57 | Pending |
+| QUAL-04 | Phase 58 | Pending |
+| QUAL-05 | Phase 58 | Pending |
+| QUAL-06 | Phase 58 | Pending |
+| L10N-01 | Phase 59 | Pending |
+| L10N-02 | Phase 59 | Pending |
+| L10N-03 | Phase 59 | Pending |
+| L10N-04 | Phase 59 | Pending |
+| RESP-01 | Phase 60 | Pending |
+| RESP-02 | Phase 60 | Pending |
+| RESP-03 | Phase 60 | Pending |
+| RESP-04 | Phase 60 | Pending |
+| A11Y-01 | Phase 61 | Pending |
+| A11Y-02 | Phase 61 | Pending |
+| A11Y-03 | Phase 61 | Pending |
 
 **Coverage:**
 - v7.0 requirements: 31 total
-- Mapped to phases: 0 (pending roadmap)
-- Unmapped: 31 ⚠️ (roadmapper will fill)
+- Mapped to phases: 31 ✓
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-05-11*
-*Last updated: 2026-05-11 after initial definition*
+*Last updated: 2026-05-11 — roadmap created, all 31 requirements mapped to Phases 54–61*
