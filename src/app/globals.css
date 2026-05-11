@@ -76,6 +76,15 @@
   /* Error extensions */
   --color-error-dim: #4e0309;
   --color-on-error: #fff7f6;
+
+  /* shadcn-style semantic aliases referenced by 24+ component files. Without
+     these declarations, classes like `text-primary-foreground` resolve to an
+     undefined CSS variable and fall back to inherited color — primary action
+     buttons (`bg-primary text-primary-foreground`) end up rendering dark text
+     on the navy primary fill (~3.5:1 contrast, WCAG AA fail). */
+  --color-primary-foreground: var(--color-on-primary);
+  --color-muted: var(--color-surface-container);
+  --color-muted-foreground: var(--color-on-surface-variant);
 }
 
 /* Utility: tabular-nums for numeric columns */
