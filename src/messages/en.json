@@ -501,10 +501,16 @@
         "period": "Period",
         "actor": "Actor",
         "advanced": "Advanced",
-        "clearAll": "Clear all"
+        "clearAll": "Clear all",
+        "any": "(any)"
       },
       "loadMore": "Load more",
       "noResults": "No results",
+      "empty": "No log entries to show. Adjust filters or wait for new events.",
+      "diff": {
+        "previousValue": "Previous value",
+        "newValue": "New value"
+      },
       "entityFilter": {
         "all": "All",
         "person": "Person",

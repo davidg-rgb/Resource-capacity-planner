@@ -153,7 +153,7 @@ export function ChangeLogFeed(props: ChangeLogFeedProps) {
               updateFilter({ entity: v ? [v as ChangeLogEntity] : undefined });
             }}
           >
-            <option value="">(any)</option>
+            <option value="">{t('filters.any')}</option>
             {ENTITY_OPTIONS.map((ent) => (
               <option key={ent} value={ent}>
                 {ent}
@@ -179,12 +179,21 @@ export function ChangeLogFeed(props: ChangeLogFeedProps) {
 
       {isLoading && <div className="text-muted-foreground text-sm">{t('loading')}</div>}
       {isError && (
-        <div className="border-error/30 bg-error/5 flex items-center justify-between rounded-md border-l-4 px-4 py-3 text-sm text-red-700">
+        <div className="border-error/30 bg-error-container/20 text-error flex items-center justify-between rounded-md border-l-4 px-4 py-3 text-sm">
           <span>{t('error')}</span>
         </div>
       )}
 
-      {!isLoading && !isError && (
+      {!isLoading && !isError && entries.length === 0 && (
+        <div
+          data-testid="change-log-empty"
+          className="bg-surface-container-low text-on-surface-variant rounded-md p-8 text-center text-sm"
+        >
+          {t('empty')}
+        </div>
+      )}
+
+      {!isLoading && !isError && entries.length > 0 && (
         <table className="w-full text-xs" data-testid="change-log-table">
           <thead>
             <tr className="text-left">
@@ -229,7 +238,7 @@ export function ChangeLogFeed(props: ChangeLogFeedProps) {
                       <div className="grid grid-cols-2 gap-2 p-2">
                         <div>
                           <div className="text-muted-foreground mb-1 text-[10px] uppercase">
-                            previousValue
+                            {t('diff.previousValue')}
                           </div>
                           <pre className="overflow-x-auto text-[11px]">
                             {JSON.stringify(entry.previousValue, null, 2)}
@@ -237,7 +246,7 @@ export function ChangeLogFeed(props: ChangeLogFeedProps) {
                         </div>
                         <div>
                           <div className="text-muted-foreground mb-1 text-[10px] uppercase">
-                            newValue
+                            {t('diff.newValue')}
                           </div>
                           <pre className="overflow-x-auto text-[11px]">
                             {JSON.stringify(entry.newValue, null, 2)}

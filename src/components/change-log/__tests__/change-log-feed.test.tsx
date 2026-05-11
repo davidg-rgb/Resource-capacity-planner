@@ -105,8 +105,10 @@ describe('ChangeLogFeed (Plan 41-04 / UX-V5-10)', () => {
     await user.click(row);
 
     const diff = await screen.findByTestId('change-log-row-diff');
-    expect(diff.textContent).toContain('previousValue');
-    expect(diff.textContent).toContain('newValue');
+    // Localized labels (sv): "Föregående värde" / "Nytt värde". JSON payload
+    // text is locale-independent so the hours assertions are stable.
+    expect(diff.textContent).toContain('Föregående värde');
+    expect(diff.textContent).toContain('Nytt värde');
     expect(diff.textContent).toContain('"hours": 20');
     expect(diff.textContent).toContain('"hours": 40');
   });

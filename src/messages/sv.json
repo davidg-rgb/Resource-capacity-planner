@@ -501,10 +501,16 @@
         "period": "Period",
         "actor": "Utförd av",
         "advanced": "Avancerat",
-        "clearAll": "Rensa alla"
+        "clearAll": "Rensa alla",
+        "any": "(alla)"
       },
       "loadMore": "Läs in fler",
       "noResults": "Inga träffar",
+      "empty": "Inga loggposter att visa. Justera filtren eller vänta på nya händelser.",
+      "diff": {
+        "previousValue": "Föregående värde",
+        "newValue": "Nytt värde"
+      },
       "entityFilter": {
         "all": "Alla",
         "person": "Person",
