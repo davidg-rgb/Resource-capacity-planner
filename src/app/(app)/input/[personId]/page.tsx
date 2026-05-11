@@ -83,7 +83,10 @@ export default function PersonInputPage({ params }: { params: Promise<{ personId
 
       <GridFooter />
 
-      <PersonAnalytics />
+      <PersonAnalytics
+        allocations={allocations ?? []}
+        targetHoursPerMonth={person.targetHoursPerMonth}
+      />
 
       {showProjectSelector && projects && (
         <div className="border-outline-variant bg-surface rounded-sm border p-4">
