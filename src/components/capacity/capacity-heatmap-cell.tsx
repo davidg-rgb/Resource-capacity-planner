@@ -5,10 +5,10 @@
 import type { UtilizationCell, CapacityStatus } from '@/features/capacity/capacity.types';
 
 const STATUS_CLASS: Record<CapacityStatus, string> = {
-  ok: 'bg-green-200 dark:bg-green-900/40',
-  under: 'bg-amber-200 dark:bg-amber-900/40',
-  over: 'bg-red-300 dark:bg-red-900/60',
-  absent: 'bg-neutral-200 dark:bg-neutral-800',
+  ok: 'bg-success-container text-on-success-container',
+  under: 'bg-warning-container text-on-warning-container',
+  over: 'bg-error-container text-on-error-container',
+  absent: 'bg-surface-container-high text-on-surface-variant',
 };
 
 export interface CapacityHeatmapCellProps {

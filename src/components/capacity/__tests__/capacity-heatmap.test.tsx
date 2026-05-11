@@ -118,11 +118,11 @@ describe('<CapacityHeatmap />', () => {
     );
     const row = screen.getByText('Anna Andersson').closest('tr')!;
     const cells = within(row).getAllByRole('cell');
-    expect(cells[0].className).toContain('bg-green-200');
+    expect(cells[0].className).toContain('bg-success-container');
     expect(cells[0].getAttribute('data-status')).toBe('ok');
   });
 
-  it('applies bg-red-300 to over cell', () => {
+  it('applies bg-error-container to over cell', () => {
     render(
       <Wrap>
         <CapacityHeatmap data={fixture} months={months} />
@@ -130,10 +130,10 @@ describe('<CapacityHeatmap />', () => {
     );
     const row = screen.getByText('Anna Andersson').closest('tr')!;
     const cells = within(row).getAllByRole('cell');
-    expect(cells[1].className).toContain('bg-red-300');
+    expect(cells[1].className).toContain('bg-error-container');
   });
 
-  it('applies bg-amber-200 to under cell AND title attr when targetIsDefault', () => {
+  it('applies bg-warning-container to under cell AND title attr when targetIsDefault', () => {
     render(
       <Wrap>
         <CapacityHeatmap data={fixture} months={months} />
@@ -141,11 +141,11 @@ describe('<CapacityHeatmap />', () => {
     );
     const row = screen.getByText('Anna Andersson').closest('tr')!;
     const cells = within(row).getAllByRole('cell');
-    expect(cells[2].className).toContain('bg-amber-200');
+    expect(cells[2].className).toContain('bg-warning-container');
     expect(cells[2].getAttribute('title')).toBe('using default 160h');
   });
 
-  it('applies bg-neutral-200 to absent cell AND to missing-cell fallback', () => {
+  it('applies bg-surface-container-high to absent cell AND to missing-cell fallback', () => {
     render(
       <Wrap>
         <CapacityHeatmap data={fixture} months={months} />
@@ -154,11 +154,11 @@ describe('<CapacityHeatmap />', () => {
     const row = screen.getByText('Bo Berg').closest('tr')!;
     const cells = within(row).getAllByRole('cell');
     // 2026-04 is explicit absent
-    expect(cells[0].className).toContain('bg-neutral-200');
+    expect(cells[0].className).toContain('bg-surface-container-high');
     // 2026-05 is missing → fallback absent
-    expect(cells[1].className).toContain('bg-neutral-200');
+    expect(cells[1].className).toContain('bg-surface-container-high');
     // 2026-06 ok
-    expect(cells[2].className).toContain('bg-green-200');
+    expect(cells[2].className).toContain('bg-success-container');
   });
 
   it('legend renders four threshold swatches', () => {

@@ -39,7 +39,7 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-300 border-t-slate-600" />
+        <div className="border-outline-variant border-t-primary h-8 w-8 animate-spin rounded-full border-4" />
       </div>
     );
   }
@@ -47,7 +47,7 @@ export function PlatformShell({ children }: { children: React.ReactNode }) {
   if (!admin) return null;
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="bg-surface min-h-screen">
       <PlatformSidebar adminName={admin.name} adminEmail={admin.email} />
       <main className="ml-60 p-6">{children}</main>
     </div>

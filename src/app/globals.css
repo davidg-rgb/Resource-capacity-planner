@@ -85,6 +85,21 @@
   --color-primary-foreground: var(--color-on-primary);
   --color-muted: var(--color-surface-container);
   --color-muted-foreground: var(--color-on-surface-variant);
+
+  /* Success palette (Material Design 3 spec, tuned to match Nordic Precision
+     primary navy). Added so capacity heatmap "ok" / "healthy" states and any
+     future success affordance can use semantic tokens instead of falling back
+     to Tailwind's utility palette (bg-green-200 / text-emerald-800). */
+  --color-success: #3d6e3a;
+  --color-success-container: #c8e6c5;
+  --color-on-success: #ffffff;
+  --color-on-success-container: #1e4321;
+
+  /* Warning palette (M3 amber) — replaces ad-hoc bg-amber-* / text-amber-*. */
+  --color-warning: #835500;
+  --color-warning-container: #ffdda8;
+  --color-on-warning: #ffffff;
+  --color-on-warning-container: #3d2e00;
 }
 
 /* Utility: tabular-nums for numeric columns */

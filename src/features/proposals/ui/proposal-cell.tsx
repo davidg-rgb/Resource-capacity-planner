@@ -62,7 +62,7 @@ export function ProposalCell(props: ProposalCellProps) {
 
   return (
     <div
-      className="bg-surface min-w-[240px] rounded border-2 border-dashed border-amber-500 p-2 shadow-lg"
+      className="bg-surface border-warning min-w-[240px] rounded border-2 border-dashed p-2 shadow-lg"
       data-testid="proposal-cell"
     >
       <div className="mb-1 text-xs font-medium">Submit wish (out-of-department)</div>
@@ -86,7 +86,7 @@ export function ProposalCell(props: ProposalCellProps) {
         rows={2}
       />
       {error && (
-        <div className="mt-1 text-xs text-red-600" role="alert">
+        <div className="text-error mt-1 text-xs" role="alert">
           {error}
         </div>
       )}
