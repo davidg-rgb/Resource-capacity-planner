@@ -47,7 +47,7 @@ function PmHomeInner() {
 
   const personaId = persona.kind === 'pm' ? persona.personId : null;
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['pm-home', personaId],
     queryFn: () => fetchPmHome(personaId as string),
     enabled: !!personaId,
@@ -75,7 +75,16 @@ function PmHomeInner() {
     return (
       <div className="space-y-4 p-8">
         <h1 className="font-headline text-2xl font-bold">{t('title')}</h1>
-        <p className="text-error text-sm">{tScreens('error')}</p>
+        <div className="border-error/30 bg-error-container/20 flex items-center justify-between gap-3 rounded-md border-l-4 p-4 text-sm">
+          <span className="text-error">{tScreens('error')}</span>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="bg-primary text-on-primary rounded px-3 py-1 text-xs disabled:opacity-50"
+          >
+            {tScreens('retry')}
+          </button>
+        </div>
       </div>
     );
   if (!data || data.projects.length === 0)

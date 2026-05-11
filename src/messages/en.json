@@ -420,6 +420,8 @@
       "title": "My schedule",
       "empty": "No approved allocations in this range.",
       "noPersonaHint": "Switch to the Staff persona to view your schedule.",
+      "error": "Couldn't load your schedule.",
+      "retry": "Try again",
       "summaryStrip": {
         "planned": "Planned",
         "actual": "Actual",
@@ -430,6 +432,8 @@
       "title": "R&D Portfolio",
       "empty": "No approved allocations in this range.",
       "noPersonaHint": "Switch to the R&D persona to view the portfolio.",
+      "error": "Couldn't load the portfolio.",
+      "retry": "Try again",
       "groupBy": {
         "project": "Project",
         "department": "Department"
@@ -454,7 +458,10 @@
         "title": "Line Manager home",
         "approvalQueueBadge": {
           "label": "{count, plural, one {1 pending approval} other {# pending approvals}}"
-        }
+        },
+        "selectDepartment": "Select a department in the persona switcher.",
+        "error": "Couldn't load capacity.",
+        "retry": "Try again"
       },
       "heatmap": {
         "legend": {

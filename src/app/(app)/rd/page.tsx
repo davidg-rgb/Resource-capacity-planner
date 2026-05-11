@@ -122,7 +122,7 @@ function RdPageInner() {
     });
   }, [searchParams, drawer]);
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['rd-portfolio', groupBy, startMonth, endMonth],
     queryFn: () => fetchPortfolio(groupBy, startMonth, endMonth),
   });
@@ -222,7 +222,18 @@ function RdPageInner() {
         />
       )}
 
-      {error && <div className="text-error p-4 text-sm">{(error as Error).message}</div>}
+      {error && (
+        <div className="border-error/30 bg-error-container/20 flex items-center justify-between gap-3 rounded-md border-l-4 p-4 text-sm">
+          <span className="text-error">{t('error')}</span>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="bg-primary text-on-primary rounded px-3 py-1 text-xs disabled:opacity-50"
+          >
+            {t('retry')}
+          </button>
+        </div>
+      )}
 
       {data && (
         <RdPortfolioGrid

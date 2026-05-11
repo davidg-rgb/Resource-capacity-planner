@@ -55,7 +55,7 @@ function LineManagerHomeInner() {
   const endMonth = months[months.length - 1];
   const monthRange = `${startMonth}:${endMonth}`;
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['line-manager-capacity', departmentId, monthRange],
     queryFn: () => fetchCapacity(departmentId, startMonth, endMonth),
     enabled: !!departmentId,
@@ -98,9 +98,7 @@ function LineManagerHomeInner() {
         </div>
       </div>
       {!departmentId && (
-        <div className="text-on-surface-variant p-4 text-sm">
-          {safeT(t, 'home.selectDepartment', 'Select a department in the persona switcher.')}
-        </div>
+        <div className="text-on-surface-variant p-4 text-sm">{t('home.selectDepartment')}</div>
       )}
       {isLoading && (
         <div
@@ -109,8 +107,15 @@ function LineManagerHomeInner() {
         />
       )}
       {error && (
-        <div className="text-error p-4 text-sm">
-          {safeT(t, 'home.error', 'Failed to load capacity.')}
+        <div className="border-error/30 bg-error-container/20 flex items-center justify-between gap-3 rounded-md border-l-4 p-4 text-sm">
+          <span className="text-error">{t('home.error')}</span>
+          <button
+            type="button"
+            onClick={() => refetch()}
+            className="bg-primary text-on-primary rounded px-3 py-1 text-xs disabled:opacity-50"
+          >
+            {t('home.retry')}
+          </button>
         </div>
       )}
       {data && <CapacityHeatmap data={data} months={months} />}

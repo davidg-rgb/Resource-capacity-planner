@@ -420,6 +420,8 @@
       "title": "Mitt schema",
       "empty": "Inga godkända allokeringar i perioden.",
       "noPersonaHint": "Byt till personan Medarbetare för att se ditt schema.",
+      "error": "Kunde inte ladda ditt schema.",
+      "retry": "Försök igen",
       "summaryStrip": {
         "planned": "Planerat",
         "actual": "Utfall",
@@ -430,6 +432,8 @@
       "title": "FoU-portfölj",
       "empty": "Inga godkända allokeringar i perioden.",
       "noPersonaHint": "Byt till personan FoU-chef för att se portföljen.",
+      "error": "Kunde inte ladda portföljen.",
+      "retry": "Försök igen",
       "groupBy": {
         "project": "Projekt",
         "department": "Avdelning"
@@ -454,7 +458,10 @@
         "title": "Linjechef – Översikt",
         "approvalQueueBadge": {
           "label": "{count, plural, one {1 väntande godkännande} other {# väntande godkännanden}}"
-        }
+        },
+        "selectDepartment": "Välj en avdelning i personabytaren.",
+        "error": "Kunde inte ladda kapaciteten.",
+        "retry": "Försök igen"
       },
       "heatmap": {
         "legend": {
