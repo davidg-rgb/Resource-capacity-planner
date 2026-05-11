@@ -6,9 +6,9 @@
  *  2. Rejected-wish-card snapshot lives here (cell test file covers draft/
  *     proposed/approved; rejected has no cell visual per Q2 split).
  *
- * Note: the panel itself already has PROP-06 tests colocated at
- * src/features/proposals/__tests__/my-wishes-panel.test.tsx — those cover
- * tabs, resubmit modal, etc. This file is additive for Phase 52 Plan 03.
+ * Note: the panel itself already has PROP-06 tests in the sibling file
+ * my-wishes-panel.test.tsx — those cover tabs, resubmit modal, etc.
+ * This file is additive for Phase 52 Plan 03.
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

@@ -63,7 +63,7 @@ export function parseClipboardText(text: string): ParsedClipboard {
  * - Returns null for invalid values (NaN, negative, > 999).
  * - Rounds to nearest integer (hours are whole numbers).
  */
-export function parseNumericValue(value: string): number | null {
+function parseNumericValue(value: string): number | null {
   if (value === '') return 0;
 
   // Handle European comma decimal separator
