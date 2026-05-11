@@ -8,10 +8,6 @@
 //     with context.confirmedHistoric=true and populated previousValue / newValue
 //   - Cutoff:      month equal to server-now is NOT historic (strict '<')
 //
-// Round 1 audit CONS-P0-09: error class canonicalized on HistoricConfirmRequiredError
-// (code HISTORIC_CONFIRM_REQUIRED, status 409). Was HistoricEditNotConfirmedError
-// (code HISTORIC_EDIT_NOT_CONFIRMED) in v5.0 — see allocation.errors.ts.
-//
 // PGlite bootstrap mirrors src/features/proposals/__tests__/proposal.service.e2e.test.ts.
 
 import { describe, test, expect, beforeAll, beforeEach, vi } from 'vitest';
@@ -35,8 +31,6 @@ vi.mock('@/lib/server/get-server-now-month-key', () => ({
 }));
 
 const { patchAllocation } = await import('../allocation.service');
-// Round 1 audit CONS-P0-09: canonical class lives in `@/lib/errors`. The
-// allocation.errors.ts file re-exports it under the legacy alias for back-compat.
 const { HistoricConfirmRequiredError } = await import('@/lib/errors');
 const { allocations, changeLog } = schema;
 

@@ -250,9 +250,6 @@ export interface PatchAllocationResult {
  * - If `row.monthKey < nowMonthKey` and `confirmHistoric !== true`, throws
  *   HistoricConfirmRequiredError (HTTP 409, code HISTORIC_CONFIRM_REQUIRED).
  *   No mutation, no change_log write.
- *   (Round 1 audit CONS-P0-09: was previously HistoricEditNotConfirmedError
- *   with code HISTORIC_EDIT_NOT_CONFIRMED, which conflicted with the
- *   documented canonical class in `lib/errors.ts`.)
  * - On historic confirmed path, writes change_log action='ALLOCATION_HISTORIC_EDITED'
  *   with context.confirmedHistoric=true.
  * - On non-historic path, writes action='ALLOCATION_EDITED' with context.via='direct'.
