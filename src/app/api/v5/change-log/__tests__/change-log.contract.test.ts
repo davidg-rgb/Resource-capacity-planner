@@ -126,11 +126,10 @@ describe('TC-API-041: GET /api/v5/change-log filter combinations', () => {
   });
 
   it('400 on malformed cursor', async () => {
+    // MED-01: decodeCursor now throws ValidationError, which handleApiError
+    // maps to 400 / ERR_VALIDATION (API-V5-01 taxonomy).
     const res = await GET(req('cursor=!!!not-base64!!!') as never);
-    expect(res.status).toBe(500);
-    // Malformed cursor surfaces as a generic 500 (decodeCursor throws Error,
-    // which the AppError taxonomy doesn't recognize). This is acceptable for
-    // Wave 0 — TC-API-041 only requires a non-200 response.
+    expect(res.status).toBe(400);
   });
 
   it('empty params return unfiltered feed', async () => {

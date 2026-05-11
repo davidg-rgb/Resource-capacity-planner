@@ -68,7 +68,11 @@ vi.mock('@/features/flags/flag.service', () => ({
 }));
 
 vi.mock('@/features/dashboard/widget-registry', () => ({
-  getWidget: vi.fn(() => undefined), // empty registry → server-side passthrough branch
+  getWidget: vi.fn(() => undefined),
+  // LO-04: route now uses getRegistrySize() === 0 as the server-side
+  // empty-registry probe instead of getWidget('kpi-cards'). Mock must
+  // export both symbols or the route throws TypeError → 500.
+  getRegistrySize: vi.fn(() => 0),
 }));
 
 vi.mock('@/features/dashboard/default-layouts', () => ({
