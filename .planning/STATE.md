@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v7.0
 milestone_name: Foundation & Quality
-status: Roadmap created 2026-05-11 — ready to plan Phase 54
-stopped_at: v7.0 roadmap created; 8 phases mapped (54–61); 31 requirements covered; awaiting /gsd-plan-phase 54
-last_updated: "2026-05-11T00:00:00.000Z"
-last_activity: 2026-05-11
+status: Phase 54 planned 2026-05-13 — ready to execute
+stopped_at: Phase 54 planned (3 plans, 2 waves); AUDIT-01..07 all covered; awaiting /gsd-execute-phase 54
+last_updated: "2026-05-13T00:00:00.000Z"
+last_activity: 2026-05-13
 progress:
   total_phases: 8
   completed_phases: 0
-  total_plans: 0
+  total_plans: 3
   completed_plans: 0
   percent: 0
 ---
@@ -36,20 +36,28 @@ Recent context:
 
 **Core value (this milestone):** Close architectural debt so v8.0 features land on a clean foundation. Audit-spine coverage, tenant-isolation consistency, change-log enum completeness, eslint guard coverage, E2E CI restoration, localization parity, responsive baseline, a11y consistency. **No new product features.**
 
-**Current focus:** Roadmap complete. Next step: `/gsd-plan-phase 54` to decompose Phase 54 (Audit-spine + eslint regex expansion) into executable plans.
+**Current focus:** Phase 54 planned. Next step: `/gsd-execute-phase 54` to run 3 plans across 2 waves (54-01 + 54-02 parallel, then 54-03).
 
 ## Current Position
 
-Phase: Not started (Phase 54 ready to plan)
-Plan: —
-Status: Roadmap created, awaiting first plan
-Last activity: 2026-05-11 — v7.0 ROADMAP.md written with 8 phases (54–61), 31/31 requirements mapped
+Phase: 54 — Audit-spine + eslint regex expansion (planned, ready to execute)
+Plan: 3 plans / 2 waves
+Status: Plans verified by gsd-plan-checker (VERIFICATION PASSED, 0 blockers); AUDIT-01..07 fully covered
+Last activity: 2026-05-13 — Phase 54 research (582 lines), planning (3 plans), and verification complete
+
+### Phase 54 plan structure
+
+| Plan | Wave | Reqs | Objective |
+|------|------|------|-----------|
+| 54-01 | 1 | AUDIT-07 | 10 RuleTester cases for execute\|promote\|apply\|cancel\|stage prefixes |
+| 54-02 | 1 | AUDIT-01..05 | 5 legacy service shims delegating to register.service.ts + actorUserId threading through 10 route handlers |
+| 54-03 | 2 | AUDIT-06 | 5 per-entity contract tests + mutations.json manifest regen |
 
 ### v7.0 Phase Overview
 
 | # | Phase | Requirements | Status |
 |---|-------|--------------|--------|
-| 54 | Audit-spine + eslint regex expansion | AUDIT-01..07 | Not started |
+| 54 | Audit-spine + eslint regex expansion | AUDIT-01..07 | Planned (3 plans, ready to execute) |
 | 55 | Tenant-isolation consolidation | TENANT-01..03 | Not started |
 | 56 | Change-log enum expansion | CHLOG-01..03 | Not started |
 | 57 | E2E CI rehab | E2E-01..04 | Not started |
@@ -101,9 +109,9 @@ Phase 54 of v6.0 (Dashboard quadrant redesign, QUAD-01..03) is deferred indefini
 
 ## Session Continuity
 
-Last session: 2026-05-11 — v7.0 milestone initialized; requirements drafted; ROADMAP.md created with 8 phases and 31/31 requirements mapped
-Stopped at: Roadmap complete; awaiting `/gsd-plan-phase 54` to decompose Phase 54 into executable plans
+Last session: 2026-05-13 — Phase 54 research (582-line RESEARCH.md) + planning (3 PLAN.md files, 2 waves) + verification (gsd-plan-checker PASSED with 0 blockers)
+Stopped at: Phase 54 ready to execute; awaiting `/gsd-execute-phase 54`
 
 ---
 
-_Last updated: 2026-05-11 — v7.0 Foundation & Quality roadmap created (8 phases, 31 requirements mapped, 0 unmapped)._
+_Last updated: 2026-05-13 — Phase 54 planned (3 plans across 2 waves, AUDIT-01..07 covered, verification passed)._
