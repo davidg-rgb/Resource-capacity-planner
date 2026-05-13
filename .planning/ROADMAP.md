@@ -118,7 +118,10 @@
   3. `MUTATION_PREFIX_REGEX` matches the verbs `execute|promote|apply|cancel|stage` in addition to existing prefixes; an eslint test confirms a sample mutating function with each new prefix fails the rule without `@no-change-log` or a `change_log` write
   4. `npm run check:mutations-manifest` (or equivalent CI invariant) passes after regeneration
   5. No regression: existing `change_log` row count for an admin "create person → update → delete" flow increments by exactly 3 (or matches prior expected baseline)
-**Plans**: TBD
+**Plans**: 3 plans (2 waves)
+- [ ] 54-01-PLAN.md — AUDIT-07: add RuleTester unit tests in require-change-log.rule.test.ts for execute|promote|apply|cancel|stage prefixes (Wave 1, independent)
+- [ ] 54-02-PLAN.md — AUDIT-01..05: refactor 5 legacy register services to delegate to register.service.ts; thread userId from requireRole('admin') through 10 mutating route handlers (Wave 1, file-disjoint from 54-01)
+- [ ] 54-03-PLAN.md — AUDIT-06: 5 per-entity contract tests asserting change_log writes for POST/PATCH/DELETE on legacy routes; regenerate tests/invariants/mutations.json (Wave 2, depends on 54-02)
 
 ### Phase 55: Tenant-isolation consolidation
 **Goal**: The `withTenant()` coverage decision is documented as an ADR and fully executed so every tenant-scoped query follows one pattern, with a runtime invariant blocking regression.
@@ -221,7 +224,7 @@
 | v5.0 Plan vs Actual + Approval | 33-47 | 62/62 (with deferrals) | Complete | 2026-04-13 |
 | v6.0 UI Restructure | 48-53 | 22/22 | Complete | 2026-04-27 |
 | v6.0 Phase 54 (Dashboard quadrant) | — | — | Deferred indefinitely (telemetry, no signal) — slot reused by v7.0 | — |
-| v7.0 Phase 54 — Audit-spine + eslint | 54 | 0/TBD | Not started | — |
+| v7.0 Phase 54 — Audit-spine + eslint | 54 | 0/3 | Planned (3 plans, 2 waves) | — |
 | v7.0 Phase 55 — Tenant-isolation consolidation | 55 | 0/TBD | Not started | — |
 | v7.0 Phase 56 — Change-log enum expansion | 56 | 0/TBD | Not started | — |
 | v7.0 Phase 57 — E2E CI rehab | 57 | 0/TBD | Not started | — |
