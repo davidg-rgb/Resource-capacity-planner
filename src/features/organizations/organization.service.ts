@@ -2,7 +2,6 @@ import { db } from '@/db';
 import * as schema from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { ConflictError } from '@/lib/errors';
-import { withTenant } from '@/lib/tenant';
 
 const DEFAULT_DISCIPLINES = [
   { name: 'Software', abbreviation: 'SW' },
@@ -45,13 +44,19 @@ export async function createOrganization(data: { clerkOrgId: string; name: strin
 }
 
 export async function seedDefaults(orgId: string) {
-  const tenant = withTenant(orgId);
-
+  // ADR-V7-01: tenant scoping via a direct organizationId predicate — the one
+  // canonical pattern, no query-builder wrapper.
   await Promise.all(
     DEFAULT_DISCIPLINES.map((d) =>
-      tenant.insertDiscipline({ name: d.name, abbreviation: d.abbreviation }),
+      db
+        .insert(schema.disciplines)
+        .values({ name: d.name, abbreviation: d.abbreviation, organizationId: orgId }),
     ),
   );
 
-  await Promise.all(DEFAULT_DEPARTMENTS.map((d) => tenant.insertDepartment({ name: d.name })));
+  await Promise.all(
+    DEFAULT_DEPARTMENTS.map((d) =>
+      db.insert(schema.departments).values({ name: d.name, organizationId: orgId }),
+    ),
+  );
 }
