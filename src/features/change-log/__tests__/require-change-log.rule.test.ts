@@ -59,6 +59,51 @@ ruleTester.run('nordic/require-change-log', rule, {
         };
       `,
     },
+    {
+      name: 'execute prefix: mutating export that calls recordChange passes',
+      code: `
+        export async function executeImport() {
+          await recordChange({}, tx);
+          return 1;
+        }
+      `,
+    },
+    {
+      name: 'promote prefix: mutating export that calls recordChange passes',
+      code: `
+        export async function promoteAllocations() {
+          await recordChange({}, tx);
+          return 1;
+        }
+      `,
+    },
+    {
+      name: 'apply prefix: mutating export that calls recordChange passes',
+      code: `
+        export async function applyOverrides() {
+          await recordChange({}, tx);
+          return 1;
+        }
+      `,
+    },
+    {
+      name: 'cancel prefix: mutating export that calls recordChange passes',
+      code: `
+        export async function cancelStaged() {
+          await recordChange({}, tx);
+          return 1;
+        }
+      `,
+    },
+    {
+      name: 'stage prefix: mutating export that calls recordChange passes',
+      code: `
+        export async function stageProposal() {
+          await recordChange({}, tx);
+          return 1;
+        }
+      `,
+    },
   ],
   invalid: [
     {
@@ -86,6 +131,51 @@ ruleTester.run('nordic/require-change-log', rule, {
         export const deleteBar = async () => {
           return 1;
         };
+      `,
+      errors: [{ messageId: 'missingRecordChange' }],
+    },
+    {
+      name: 'execute prefix: mutating export without recordChange and no escape hatch fails',
+      code: `
+        export async function executeImport() {
+          return 1;
+        }
+      `,
+      errors: [{ messageId: 'missingRecordChange' }],
+    },
+    {
+      name: 'promote prefix: mutating export without recordChange and no escape hatch fails',
+      code: `
+        export async function promoteAllocations() {
+          return 1;
+        }
+      `,
+      errors: [{ messageId: 'missingRecordChange' }],
+    },
+    {
+      name: 'apply prefix: mutating export without recordChange and no escape hatch fails',
+      code: `
+        export async function applyOverrides() {
+          return 1;
+        }
+      `,
+      errors: [{ messageId: 'missingRecordChange' }],
+    },
+    {
+      name: 'cancel prefix: mutating export without recordChange and no escape hatch fails',
+      code: `
+        export async function cancelStaged() {
+          return 1;
+        }
+      `,
+      errors: [{ messageId: 'missingRecordChange' }],
+    },
+    {
+      name: 'stage prefix: mutating export without recordChange and no escape hatch fails',
+      code: `
+        export async function stageProposal() {
+          return 1;
+        }
       `,
       errors: [{ messageId: 'missingRecordChange' }],
     },
