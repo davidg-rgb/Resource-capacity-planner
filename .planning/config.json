@@ -7,7 +7,11 @@
     "research": true,
     "plan_check": true,
     "verifier": true,
+    "quality_tier": "production",
     "_auto_chain_active": false
   },
-  "granularity": "fine"
+  "granularity": "fine",
+  "features": {
+    "execution_gates": true
+  }
 }
