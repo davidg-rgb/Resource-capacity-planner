@@ -23,9 +23,9 @@ Route all register-table mutations through the single audited service so the uni
 
 Decide and execute the `withTenant()` coverage decision. Currently 8 of 16 tenant-scoped tables route through the wrapper, 8 use direct `eq(organizationId, orgId)` predicates. Source: MED-02.
 
-- [ ] **TENANT-01**: ADR documenting the chosen direction — extend `withTenant()` to all 16 tables OR remove the wrapper and standardize on direct predicates
-- [ ] **TENANT-02**: Implementation of the chosen direction — touch every tenant-scoped query so coverage is binary, not half-and-half
-- [ ] **TENANT-03**: Runtime invariant test asserting no mixed pattern survives (regex or AST check)
+- [x] **TENANT-01**: ADR documenting the chosen direction — extend `withTenant()` to all 16 tables OR remove the wrapper and standardize on direct predicates → **DONE (Phase 55):** `.planning/adr/ADR-V7-01-tenant-isolation.md` — chose REMOVE wrapper (census: 139 direct sites vs 1 vestigial wrapper usage)
+- [x] **TENANT-02**: Implementation of the chosen direction — touch every tenant-scoped query so coverage is binary, not half-and-half → **DONE (Phase 55):** migrated the 1 `withTenant()` caller (`seedDefaults`) to direct inserts; deleted `src/lib/tenant.ts`; `grep withTenant( src` → 0
+- [x] **TENANT-03**: Runtime invariant test asserting no mixed pattern survives (regex or AST check) → **DONE (Phase 55):** tightened `tenant-isolation.static.test.ts` to `requireRole+orgId` only + a `TC-API-TENANT-REJECTED` guard failing CI if `withTenant(` reappears anywhere in `src/`
 
 ### Change-Log Enum Expansion (DEBT)
 
@@ -118,9 +118,9 @@ Three a11y categories surfaced by 2026-05-11 frontend audit Phase 6 review as de
 | AUDIT-05 | Phase 54 | Pending |
 | AUDIT-06 | Phase 54 | Pending |
 | AUDIT-07 | Phase 54 | Pending |
-| TENANT-01 | Phase 55 | Pending |
-| TENANT-02 | Phase 55 | Pending |
-| TENANT-03 | Phase 55 | Pending |
+| TENANT-01 | Phase 55 | Done (2026-05-28) |
+| TENANT-02 | Phase 55 | Done (2026-05-28) |
+| TENANT-03 | Phase 55 | Done (2026-05-28) |
 | CHLOG-01 | Phase 56 | Pending |
 | CHLOG-02 | Phase 56 | Pending |
 | CHLOG-03 | Phase 56 | Pending |

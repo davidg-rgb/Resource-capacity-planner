@@ -98,7 +98,7 @@
 ### v7.0 Foundation & Quality (Phases 54-61)
 
 - [ ] **Phase 54: Audit-spine + eslint regex expansion** — Route 5 legacy register services through `register.service.ts` so every register-table mutation emits a `change_log` row; expand `MUTATION_PREFIX_REGEX` to cover `execute|promote|apply|cancel|stage` verbs.
-- [ ] **Phase 55: Tenant-isolation consolidation** — ADR-driven decision on `withTenant()` scope, then full execution so coverage is binary (all or none), guarded by a runtime invariant.
+- [x] **Phase 55: Tenant-isolation consolidation** — ADR-driven decision on `withTenant()` scope, then full execution so coverage is binary (all or none), guarded by a runtime invariant. (Done 2026-05-28: removed the wrapper, standardized direct predicates, ADR-V7-01.)
 - [ ] **Phase 56: Change-log enum expansion** — Add `scenario`, `scenario_allocation`, `import_session` to `change_log_entity` enum via schema migration; remove `@no-change-log` escape hatches that depended on the deferred enum.
 - [ ] **Phase 57: E2E CI rehab** — Diagnose Clerk-key blocker, restore the Playwright CI job disabled on 2026-04-28, prove the 11-spec persona suite + axe-core a11y assertions run green.
 - [ ] **Phase 58: Dev-env harness fixes** — Three documented harness gaps from STATE.md Blockers so local + CI test runs are unblocked.
@@ -225,7 +225,7 @@
 | v6.0 UI Restructure | 48-53 | 22/22 | Complete | 2026-04-27 |
 | v6.0 Phase 54 (Dashboard quadrant) | — | — | Deferred indefinitely (telemetry, no signal) — slot reused by v7.0 | — |
 | v7.0 Phase 54 — Audit-spine + eslint | 54 | 0/3 | Planned (3 plans, 2 waves) | — |
-| v7.0 Phase 55 — Tenant-isolation consolidation | 55 | 0/TBD | Not started | — |
+| v7.0 Phase 55 — Tenant-isolation consolidation | 55 | 1/1 | Complete (2026-05-28) — ADR-V7-01, wrapper removed | — |
 | v7.0 Phase 56 — Change-log enum expansion | 56 | 0/TBD | Not started | — |
 | v7.0 Phase 57 — E2E CI rehab | 57 | 0/TBD | Not started | — |
 | v7.0 Phase 58 — Dev-env harness fixes | 58 | 0/TBD | Not started | — |

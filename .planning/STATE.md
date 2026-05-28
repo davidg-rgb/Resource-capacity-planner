@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v7.0
 milestone_name: Foundation & Quality
-status: Phase 54.5 (dependency security remediation) COMPLETE 2026-05-28 — pnpm audit fully clean (0/0/0/0); dependency_audit gate override removed
-stopped_at: Phase 54.5 COMPLETE — all 33 dependency vulns remediated (2 crit / 14 high / 14 mod / 3 low -> 0/0/0/0). 6 atomic commits (382e11e, 8b61bbe, 37a8cba, 43ae35c, 013a9df, 9dca2e4) LOCAL on main, NOT pushed (push needs explicit David authorization). dependency_audit override removed from 54-GATES.md (regression override stays for Phase 58). NEXT TASK: Phase 55 — Tenant-isolation consolidation (TENANT-01..03), first v7.0 ADR. See .planning/phases/54.5-dependency-security-remediation/54.5-SUMMARY.md.
-last_updated: "2026-05-28T17:56:00.000Z"
+status: Phase 55 (Tenant-isolation consolidation) COMPLETE 2026-05-28 — withTenant removed, direct-predicate standard, ADR-V7-01, rejected-pattern guard
+stopped_at: Phase 55 COMPLETE — TENANT-01..03 closed. Removed withTenant() wrapper (1 vestigial usage), standardized on requireRole+orgId+direct organizationId predicate (139 sites), first v7.0 ADR (ADR-V7-01), tightened tenant-isolation.static.test.ts with a rejected-pattern guard. typecheck+lint green; 1095 tests pass (only pre-existing imports.api fails). Phase 54.5 (dependency remediation) was PUSHED earlier this session (origin/main @ aa2c823, audit 0/0/0/0). Phase 55 commits are LOCAL, NOT yet pushed. NEXT TASK: Phase 56 — Change-log enum expansion (CHLOG-01..03). See .planning/phases/55-tenant-isolation-consolidation/55-SUMMARY.md.
+last_updated: "2026-05-28T19:30:00.000Z"
 last_activity: 2026-05-28
 progress:
   total_phases: 8
-  completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
-  percent: 13
+  completed_phases: 2
+  total_plans: 4
+  completed_plans: 4
+  percent: 25
 ---
 
 # Nordic Capacity -- Project State
@@ -36,14 +36,14 @@ Recent context:
 
 **Core value (this milestone):** Close architectural debt so v8.0 features land on a clean foundation. Audit-spine coverage, tenant-isolation consistency, change-log enum completeness, eslint guard coverage, E2E CI restoration, localization parity, responsive baseline, a11y consistency. **No new product features.**
 
-**Current focus:** Phase 54.5 (dependency security remediation) COMPLETE — `pnpm audit` is fully clean (0 critical / 0 high / 0 moderate / 0 low, down from 33 vulns); the `dependency_audit` execution gate now passes WITHOUT an override (removed from 54-GATES.md). The 6 remediation commits are LOCAL on `main`, NOT yet pushed (push awaits explicit David authorization). **Next task = Phase 55 — Tenant-isolation consolidation** (TENANT-01..03; first v7.0 ADR lands here). See `.planning/phases/54.5-dependency-security-remediation/54.5-SUMMARY.md`.
+**Current focus:** Phase 55 (Tenant-isolation consolidation) COMPLETE — TENANT-01..03 closed. ADR-V7-01 (first v7.0 ADR) records the decision to REMOVE the `withTenant()` wrapper and standardize on `requireRole()`+`orgId`+direct `organizationId` predicates (census made it lopsided: 139 direct sites vs 1 vestigial wrapper usage). `src/lib/tenant.ts` deleted; the lone caller migrated; `tenant-isolation.static.test.ts` tightened to `requireRole+orgId` only + a rejected-pattern guard so the wrapper can't return. Phase 54.5 (dependency remediation) was pushed earlier this session (`origin/main @ aa2c823`, audit 0/0/0/0); Phase 55 commits are LOCAL, not yet pushed. **Next task = Phase 56 — Change-log enum expansion** (CHLOG-01..03). See `.planning/phases/55-tenant-isolation-consolidation/55-SUMMARY.md`.
 
 ## Current Position
 
-Phase: 54.5 — Dependency security remediation (COMPLETE 2026-05-28)
-Plan: standalone cross-cutting pass — 6 atomic commits (382e11e, 8b61bbe, 37a8cba, 43ae35c, 013a9df, 9dca2e4), LOCAL on main, NOT pushed
-Status: pnpm audit fully clean (0/0/0/0, was 33 vulns). typecheck + lint green; 1094 tests passing (only pre-existing imports.api env-harness suite fails). dependency_audit override REMOVED from 54-GATES.md — gate now passes on its own (engine verdict `pass`). regression override stays (Phase 58).
-Last activity: 2026-05-28 — Phase 54.5 remediated all dependency vulnerabilities; audit clean, gate cleared
+Phase: 55 — Tenant-isolation consolidation (COMPLETE 2026-05-28)
+Plan: standalone — TENANT-01 (ADR-V7-01), TENANT-02 (migrate seedDefaults + delete src/lib/tenant.ts), TENANT-03 (tighten static invariant + rejected-pattern guard). Commits LOCAL on main, NOT yet pushed.
+Status: withTenant() removed; direct-predicate is the single pattern (139 sites); `grep withTenant( src` → 0. typecheck + lint green; 1095 tests passing (+1 = new rejected-pattern test; only pre-existing imports.api env-harness suite fails). pnpm audit still clean (0/0/0/0). Earlier this session: Phase 54.5 dependency remediation pushed (origin/main @ aa2c823).
+Last activity: 2026-05-28 — Phase 55 consolidated tenant scoping to one pattern, guarded against regression
 
 ### Phase 54 plan structure
 
@@ -58,7 +58,8 @@ Last activity: 2026-05-28 — Phase 54.5 remediated all dependency vulnerabiliti
 | # | Phase | Requirements | Status |
 |---|-------|--------------|--------|
 | 54 | Audit-spine + eslint regex expansion | AUDIT-01..07 | ✅ Complete (3 plans, 2026-05-28) |
-| 54.5 | Dependency security remediation | (ad-hoc cross-cutting) | ✅ Complete (6 commits, 2026-05-28) — audit 0/0/0/0 |
+| 54.5 | Dependency security remediation | (ad-hoc cross-cutting) | ✅ Complete (6 commits, 2026-05-28) — audit 0/0/0/0, PUSHED |
+| 55 | Tenant-isolation consolidation | TENANT-01..03 | ✅ Complete (2026-05-28) — ADR-V7-01, wrapper removed |
 | 55 | Tenant-isolation consolidation | TENANT-01..03 | Not started |
 | 56 | Change-log enum expansion | CHLOG-01..03 | Not started |
 | 57 | E2E CI rehab | E2E-01..04 | Not started |
