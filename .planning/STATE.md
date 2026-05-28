@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v7.0
 milestone_name: Foundation & Quality
 status: Phase 54 complete 2026-05-28 — AUDIT-01..07 closed; exec-gates validated live (BLOCK+override)
-stopped_at: Phase 54 executed (3 plans, all green). exec-gates fired live at production tier — regression + dependency_audit both BLOCKed, both overridden with auditable reasons in 54-GATES.md. Next: Phase 55 (Tenant-isolation consolidation), or remediate the two overrides (dep vulns; Phase 58 env-harness).
+stopped_at: Phase 54 COMPLETE + pushed (origin/main @ 321914c). NEXT TASK (decided 2026-05-28): remediate ALL dependency vulnerabilities (2 crit / 14 high / 14 mod / 3 low) — concentrated in next + @clerk/nextjs + drizzle-orm + js-cookie bumps. Plan it as a GSD phase (plan→bump→test→verify), NOT a blind update. Full playbook + triage in .planning/HANDOFF-2026-05-28.md.
 last_updated: "2026-05-28T13:20:00.000Z"
 last_activity: 2026-05-28
 progress:
@@ -36,7 +36,7 @@ Recent context:
 
 **Core value (this milestone):** Close architectural debt so v8.0 features land on a clean foundation. Audit-spine coverage, tenant-isolation consistency, change-log enum completeness, eslint guard coverage, E2E CI restoration, localization parity, responsive baseline, a11y consistency. **No new product features.**
 
-**Current focus:** Phase 54 COMPLETE (2026-05-28). All 3 plans executed and committed; AUDIT-01..07 closed. Next step: `/gsd-plan-phase 55` (Tenant-isolation consolidation) — or a dedicated dependency-remediation pass for the 16 vulns recorded in 54-GATES.md.
+**Current focus:** Phase 54 COMPLETE + pushed. **Next task = remediate ALL dependency vulnerabilities** (see `.planning/HANDOFF-2026-05-28.md` for the full triage + playbook). Plan a dependency-security phase: bump `next` + `@clerk/nextjs` (clears the 2 criticals + ~12 highs) + `drizzle-orm` (SQL-injection high) + `js-cookie`, then sweep moderates; target `pnpm audit --audit-level=high` clean. Phase 55 (Tenant-isolation) comes after.
 
 ## Current Position
 
