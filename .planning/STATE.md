@@ -2,9 +2,9 @@
 gsd_state_version: 1.0
 milestone: v7.0
 milestone_name: Foundation & Quality
-status: Phase 54 complete 2026-05-28 — AUDIT-01..07 closed; exec-gates validated live (BLOCK+override)
-stopped_at: Phase 54 COMPLETE + pushed (origin/main @ 321914c). NEXT TASK (decided 2026-05-28): remediate ALL dependency vulnerabilities (2 crit / 14 high / 14 mod / 3 low) — concentrated in next + @clerk/nextjs + drizzle-orm + js-cookie bumps. Plan it as a GSD phase (plan→bump→test→verify), NOT a blind update. Full playbook + triage in .planning/HANDOFF-2026-05-28.md.
-last_updated: "2026-05-28T13:20:00.000Z"
+status: Phase 54.5 (dependency security remediation) COMPLETE 2026-05-28 — pnpm audit fully clean (0/0/0/0); dependency_audit gate override removed
+stopped_at: Phase 54.5 COMPLETE — all 33 dependency vulns remediated (2 crit / 14 high / 14 mod / 3 low -> 0/0/0/0). 6 atomic commits (382e11e, 8b61bbe, 37a8cba, 43ae35c, 013a9df, 9dca2e4) LOCAL on main, NOT pushed (push needs explicit David authorization). dependency_audit override removed from 54-GATES.md (regression override stays for Phase 58). NEXT TASK: Phase 55 — Tenant-isolation consolidation (TENANT-01..03), first v7.0 ADR. See .planning/phases/54.5-dependency-security-remediation/54.5-SUMMARY.md.
+last_updated: "2026-05-28T17:56:00.000Z"
 last_activity: 2026-05-28
 progress:
   total_phases: 8
@@ -36,14 +36,14 @@ Recent context:
 
 **Core value (this milestone):** Close architectural debt so v8.0 features land on a clean foundation. Audit-spine coverage, tenant-isolation consistency, change-log enum completeness, eslint guard coverage, E2E CI restoration, localization parity, responsive baseline, a11y consistency. **No new product features.**
 
-**Current focus:** Phase 54 COMPLETE + pushed. **Next task = remediate ALL dependency vulnerabilities** (see `.planning/HANDOFF-2026-05-28.md` for the full triage + playbook). Plan a dependency-security phase: bump `next` + `@clerk/nextjs` (clears the 2 criticals + ~12 highs) + `drizzle-orm` (SQL-injection high) + `js-cookie`, then sweep moderates; target `pnpm audit --audit-level=high` clean. Phase 55 (Tenant-isolation) comes after.
+**Current focus:** Phase 54.5 (dependency security remediation) COMPLETE — `pnpm audit` is fully clean (0 critical / 0 high / 0 moderate / 0 low, down from 33 vulns); the `dependency_audit` execution gate now passes WITHOUT an override (removed from 54-GATES.md). The 6 remediation commits are LOCAL on `main`, NOT yet pushed (push awaits explicit David authorization). **Next task = Phase 55 — Tenant-isolation consolidation** (TENANT-01..03; first v7.0 ADR lands here). See `.planning/phases/54.5-dependency-security-remediation/54.5-SUMMARY.md`.
 
 ## Current Position
 
-Phase: 54 — Audit-spine + eslint regex expansion (COMPLETE 2026-05-28)
-Plan: 3 plans / 2 waves — all executed (54-01 `81feeb0`, 54-02 `465dba5`, 54-03 `8d010d0`)
-Status: AUDIT-01..07 closed. typecheck + lint green; 1094 tests passing (only pre-existing imports.api env-harness suite fails). exec-gates ran live at production tier: regression + dependency_audit both BLOCKed, both overridden in 54-GATES.md.
-Last activity: 2026-05-28 — Phase 54 executed end-to-end with live execution-gate validation
+Phase: 54.5 — Dependency security remediation (COMPLETE 2026-05-28)
+Plan: standalone cross-cutting pass — 6 atomic commits (382e11e, 8b61bbe, 37a8cba, 43ae35c, 013a9df, 9dca2e4), LOCAL on main, NOT pushed
+Status: pnpm audit fully clean (0/0/0/0, was 33 vulns). typecheck + lint green; 1094 tests passing (only pre-existing imports.api env-harness suite fails). dependency_audit override REMOVED from 54-GATES.md — gate now passes on its own (engine verdict `pass`). regression override stays (Phase 58).
+Last activity: 2026-05-28 — Phase 54.5 remediated all dependency vulnerabilities; audit clean, gate cleared
 
 ### Phase 54 plan structure
 
@@ -58,6 +58,7 @@ Last activity: 2026-05-28 — Phase 54 executed end-to-end with live execution-g
 | # | Phase | Requirements | Status |
 |---|-------|--------------|--------|
 | 54 | Audit-spine + eslint regex expansion | AUDIT-01..07 | ✅ Complete (3 plans, 2026-05-28) |
+| 54.5 | Dependency security remediation | (ad-hoc cross-cutting) | ✅ Complete (6 commits, 2026-05-28) — audit 0/0/0/0 |
 | 55 | Tenant-isolation consolidation | TENANT-01..03 | Not started |
 | 56 | Change-log enum expansion | CHLOG-01..03 | Not started |
 | 57 | E2E CI rehab | E2E-01..04 | Not started |
