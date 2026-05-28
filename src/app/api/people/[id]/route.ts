@@ -22,11 +22,11 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
     // RV-02: ARCHITECTURE.md §6 reserves CUD on the people register for
     // admins. Tighten back from `planner`.
-    const { orgId } = await requireRole('admin');
+    const { orgId, userId } = await requireRole('admin');
     const { id } = await params;
     const body = await request.json();
     const data = personUpdateSchema.parse(body);
-    const person = await updatePerson(orgId, id, data);
+    const person = await updatePerson(orgId, userId, id, data);
     return NextResponse.json({ person });
   } catch (error) {
     return handleApiError(error);
@@ -35,9 +35,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   try {
-    const { orgId } = await requireRole('admin');
+    const { orgId, userId } = await requireRole('admin');
     const { id } = await params;
-    await deletePerson(orgId, id);
+    await deletePerson(orgId, userId, id);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     return handleApiError(error);

@@ -2,8 +2,12 @@ import { and, eq, ne, sql } from 'drizzle-orm';
 
 import { db } from '@/db';
 import * as schema from '@/db/schema';
-import { ConflictError, NotFoundError } from '@/lib/errors';
-import { withTenant } from '@/lib/tenant';
+import {
+  archiveRegisterRow,
+  createRegisterRow,
+  updateRegisterRow,
+} from '@/features/admin/register.service';
+import { NotFoundError } from '@/lib/errors';
 
 import type { ProgramCreate, ProgramUpdate } from './program.types';
 
@@ -37,49 +41,47 @@ export async function getProgramById(orgId: string, id: string) {
 /**
  * Create a new program scoped to the organization.
  */
-export async function createProgram(orgId: string, data: ProgramCreate) {
-  const rows = await withTenant(orgId)
-    .insertProgram({
-      name: data.name,
-      description: data.description ?? null,
-    })
-    .returning();
-  return rows[0];
+export async function createProgram(orgId: string, actorUserId: string, data: ProgramCreate) {
+  return createRegisterRow({
+    orgId,
+    actorUserId,
+    entity: 'program',
+    data,
+  });
 }
 
 /**
  * Update an existing program. Only provided fields are changed.
  * Throws NotFoundError if program not found or not in org.
  */
-export async function updateProgram(orgId: string, id: string, data: ProgramUpdate) {
-  const rows = await withTenant(orgId)
-    .updateProgram(id, { ...data, updatedAt: new Date() })
-    .returning();
-
-  if (rows.length === 0) {
-    throw new NotFoundError('Program', id);
-  }
-  return rows[0];
+export async function updateProgram(
+  orgId: string,
+  actorUserId: string,
+  id: string,
+  data: ProgramUpdate,
+) {
+  return updateRegisterRow({
+    orgId,
+    actorUserId,
+    entity: 'program',
+    id,
+    data,
+  });
 }
 
 /**
- * Delete a program. Checks usage count first and throws ConflictError if in use.
- * Throws NotFoundError if program not found or not in org.
+ * Archive a program. The dependent-row blocker (active projects) is enforced by
+ * archiveRegisterRow.collectBlockers, which throws ConflictError(
+ * 'DEPENDENT_ROWS_EXIST', { entity, id, blockers }) instead of the legacy
+ * usageCount shape. Throws NotFoundError if program not found or not in org.
  */
-export async function deleteProgram(orgId: string, id: string) {
-  const count = await getProgramUsageCount(orgId, id);
-  if (count > 0) {
-    throw new ConflictError(`Cannot delete program: ${count} projects are assigned to it`, {
-      usageCount: count,
-    });
-  }
-
-  const rows = await withTenant(orgId).deleteProgram(id).returning();
-
-  if (rows.length === 0) {
-    throw new NotFoundError('Program', id);
-  }
-  return rows[0];
+export async function deleteProgram(orgId: string, actorUserId: string, id: string) {
+  return archiveRegisterRow({
+    orgId,
+    actorUserId,
+    entity: 'program',
+    id,
+  });
 }
 
 /**

@@ -17,10 +17,10 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { orgId } = await requireRole('admin');
+    const { orgId, userId } = await requireRole('admin');
     const body = await request.json();
     const data = programCreateSchema.parse(body);
-    const program = await createProgram(orgId, data);
+    const program = await createProgram(orgId, userId, data);
     return NextResponse.json({ program }, { status: 201 });
   } catch (error) {
     return handleApiError(error);

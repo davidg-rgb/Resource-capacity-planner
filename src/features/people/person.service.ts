@@ -2,10 +2,14 @@ import { and, eq, ilike, isNull, or, sql } from 'drizzle-orm';
 
 import { db } from '@/db';
 import * as schema from '@/db/schema';
+import {
+  archiveRegisterRow,
+  createRegisterRow,
+  updateRegisterRow,
+} from '@/features/admin/register.service';
 import { calculateStatus } from '@/lib/capacity';
 import { getCurrentMonth } from '@/lib/date-utils';
 import { NotFoundError } from '@/lib/errors';
-import { withTenant } from '@/lib/tenant';
 
 import type { PersonCreate, PersonFilter, PersonUpdate, PersonWithStatus } from './person.types';
 
@@ -70,93 +74,49 @@ export async function getPersonById(orgId: string, id: string) {
 }
 
 /**
- * CR-04: verify discipline + department FK targets belong to the caller's
- * tenant. Zod only validates UUID format; without this guard a tenant-A admin
- * could create a person whose departmentId/disciplineId points at tenant B
- * rows, leaking foreign register names through joined queries.
+ * Create a new person scoped to the organization. Delegates to
+ * register.service.ts so the insert + its change_log row are written in one tx
+ * (ADR-003). FK tenant validation lives in the dispatcher.
  */
-async function assertRefsInTenant(
-  orgId: string,
-  refs: { disciplineId?: string; departmentId?: string },
-): Promise<void> {
-  if (refs.disciplineId !== undefined) {
-    const [discipline] = await db
-      .select({ id: schema.disciplines.id })
-      .from(schema.disciplines)
-      .where(
-        and(
-          eq(schema.disciplines.organizationId, orgId),
-          eq(schema.disciplines.id, refs.disciplineId),
-        ),
-      )
-      .limit(1);
-    if (!discipline) throw new NotFoundError('Discipline', refs.disciplineId);
-  }
-  if (refs.departmentId !== undefined) {
-    const [department] = await db
-      .select({ id: schema.departments.id })
-      .from(schema.departments)
-      .where(
-        and(
-          eq(schema.departments.organizationId, orgId),
-          eq(schema.departments.id, refs.departmentId),
-        ),
-      )
-      .limit(1);
-    if (!department) throw new NotFoundError('Department', refs.departmentId);
-  }
-}
-
-/**
- * Create a new person scoped to the organization.
- */
-export async function createPerson(orgId: string, data: PersonCreate) {
-  await assertRefsInTenant(orgId, {
-    disciplineId: data.disciplineId,
-    departmentId: data.departmentId,
+export async function createPerson(orgId: string, actorUserId: string, data: PersonCreate) {
+  return createRegisterRow({
+    orgId,
+    actorUserId,
+    entity: 'person',
+    data,
   });
-  const rows = await withTenant(orgId)
-    .insertPerson({
-      firstName: data.firstName,
-      lastName: data.lastName,
-      disciplineId: data.disciplineId,
-      departmentId: data.departmentId,
-      targetHoursPerMonth: data.targetHoursPerMonth ?? 160,
-    })
-    .returning();
-  return rows[0];
 }
 
 /**
  * Update an existing person. Only provided fields are changed.
  * Throws NotFoundError if person not found or not in org.
  */
-export async function updatePerson(orgId: string, id: string, data: PersonUpdate) {
-  await assertRefsInTenant(orgId, {
-    disciplineId: data.disciplineId,
-    departmentId: data.departmentId,
+export async function updatePerson(
+  orgId: string,
+  actorUserId: string,
+  id: string,
+  data: PersonUpdate,
+) {
+  return updateRegisterRow({
+    orgId,
+    actorUserId,
+    entity: 'person',
+    id,
+    data,
   });
-  const rows = await withTenant(orgId)
-    .updatePerson(id, { ...data, updatedAt: new Date() })
-    .returning();
-
-  if (rows.length === 0) {
-    throw new NotFoundError('Person', id);
-  }
-  return rows[0];
 }
 
 /**
  * Soft-delete a person by setting archivedAt.
  * Throws NotFoundError if person not found or not in org.
  */
-export async function deletePerson(orgId: string, id: string) {
-  const rows = await withTenant(orgId).updatePerson(id, { archivedAt: new Date() }).returning();
-
-  if (rows.length === 0) {
-    throw new NotFoundError('Person', id);
-  }
-  return rows[0];
+export async function deletePerson(orgId: string, actorUserId: string, id: string) {
+  return archiveRegisterRow({
+    orgId,
+    actorUserId,
+    entity: 'person',
+    id,
+  });
 }
 
 /**

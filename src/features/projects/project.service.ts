@@ -2,8 +2,12 @@ import { and, eq, ilike, ne } from 'drizzle-orm';
 
 import { db } from '@/db';
 import * as schema from '@/db/schema';
+import {
+  archiveRegisterRow,
+  createRegisterRow,
+  updateRegisterRow,
+} from '@/features/admin/register.service';
 import { NotFoundError } from '@/lib/errors';
-import { withTenant } from '@/lib/tenant';
 
 import type { ProjectCreate, ProjectFilter, ProjectUpdate } from './project.types';
 
@@ -55,43 +59,43 @@ export async function getProjectById(orgId: string, id: string) {
  * Create a new project scoped to the organization.
  * Duplicate names within the same org will trigger a Postgres unique_violation (23505).
  */
-export async function createProject(orgId: string, data: ProjectCreate) {
-  const rows = await withTenant(orgId)
-    .insertProject({
-      name: data.name,
-      programId: data.programId ?? null,
-      status: data.status ?? 'active',
-    })
-    .returning();
-  return rows[0];
+export async function createProject(orgId: string, actorUserId: string, data: ProjectCreate) {
+  return createRegisterRow({
+    orgId,
+    actorUserId,
+    entity: 'project',
+    data,
+  });
 }
 
 /**
  * Update an existing project. Only provided fields are changed.
  * Throws NotFoundError if project not found or not in org.
  */
-export async function updateProject(orgId: string, id: string, data: ProjectUpdate) {
-  const rows = await withTenant(orgId)
-    .updateProject(id, { ...data, updatedAt: new Date() })
-    .returning();
-
-  if (rows.length === 0) {
-    throw new NotFoundError('Project', id);
-  }
-  return rows[0];
+export async function updateProject(
+  orgId: string,
+  actorUserId: string,
+  id: string,
+  data: ProjectUpdate,
+) {
+  return updateRegisterRow({
+    orgId,
+    actorUserId,
+    entity: 'project',
+    id,
+    data,
+  });
 }
 
 /**
- * Archive a project by setting status to 'archived' and archivedAt timestamp.
- * Throws NotFoundError if project not found or not in org.
+ * Archive a project. register.service.ts preserves the v4 semantics of setting
+ * BOTH status='archived' AND archivedAt. Throws NotFoundError if not in org.
  */
-export async function archiveProject(orgId: string, id: string) {
-  const rows = await withTenant(orgId)
-    .updateProject(id, { status: 'archived', archivedAt: new Date() })
-    .returning();
-
-  if (rows.length === 0) {
-    throw new NotFoundError('Project', id);
-  }
-  return rows[0];
+export async function archiveProject(orgId: string, actorUserId: string, id: string) {
+  return archiveRegisterRow({
+    orgId,
+    actorUserId,
+    entity: 'project',
+    id,
+  });
 }

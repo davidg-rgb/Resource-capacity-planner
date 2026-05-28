@@ -2,8 +2,12 @@ import { and, eq, isNull, sql } from 'drizzle-orm';
 
 import { db } from '@/db';
 import * as schema from '@/db/schema';
-import { ConflictError, NotFoundError } from '@/lib/errors';
-import { withTenant } from '@/lib/tenant';
+import {
+  archiveRegisterRow,
+  createRegisterRow,
+  updateRegisterRow,
+} from '@/features/admin/register.service';
+import { NotFoundError } from '@/lib/errors';
 
 import type { DepartmentCreate, DepartmentUpdate } from './department.types';
 
@@ -37,46 +41,47 @@ export async function getDepartmentById(orgId: string, id: string) {
 /**
  * Create a new department scoped to the organization.
  */
-export async function createDepartment(orgId: string, data: DepartmentCreate) {
-  const rows = await withTenant(orgId)
-    .insertDepartment({
-      name: data.name,
-    })
-    .returning();
-  return rows[0];
+export async function createDepartment(orgId: string, actorUserId: string, data: DepartmentCreate) {
+  return createRegisterRow({
+    orgId,
+    actorUserId,
+    entity: 'department',
+    data,
+  });
 }
 
 /**
  * Update an existing department. Only provided fields are changed.
  * Throws NotFoundError if department not found or not in org.
  */
-export async function updateDepartment(orgId: string, id: string, data: DepartmentUpdate) {
-  const rows = await withTenant(orgId).updateDepartment(id, data).returning();
-
-  if (rows.length === 0) {
-    throw new NotFoundError('Department', id);
-  }
-  return rows[0];
+export async function updateDepartment(
+  orgId: string,
+  actorUserId: string,
+  id: string,
+  data: DepartmentUpdate,
+) {
+  return updateRegisterRow({
+    orgId,
+    actorUserId,
+    entity: 'department',
+    id,
+    data,
+  });
 }
 
 /**
- * Delete a department. Checks usage count first and throws ConflictError if in use.
- * Throws NotFoundError if department not found or not in org.
+ * Archive a department. The dependent-row blocker (assigned people) is enforced
+ * by archiveRegisterRow.collectBlockers, which throws ConflictError(
+ * 'DEPENDENT_ROWS_EXIST', { entity, id, blockers }) instead of the legacy
+ * usageCount shape. Throws NotFoundError if department not found or not in org.
  */
-export async function deleteDepartment(orgId: string, id: string) {
-  const count = await getDepartmentUsageCount(orgId, id);
-  if (count > 0) {
-    throw new ConflictError(`Cannot delete department: ${count} people are assigned to it`, {
-      usageCount: count,
-    });
-  }
-
-  const rows = await withTenant(orgId).deleteDepartment(id).returning();
-
-  if (rows.length === 0) {
-    throw new NotFoundError('Department', id);
-  }
-  return rows[0];
+export async function deleteDepartment(orgId: string, actorUserId: string, id: string) {
+  return archiveRegisterRow({
+    orgId,
+    actorUserId,
+    entity: 'department',
+    id,
+  });
 }
 
 /**

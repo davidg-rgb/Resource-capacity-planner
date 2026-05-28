@@ -18,10 +18,10 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { orgId } = await requireRole('admin');
+    const { orgId, userId } = await requireRole('admin');
     const body = await request.json();
     const data = departmentCreateSchema.parse(body);
-    const department = await createDepartment(orgId, data);
+    const department = await createDepartment(orgId, userId, data);
     return NextResponse.json({ department }, { status: 201 });
   } catch (error) {
     return handleApiError(error);

@@ -26,11 +26,11 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
-    const { orgId } = await requireRole('admin');
+    const { orgId, userId } = await requireRole('admin');
     const { id } = await params;
     const body = await request.json();
     const data = disciplineUpdateSchema.parse(body);
-    const discipline = await updateDiscipline(orgId, id, data);
+    const discipline = await updateDiscipline(orgId, userId, id, data);
     return NextResponse.json({ discipline });
   } catch (error) {
     return handleApiError(error);
@@ -39,9 +39,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
 export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   try {
-    const { orgId } = await requireRole('admin');
+    const { orgId, userId } = await requireRole('admin');
     const { id } = await params;
-    await deleteDiscipline(orgId, id);
+    await deleteDiscipline(orgId, userId, id);
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     return handleApiError(error);

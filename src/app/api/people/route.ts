@@ -40,10 +40,10 @@ export async function POST(request: NextRequest) {
     // RV-02: ARCHITECTURE.md §6 reserves CUD on the people register for
     // admins. The previous `planner` role check leaked write access to
     // any planner regardless of admin role.
-    const { orgId } = await requireRole('admin');
+    const { orgId, userId } = await requireRole('admin');
     const body = await request.json();
     const data = personCreateSchema.parse(body);
-    const person = await createPerson(orgId, data);
+    const person = await createPerson(orgId, userId, data);
     return NextResponse.json({ person }, { status: 201 });
   } catch (error) {
     return handleApiError(error);
