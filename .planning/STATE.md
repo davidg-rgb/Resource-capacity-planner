@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v7.0
 milestone_name: Foundation & Quality
-status: Phase 54 planned 2026-05-13 — ready to execute
-stopped_at: Phase 54 planned (3 plans, 2 waves); AUDIT-01..07 all covered; awaiting /gsd-execute-phase 54
-last_updated: "2026-05-13T00:00:00.000Z"
-last_activity: 2026-05-13
+status: Phase 54 complete 2026-05-28 — AUDIT-01..07 closed; exec-gates validated live (BLOCK+override)
+stopped_at: Phase 54 executed (3 plans, all green). exec-gates fired live at production tier — regression + dependency_audit both BLOCKed, both overridden with auditable reasons in 54-GATES.md. Next: Phase 55 (Tenant-isolation consolidation), or remediate the two overrides (dep vulns; Phase 58 env-harness).
+last_updated: "2026-05-28T13:20:00.000Z"
+last_activity: 2026-05-28
 progress:
   total_phases: 8
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 3
-  completed_plans: 0
-  percent: 0
+  completed_plans: 3
+  percent: 13
 ---
 
 # Nordic Capacity -- Project State
@@ -36,14 +36,14 @@ Recent context:
 
 **Core value (this milestone):** Close architectural debt so v8.0 features land on a clean foundation. Audit-spine coverage, tenant-isolation consistency, change-log enum completeness, eslint guard coverage, E2E CI restoration, localization parity, responsive baseline, a11y consistency. **No new product features.**
 
-**Current focus:** Phase 54 planned. Next step: `/gsd-execute-phase 54` to run 3 plans across 2 waves (54-01 + 54-02 parallel, then 54-03).
+**Current focus:** Phase 54 COMPLETE (2026-05-28). All 3 plans executed and committed; AUDIT-01..07 closed. Next step: `/gsd-plan-phase 55` (Tenant-isolation consolidation) — or a dedicated dependency-remediation pass for the 16 vulns recorded in 54-GATES.md.
 
 ## Current Position
 
-Phase: 54 — Audit-spine + eslint regex expansion (planned, ready to execute)
-Plan: 3 plans / 2 waves
-Status: Plans verified by gsd-plan-checker (VERIFICATION PASSED, 0 blockers); AUDIT-01..07 fully covered
-Last activity: 2026-05-13 — Phase 54 research (582 lines), planning (3 plans), and verification complete
+Phase: 54 — Audit-spine + eslint regex expansion (COMPLETE 2026-05-28)
+Plan: 3 plans / 2 waves — all executed (54-01 `81feeb0`, 54-02 `465dba5`, 54-03 `8d010d0`)
+Status: AUDIT-01..07 closed. typecheck + lint green; 1094 tests passing (only pre-existing imports.api env-harness suite fails). exec-gates ran live at production tier: regression + dependency_audit both BLOCKed, both overridden in 54-GATES.md.
+Last activity: 2026-05-28 — Phase 54 executed end-to-end with live execution-gate validation
 
 ### Phase 54 plan structure
 
@@ -57,7 +57,7 @@ Last activity: 2026-05-13 — Phase 54 research (582 lines), planning (3 plans),
 
 | # | Phase | Requirements | Status |
 |---|-------|--------------|--------|
-| 54 | Audit-spine + eslint regex expansion | AUDIT-01..07 | Planned (3 plans, ready to execute) |
+| 54 | Audit-spine + eslint regex expansion | AUDIT-01..07 | ✅ Complete (3 plans, 2026-05-28) |
 | 55 | Tenant-isolation consolidation | TENANT-01..03 | Not started |
 | 56 | Change-log enum expansion | CHLOG-01..03 | Not started |
 | 57 | E2E CI rehab | E2E-01..04 | Not started |
