@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v7.0
 milestone_name: Foundation & Quality
-status: Phase 55 (Tenant-isolation consolidation) COMPLETE 2026-05-28 — withTenant removed, direct-predicate standard, ADR-V7-01, rejected-pattern guard
-stopped_at: Phase 55 COMPLETE — TENANT-01..03 closed. Removed withTenant() wrapper (1 vestigial usage), standardized on requireRole+orgId+direct organizationId predicate (139 sites), first v7.0 ADR (ADR-V7-01), tightened tenant-isolation.static.test.ts with a rejected-pattern guard. typecheck+lint green; 1095 tests pass (only pre-existing imports.api fails). Phase 54.5 (dependency remediation) was PUSHED earlier this session (origin/main @ aa2c823, audit 0/0/0/0). Phase 55 commits are LOCAL, NOT yet pushed. NEXT TASK: Phase 56 — Change-log enum expansion (CHLOG-01..03). See .planning/phases/55-tenant-isolation-consolidation/55-SUMMARY.md.
-last_updated: "2026-05-28T19:30:00.000Z"
-last_activity: 2026-05-28
+status: Phase 56 (Change-log enum expansion) COMPLETE 2026-05-31 — scenario + import_session mutations now on the audit spine; migration 0010
+stopped_at: Phase 56 COMPLETE — CHLOG-01..03 closed. Migration 0010 adds 3 change_log_entity + 6 change_log_action values (hand-written idempotent ADD VALUE IF NOT EXISTS, journaled idx 9). All five @no-change-log hatches removed: createScenario (now tx-wrapped) / updateScenario / deleteScenario / upsertScenarioAllocations (one row/op, counts in context) / parseAndStageActuals (IMPORT_SESSION_STAGED) / cancelStaged (IMPORT_SESSION_CANCELLED); commit stays under import_batch (no double-log). userId threaded through allocations PUT + imports DELETE routes. typecheck + lint (incl check:mutations-manifest) green; 1101 tests pass (+6; only pre-existing imports.api env-harness suite fails — regression override in 56-GATES.md). Phase 55 was PUSHED this session (origin/main @ ef345d6). Phase 56 commits are LOCAL, NOT yet pushed. IRREVERSIBLE STEP PENDING: migration 0010 not yet applied to prod-equivalent DB (no DROP VALUE in Postgres). NEXT TASK: Phase 57 — E2E CI rehab (E2E-01..04) OR Phase 58 dev-env harness (unblocks imports.api). See .planning/phases/56-change-log-enum-expansion/56-SUMMARY.md.
+last_updated: "2026-05-31T12:30:00.000Z"
+last_activity: 2026-05-31
 progress:
   total_phases: 8
-  completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
-  percent: 25
+  completed_phases: 3
+  total_plans: 5
+  completed_plans: 5
+  percent: 38
 ---
 
 # Nordic Capacity -- Project State
@@ -36,14 +36,14 @@ Recent context:
 
 **Core value (this milestone):** Close architectural debt so v8.0 features land on a clean foundation. Audit-spine coverage, tenant-isolation consistency, change-log enum completeness, eslint guard coverage, E2E CI restoration, localization parity, responsive baseline, a11y consistency. **No new product features.**
 
-**Current focus:** Phase 55 (Tenant-isolation consolidation) COMPLETE — TENANT-01..03 closed. ADR-V7-01 (first v7.0 ADR) records the decision to REMOVE the `withTenant()` wrapper and standardize on `requireRole()`+`orgId`+direct `organizationId` predicates (census made it lopsided: 139 direct sites vs 1 vestigial wrapper usage). `src/lib/tenant.ts` deleted; the lone caller migrated; `tenant-isolation.static.test.ts` tightened to `requireRole+orgId` only + a rejected-pattern guard so the wrapper can't return. Phase 54.5 (dependency remediation) was pushed earlier this session (`origin/main @ aa2c823`, audit 0/0/0/0); Phase 55 commits are LOCAL, not yet pushed. **Next task = Phase 56 — Change-log enum expansion** (CHLOG-01..03). See `.planning/phases/55-tenant-isolation-consolidation/55-SUMMARY.md`.
+**Current focus:** Phase 56 (Change-log enum expansion) COMPLETE — CHLOG-01..03 closed. The universal `change_log` audit spine now covers `scenario`, `scenario_allocation`, and `import_session` mutations (the last three `@no-change-log` hatches removed). Migration `0010` adds those 3 entity values + 6 action values (`SCENARIO_CREATED/UPDATED/DELETED`, `SCENARIO_ALLOCATIONS_UPSERTED`, `IMPORT_SESSION_STAGED/CANCELLED`) — hand-written idempotent `ADD VALUE IF NOT EXISTS` because the drizzle snapshot froze at `0006` (repo convention: `0007`+ are raw-SQL). `createScenario` is now transactional (ADR-003). Commit stays audited under `import_batch` (no double-log). **IRREVERSIBLE STEP PENDING:** migration `0010` is committed but NOT yet applied to the prod-equivalent DB. Phase 55 was pushed this session (`origin/main @ ef345d6`); Phase 56 commits are LOCAL, not yet pushed. **Next task = Phase 57 (E2E CI rehab) or Phase 58 (dev-env harness — would unblock the imports.api suite).** See `.planning/phases/56-change-log-enum-expansion/56-SUMMARY.md`.
 
 ## Current Position
 
-Phase: 55 — Tenant-isolation consolidation (COMPLETE 2026-05-28)
-Plan: standalone — TENANT-01 (ADR-V7-01), TENANT-02 (migrate seedDefaults + delete src/lib/tenant.ts), TENANT-03 (tighten static invariant + rejected-pattern guard). Commits LOCAL on main, NOT yet pushed.
-Status: withTenant() removed; direct-predicate is the single pattern (139 sites); `grep withTenant( src` → 0. typecheck + lint green; 1095 tests passing (+1 = new rejected-pattern test; only pre-existing imports.api env-harness suite fails). pnpm audit still clean (0/0/0/0). Earlier this session: Phase 54.5 dependency remediation pushed (origin/main @ aa2c823).
-Last activity: 2026-05-28 — Phase 55 consolidated tenant scoping to one pattern, guarded against regression
+Phase: 56 — Change-log enum expansion (COMPLETE 2026-05-31)
+Plan: 56-01 enum expansion (migration 0010) · 56-02 service wiring · 56-03 tests + manifest — executed inline. Commits LOCAL on main, NOT yet pushed.
+Status: scenario + import_session lifecycle mutations audited; 5 `@no-change-log` hatches removed; migration 0010 committed (NOT applied to prod-equivalent DB yet). typecheck + lint (incl check:mutations-manifest) green; 1101 tests passing (+6 from the new phase-56 contract+smoke suite; only pre-existing imports.api env-harness suite fails — regression override recorded in 56-GATES.md). pnpm audit clean (0/0/0/0). Production-tier exec-gates pass.
+Last activity: 2026-05-31 — Phase 56 brought scenario + import_session mutations onto the change_log audit spine
 
 ### Phase 54 plan structure
 

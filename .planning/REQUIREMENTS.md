@@ -31,9 +31,9 @@ Decide and execute the `withTenant()` coverage decision. Currently 8 of 16 tenan
 
 Three entity types never made it into the `change_log_entity` enum, so their mutations are silently `@no-change-log`. Source: deferred from 2026-05-10 audit (v7.0 audit-coverage expansion).
 
-- [ ] **CHLOG-01**: Schema migration adds `scenario`, `scenario_allocation`, `import_session` to `change_log_entity` enum
-- [ ] **CHLOG-02**: Remove `@no-change-log` escape hatches from scenario service mutations that wrote them via the deferred enum
-- [ ] **CHLOG-03**: Mutations-manifest regenerated; CI invariant `check:mutations-manifest` passes
+- [x] **CHLOG-01**: Schema migration adds `scenario`, `scenario_allocation`, `import_session` to `change_log_entity` enum (Done 2026-05-31, migration 0010; also added 6 `change_log_action` values)
+- [x] **CHLOG-02**: Remove `@no-change-log` escape hatches from scenario service mutations that wrote them via the deferred enum (Done 2026-05-31; also import_session staged/cancelled)
+- [x] **CHLOG-03**: Mutations-manifest regenerated; CI invariant `check:mutations-manifest` passes (Done 2026-05-31)
 
 ### E2E CI Rehab (QUALITY)
 
@@ -121,9 +121,9 @@ Three a11y categories surfaced by 2026-05-11 frontend audit Phase 6 review as de
 | TENANT-01 | Phase 55 | Done (2026-05-28) |
 | TENANT-02 | Phase 55 | Done (2026-05-28) |
 | TENANT-03 | Phase 55 | Done (2026-05-28) |
-| CHLOG-01 | Phase 56 | Pending |
-| CHLOG-02 | Phase 56 | Pending |
-| CHLOG-03 | Phase 56 | Pending |
+| CHLOG-01 | Phase 56 | Done (2026-05-31) |
+| CHLOG-02 | Phase 56 | Done (2026-05-31) |
+| CHLOG-03 | Phase 56 | Done (2026-05-31) |
 | E2E-01 | Phase 57 | Pending |
 | E2E-02 | Phase 57 | Pending |
 | E2E-03 | Phase 57 | Pending |

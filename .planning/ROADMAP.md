@@ -97,9 +97,9 @@
 
 ### v7.0 Foundation & Quality (Phases 54-61)
 
-- [ ] **Phase 54: Audit-spine + eslint regex expansion** — Route 5 legacy register services through `register.service.ts` so every register-table mutation emits a `change_log` row; expand `MUTATION_PREFIX_REGEX` to cover `execute|promote|apply|cancel|stage` verbs.
+- [x] **Phase 54: Audit-spine + eslint regex expansion** — Route 5 legacy register services through `register.service.ts` so every register-table mutation emits a `change_log` row; expand `MUTATION_PREFIX_REGEX` to cover `execute|promote|apply|cancel|stage` verbs. (Done 2026-05-28: AUDIT-01..07, verified PASS `321914c`. Phase 54.5 dependency remediation pushed separately.)
 - [x] **Phase 55: Tenant-isolation consolidation** — ADR-driven decision on `withTenant()` scope, then full execution so coverage is binary (all or none), guarded by a runtime invariant. (Done 2026-05-28: removed the wrapper, standardized direct predicates, ADR-V7-01.)
-- [ ] **Phase 56: Change-log enum expansion** — Add `scenario`, `scenario_allocation`, `import_session` to `change_log_entity` enum via schema migration; remove `@no-change-log` escape hatches that depended on the deferred enum.
+- [x] **Phase 56: Change-log enum expansion** — Add `scenario`, `scenario_allocation`, `import_session` to `change_log_entity` enum via schema migration; remove `@no-change-log` escape hatches that depended on the deferred enum. (Done 2026-05-31: migration 0010 + 6 new `change_log_action` values; all scenario + import_session lifecycle mutations now audited; 1101 tests pass. Migration not yet applied to prod-equivalent DB — see 56-SUMMARY.)
 - [ ] **Phase 57: E2E CI rehab** — Diagnose Clerk-key blocker, restore the Playwright CI job disabled on 2026-04-28, prove the 11-spec persona suite + axe-core a11y assertions run green.
 - [ ] **Phase 58: Dev-env harness fixes** — Three documented harness gaps from STATE.md Blockers so local + CI test runs are unblocked.
 - [ ] **Phase 59: Localization completeness** — Move remaining hardcoded sv/en strings to i18n bundles and add a sv↔en parity invariant; absorbs deferred v3.0 Phase 22 Swedish localization scope.
@@ -143,7 +143,7 @@
   2. The scenario service mutations that previously carried `@no-change-log` escape hatches now write a row to `change_log` with the correct entity type, verified by a contract test per entity
   3. `npm run check:mutations-manifest` passes after regeneration; the manifest lists the three new entity types
   4. `change_log` row count increments by 1 for a "create scenario → add scenario_allocation → commit import_session" smoke test
-**Plans**: TBD
+**Plans**: 56-01 enum expansion (migration 0010) · 56-02 service wiring · 56-03 tests + manifest — executed inline 2026-05-31; see 56-PLAN.md / 56-SUMMARY.md (DONE)
 
 ### Phase 57: E2E CI rehab
 **Goal**: The Playwright CI job runs green on every PR push to main, exercising the full 11-spec persona journey suite plus axe-core a11y assertions; no more disabled job sitting in `.github/workflows/`.
