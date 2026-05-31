@@ -105,123 +105,140 @@ export async function listScenarios(orgId: string, _userId: string): Promise<Sce
   });
 }
 
-/**
- * @no-change-log scenarios + scenarioAllocations + scenarioTempEntities are
- * workspace-local models not on the audit spine — `scenario` is not in
- * changeLogEntityEnum. The only spine-relevant mutation here is
- * promoteAllocations (which DOES audit, see HI-01). Adding scenario entities
- * to the change_log requires an enum migration; tracked as v7.0 audit-coverage
- * expansion (CODE-REVIEW MED-03 follow-up).
- */
+// Phase 56 (CHLOG-02): scenario mutations are on the audit spine. createScenario
+// runs in a transaction so the scenario insert, the allocation snapshot, and the
+// SCENARIO_CREATED change_log row commit atomically (ADR-003: recordChange inside
+// the mutation's own tx).
 export async function createScenario(
   orgId: string,
   userId: string,
   data: CreateScenarioRequest,
 ): Promise<Scenario> {
-  // Check user limit
-  const [userCount] = await db
-    .select({ count: drizzleCount() })
-    .from(schema.scenarios)
-    .where(
-      and(
-        eq(schema.scenarios.organizationId, orgId),
-        eq(schema.scenarios.createdBy, userId),
-        sql`${schema.scenarios.status} != 'archived'`,
-      ),
+  return db.transaction(async (tx) => {
+    // Check user limit
+    const [userCount] = await tx
+      .select({ count: drizzleCount() })
+      .from(schema.scenarios)
+      .where(
+        and(
+          eq(schema.scenarios.organizationId, orgId),
+          eq(schema.scenarios.createdBy, userId),
+          sql`${schema.scenarios.status} != 'archived'`,
+        ),
+      );
+
+    if (Number(userCount?.count ?? 0) >= MAX_SCENARIOS_PER_USER) {
+      throw new ValidationError(
+        `Maximum ${MAX_SCENARIOS_PER_USER} scenarios per user. Archive or delete one to create a new one.`,
+      );
+    }
+
+    // Check org limit
+    const [orgCount] = await tx
+      .select({ count: drizzleCount() })
+      .from(schema.scenarios)
+      .where(
+        and(
+          eq(schema.scenarios.organizationId, orgId),
+          sql`${schema.scenarios.status} != 'archived'`,
+        ),
+      );
+
+    if (Number(orgCount?.count ?? 0) >= MAX_SCENARIOS_PER_ORG) {
+      throw new ValidationError(
+        `Maximum ${MAX_SCENARIOS_PER_ORG} scenarios per organization. Archive or delete one to create a new one.`,
+      );
+    }
+
+    // Create scenario
+    const [scenario] = await tx
+      .insert(schema.scenarios)
+      .values({
+        organizationId: orgId,
+        name: data.name,
+        description: data.description ?? null,
+        createdBy: userId,
+        status: 'draft',
+        visibility: 'private',
+      })
+      .returning();
+
+    if (!scenario) throw new InternalError('Failed to create scenario');
+
+    // Snapshot current allocations into scenario_allocations
+    if (data.baseScenarioId) {
+      // Clone from existing scenario
+      const baseScenario = await getScenarioOrThrow(data.baseScenarioId, orgId);
+      await tx.execute(sql`
+        INSERT INTO scenario_allocations (
+          scenario_id, organization_id, person_id, temp_entity_id,
+          project_id, temp_project_name, month, hours,
+          is_modified, is_new, is_removed
+        )
+        SELECT
+          ${scenario.id}, organization_id, person_id, temp_entity_id,
+          project_id, temp_project_name, month, hours,
+          is_modified, is_new, is_removed
+        FROM scenario_allocations
+        WHERE scenario_id = ${baseScenario.id}
+          AND promoted_at IS NULL
+      `);
+    } else {
+      // Snapshot from actual allocations
+      await tx.execute(sql`
+        INSERT INTO scenario_allocations (
+          scenario_id, organization_id, person_id,
+          project_id, month, hours,
+          is_modified, is_new, is_removed
+        )
+        SELECT
+          ${scenario.id}, organization_id, person_id,
+          project_id, month, hours,
+          false, false, false
+        FROM allocations
+        WHERE organization_id = ${orgId}
+      `);
+    }
+
+    await recordChange(
+      {
+        orgId,
+        actorPersonaId: userId,
+        entity: 'scenario',
+        entityId: scenario.id,
+        action: 'SCENARIO_CREATED',
+        previousValue: null,
+        newValue: {
+          id: scenario.id,
+          name: scenario.name,
+          description: scenario.description,
+          status: scenario.status,
+          visibility: scenario.visibility,
+        },
+        context: { source: 'scenarios.create', baseScenarioId: data.baseScenarioId ?? null },
+      },
+      tx,
     );
 
-  if (Number(userCount?.count ?? 0) >= MAX_SCENARIOS_PER_USER) {
-    throw new ValidationError(
-      `Maximum ${MAX_SCENARIOS_PER_USER} scenarios per user. Archive or delete one to create a new one.`,
-    );
-  }
-
-  // Check org limit
-  const [orgCount] = await db
-    .select({ count: drizzleCount() })
-    .from(schema.scenarios)
-    .where(
-      and(
-        eq(schema.scenarios.organizationId, orgId),
-        sql`${schema.scenarios.status} != 'archived'`,
-      ),
-    );
-
-  if (Number(orgCount?.count ?? 0) >= MAX_SCENARIOS_PER_ORG) {
-    throw new ValidationError(
-      `Maximum ${MAX_SCENARIOS_PER_ORG} scenarios per organization. Archive or delete one to create a new one.`,
-    );
-  }
-
-  // Create scenario
-  const [scenario] = await db
-    .insert(schema.scenarios)
-    .values({
-      organizationId: orgId,
-      name: data.name,
-      description: data.description ?? null,
-      createdBy: userId,
-      status: 'draft',
-      visibility: 'private',
-    })
-    .returning();
-
-  if (!scenario) throw new InternalError('Failed to create scenario');
-
-  // Snapshot current allocations into scenario_allocations
-  if (data.baseScenarioId) {
-    // Clone from existing scenario
-    const baseScenario = await getScenarioOrThrow(data.baseScenarioId, orgId);
-    await db.execute(sql`
-      INSERT INTO scenario_allocations (
-        scenario_id, organization_id, person_id, temp_entity_id,
-        project_id, temp_project_name, month, hours,
-        is_modified, is_new, is_removed
-      )
-      SELECT
-        ${scenario.id}, organization_id, person_id, temp_entity_id,
-        project_id, temp_project_name, month, hours,
-        is_modified, is_new, is_removed
-      FROM scenario_allocations
-      WHERE scenario_id = ${baseScenario.id}
-        AND promoted_at IS NULL
-    `);
-  } else {
-    // Snapshot from actual allocations
-    await db.execute(sql`
-      INSERT INTO scenario_allocations (
-        scenario_id, organization_id, person_id,
-        project_id, month, hours,
-        is_modified, is_new, is_removed
-      )
-      SELECT
-        ${scenario.id}, organization_id, person_id,
-        project_id, month, hours,
-        false, false, false
-      FROM allocations
-      WHERE organization_id = ${orgId}
-    `);
-  }
-
-  return {
-    id: scenario.id,
-    organizationId: scenario.organizationId,
-    name: scenario.name,
-    description: scenario.description,
-    status: scenario.status,
-    visibility: scenario.visibility,
-    createdBy: scenario.createdBy,
-    baselineSnapshotAt: scenario.baselineSnapshotAt.toISOString(),
-    createdAt: scenario.createdAt.toISOString(),
-    updatedAt: scenario.updatedAt.toISOString(),
-  };
+    return {
+      id: scenario.id,
+      organizationId: scenario.organizationId,
+      name: scenario.name,
+      description: scenario.description,
+      status: scenario.status,
+      visibility: scenario.visibility,
+      createdBy: scenario.createdBy,
+      baselineSnapshotAt: scenario.baselineSnapshotAt.toISOString(),
+      createdAt: scenario.createdAt.toISOString(),
+      updatedAt: scenario.updatedAt.toISOString(),
+    };
+  });
 }
 
 export async function getScenario(orgId: string, scenarioId: string): Promise<Scenario> {
   return getScenarioOrThrow(scenarioId, orgId);
 }
 
-/** @no-change-log scenario entity not on audit spine — see createScenario. */
 export async function updateScenario(
   orgId: string,
   scenarioId: string,
@@ -235,34 +252,59 @@ export async function updateScenario(
     throw new ForbiddenError('Only the scenario creator can update this scenario');
   }
 
-  const [updated] = await db
-    .update(schema.scenarios)
-    .set({
-      ...(data.name !== undefined && { name: data.name }),
-      ...(data.description !== undefined && { description: data.description }),
-      ...(data.status !== undefined && { status: data.status }),
-      ...(data.visibility !== undefined && { visibility: data.visibility }),
-    })
-    .where(and(eq(schema.scenarios.id, scenarioId), eq(schema.scenarios.organizationId, orgId)))
-    .returning();
+  return db.transaction(async (tx) => {
+    const [updated] = await tx
+      .update(schema.scenarios)
+      .set({
+        ...(data.name !== undefined && { name: data.name }),
+        ...(data.description !== undefined && { description: data.description }),
+        ...(data.status !== undefined && { status: data.status }),
+        ...(data.visibility !== undefined && { visibility: data.visibility }),
+      })
+      .where(and(eq(schema.scenarios.id, scenarioId), eq(schema.scenarios.organizationId, orgId)))
+      .returning();
 
-  if (!updated) throw new NotFoundError('Scenario', scenarioId);
+    if (!updated) throw new NotFoundError('Scenario', scenarioId);
 
-  return {
-    id: updated.id,
-    organizationId: updated.organizationId,
-    name: updated.name,
-    description: updated.description,
-    status: updated.status,
-    visibility: updated.visibility,
-    createdBy: updated.createdBy,
-    baselineSnapshotAt: updated.baselineSnapshotAt.toISOString(),
-    createdAt: updated.createdAt.toISOString(),
-    updatedAt: updated.updatedAt.toISOString(),
-  };
+    await recordChange(
+      {
+        orgId,
+        actorPersonaId: userId,
+        entity: 'scenario',
+        entityId: updated.id,
+        action: 'SCENARIO_UPDATED',
+        previousValue: {
+          name: existing.name,
+          description: existing.description,
+          status: existing.status,
+          visibility: existing.visibility,
+        },
+        newValue: {
+          name: updated.name,
+          description: updated.description,
+          status: updated.status,
+          visibility: updated.visibility,
+        },
+        context: { source: 'scenarios.update' },
+      },
+      tx,
+    );
+
+    return {
+      id: updated.id,
+      organizationId: updated.organizationId,
+      name: updated.name,
+      description: updated.description,
+      status: updated.status,
+      visibility: updated.visibility,
+      createdBy: updated.createdBy,
+      baselineSnapshotAt: updated.baselineSnapshotAt.toISOString(),
+      createdAt: updated.createdAt.toISOString(),
+      updatedAt: updated.updatedAt.toISOString(),
+    };
+  });
 }
 
-/** @no-change-log scenario entity not on audit spine — see createScenario. */
 export async function deleteScenario(
   orgId: string,
   scenarioId: string,
@@ -274,10 +316,31 @@ export async function deleteScenario(
     throw new ForbiddenError('Only the scenario creator can delete this scenario');
   }
 
-  // Cascade delete handles allocations and temp entities
-  await db
-    .delete(schema.scenarios)
-    .where(and(eq(schema.scenarios.id, scenarioId), eq(schema.scenarios.organizationId, orgId)));
+  await db.transaction(async (tx) => {
+    // Cascade delete handles allocations and temp entities
+    await tx
+      .delete(schema.scenarios)
+      .where(and(eq(schema.scenarios.id, scenarioId), eq(schema.scenarios.organizationId, orgId)));
+
+    await recordChange(
+      {
+        orgId,
+        actorPersonaId: userId,
+        entity: 'scenario',
+        entityId: scenarioId,
+        action: 'SCENARIO_DELETED',
+        previousValue: {
+          name: existing.name,
+          description: existing.description,
+          status: existing.status,
+          visibility: existing.visibility,
+        },
+        newValue: null,
+        context: { source: 'scenarios.delete' },
+      },
+      tx,
+    );
+  });
 }
 
 // ---------------------------------------------------------------------------
@@ -323,10 +386,10 @@ export async function getScenarioAllocations(orgId: string, scenarioId: string) 
   return rows;
 }
 
-/** @no-change-log scenarioAllocations not on audit spine — see createScenario. */
 export async function upsertScenarioAllocations(
   orgId: string,
   scenarioId: string,
+  userId: string,
   allocations: ScenarioAllocationUpsert[],
 ) {
   await getScenarioOrThrow(scenarioId, orgId);
@@ -358,6 +421,8 @@ export async function upsertScenarioAllocations(
     }
 
     const results = [];
+    let createdCount = 0;
+    let updatedCount = 0;
 
     for (const alloc of allocations) {
       const monthDate = alloc.month.length === 7 ? `${alloc.month}-01` : alloc.month;
@@ -375,6 +440,7 @@ export async function upsertScenarioAllocations(
           .where(eq(schema.scenarioAllocations.id, existingId))
           .returning();
         results.push(updated);
+        updatedCount += 1;
       } else {
         const [inserted] = await tx
           .insert(schema.scenarioAllocations)
@@ -393,8 +459,31 @@ export async function upsertScenarioAllocations(
           })
           .returning();
         results.push(inserted);
+        createdCount += 1;
       }
     }
+
+    // Phase 56 (CHLOG-02): one audit row per upsert operation; per-row counts in
+    // context rather than one change_log row per allocation (which would be noise).
+    await recordChange(
+      {
+        orgId,
+        actorPersonaId: userId,
+        entity: 'scenario_allocation',
+        entityId: scenarioId,
+        action: 'SCENARIO_ALLOCATIONS_UPSERTED',
+        previousValue: null,
+        newValue: null,
+        context: {
+          source: 'scenarios.allocations.upsert',
+          scenarioId,
+          created: createdCount,
+          updated: updatedCount,
+          total: allocations.length,
+        },
+      },
+      tx,
+    );
 
     return results;
   });

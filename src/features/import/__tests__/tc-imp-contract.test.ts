@@ -135,7 +135,7 @@ beforeAll(async () => {
     );
     CREATE TYPE change_log_entity AS ENUM (
       'allocation','proposal','actual_entry','person','project',
-      'department','discipline','import_batch'
+      'department','discipline','import_batch','import_session'
     );
     CREATE TYPE change_log_action AS ENUM (
       'ALLOCATION_EDITED','ALLOCATION_HISTORIC_EDITED','ALLOCATION_BULK_COPIED',
@@ -143,7 +143,7 @@ beforeAll(async () => {
       'PROPOSAL_WITHDRAWN','PROPOSAL_EDITED',
       'ACTUALS_BATCH_COMMITTED','ACTUALS_BATCH_ROLLED_BACK',
       'REGISTER_ROW_CREATED','REGISTER_ROW_UPDATED','REGISTER_ROW_DELETED',
-      'ACTUAL_UPSERTED'
+      'ACTUAL_UPSERTED','IMPORT_SESSION_STAGED','IMPORT_SESSION_CANCELLED'
     );
     CREATE TABLE change_log (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

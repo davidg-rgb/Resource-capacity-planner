@@ -6,7 +6,7 @@ import {
   upsertScenarioAllocations,
 } from '@/features/scenarios/scenario.service';
 import { handleApiError } from '@/lib/api-utils';
-import { getTenantId } from '@/lib/auth';
+import { getTenantId, requireRole } from '@/lib/auth';
 
 // ---------------------------------------------------------------------------
 // Validation
@@ -42,10 +42,12 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 /** PUT /api/scenarios/:id/allocations — upsert scenario allocations */
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
-    const orgId = await getTenantId();
+    // Phase 56 (CHLOG-02): writes need the actor for the change_log row, and
+    // mutating scenario inputs requires planner+ (matches POST /api/scenarios).
+    const { orgId, userId } = await requireRole('planner');
     const { id } = await params;
     const body = putAllocationsSchema.parse(await request.json());
-    const results = await upsertScenarioAllocations(orgId, id, body.allocations);
+    const results = await upsertScenarioAllocations(orgId, id, userId, body.allocations);
     return NextResponse.json({ results });
   } catch (error) {
     return handleApiError(error);

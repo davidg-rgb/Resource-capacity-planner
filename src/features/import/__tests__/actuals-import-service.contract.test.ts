@@ -106,7 +106,7 @@ async function setupSchema() {
     );
     CREATE TYPE change_log_entity AS ENUM (
       'allocation','proposal','actual_entry','person','project',
-      'department','discipline','import_batch'
+      'department','discipline','import_batch','import_session'
     );
     CREATE TYPE change_log_action AS ENUM (
       'ALLOCATION_EDITED','ALLOCATION_HISTORIC_EDITED','ALLOCATION_BULK_COPIED',
@@ -114,7 +114,7 @@ async function setupSchema() {
       'PROPOSAL_WITHDRAWN','PROPOSAL_EDITED',
       'ACTUALS_BATCH_COMMITTED','ACTUALS_BATCH_ROLLED_BACK',
       'REGISTER_ROW_CREATED','REGISTER_ROW_UPDATED','REGISTER_ROW_DELETED',
-      'ACTUAL_UPSERTED'
+      'ACTUAL_UPSERTED','IMPORT_SESSION_STAGED','IMPORT_SESSION_CANCELLED'
     );
     CREATE TABLE change_log (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -168,11 +168,6 @@ function buildXlsx(rows: Array<[string, string, string, number]>): ArrayBuffer {
   XLSX.utils.book_append_sheet(wb, ws, 'Utfall');
   const out = XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
   return out as ArrayBuffer;
-}
-
-async function changeLogCount(): Promise<number> {
-  const r = await testDb.execute(sql`SELECT count(*)::int AS c FROM change_log`);
-  return (r.rows[0] as { c: number }).c;
 }
 
 async function stage(rows: Array<[string, string, string, number]>): Promise<string> {
@@ -258,10 +253,21 @@ describe('TC-AC-007: commit happy path writes actual_entries + one change_log ro
       expect(r.importBatchId).toBe(result.batchId);
     }
 
-    expect(await changeLogCount()).toBe(1);
-    const logs = await testDb.select().from(schema.changeLog);
-    expect(logs[0].action).toBe('ACTUALS_BATCH_COMMITTED');
-    expect(logs[0].entity).toBe('import_batch');
+    // Commit writes exactly ONE aggregate change_log row (not one per daily row).
+    // Phase 56: staging earlier wrote a separate IMPORT_SESSION_STAGED row, so we
+    // scope this invariant to the commit action rather than the raw total.
+    const commitLogs = await testDb
+      .select()
+      .from(schema.changeLog)
+      .where(eq(schema.changeLog.action, 'ACTUALS_BATCH_COMMITTED'));
+    expect(commitLogs).toHaveLength(1);
+    expect(commitLogs[0].entity).toBe('import_batch');
+    const stagedLogs = await testDb
+      .select()
+      .from(schema.changeLog)
+      .where(eq(schema.changeLog.action, 'IMPORT_SESSION_STAGED'));
+    expect(stagedLogs).toHaveLength(1);
+    expect(stagedLogs[0].entity).toBe('import_session');
   });
 });
 
@@ -346,7 +352,7 @@ describe('Tenant isolation: previewStagedBatch from another org returns NotFound
 describe('cancelStaged: deletes a staged session', () => {
   it('deletes the import_sessions row when status is staged', async () => {
     const sessionId = await stage([['Anna Tester', 'Atlas', '2026-06-12', 8]]);
-    await cancelStaged({ orgId: ORG_ID, sessionId });
+    await cancelStaged({ orgId: ORG_ID, sessionId, userId: 'user_test' });
     const rows = await testDb
       .select()
       .from(schema.importSessions)
@@ -357,12 +363,18 @@ describe('cancelStaged: deletes a staged session', () => {
   it('throws ConflictError when session is already committed', async () => {
     const sessionId = await stage([['Anna Tester', 'Atlas', '2026-06-13', 8]]);
     await commitActualsBatch({ ...baseCommit, sessionId });
-    await expect(cancelStaged({ orgId: ORG_ID, sessionId })).rejects.toThrow(/not in staged/i);
+    await expect(cancelStaged({ orgId: ORG_ID, sessionId, userId: 'user_test' })).rejects.toThrow(
+      /not in staged/i,
+    );
   });
 
   it('throws NotFoundError for a non-existent session', async () => {
     await expect(
-      cancelStaged({ orgId: ORG_ID, sessionId: 'deadbeef-dead-4ead-8ead-deaddeadbeef' }),
+      cancelStaged({
+        orgId: ORG_ID,
+        sessionId: 'deadbeef-dead-4ead-8ead-deaddeadbeef',
+        userId: 'user_test',
+      }),
     ).rejects.toThrow();
   });
 });

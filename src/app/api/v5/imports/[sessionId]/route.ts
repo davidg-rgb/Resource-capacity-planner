@@ -11,9 +11,9 @@ export async function DELETE(
   { params }: { params: Promise<{ sessionId: string }> },
 ) {
   try {
-    const { orgId } = await requireRole('planner');
+    const { orgId, userId } = await requireRole('planner');
     const { sessionId } = await params;
-    await cancelStaged({ orgId, sessionId });
+    await cancelStaged({ orgId, sessionId, userId });
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     return handleApiError(error);

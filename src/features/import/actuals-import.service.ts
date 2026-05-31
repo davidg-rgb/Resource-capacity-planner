@@ -55,32 +55,46 @@ import { validateStagedRows } from './validate-staged-rows';
 // parseAndStageActuals
 // ---------------------------------------------------------------------------
 
-/**
- * @no-change-log import_session is staging-only; rows become permanent via
- * commitStaged() which DOES write an ACTUALS_BATCH_COMMITTED change_log row
- * (and that row references the import_batch entity, which IS in
- * changeLogEntityEnum). Pre-commit stage transitions and cancellations are
- * intentionally outside the audit spine. Tracked as v7.0 audit-coverage
- * expansion (CODE-REVIEW MED-03 follow-up).
- */
+// Phase 56 (CHLOG-02): the import_session lifecycle is on the audit spine. Staging
+// writes an IMPORT_SESSION_STAGED row; cancellation writes IMPORT_SESSION_CANCELLED
+// (see cancelStaged). Commit remains audited under the import_batch entity via
+// ACTUALS_BATCH_COMMITTED (commitActualsBatch) — no double-logging at commit.
 export async function parseAndStageActuals(
   input: ParseAndStageInput,
 ): Promise<ParseAndStageResult> {
   const parsed: ParseResult = parseActualsWorkbook(input.fileBuffer);
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-  const [row] = await db
-    .insert(importSessions)
-    .values({
-      organizationId: input.orgId,
-      userId: input.userId,
-      fileName: input.fileName,
-      status: 'staged',
-      rowCount: parsed.rows.length,
-      parsedData: parsed as unknown as Record<string, unknown>,
-      expiresAt,
-    })
-    .returning({ id: importSessions.id });
+  const row = await db.transaction(async (tx) => {
+    const [inserted] = await tx
+      .insert(importSessions)
+      .values({
+        organizationId: input.orgId,
+        userId: input.userId,
+        fileName: input.fileName,
+        status: 'staged',
+        rowCount: parsed.rows.length,
+        parsedData: parsed as unknown as Record<string, unknown>,
+        expiresAt,
+      })
+      .returning({ id: importSessions.id });
+
+    await recordChange(
+      {
+        orgId: input.orgId,
+        actorPersonaId: input.userId,
+        entity: 'import_session',
+        entityId: inserted.id,
+        action: 'IMPORT_SESSION_STAGED',
+        previousValue: null,
+        newValue: { fileName: input.fileName, rowCount: parsed.rows.length, status: 'staged' },
+        context: { source: 'imports.parseAndStage' },
+      },
+      tx,
+    );
+
+    return inserted;
+  });
 
   return {
     sessionId: row.id,
@@ -140,7 +154,11 @@ export async function previewStagedBatch(
  * Cancel only touches the staging session; no permanent row mutation. v7.0
  * audit-coverage expansion may add a SESSION_CANCELLED action.
  */
-export async function cancelStaged(input: { orgId: string; sessionId: string }): Promise<void> {
+export async function cancelStaged(input: {
+  orgId: string;
+  sessionId: string;
+  userId: string;
+}): Promise<void> {
   const session = await loadSessionOrThrow(input.orgId, input.sessionId);
   if (session.status !== 'staged') {
     throw new ConflictError('Session is not in staged status and cannot be cancelled', {
@@ -149,11 +167,27 @@ export async function cancelStaged(input: { orgId: string; sessionId: string }):
       currentStatus: session.status,
     });
   }
-  await db
-    .delete(importSessions)
-    .where(
-      and(eq(importSessions.id, input.sessionId), eq(importSessions.organizationId, input.orgId)),
+  await db.transaction(async (tx) => {
+    await tx
+      .delete(importSessions)
+      .where(
+        and(eq(importSessions.id, input.sessionId), eq(importSessions.organizationId, input.orgId)),
+      );
+
+    await recordChange(
+      {
+        orgId: input.orgId,
+        actorPersonaId: input.userId,
+        entity: 'import_session',
+        entityId: input.sessionId,
+        action: 'IMPORT_SESSION_CANCELLED',
+        previousValue: { fileName: session.fileName, rowCount: session.rowCount, status: 'staged' },
+        newValue: null,
+        context: { source: 'imports.cancelStaged' },
+      },
+      tx,
     );
+  });
 }
 
 // ---------------------------------------------------------------------------

@@ -104,7 +104,7 @@ beforeAll(async () => {
     );
     CREATE TYPE change_log_entity AS ENUM (
       'allocation','proposal','actual_entry','person','project',
-      'department','discipline','import_batch'
+      'department','discipline','import_batch','import_session'
     );
     CREATE TYPE change_log_action AS ENUM (
       'ALLOCATION_EDITED','ALLOCATION_HISTORIC_EDITED','ALLOCATION_BULK_COPIED',
@@ -112,7 +112,7 @@ beforeAll(async () => {
       'PROPOSAL_WITHDRAWN','PROPOSAL_EDITED',
       'ACTUALS_BATCH_COMMITTED','ACTUALS_BATCH_ROLLED_BACK',
       'REGISTER_ROW_CREATED','REGISTER_ROW_UPDATED','REGISTER_ROW_DELETED',
-      'ACTUAL_UPSERTED'
+      'ACTUAL_UPSERTED','IMPORT_SESSION_STAGED','IMPORT_SESSION_CANCELLED'
     );
     CREATE TABLE change_log (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -200,8 +200,12 @@ describe('TC-AC-012: rollback within 24h restores prior values (DELETE for new r
       .where(eq(schema.actualEntries.organizationId, ORG_ID));
     expect(remaining).toHaveLength(0);
 
-    // change_log: 1 commit + 1 rollback = 2 rows
-    const r = await testDb.execute(sql`SELECT count(*)::int AS c FROM change_log`);
+    // change_log: 1 commit + 1 rollback = 2 import_batch rows. Phase 56 also wrote
+    // an IMPORT_SESSION_STAGED row at staging time, so scope the count to the
+    // import_batch entity rather than the raw total.
+    const r = await testDb.execute(
+      sql`SELECT count(*)::int AS c FROM change_log WHERE entity = 'import_batch'`,
+    );
     expect((r.rows[0] as { c: number }).c).toBe(2);
   });
 });
