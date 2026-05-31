@@ -71,6 +71,10 @@ export const changeLogEntityEnum = pgEnum('change_log_entity', [
   'import_batch',
   // v5.0 — Phase 43 / Plan 43-01: admin register coverage (migration 0008).
   'program',
+  // v7.0 — Phase 56 / CHLOG-01: scenario + import-session audit coverage (migration 0010).
+  'scenario',
+  'scenario_allocation',
+  'import_session',
 ]);
 
 export const changeLogActionEnum = pgEnum('change_log_action', [
@@ -88,6 +92,13 @@ export const changeLogActionEnum = pgEnum('change_log_action', [
   'REGISTER_ROW_UPDATED',
   'REGISTER_ROW_DELETED',
   'ACTUAL_UPSERTED',
+  // v7.0 — Phase 56 / CHLOG-01: scenario + import-session audit actions (migration 0010).
+  'SCENARIO_CREATED',
+  'SCENARIO_UPDATED',
+  'SCENARIO_DELETED',
+  'SCENARIO_ALLOCATIONS_UPSERTED',
+  'IMPORT_SESSION_STAGED',
+  'IMPORT_SESSION_CANCELLED',
 ]);
 
 // v5.0 — Phase 36: proposal + actual entry enums (ARCHITECTURE §7.1, §7.2)

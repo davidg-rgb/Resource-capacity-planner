@@ -64,6 +64,13 @@
       "when": 1775944800001,
       "tag": "0008_change_log_entity_program",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1780228224956,
+      "tag": "0010_change_log_scenario_import_session",
+      "breakpoints": true
     }
   ]
 }
